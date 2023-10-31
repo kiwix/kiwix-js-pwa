@@ -6,7 +6,7 @@ _(be patient while the demo loads)_
 
 <img src="Install-PWA_Firefox_Android.gif" width="360px" />
 
-See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]
+See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
 
 ## Firefox can install PWAs on Android
 
@@ -22,4 +22,4 @@ that will fit in the OPFS.
 Firefox currently limits the maximum size of the OPFS to ~10GB. On Chromium browsers, there is usually a much larger quota (limited only by the amount
 of free space in your storage).
 
-See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]
+See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]

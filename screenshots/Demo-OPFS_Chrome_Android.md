@@ -6,7 +6,7 @@ _(please be patient while the demo loads)_
 
 <img src="Demo-OPFS_Chrome_Android.gif" width="360px" />
 
-See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Android.md)&ensp;]
+See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Android.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
 
 ## Chromium browsers have first-class support for PWAs on Android
 
@@ -22,4 +22,4 @@ file system. Full-text search also works for archives in the OPFS, whereas acces
 archives. However, for very large archives like full English Wikipedia which won't fit in the OPFS, you can still pick these archives from
 anywhere on your device, including microSD cards.
 
-See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Android.md)&ensp;]
+See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Android.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]

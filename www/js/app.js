@@ -3746,49 +3746,23 @@ function processNativeDirHandle (dirHandle, callback) {
     });
     params.pickedFolder = dirHandle;
     params.pickedFile = '';
-    // We have to iterate async function with Promise because IE11 compiler throws error if we use async
-    var archiveList = [];
-    var entryList = dirHandle.entries();
-    (function iterateAsyncDirEntryArray () {
-        return entryList.next().then(function (result) {
-            if (!result.done) {
-                var entry = result.value[1];
-                if (/\.zim(\w\w)?$/.test(entry.name)) {
-                    if (callback) archiveList.push(entry);
-                    // Hide all parts of split file except first in UI
-                    else if (/\.zim(aa)?$/.test(entry.name)) archiveList.push(entry.name);
-                    if (!params.pickedFolder.path) {
-                        entry.getFile().then(function (file) {
-                            params.pickedFolder.path = file.path;
-                        });
-                    }
-                }
-                iterateAsyncDirEntryArray();
-            } else {
-                var noZIMFound = document.getElementById('noZIMFound');
-                if (archiveList.length) {
-                    if (callback) {
-                        callback(archiveList);
-                    } else {
-                        noZIMFound.style.display = 'none';
-                        populateDropDownListOfArchives(archiveList);
-                    }
-                } else {
-                    if (callback) {
-                        callback(null);
-                    } else {
-                        noZIMFound.style.display = 'block';
-                        populateDropDownListOfArchives(archiveList, true);
-                    }
-                }
-            }
-        }).catch(function (err) {
-            uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
-                '<p>[System error message: ' + err.message + ']</p>', 'Error!');
-        });
-    })();
     var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
     archiveDisplay.style.display = 'block';
+    var iterableEntryList = dirHandle.entries();
+    return cache.iterateAsyncDirEntries(iterableEntryList, [], !!callback).then(function (archiveList) {
+        var noZIMFound = document.getElementById('noZIMFound');
+        var hasArchives = archiveList.length > 0;
+        if (!hasArchives) console.warn('No archives found in directory ' + dirHandle.name);
+        if (callback) {
+            callback(archiveList);
+        } else {
+            noZIMFound.style.display = hasArchives ? 'none' : 'block';
+            populateDropDownListOfArchives(archiveList, !hasArchives);
+        }
+    }).catch(function (err) {
+        uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
+        '<p>[System error message: ' + err.message + ']</p>', 'Error!');
+    });
 }
 
 function scanNodeFolderforArchives (folder, callback) {

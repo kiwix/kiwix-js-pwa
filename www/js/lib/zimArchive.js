@@ -713,8 +713,11 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
  * @param {callbackBinaryContent} callback
  */
 ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
-    var that = this;
-    return dirEntry.readData().then(function(data) {
+    if (!dirEntry) {
+        console.warn('Directory entry for requested URL was empty!');
+        return callback(dirEntry, '');
+    }
+    return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         if (dirEntry.inspect) {
             dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());

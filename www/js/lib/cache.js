@@ -64,6 +64,7 @@ function test (callback) {
         if (typeof Storage !== 'undefined') {
             try {
                 // If localStorage is really supported, this won't produce an error
+                // eslint-disable-next-line no-unused-vars
                 var item = window.localStorage.length;
                 assetsCache.capability = assetsCache.capability + '|localStorage';
             } catch (err) {
@@ -199,6 +200,7 @@ function idxDB (keyOrCommand, valueOrCallback, callback) {
     // Create the schema
     open.onupgradeneeded = function () {
         var db = open.result;
+        // eslint-disable-next-line no-unused-vars
         var store = db.createObjectStore(objStore);
     };
 
@@ -489,6 +491,10 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                     var readFile = /\b(?:x?html|css|javascript)\b/i.test(mimetype)
                         ? selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                     readFile(resolvedDirEntry, function (fileDirEntry, content) {
+                        if (!fileDirEntry && !content) {
+                            console.warn('Could not read asset ' + title);
+                            return;
+                        }
                         if (regexpMimeTypes.test(mimetype)) {
                             console.debug('Cache retrieved ' + title + ' from ZIM');
                             // Process any pre-cache transforms
@@ -875,6 +881,39 @@ function deleteOPFSEntry (name) {
 }
 
 /**
+ * Iterates an iterable entry list of files using the File System API and returns an array of entries found
+ *
+ * @param {Iterator} entries An asychronous iterator of entries derived from a directory handle
+ * @param {Array} archives An array to which to add the entries (may be an empty array)
+ * @param {Boolean} noFilter An optional flag to indicate that no filtering should be applied to the entries
+ * @returns {Promise<Array>} A Promise for an array of entries in the file system directory
+ */
+function iterateAsyncDirEntries (entries, archives, noFilter) {
+    return entries.next().then(function (result) {
+        if (!result.done) {
+            var entry = result.value[1];
+            if (/\.zim(\w\w)?$/.test(entry.name)) {
+                if (noFilter) archives.push(entry);
+                // Hide all parts of split file except first in UI
+                else if (/\.zim(aa)?$/.test(entry.name)) archives.push(entry.name);
+                // In an Electron app, we should be able to get the path of the files
+                if (window.fs && !params.pickedFolder.path) {
+                    entry.getFile().then(function (file) {
+                        params.pickedFolder.path = file.path;
+                    });
+                }
+            }
+            return iterateAsyncDirEntries(entries, archives, noFilter);
+        } else {
+            // We've processed all the entries
+            return archives;
+        }
+    }).catch(function (err) {
+        throw err;
+    });
+}
+
+/**
  * Iterates the OPFS file system and returns an array of entries found
  *
  * @returns {Promise<Array>} A Promise for an array of entries in the OPFS file system
@@ -882,31 +921,12 @@ function deleteOPFSEntry (name) {
 function iterateOPFSEntries () {
     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
         return navigator.storage.getDirectory().then(function (dirHandle) {
-            var archiveEntries = [];
             var entries = dirHandle.entries();
-            var promisesForEntries = [];
-            // Push the pormise for each entry to the promises array
-            var pushPromises = new Promise(function (resolve) {
-                (function iterate () {
-                    return entries.next().then(function (result) {
-                        if (!result.done) {
-                            // Process the entry, then continue iterating
-                            var entry = result.value[1];
-                            archiveEntries.push(entry);
-                            promisesForEntries.push(result);
-                            iterate();
-                        } else {
-                            return resolve(true);
-                        }
-                    });
-                })();
-            });
-            return pushPromises.then(function () {
-                return Promise.all(promisesForEntries).then(function () {
-                    return archiveEntries;
-                }).catch(function (err) {
-                    console.error('Unable to iterate OPFS entries', err);
-                });
+            return iterateAsyncDirEntries(entries, []).then(function (archiveList) {
+                return archiveList;
+            }).catch(function (err) {
+                console.error('Unable to iterate OPFS entries', err);
+                throw err;
             });
         });
     }
@@ -970,6 +990,7 @@ export default {
     importOPFSEntries: importOPFSEntries,
     exportOPFSEntry: exportOPFSEntry,
     deleteOPFSEntry: deleteOPFSEntry,
+    iterateAsyncDirEntries: iterateAsyncDirEntries,
     iterateOPFSEntries: iterateOPFSEntries,
     populateOPFSStorageQuota: populateOPFSStorageQuota
 };
