@@ -838,7 +838,6 @@ function setTab (activeBtn) {
     document.getElementById('configuration').style.display = 'none';
     document.getElementById('formArticleSearch').style.display = '';
     if (!activeBtn || activeBtn === 'btnHome') {
-        // document.getElementById('search-article').scrollTop = 0;
         document.getElementById('scrollbox').style.height = 0;
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
@@ -1823,7 +1822,7 @@ document.getElementById('hideActiveContentWarningCheck').addEventListener('chang
 // Function to restore the fullscreen/orientation lock state on user click in-app
 // This is necessary because the browser will not restore the state without a user gesture
 var refreshFullScreen = function (evt) {
-    console.debug('refreshFullScreen starting');
+    // console.debug('refreshFullScreen starting');
     // Don't react if user is selecting an archive or setting the lock orientation
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
@@ -4676,7 +4675,7 @@ function readArticle (dirEntry) {
 
 // Add event listener to iframe window to check for links to external resources
 var filterClickEvent = function (event) {
-    console.debug('filterClickEvent fired');
+    // console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
