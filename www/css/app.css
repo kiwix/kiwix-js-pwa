@@ -114,6 +114,10 @@ div:not(.panel-success, .alert-message) {
     overflow-wrap: break-word;
 }
 
+#top, #articleContent, #footer {
+    transition: transform 0.5s ease;
+}
+
 #scrollbox {
     position: absolute;
 }

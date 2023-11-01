@@ -2057,50 +2057,7 @@ Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(func
 });
 
 var iframe = document.getElementById('articleContent');
-var header = document.getElementById('top');
-var footer = document.getElementById('footer');
-var findInArticle = document.getElementById('findInArticle');
-var navbarDim;
-var footerDim;
-var oldScrollY;
-var newScrollY;
-var throttle = 0;
-header.style.transition = 'transform 500ms';
-iframe.style.transition = 'transform 500ms';
-iframe.style.zIndex = 0;
-footer.style.transition = 'transform 500ms';
-
-var scrollFunction = function () {
-    if (throttle) return;
-    throttle = 1;
-    newScrollY = iframe.contentWindow.pageYOffset;
-    // Hide the toolbars if user has scrolled and search elements are not selected
-    if (newScrollY - oldScrollY > 0 && document.activeElement !== prefix &&
-        document.activeElement !== findInArticle) {
-        // If the header and/or footer have not already been hidden
-        if (/\(0p?x?\)/.test(header.style.transform)) {
-            throttle = 2;
-            setTimeout(function () {
-                if (newScrollY > navbarDim.height) {
-                    header.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
-                    iframe.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
-                    if (params.hideToolbars === true) { // Only hide footer if requested
-                        footer.style.transform = 'translateY(' + (footerDim.height - 2) + 'px)';
-                    }
-                }
-                throttle = 0;
-            }, 200);
-        }
-    } else if (newScrollY - oldScrollY < 0) {
-        header.style.zIndex = 1;
-        header.style.transform = 'translateY(0)';
-        // Needed for Windows Mobile to prevent header disappearing beneath iframe
-        iframe.style.transform = 'translateY(-1px)';
-        footer.style.transform = 'translateY(0)';
-    }
-    oldScrollY = newScrollY;
-    throttle = throttle < 2 ? 0 : throttle;
-};
+var iframeWindow = iframe.contentWindow;
 
 function checkToolbar () {
     if (document.getElementById('row2').style.display === 'none') {
@@ -2108,34 +2065,19 @@ function checkToolbar () {
         params.hideToolbars = settingsStore.getItem('hideToolbars');
         params.hideToolbars = params.hideToolbars === null ? true : params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
     }
-    oldScrollY = iframe.contentWindow.pageYOffset;
-    navbarDim = document.getElementById('navbar').getBoundingClientRect();
-    footerDim = footer.getBoundingClientRect();
-    var doc = iframe.contentDocument ? iframe.contentDocument.documentElement : null;
-    if (doc) doc.style.transition = 'transform 500ms';
-
-    iframe.contentDocument.removeEventListener('scroll', scrollFunction);
+    iframeWindow.removeEventListener('scroll', uiUtil.scroller);
+    iframeWindow.removeEventListener('touchstart', uiUtil.scroller);
+    iframeWindow.removeEventListener('touchend', uiUtil.scroller);
+    iframeWindow.removeEventListener('wheel', uiUtil.scroller);
+    iframeWindow.removeEventListener('keydown', uiUtil.scroller);
     if (params.hideToolbars) {
-        // Shift the iframe up and the document down, and increase height of iframe
-        iframe.style.height = window.innerHeight + navbarDim +
-            (params.hideToolbars === true ? footerDim.height : 0) + 'px';
-        // iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
-        if (doc) {
-            // doc.style.transform = 'translateY(' + navbarDim.height + 'px)';
-            iframe.contentDocument.addEventListener('scroll', scrollFunction);
-        }
-        scrollFunction();
+        iframeWindow.addEventListener('scroll', uiUtil.scroller);
+        iframeWindow.addEventListener('touchstart', uiUtil.scroller);
+        iframeWindow.addEventListener('touchend', uiUtil.scroller);
+        iframeWindow.addEventListener('wheel', uiUtil.scroller);
+        iframeWindow.addEventListener('keydown', uiUtil.scroller);
     } else {
-        // Ensure toolbar is restored
-        setTimeout(function () {
-            header.style.zIndex = 1;
-            header.style.transform = 'translateY(0)';
-            footer.style.transform = 'translateY(0)';
-            // DEV: Moving the iframe up by 1 pixel bizarrely solves the bug with the toolbar disappearing benath the iframe
-            iframe.style.transform = 'translateY(-1px)';
-            if (doc) doc.style.removeProperty('transform');
-            iframe.style.height = window.innerHeight + 'px';
-        }, 500);
+        uiUtil.showSlidingUIElements();
     }
 }
 
