@@ -4705,6 +4705,7 @@ var filterClickEvent = function (event) {
             var decHref = decodeURIComponent(href);
             if (!/^(?:#|javascript)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
+                uiUtil.showSlidingUIElements();
             }
         }
     }
@@ -6021,6 +6022,7 @@ function addListenersToLink (a, href, baseUrl) {
         }
         // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
         a.newcontainer = true; // Prevents double activation
+        uiUtil.showSlidingUIElements();
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
     };
