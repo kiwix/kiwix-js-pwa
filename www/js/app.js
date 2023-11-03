@@ -3044,6 +3044,9 @@ if (storages !== null && storages.length > 0 ||
     } else if (!window.fs) {
         // This should run, e.g., if we have params.webkitdirectory but not windows.fs, and also if we're using legacy file picking
         searchForArchivesInPreferencesOrStorage(true);
+        // If we're not in Configuration, click
+        btnConfigure = document.getElementById('btnConfigure');
+        if (!btnConfigure.classList.contains('active')) btnConfigure.click();
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
         // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
