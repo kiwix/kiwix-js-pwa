@@ -134,9 +134,9 @@ function resizeIFrame (reload) {
     header.style.transform = 'translateY(0)';
     document.getElementById('footer').style.transform = 'translateY(0)';
     iframe.style.transform = 'translateY(-1px)';
-    // iframe.style.height = window.innerHeight + 'px';
+    iframe.style.height = window.innerHeight + 'px';
     // DEV: if we set the iframe with clientHeight, then it takes into account any zoom
-    iframe.style.height = document.documentElement.clientHeight - 5 + 'px';
+    // iframe.style.height = document.documentElement.clientHeight - 5 + 'px';
     // This is needed to cause a reflow in Zimit ZIMs
     setTimeout(function () {
         iframe.style.height = document.documentElement.clientHeight + 'px';

@@ -49,8 +49,8 @@ function hideSlidingUIElements () {
     if (params.hideToolbars === true) { // Only hide footer if requested
         footer.style.transform = 'translateY(' + footerHeight + 'px)';
     }
-    // articleContainer.style.height = window.innerHeight + 'px';
-    articleContainer.style.height = document.documentElement.clientHeight + 'px';
+    articleContainer.style.height = window.innerHeight + 'px';
+    // articleContainer.style.height = document.documentElement.clientHeight + 'px';
     header.style.transform = 'translateY(-' + headerHeight + 'px)';
     articleElement.style.transform = 'translateY(-' + headerHeight + 'px)';
     // Needed by IE11
@@ -70,8 +70,8 @@ function showSlidingUIElements () {
     articleElement.style.transform = 'translateY(-1px)';
     articleContainer.style.transform = 'translateY(-1px)';
     footer.style.transform = 'translateY(0)';
-    // articleContainer.style.height = window.innerHeight + headerHeight + 'px';
-    articleContainer.style.height = document.documentElement.clientHeight + 'px';
+    articleContainer.style.height = window.innerHeight + headerHeight + 'px';
+    // articleContainer.style.height = document.documentElement.clientHeight + 'px';
 }
 
 let scrollThrottle = false;
