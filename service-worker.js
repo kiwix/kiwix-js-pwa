@@ -2,22 +2,22 @@
  * service-worker.js : Service Worker implementation,
  * in order to capture the HTTP requests made by an article, and respond with the
  * corresponding content, coming from the archive
- * 
+ *
  * Copyright 2022 Mossroy, Jaifroid and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
@@ -72,7 +72,7 @@ let imageDisplay;
 // DEV: The server URL is defined in init.js, but is not available to us in SW
 const regexpKiwixDownloadLinks = /download\.kiwix\.org|api\.github\.com/i;
 
-/**  
+/**
  * A regular expression that matches the Content-Types of assets that may be stored in ASSETS_CACHE
  * Add any further Content-Types you wish to cache to the regexp, separated by '|'
  * @type {RegExp}
@@ -87,7 +87,7 @@ const regexpCachedContentTypes = /text\/css|\/javascript|application\/javascript
  */
 const regexpExcludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
-/** 
+/**
  * Pattern for ZIM file namespace: see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
  * In our case, there is also the ZIM file name used as a prefix in the URL
  * @type {RegExp}
@@ -100,7 +100,7 @@ const regexpZIMUrlWithNamespace = /(?:^|\/)([^/]+\/)([-ABCHIJMUVWX])\/(.+)/;
  * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range
  * But, in our case, we send a header to tell the browser we only accept the bytes unit.
  * I did not see multiple ranges asked by a browser.
- * 
+ *
  * @type {RegExp}
  */
 const regexpByteRangeHeader = /^\s*bytes=(\d+)-/;
@@ -108,150 +108,152 @@ const regexpByteRangeHeader = /^\s*bytes=(\d+)-/;
 /**
  * The list of files that the app needs in order to run entirely from offline code
  */
-let precacheFiles = [
-  ".", // This caches the redirect to www/index.html, in case a user launches the app from its root directory
-  "manifest.json",
-  "service-worker.js",
-  "www/favicon.ico",
-  "www/-/mw/ext.cite.styles.css",
-  "www/-/mw/ext.cite.ux-enhancements.css",
-  "www/-/mw/ext.math.scripts.css",
-  "www/-/mw/ext.math.styles.css",
-  "www/-/mw/ext.kartographer.frame.css",
-  "www/-/mw/ext.kartographer.link.css",
-  "www/-/mw/ext.kartographer.style.css",
-  "www/-/mw/ext.scribunto.logs.css",
-  "www/-/mw/ext.tmh.thumbnail.styles.css",
-  "www/-/mw/inserted_style.css",
-  "www/-/mw/inserted_style_mobile.css",
-  "www/-/mw/mediawiki.page.gallery.styles.css",
-  "www/-/mw/mobile.css",
-  "www/-/mw/mw.MediaWikiPlayer.loader.css",
-  "www/-/mw/mw.PopUpMediaTransform.css",
-  "www/-/mw/mw.TMHGalleryHook.js.css",
-  "www/-/mw/newstyle_main_page.css",
-  "www/-/mw/style.css",
-  "www/-/s/css_modules/content.parsoid.css",
-  "www/-/s/css_modules/ext.cite.a11y.css",
-  "www/-/s/css_modules/ext.cite.styles.css",
-  "www/-/s/css_modules/ext.cite.ux-enhancements.css",
-  "www/-/s/css_modules/ext.inputBox.styles.css",
-  "www/-/s/css_modules/ext.kartographer.frame.css",
-  "www/-/s/css_modules/ext.kartographer.link.css",
-  "www/-/s/css_modules/ext.kartographer.style.css",
-  "www/-/s/css_modules/inserted_style.css",
-  "www/-/s/css_modules/inserted_style_mobile.css",
-  "www/-/s/css_modules/mobile.css",
-  "www/-/s/css_modules/style.css",
-  "www/-/style.css",
-  "www/-/s/style.css",
-  "www/-/s/style-dark.css",
-  "www/-/s/style-dark-invert.css",
-  "www/-/s/style-mobile.css",
-  "www/-/s/vector.css",
-  "www/I/COVID-19_lifecycle.jpg",
-  "www/I/s/Icon_External_Link.png",
-  "www/I/s/Icons-mini-file_acrobat.gif",
-  "www/css/app.css",
-  "www/css/bootstrap.min.css",
-  "www/fonts/glyphicons-halflings-regular.woff2",
-  "www/img/icons/kiwix-256.png",
-  "www/img/icons/kiwix-192.png",
-  "www/img/icons/kiwix-32.png",
-  "www/img/icons/kiwix-60.png",
-  "www/img/icons/kiwix-blue-32.png",
-  "www/img/icons/kiwix-midnightblue-90.png",
-  "www/img/icons/wikimed-blue-32.png",
-  "www/img/icons/wikimed-lightblue-32.png",
-  "www/img/icons/wikivoyage-90-white.png",
-  "www/img/icons/wikivoyage-black-32.png",
-  "www/img/icons/wikivoyage-white-32.png",
-  "www/img/icons/map_marker-30px.png",
-  "www/img/icons/map_marker-18px.png",
-  "www/img/spinner.gif",
-  "www/index.html",
-  "www/article.html",
-  "www/js/app.js",
-  "www/js/init.js",
-  "www/js/lib/cache.js",
-  "www/js/lib/filecache.js",
-  "www/js/lib/images.js",
-  "www/js/lib/jquery.module.js",
-  "www/js/lib/jquery-3.7.0.slim.js",
-  "www/js/lib/kiwixServe.js",
-  "www/js/lib/settingsStore.js",
-  "www/js/lib/transformStyles.js",
-  "www/js/lib/transformZimit.js",
-  "www/js/lib/uiUtil.js",
-  "www/js/lib/updater.js",
-  "www/js/lib/utf8.js",
-  "www/js/lib/util.js",
-  "www/js/lib/xzdec_wrapper.js",
-  "www/js/lib/zstddec_wrapper.js",
-  "www/js/lib/zimArchive.js",
-  "www/js/lib/zimArchiveLoader.js",
-  "www/js/lib/zimDirEntry.js",
-  "www/js/lib/zimfile.js",
-  "www/js/lib/darkreader.min.js", // Don't move this or below to prevent them being deleted by the build process
-  "www/js/lib/webpHeroBundle_0.0.0-dev.27.js",
-  "www/js/katex/katex.min.js",
-  "www/js/katex/katex.min.css",
-  "www/js/katex/contrib/auto-render.min.js",
-  "www/js/katex/contrib/copy-tex.min.js",
-  "www/js/katex/contrib/mathtex-script-type.min.js",
-  "www/js/katex/contrib/mhchem.min.js",
-  "www/js/katex/contrib/render-a11y-string.min.js",
-  "www/js/katex/fonts/KaTeX_AMS-Regular.woff2",
-  "www/js/katex/fonts/KaTeX_Main-Bold.woff2",
-  "www/js/katex/fonts/KaTeX_Main-Regular.woff2",
-  "www/js/katex/fonts/KaTeX_Math-Italic.woff2",
-  "www/js/katex/fonts/KaTeX_Size1-Regular.woff2",
-  "www/js/katex/fonts/KaTeX_Size2-Regular.woff2",
-  "www/js/katex/fonts/KaTeX_Size3-Regular.woff2",
-  "www/js/katex/fonts/KaTeX_Size4-Regular.woff2"
+const precacheFiles = [
+    '.', // This caches the redirect to www/index.html, in case a user launches the app from its root directory
+    'manifest.json',
+    'service-worker.js',
+    'www/favicon.ico',
+    'www/-/mw/ext.cite.styles.css',
+    'www/-/mw/ext.cite.ux-enhancements.css',
+    'www/-/mw/ext.math.scripts.css',
+    'www/-/mw/ext.math.styles.css',
+    'www/-/mw/ext.kartographer.frame.css',
+    'www/-/mw/ext.kartographer.link.css',
+    'www/-/mw/ext.kartographer.style.css',
+    'www/-/mw/ext.scribunto.logs.css',
+    'www/-/mw/ext.tmh.thumbnail.styles.css',
+    'www/-/mw/inserted_style.css',
+    'www/-/mw/inserted_style_mobile.css',
+    'www/-/mw/mediawiki.page.gallery.styles.css',
+    'www/-/mw/mobile.css',
+    'www/-/mw/mw.MediaWikiPlayer.loader.css',
+    'www/-/mw/mw.PopUpMediaTransform.css',
+    'www/-/mw/mw.TMHGalleryHook.js.css',
+    'www/-/mw/newstyle_main_page.css',
+    'www/-/mw/style.css',
+    'www/-/s/css_modules/content.parsoid.css',
+    'www/-/s/css_modules/ext.cite.a11y.css',
+    'www/-/s/css_modules/ext.cite.styles.css',
+    'www/-/s/css_modules/ext.cite.ux-enhancements.css',
+    'www/-/s/css_modules/ext.inputBox.styles.css',
+    'www/-/s/css_modules/ext.kartographer.frame.css',
+    'www/-/s/css_modules/ext.kartographer.link.css',
+    'www/-/s/css_modules/ext.kartographer.style.css',
+    'www/-/s/css_modules/inserted_style.css',
+    'www/-/s/css_modules/inserted_style_mobile.css',
+    'www/-/s/css_modules/mobile.css',
+    'www/-/s/css_modules/style.css',
+    'www/-/style.css',
+    'www/-/s/style.css',
+    'www/-/s/style-dark.css',
+    'www/-/s/style-dark-invert.css',
+    'www/-/s/style-mobile.css',
+    'www/-/s/vector.css',
+    'www/I/COVID-19_lifecycle.jpg',
+    'www/I/s/Icon_External_Link.png',
+    'www/I/s/Icons-mini-file_acrobat.gif',
+    'www/css/app.css',
+    'www/css/bootstrap.min.css',
+    'www/fonts/glyphicons-halflings-regular.woff2',
+    'www/img/icons/kiwix-256.png',
+    'www/img/icons/kiwix-192.png',
+    'www/img/icons/kiwix-32.png',
+    'www/img/icons/kiwix-60.png',
+    'www/img/icons/kiwix-blue-32.png',
+    'www/img/icons/kiwix-midnightblue-90.png',
+    'www/img/icons/wikimed-blue-32.png',
+    'www/img/icons/wikimed-lightblue-32.png',
+    'www/img/icons/wikivoyage-90-white.png',
+    'www/img/icons/wikivoyage-black-32.png',
+    'www/img/icons/wikivoyage-white-32.png',
+    'www/img/icons/map_marker-30px.png',
+    'www/img/icons/map_marker-18px.png',
+    'www/img/spinner.gif',
+    'www/index.html',
+    'www/article.html',
+    'www/js/app.js',
+    'www/js/init.js',
+    'www/js/lib/cache.js',
+    'www/js/lib/filecache.js',
+    'www/js/lib/images.js',
+    'www/js/lib/jquery.module.js',
+    'www/js/lib/jquery-3.7.0.slim.js',
+    'www/js/lib/kiwixServe.js',
+    'www/js/lib/settingsStore.js',
+    'www/js/lib/transformStyles.js',
+    'www/js/lib/transformZimit.js',
+    'www/js/lib/uiUtil.js',
+    'www/js/lib/updater.js',
+    'www/js/lib/utf8.js',
+    'www/js/lib/util.js',
+    'www/js/lib/xzdec_wrapper.js',
+    'www/js/lib/zstddec_wrapper.js',
+    'www/js/lib/zimArchive.js',
+    'www/js/lib/zimArchiveLoader.js',
+    'www/js/lib/zimDirEntry.js',
+    'www/js/lib/zimfile.js',
+    'www/js/lib/darkreader.min.js', // Don't move this or below to prevent them being deleted by the build process
+    'www/js/lib/webpHeroBundle_0.0.0-dev.27.js',
+    'www/js/katex/katex.min.js',
+    'www/js/katex/katex.min.css',
+    'www/js/katex/contrib/auto-render.min.js',
+    'www/js/katex/contrib/copy-tex.min.js',
+    'www/js/katex/contrib/mathtex-script-type.min.js',
+    'www/js/katex/contrib/mhchem.min.js',
+    'www/js/katex/contrib/render-a11y-string.min.js',
+    'www/js/katex/fonts/KaTeX_AMS-Regular.woff2',
+    'www/js/katex/fonts/KaTeX_Main-Bold.woff2',
+    'www/js/katex/fonts/KaTeX_Main-Regular.woff2',
+    'www/js/katex/fonts/KaTeX_Math-Italic.woff2',
+    'www/js/katex/fonts/KaTeX_Size1-Regular.woff2',
+    'www/js/katex/fonts/KaTeX_Size2-Regular.woff2',
+    'www/js/katex/fonts/KaTeX_Size3-Regular.woff2',
+    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2'
 ];
 
 if ('WebAssembly' in self) {
-  precacheFiles.push(
-    "www/js/lib/xzdec-wasm.js",
-    "www/js/lib/xzdec-wasm.wasm",
-    "www/js/lib/zstddec-wasm.js",
-    "www/js/lib/zstddec-wasm.wasm",
-    "www/js/lib/libzim-wasm.js",
-    "www/js/lib/libzim-wasm.wasm"
-  );
+    precacheFiles.push(
+        'www/js/lib/xzdec-wasm.js',
+        'www/js/lib/xzdec-wasm.wasm',
+        'www/js/lib/zstddec-wasm.js',
+        'www/js/lib/zstddec-wasm.wasm',
+        'www/js/lib/libzim-wasm.js',
+        'www/js/lib/libzim-wasm.wasm'
+    );
 } else {
-  precacheFiles.push(
-    "www/js/lib/xzdec-asm.js",
-    "www/js/lib/zstddec-asm.js",
-    "www/js/lib/libzim-asm.js"
-  );
+    precacheFiles.push(
+        'www/js/lib/xzdec-asm.js',
+        'www/js/lib/zstddec-asm.js',
+        'www/js/lib/libzim-asm.js'
+    );
 }
 
 // Process install event
-self.addEventListener("install", function (event) {
-    console.debug("[SW] Install Event processing");
+self.addEventListener('install', function (event) {
+    console.debug('[SW] Install Event processing');
     // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
     // self.skipWaiting();
     // We try to circumvent the browser's cache by adding a header to the Request, and it ensures all files are explicitly versioned
     var requests = precacheFiles.map(function (urlPath) {
         return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
     });
-    if (!regexpExcludedURLSchema.test(requests[0].url)) event.waitUntil(
-        caches.open(APP_CACHE).then(function (cache) {
-            return Promise.all(
-                requests.map(function (request) {
-                    return fetch(request).then(function (response) {
-                        // Fail on 404, 500 etc
-                        if (!response.ok) throw Error('Could not fetch ' + request.url);
-                        return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
-                    }).catch(function (err) {
-                        console.error('There was an error pre-caching files', err);
-                    });
-                })
-            );
-        })
-    );
+    if (!regexpExcludedURLSchema.test(requests[0].url)) {
+        event.waitUntil(
+            caches.open(APP_CACHE).then(function (cache) {
+                return Promise.all(
+                    requests.map(function (request) {
+                        return fetch(request).then(function (response) {
+                            // Fail on 404, 500 etc
+                            if (!response.ok) throw Error('Could not fetch ' + request.url);
+                            return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
+                        }).catch(function (err) {
+                            console.error('There was an error pre-caching files', err);
+                        });
+                    })
+                );
+            })
+        );
+    }
 });
 
 // Allow sw to control current page
@@ -285,6 +287,8 @@ self.addEventListener('fetch', function (event) {
     // Only handle GET or POST requests (POST is intended to handle video in Zimit ZIMs)
     if (!/GET|POST/.test(event.request.method)) return;
     var rqUrl = event.request.url;
+    // Filter out requests that do not match the scope of the Service Worker
+
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
     var strippedUrl = urlObject.pathname;
@@ -304,24 +308,25 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
         // First see if the content is in the cache
         fromCache(cache, rqUrl).then(function (response) {
-            // The response was found in the cache so we respond with it 
+            // The response was found in the cache so we respond with it
             return response;
         }, function () {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
             // YouTube links from Zimit archives are dealt with specially
             if (/youtubei.*player/.test(strippedUrl) || cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
-                let range = event.request.headers.get('range');
+                const range = event.request.headers.get('range');
                 if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
                     // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
                     // A URL without "?kiwix-display" query string acts as a passthrough so that the regex will not match and
-                    // the image will be fetched by app.js  
+                    // the image will be fetched by app.js
                     // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
                     var svgResponse;
-                    if (imageDisplay === 'manual')
+                    if (imageDisplay === 'manual') {
                         svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
-                    else
+                    } else {
                         svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
+                    }
                     return new Response(svgResponse, {
                         headers: {
                             'Content-Type': 'image/svg+xml'
@@ -349,7 +354,7 @@ self.addEventListener('fetch', function (event) {
                     }
                     return response;
                 }).catch(function (error) {
-                    console.debug("[SW] Network request failed and no cache.", error);
+                    console.debug('[SW] Network request failed and no cache.', error);
                 });
             }
         })
@@ -359,7 +364,7 @@ self.addEventListener('fetch', function (event) {
 /**
  * Handle custom commands sent from app.js
  */
- self.addEventListener('message', function (event) {
+self.addEventListener('message', function (event) {
     if (event.data.action) {
         if (event.data.action === 'init') {
             // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
@@ -384,7 +389,7 @@ self.addEventListener('fetch', function (event) {
             if (useAppCache !== oldValue) console.debug('[SW] Use of appCache was switched to: ' + useAppCache);
         }
         if (event.data.action === 'getCacheNames') {
-            event.ports[0].postMessage({ 'app': APP_CACHE, 'assets': ASSETS_CACHE });
+            event.ports[0].postMessage({ app: APP_CACHE, assets: ASSETS_CACHE });
         }
         if (event.data.action.checkCache) {
             // Checks and returns the caching strategy: checkCache key should contain a sample URL string to test
@@ -397,19 +402,19 @@ self.addEventListener('fetch', function (event) {
 
 /**
  * Handles URLs that need to be extracted from the ZIM archive
- * 
+ *
  * @param {URL} urlObject The URL object to be processed for extraction from the ZIM
  * @param {String} range Optional byte range string
  * @returns {Promise<Response>} A Promise for the Response, or rejects with the invalid message port data
  */
-function fetchUrlFromZIM(urlObject, range) {
+function fetchUrlFromZIM (urlObject, range) {
     return new Promise(function (resolve, reject) {
         // Note that titles may contain bare question marks or hashes, so we must use only the pathname without any URL parameters.
         // Be sure that you haven't encoded any querystring along with the URL.
         var barePathname = decodeURIComponent(urlObject.pathname);
         var partsOfZIMUrl = regexpZIMUrlWithNamespace.exec(barePathname);
         var prefix = partsOfZIMUrl ? partsOfZIMUrl[1] : '';
-        var nameSpace = partsOfZIMUrl ? partsOfZIMUrl[2]: '';
+        var nameSpace = partsOfZIMUrl ? partsOfZIMUrl[2] : '';
         var title = partsOfZIMUrl ? partsOfZIMUrl[3] : barePathname;
         var anchorTarget = urlObject.hash.replace(/^#/, '');
         var uriComponent = urlObject.search.replace(/\?kiwix-display/, '');
@@ -423,8 +428,8 @@ function fetchUrlFromZIM(urlObject, range) {
                 var contentLength = msgPortEvent.data.content ? (msgPortEvent.data.content.byteLength || msgPortEvent.data.content.length) : null;
                 var contentType = msgPortEvent.data.mimetype;
                 // Set the imageDisplay variable if it has been sent in the event data
-                imageDisplay = typeof msgPortEvent.data.imageDisplay !== 'undefined' ?
-                    msgPortEvent.data.imageDisplay : imageDisplay;
+                imageDisplay = typeof msgPortEvent.data.imageDisplay !== 'undefined'
+                    ? msgPortEvent.data.imageDisplay : imageDisplay;
                 var headers = new Headers();
                 if (contentLength) headers.set('Content-Length', contentLength);
                 // Prevent CORS issues in PWAs - not needed and insecure!
@@ -433,14 +438,14 @@ function fetchUrlFromZIM(urlObject, range) {
                 headers.set('Content-Security-Policy', "default-src 'self' data: blob: about: chrome-extension: bingmaps: https://pwa.kiwix.org https://kiwix.github.io 'unsafe-inline' 'unsafe-eval'; sandbox allow-scripts allow-same-origin allow-modals allow-popups allow-forms allow-downloads;");
                 headers.set('Referrer-Policy', 'no-referrer');
                 if (contentType) headers.set('Content-Type', contentType);
-                
+
                 // Test if the content is a video or audio file. In this case, Chrome & Edge need us to support ranges.
                 // See kiwix-js #519 and openzim/zimwriterfs #113 for why we test for invalid types like "mp4" or "webm" (without "video/")
                 // The full list of types produced by zimwriterfs is in https://github.com/openzim/zimwriterfs/blob/master/src/tools.cpp
                 if (contentLength >= 1 && /^(video|audio)|(^|\/)(mp4|webm|og[gmv]|mpeg)$/i.test(contentType)) {
                     headers.set('Accept-Ranges', 'bytes');
                 }
-                
+
                 var slicedData = msgPortEvent.data.content;
                 if (range) {
                     // The browser asks for a range of bytes (usually for a video or audio stream)
@@ -450,22 +455,22 @@ function fetchUrlFromZIM(urlObject, range) {
                     // So it's probably better to send all we have: hopefully it will avoid some subsequent requests of
                     // the browser to get the following chunks (which would trigger some other complete reads in the ZIM file)
                     // This might be improved in the future with the libzim wasm backend, that should be able to handle ranges.
-                    let partsOfRangeHeader = regexpByteRangeHeader.exec(range);
-                    let begin = partsOfRangeHeader[1];
-                    let end = contentLength - 1;
+                    const partsOfRangeHeader = regexpByteRangeHeader.exec(range);
+                    const begin = partsOfRangeHeader[1];
+                    const end = contentLength - 1;
                     slicedData = slicedData.slice(begin);
-                    
+
                     headers.set('Content-Range', 'bytes ' + begin + '-' + end + '/' + contentLength);
                     headers.set('Content-Length', end - begin + 1);
                 }
-                
+
                 var responseInit = {
                     // HTTP status is usually 200, but has to bee 206 when partial content (range) is sent
                     status: range ? 206 : 200,
                     statusText: 'OK',
                     headers: headers
                 };
-                
+
                 var httpResponse = new Response(slicedData, responseInit);
 
                 // Let's send the content back from the ServiceWorker
@@ -477,10 +482,10 @@ function fetchUrlFromZIM(urlObject, range) {
             }
         };
         outgoingMessagePort.postMessage({
-            'action': 'askForContent',
-            'title': titleWithNameSpace,
-            'search': uriComponent,
-            'anchorTarget': anchorTarget
+            action: 'askForContent',
+            title: titleWithNameSpace,
+            search: uriComponent,
+            anchorTarget: anchorTarget
         }, [messageChannel.port2]);
     });
 }
@@ -491,12 +496,12 @@ function fetchUrlFromZIM(urlObject, range) {
  * @param {String} requestUrl The Request URL to fulfill from cache
  * @returns {Promise<Response>} A Promise for the cached Response, or rejects with strings 'disabled' or 'no-match'
  */
-function fromCache(cache, requestUrl) {
+function fromCache (cache, requestUrl) {
     // Prevents use of Cache API if user has disabled it
-    if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) return Promise.reject('disabled');
+    if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) return Promise.reject(new Error('Cache disabled'));
     return caches.open(cache).then(function (cacheObj) {
         return cacheObj.match(requestUrl).then(function (matching) {
-            if (!matching || matching.status === 404) return Promise.reject('no-match');
+            if (!matching || matching.status === 404) return Promise.reject(new Error('no-match'));
             console.debug('[SW] Supplying ' + requestUrl + ' from ' + cache + '...');
             return matching;
         });
@@ -510,10 +515,11 @@ function fromCache(cache, requestUrl) {
  * @param {Response} response The Response received from the server/ZIM
  * @returns {Promise} A Promise for the update action
  */
-function updateCache(cache, request, response) {
+function updateCache (cache, request, response) {
     // Prevents use of Cache API if user has disabled it
-    if (!response.ok || !(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE))
+    if (!response.ok || !(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) {
         return Promise.resolve();
+    }
     return caches.open(cache).then(function (cacheObj) {
         var reqKey = request.url || request;
         console.debug('[SW] Adding ' + reqKey + ' to ' + cache + '...');
@@ -527,16 +533,16 @@ function updateCache(cache, request, response) {
  * @param {String} url A URL to test against excludedURLSchema
  * @returns {Promise<Array>} A Promise for an array of format [cacheType, cacheDescription, assetCount]
  */
-function testCacheAndCountAssets(url) {
+function testCacheAndCountAssets (url) {
     if (regexpExcludedURLSchema.test(url)) return Promise.resolve(['custom', 'custom', 'Custom', '-']);
     if (!useAssetsCache) return Promise.resolve(['none', 'none', 'None', 0]);
     return caches.open(ASSETS_CACHE).then(function (cache) {
         return cache.keys().then(function (keys) {
             return ['cacheAPI', ASSETS_CACHE, 'Cache API', keys.length];
-        }).catch(function(err) {
+        }).catch(function (err) {
             return err;
         });
-    }).catch(function(err) {
+    }).catch(function (err) {
         return err;
     });
 }
