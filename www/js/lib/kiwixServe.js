@@ -739,7 +739,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Add language, subject and date spans to doc
             if (/\/(mooc|phet|zimit|videos|other|dev)\b/i.test(URL)) {
                 // doc = doc.replace(/^([^_\n\r]+_([^_\n\r\d]*)_?.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
-                doc = doc.replace(/^(.+_(?!all_)([a-z]{2,6}|nds-nl|be-tarask|map-bms|roa-tara|zh-classical)_.*?(\d[\d-]+)\.zi[mp].+|.+(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                doc = doc.replace(/^(.+?_(?!all_)([a-z]{2,4}|nds-nl|be-tarask|map-bms|roa-tara|zh-classical)_.*?(\d[\d-]+)\.(?:zi[mp]|err).+|.+(\d[\d-]+)\.(?:zi[mp]|err).+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
             } else if (/\/stack_exchange\b/i.test(URL)) {
                 doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
             } else {
@@ -995,12 +995,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         function getSubjectArray (fromDoc) {
             // Get list of all subjects
             var subList;
-            if (/\/(mooc|phet|zimit|videos|other)\b/i.test(URL)) {
+            if (/\/(mooc|phet|zimit|videos|other|dev)\b/i.test(URL)) {
                 return null;
             } else if (/\/stack_exchange\b/i.test(URL)) {
                 subList = fromDoc.replace(/^(?:.+(stackoverflow)|[^"]+"([^.]+)).+[\r\n]/img, '$1$2\n');
             } else {
-                subList = fromDoc.replace(/^[^>]+>[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
+                subList = fromDoc.replace(/^[^"]+"[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/img, '$1\n');
             }
             // Delete recurrences
             subList = subList.replace(/^([\w_-]+)$[\r\n]*(?=[\s\S]*^\1$)/gm, '');
@@ -1019,7 +1019,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Get list of dates
         function getDateArray (fromDoc) {
             // Get list of all dates
-            var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, '$1\n');
+            var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.(?:zi[mp]|err).+[\r\n]*/mig, '$1\n');
             // Delete recurrences
             dateList = dateList.replace(/(\b\d+[-]\d+)\n(?=[\s\S]*\b\1\n?)/g, '');
             dateList = 'All\n' + dateList;
