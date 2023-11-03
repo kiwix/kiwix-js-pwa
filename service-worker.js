@@ -288,7 +288,7 @@ self.addEventListener('fetch', function (event) {
     if (!/GET|POST/.test(event.request.method)) return;
     var rqUrl = event.request.url;
     // Filter out requests that do not match the scope of the Service Worker
-
+    if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
     var strippedUrl = urlObject.pathname;
