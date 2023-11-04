@@ -3393,7 +3393,7 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
+        zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
         });
@@ -3853,7 +3853,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
     // TODO: Turn this into a Promise
-    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
+    zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
         uiUtil.systemAlert(message, label);
     });
@@ -3865,6 +3865,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  * @param {ZIMArchive} archive The ZIM archive
  */
 function archiveReadyCallback (archive) {
+    appstate.selectedArchive = archive;
     uiUtil.clearSpinner();
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
     // (this only affects jQuery mode)
