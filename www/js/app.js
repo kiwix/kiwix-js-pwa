@@ -4775,6 +4775,9 @@ var articleLoadedSW = function (dirEntry) {
             articleDocument.bgcolor = '';
             if (appstate.target === 'iframe') articleContainer.style.display = 'block';
             docBody.style.display = 'block';
+            // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+            iframe.style.height = 'auto';
+            resizeIFrame();
         }, 30);
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
