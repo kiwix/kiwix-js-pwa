@@ -22,7 +22,7 @@
 
 'use strict';
 
-/* global params */
+/* global params, appstate */
 
 import xz from './xzdec_wrapper.js';
 import zstd from './zstddec_wrapper.js';
