@@ -109,6 +109,11 @@ function extractImages (images, callback) {
         // Zimit files store URLs encoded!
         if (params.zimType === 'zimit') title = encodeURI(title);
         appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+            if (!dirEntry) {
+                console.warn('Could not find DirEntry for image: ' + title);
+                checkBatch();
+                return;
+            }
             return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                 image.style.background = '';
                 var mimetype = dirEntry.getMimetype();
