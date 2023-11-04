@@ -611,6 +611,8 @@ document.getElementById('findText').addEventListener('click', function () {
 document.getElementById('btnRandomArticle').addEventListener('click', function () {
     // In jQuery mode, only load random content in iframe (not tab or window)
     appstate.target = 'iframe';
+    // If an archive name was stored in the window, then we use that
+    if (window.archive) selectedArchive = window.archive;
     setTab('btnRandomArticle');
     // Re-enable top-level scrolling
     goToRandomArticle();
@@ -752,6 +754,8 @@ document.getElementById('btnTop').addEventListener('click', function () {
 document.getElementById('btnHome').addEventListener('click', function () {
     // In jQuery mode, only load landing page in iframe (not tab or window)
     appstate.target = 'iframe';
+    // If an archive name was stored in the window, then we use that
+    if (window.archive) selectedArchive = window.archive;
     setTab('btnHome');
     document.getElementById('search-article').scrollTop = 0;
     const articleContent = document.getElementById('articleContent');
@@ -3855,6 +3859,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  */
 function archiveReadyCallback (archive) {
     selectedArchive = archive.file.name;
+    window.archive = selectedArchive;
     appstate[selectedArchive] = archive;
     // A blob cache significantly speeds up the loading of CSS files
     appstate[selectedArchive].cssBlobCache = new Map();
@@ -4832,6 +4837,12 @@ function handleMessageChannelMessage (event) {
                 titleIsAsset = !/\??isKiwixHref/.test(title);
             }
             title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
+            // Check that title matches the currently selected archive, and if not, set selectedArchive appropriately
+            var zimName = event.data.zim;
+            if (!~zimName.indexOf(selectedArchive)) {
+                console.log('[MULTIZIM] Switching to requested zim: ' + zimName);
+                selectedArchive = zimName;
+            }
             if (appstate[selectedArchive] && appstate[selectedArchive].landingPageUrl === title) params.isLandingPage = true;
             var messagePort = event.ports[0];
             if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -5954,6 +5965,8 @@ function addListenersToLink (a, href, baseUrl) {
         appstate.target = kiwixTarget;
         articleWindow = thisWindow;
         articleContainer = thisContainer;
+        // If an archive name was stored in the window, then we use that
+        if (window.archive) selectedArchive = window.archive;
         var isNautilusPopup = a.dataset.popup && !/0|false/i.test(a.dataset.popup);
         if (a.tagName === 'H1' || isNautilusPopup) {
             // We have registered a click on the header or on a dynamic link (e.g. in Nautilus archives)

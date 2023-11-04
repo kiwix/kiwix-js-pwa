@@ -1,4 +1,4 @@
-﻿/**
+/**
  * zimArchive.js: Support for archives in ZIM format.
  *
  * Copyright 2015-2023 Mossroy, Jaifroid and contributors
@@ -685,8 +685,9 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         if (dirEntry.inspect || dirEntry.zimitRedirect) {
             if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
             if (dirEntry.zimitRedirect) {
-                return this.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return this.readUtf8File(rd, callback);
+                var that = appstate[selectedArchive];
+                return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return that.readUtf8File(rd, callback);
                 });
             }
         } else {
