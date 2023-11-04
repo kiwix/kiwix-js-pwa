@@ -3389,10 +3389,6 @@ function setLocalArchiveFromArchiveList (archive) {
                 // }
             }
         }
-        // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-        if (cssBlobCache) {
-            cssBlobCache = new Map();
-        }
         zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
@@ -3850,8 +3846,6 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (files.length > 1 && firstSplitFileIndex === null) {
         files = [files[storedFileIndex]];
     }
-    // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-    if (cssBlobCache) cssBlobCache = new Map();
     // TODO: Turn this into a Promise
     zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
@@ -3866,6 +3860,8 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  */
 function archiveReadyCallback (archive) {
     appstate.selectedArchive = archive;
+    // A blob cache significantly speeds up the loading of CSS files
+    appstate.selectedArchive.cssBlobCache = new Map();
     uiUtil.clearSpinner();
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
     // (this only affects jQuery mode)
@@ -5083,12 +5079,6 @@ params.containsMathTexRaw = false;
 params.containsMathTex = false;
 params.containsMathSVG = false;
 
-// Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
-// When archive changes these caches should be reset.
-// Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
-// var cssDirEntryCache = new Map(); //This one is never hit!
-var cssBlobCache = new Map();
-
 /**
  * Display the the given HTML article in the web page,
  * and convert links to javascript calls
@@ -5518,9 +5508,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
 
     function resolveCSS (title, index) {
-        if (cssBlobCache && cssBlobCache.has(title)) {
+        if (appstate.selectedArchive.cssBlobCache.has(title)) {
             console.log('*** cssBlobCache hit ***');
-            blobArray.push([title, cssBlobCache.get(title)]);
+            blobArray.push([title, appstate.selectedArchive.cssBlobCache.get(title)]);
             injectCSS();
         } else {
             var cacheKey = appstate.selectedArchive.file.name + '/' + title;
@@ -5536,17 +5526,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
                 var newURL = cssBlob ? [title, URL.createObjectURL(cssBlob)] : [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache) {
-                    cssBlobCache.set(newURL[0], newURL[1]);
-                }
+                appstate.selectedArchive.cssBlobCache.set(newURL[0], newURL[1]);
                 injectCSS(); // DO NOT move this: it must run within .then function to pass correct values
             }).catch(function (err) {
                 console.error(err);
                 var newURL = [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache) {
-                    cssBlobCache.set(newURL[0], newURL[1]);
-                }
+                appstate.selectedArchive.cssBlobCache.set(newURL[0], newURL[1]);
                 injectCSS();
             });
         }
