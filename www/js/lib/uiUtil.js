@@ -723,7 +723,7 @@ function displayFileDownloadAlert (title, download, contentType, content, autoDi
 function XHR (url, responseType, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function (e) {
-        if (this.readyState == 4) {
+        if (this.readyState === 4) {
             callback(this.response, this.response.type, this.status);
         }
     };
@@ -755,7 +755,7 @@ function insertBreakoutLink (mode) {
     var div = document.createElement('div');
     div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
     div.id = 'openInTab';
-    div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + '/img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
+    div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + '/img/icons/' + (mode === 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
     iframe.body.insertBefore(div, iframe.body.firstChild);
     var openInTab = iframe.getElementById('openInTab');
     openInTab.addEventListener('click', function (e) {
@@ -788,7 +788,7 @@ function extractHTML () {
             // Extract the BLOB itself from the URL (even if it's a blob: URL)
             var itemUrl = item.href || item.src;
             XHR(itemUrl, 'blob', function (response, mimetype, status) {
-                if (status == 500) {
+                if (status === 500) {
                     itemsCount--;
                     return;
                 }
@@ -1014,7 +1014,7 @@ function isElementInView (area, el, fully, offset) {
 function initTouchZoom (element, container) {
     container = container || element;
     // Global vars to cache event state
-    appstate.evCache = new Array();
+    appstate.evCache = [];
     appstate.prevDiff = -1;
     // Set initial element transforms
     var contentWin = element.ownerDocument.defaultView || element.ownerDocument.parentWindow;
@@ -1023,38 +1023,38 @@ function initTouchZoom (element, container) {
     appstate.sessionScale = 1;
     appstate.startVector = null;
     // Install event handlers for the pointer target
-    element.onpointerdown = pointerdown_handler;
+    element.onpointerdown = pointerdownHandler;
     element.onpointermove = function (event) {
-        pointermove_handler(event, container, contentWin);
+        pointermoveHandler(event, container, contentWin);
     };
     // Use same handler for pointer{up,cancel,out,leave} events since
     // the semantics for these events - in this app - are the same.
-    element.onpointerup = pointerup_handler;
-    element.onpointercancel = pointerup_handler;
-    element.onpointerout = pointerup_handler;
-    element.onpointerleave = pointerup_handler;
+    element.onpointerup = pointerupHandler;
+    element.onpointercancel = pointerupHandler;
+    element.onpointerout = pointerupHandler;
+    element.onpointerleave = pointerupHandler;
 }
 
-function pointerdown_handler (ev) {
+function pointerdownHandler (ev) {
     // The pointerdown event signals the start of a touch interaction.
     // This event is cached to support 2-finger gestures
     appstate.evCache.push(ev);
     // console.debug('pointerDown', ev);
 }
 
-function pointermove_handler (ev, cont, win) {
+function pointermoveHandler (ev, cont, win) {
     // This function implements a 2-pointer horizontal pinch/zoom gesture.
     // console.debug('pointerMove', ev);
     // Find this event in the cache and update its record with this event
     for (var i = 0; i < appstate.evCache.length; i++) {
-        if (ev.pointerId == appstate.evCache[i].pointerId) {
+        if (ev.pointerId === appstate.evCache[i].pointerId) {
             appstate.evCache[i] = ev;
             break;
         }
     }
 
     // If two pointers are down, check for pinch gestures
-    if (appstate.evCache.length == 2) {
+    if (appstate.evCache.length === 2) {
         ev.preventDefault();
         // Calculate the distance between the two pointers
         var x0 = appstate.evCache[0].clientX;
@@ -1084,10 +1084,10 @@ function pointermove_handler (ev, cont, win) {
     }
 }
 
-function pointerup_handler (ev) {
+function pointerupHandler (ev) {
     // console.debug(ev.type, ev);
     // Remove this pointer from the cache
-    remove_event(ev);
+    removeEvent(ev);
 
     // If the number of pointers down is less than two then reset diff tracker
     if (appstate.evCache.length < 2) {
@@ -1095,10 +1095,10 @@ function pointerup_handler (ev) {
     }
 }
 
-function remove_event (ev) {
+function removeEvent (ev) {
     // Remove this event from the target's cache
     for (var i = 0; i < appstate.evCache.length; i++) {
-        if (appstate.evCache[i].pointerId == ev.pointerId) {
+        if (appstate.evCache[i].pointerId === ev.pointerId) {
             appstate.evCache.splice(i, 1);
             break;
         }
@@ -1151,7 +1151,7 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
     message += ':</p>' + anchor;
     var opener = function (ev) {
         try {
-            window.open(href,  params.windowOpener === 'tab' ? '_blank' : (ev ? ev.target.title : 'Download'),
+            window.open(href, params.windowOpener === 'tab' ? '_blank' : (ev ? ev.target.title : 'Download'),
                 params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             if (ev) ev.preventDefault();
         } catch (e) {
@@ -1198,14 +1198,14 @@ function setupConfigurationToggles () {
                     var text = head.innerHTML;
                     if (/▶/.test(text)) return;
                     // Don't close panel for certain cases
-                    if (panelHeading === head || /API\sStatus/.test(text + headingText)||
+                    if (panelHeading === head || /API\sStatus/.test(text + headingText) ||
                         !params.appCache && /Troubleshooting/.test(text)) return;
                     head.click();
                 });
             } else {
                 panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▶ ');
                 panelBody.style.display = 'none';
-                if (panelPrevious) panelPrevious.style.marginBottom = panelPreviousHeading && /▼/.test(panelPreviousHeading.innerHTML) ? null: 0;
+                if (panelPrevious) panelPrevious.style.marginBottom = panelPreviousHeading && /▼/.test(panelPreviousHeading.innerHTML) ? null : 0;
                 if (panelNext) panelParent.style.marginBottom = panelNextHeading && /▼/.test(panelNextHeading.innerHTML) ? null : 0;
             }
         });
@@ -1237,7 +1237,7 @@ function setupConfigurationToggles () {
             panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▶/, '▼') : panelHeading.innerHTML.replace(/▼/, '▶');
             panelBody.style.display = open ? 'block' : 'none';
             var panelParent = panelHeading.parentElement;
-            if (panelParent) panelParent.style.marginBottom = open ? null: 0;
+            if (panelParent) panelParent.style.marginBottom = open ? null : 0;
         });
         if (open) e.target.innerHTML = e.target.innerHTML.replace(/▶\sOpen/, '▼ Close');
         else e.target.innerHTML = e.target.innerHTML.replace(/▼\sClose/, '▶ Open');
@@ -1270,17 +1270,17 @@ function requestOrCancelFullScreen (el) {
             ? sel.requestFullscreen ? sel.requestFullscreen()
             : sel.webkitRequestFullscreen ? sel.webkitRequestFullscreen()
             : sel.mozRequestFullScreen ? sel.mozRequestFullScreen()
-            : sel.msRequestFullscreen ? sel.msRequestFullscreen() : Promise.reject('No full-screen mode API available')
+            : sel.msRequestFullscreen ? sel.msRequestFullscreen() : Promise.reject(new Error('No full-screen mode API available'))
             // Cancel full-screen mode
             : document.exitFullscreen ? document.exitFullscreen()
             : document.webkitExitFullscreen ? document.webkitExitFullscreen()
             : document.mozCancelFullScreen ? document.mozCancelFullScreen()
-            : document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject('No full-screen mode API available');
+            : document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject(new Error('No full-screen mode API available'));
         return Promise.resolve(fn);
     };
     return rq(el).then(function () {
         console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled');
-        return el ? true : false;
+        return !!el;
     }).catch(function (err) {
         console.log('Error enabling full-screen mode', err);
         throw err;
@@ -1333,7 +1333,6 @@ function lockDisplayOrientation (val) {
         return requestOrCancelFullScreen();
     }
 }
-
 
 /**
  * Finds the closest <a> or <area> enclosing tag of an element.
