@@ -83,9 +83,6 @@ params['storeType'] = settingsStore.getBestAvailableStorageAPI();
 // A parameter to determine whether the webkitdirectory API is available
 params['webkitdirectory'] = util.webkitdirectorySupported();
 
-// Placeholder for the alert box header element, so it can be displayed and hidden easily
-const alertBoxHeader = document.getElementById('alertBoxHeader');
-
 // Retrieve UWP launch arguments when the app is started by double-clicking on a file
 if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
     Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
@@ -4256,7 +4253,7 @@ function searchDirEntriesFromPrefix (prefix) {
         appstate.search.status = 'cancelled';
         // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
         appstate.search = { prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize };
-        alertBoxHeader.style.display = 'none';
+        uiUtil.hideActiveContentWarning();
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
             if (sel.length) {
@@ -4548,7 +4545,7 @@ function readArticle (dirEntry) {
         var mimeType = dirEntry.getMimetype();
         // TESTING//
         console.log('Initiating ' + mimeType + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + '...');
-        alertBoxHeader.style.display = 'none';
+        uiUtil.hideActiveContentWarning();
         // Set startup parameter to guard against boot loop
         if (settingsStore.getItem('lastPageLoad') !== 'rebooting') settingsStore.setItem('lastPageLoad', 'failed', Infinity);
         // Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-pwa #56]
@@ -6416,7 +6413,7 @@ function goToRandomArticle () {
                 if (appstate.selectedArchive.file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) ||
                     params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                     params.isLandingPage = false;
-                    alertBoxHeader.style.display = 'none';
+                    uiUtil.hideActiveContentWarning();
                     readArticle(dirEntry);
                 } else {
                     // If the random title search did not end up on an article,

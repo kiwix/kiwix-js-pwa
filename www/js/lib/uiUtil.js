@@ -32,7 +32,7 @@ import util from './util.js';
  */
 var itemsCount = false;
 
-// Placeholders for the article container and the article window
+// Placeholders for the header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
 
@@ -127,6 +127,8 @@ function slideAway (e) {
     const newScrollY = articleContainer.contentWindow.pageYOffset;
     let delta;
     const visibleState = /\(0p?x?\)/.test(header.style.transform);
+    // Remove any content warning
+    hideActiveContentWarning();
     // If the search field is focused and elements are not showing, do not slide away
     if (document.activeElement === document.getElementById('prefix')) {
         if (!visibleState) showSlidingUIElements();
@@ -562,8 +564,7 @@ function displayActiveContentWarning (type) {
     alertBoxHeader.innerHTML = alertHTML;
     alertBoxHeader.style.display = 'block';
     document.getElementById('activeContentClose').addEventListener('click', function () {
-        // Hide the alert box
-        alertBoxHeader.style.display = 'none';
+        hideActiveContentWarning();
     });
     ['swModeLink', 'jqModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function (id) {
         // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
@@ -598,6 +599,21 @@ function displayActiveContentWarning (type) {
             });
         }
     });
+}
+
+/**
+ * Hides the active content warning alert box with a fade-out effect
+ */
+function hideActiveContentWarning () {
+    const alertBoxHeader = document.getElementById('alertBoxHeader');
+    if (alertBoxHeader.style.display === 'none') return;
+    alertBoxHeader.style.opacity = 0;
+    alertBoxHeader.style.maxHeight = 0;
+    setTimeout(function () {
+        alertBoxHeader.style.display = 'none';
+        alertBoxHeader.style.opacity = 1;
+        alertBoxHeader.style.maxHeight = '';
+    }, 500);
 }
 
 /**
@@ -1385,6 +1401,7 @@ export default {
     printCustomElements: printCustomElements,
     downloadBlobUWP: downloadBlobUWP,
     displayActiveContentWarning: displayActiveContentWarning,
+    hideActiveContentWarning: hideActiveContentWarning,
     displayFileDownloadAlert: displayFileDownloadAlert,
     insertBreakoutLink: insertBreakoutLink,
     extractHTML: extractHTML,

@@ -544,6 +544,13 @@ pre {
     margin-bottom: 15% !important;
 }
 
+#alertBoxHeader {
+    transition: opacity 0.5s;
+    text-align: center;
+    position: relative;
+    z-index: 1; 
+}
+
 #alertBoxFooter .alert {
     margin-bottom: 0;
 }
