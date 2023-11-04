@@ -44,7 +44,7 @@
 
 import uiUtil from './uiUtil.js';
 
-/* global appstate, params */
+/* global appstate, selectedArchive, params */
 
 /**
  * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
@@ -131,7 +131,7 @@ function transformReplayUrls (dirEntry, data, mimetype, callback) {
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate[selectedArchive].file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);
         // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -281,7 +281,7 @@ function transformReplayUrls (dirEntry, data, mimetype, callback) {
  */
 function transformVideoUrl (url, articleDocument, callback) {
     if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
-        var cns = appstate.selectedArchive.getContentNamespace();
+        var cns = appstate[selectedArchive].getContentNamespace();
         var rgxTrimUrl = new RegExp('(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
         var pureUrl = url.replace(rgxTrimUrl, '');
         // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
@@ -298,7 +298,7 @@ function transformVideoUrl (url, articleDocument, callback) {
             searchUrlIndex: true,
             size: 1
         }
-        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+        appstate[selectedArchive].findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
             if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                 dirEntry = dirEntry[0];
                 var cpn = dirEntry.url.match(/cpn=([^&]+)/i);
@@ -312,7 +312,7 @@ function transformVideoUrl (url, articleDocument, callback) {
                         searchUrlIndex: true,
                         size: 1
                     }
-                    appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                    appstate[selectedArchive].findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                         if (dirEntry && dirEntry[0] && dirEntry[0].url && !search.found) {
                             dirEntry = dirEntry[0];
                             search.found = true;
@@ -320,7 +320,7 @@ function transformVideoUrl (url, articleDocument, callback) {
                             console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
                             // If we are dealing with embedded video, we have to find the embedded URL and subsitute it
                             if (/\/embed\//i.test(pureUrl)) {
-                                var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
+                                var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate[selectedArchive].file.name);
                                 Array.prototype.slice.call(articleDocument.querySelectorAll('iframe')).forEach(function (frame) {
                                     if (~frame.src.indexOf(videoId)) {
                                         var newUrl = window.location.origin + indexRoot + transUrl.replace(/videoembed/, '');

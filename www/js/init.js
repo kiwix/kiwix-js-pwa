@@ -53,6 +53,13 @@ var params = {};
  */
 var appstate = {};
 
+/**
+ * A global object for storing the currently selected archive
+ *
+ * @type String
+ */
+var selectedArchive = '';
+
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '2.7.6'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************

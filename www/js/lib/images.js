@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* global params, appstate, Windows, articleContainer */
+/* global params, appstate, selectedArchive, Windows, articleContainer */
 
 'use strict';
 
@@ -105,16 +105,16 @@ function extractImages (images, callback) {
             return;
         }
         // Zimit files (at least) will sometimes have a ZIM prefix, but we are extracting raw here
-        title = title.replace(appstate.selectedArchive.file.name + '/', '');
+        title = title.replace(appstate[selectedArchive].file.name + '/', '');
         // Zimit files store URLs encoded!
         if (params.zimType === 'zimit') title = encodeURI(title);
-        appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+        appstate[selectedArchive].getDirEntryByPath(title).then(function (dirEntry) {
             if (!dirEntry) {
                 console.warn('Could not find DirEntry for image: ' + title);
                 checkBatch();
                 return;
             }
-            return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+            return appstate[selectedArchive].readBinaryFile(dirEntry, function (fileDirEntry, content) {
                 image.style.background = '';
                 var mimetype = dirEntry.getMimetype();
                 uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages || params.allowHTMLExtraction, function () {
@@ -247,7 +247,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
     }, 1000);
     if (!forPrinting && !documentImages.length) return;
     var imageHtml;
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate[selectedArchive].file.name) + '/';
     for (var i = 0, l = documentImages.length; i < l; i++) {
         // Process Wikimedia MathML, but not if we'll be using the jQuery routine later
         if (!(params.manipulateImages || params.allowHTMLExtraction)) {
@@ -317,7 +317,7 @@ function prepareImagesJQuery (win, forPrinting) {
     container = win;
     var doc = container.document;
     var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate[selectedArchive].file.name) + '/';
     indexRoot = indexRoot.replace(/^\//, '');
     // Zimit ZIMs work better if all images are extracted
     if (params.zimType === 'zimit') forPrinting = true;
@@ -336,7 +336,7 @@ function prepareImagesJQuery (win, forPrinting) {
             image.style.opacity = '0';
             // Set a minimum width to avoid some images not rendering in squashed hidden tables
             if (params.displayHiddenBlockElements && image.width && !image.style.minWidth &&
-                /wiki|wiktionary/i.test(appstate.selectedArchive.file.name)) {
+                /wiki|wiktionary/i.test(appstate[selectedArchive].file.name)) {
                 var imgX = image.width + '';
                 imgX = imgX.replace(/(\d+)$/, '$1px');
                 image.style.minWidth = imgX;
@@ -388,8 +388,8 @@ function insertMediaBlobsJQuery (medium) {
             });
         }
         // Load media file
-        appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
-            return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+        appstate[selectedArchive].getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
+            return appstate[selectedArchive].readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                 var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                 var blob = new Blob([mediaArray], {
                     type: mimeType
@@ -504,8 +504,8 @@ function buildCustomCCMenu (doc, mediaElement, callback) {
         if (existingCC) existingCC.parentNode.removeChild(existingCC);
         var sel = v.target.options[v.target.selectedIndex];
         if (!sel.value) return; // User selected "none"
-        appstate.selectedArchive.getDirEntryByPath(sel.dataset.kiwixsrc).then(function (dirEntry) {
-            return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+        appstate[selectedArchive].getDirEntryByPath(sel.dataset.kiwixsrc).then(function (dirEntry) {
+            return appstate[selectedArchive].readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
                 var blob = new Blob([trackContents], {
                     type: 'text/vtt'
                 });

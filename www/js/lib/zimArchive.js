@@ -22,7 +22,7 @@
 
 'use strict';
 
-/* global params, appstate */
+/* global params, appstate, selectedArchive */
 
 import zimfile from './zimfile.js';
 import zimDirEntry from './zimDirEntry.js';
@@ -655,7 +655,7 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         console.warn('No directory entry found for requested URL!');
         return callback(dirEntry, '');
     }
-    var cns = appstate.selectedArchive.getContentNamespace();
+    var cns = appstate[selectedArchive].getContentNamespace();
     return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         if (window.TextDecoder) {
