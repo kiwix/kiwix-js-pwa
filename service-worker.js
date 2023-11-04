@@ -484,7 +484,6 @@ function fetchUrlFromZIM (urlObject, range) {
         outgoingMessagePort.postMessage({
             action: 'askForContent',
             title: titleWithNameSpace,
-            zim: prefix.replace(/\/$/, ''),
             search: uriComponent,
             anchorTarget: anchorTarget
         }, [messageChannel.port2]);
