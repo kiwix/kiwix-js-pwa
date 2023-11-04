@@ -473,10 +473,10 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
     var cns = this.getContentNamespace();
     // Search v1 article listing if available, otherwise fallback to v0
     var articleCount = this.file.articleCount || this.file.entryCount;
-    var searchFunction = appstate.selectedArchive.file.dirEntryByTitleIndex;
+    var searchFunction = this.file.dirEntryByTitleIndex;
     if (search.searchUrlIndex) {
         articleCount = this.file.entryCount;
-        searchFunction = appstate.selectedArchive.file.dirEntryByUrlIndex;
+        searchFunction = this.file.dirEntryByUrlIndex;
     }
     util.binarySearch(startIndex, articleCount, function(i) {
         return searchFunction(i).then(function(dirEntry) {
@@ -684,8 +684,8 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         if (dirEntry.inspect || dirEntry.zimitRedirect) {
             if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
             if (dirEntry.zimitRedirect) {
-                return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return appstate.selectedArchive.readUtf8File(rd, callback);
+                return this.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return this.readUtf8File(rd, callback);
                 });
             }
         } else {
@@ -720,10 +720,10 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
     return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         if (dirEntry.inspect) {
-            dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());
+            dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), this.getContentNamespace());
             if (dirEntry.zimitRedirect) {
-                return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return appstate.selectedArchive.readBinaryFile(rd, callback);
+                return this.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return this.readBinaryFile(rd, callback);
                 })
             }
         } else {
@@ -753,7 +753,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
         var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
         if (revisedPath !== path) {
             console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
-            if (appstate.selectedArchive.zimType === 'zimit') {
+            if (this.zimType === 'zimit') {
                 console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
             }
             path = revisedPath;
@@ -832,7 +832,7 @@ function fuzzySearch(path, search) {
         // setTimeout(function () {
         //     if (!searchResolved) uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
         // }, 5000);
-        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
+        this.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
             if (!search.found && dirEntry && dirEntry[0] && dirEntry[0].url) {
                 search.found++;
                 dirEntry = dirEntry[0];
