@@ -63,6 +63,12 @@ articleContainer.kiwixType = 'iframe';
 var articleWindow = articleContainer.contentWindow;
 var articleDocument;
 
+// The following variables are used to store the current article and its state
+
+var messageChannelWaiting = false;
+var transformedHTML = '';
+var transDirEntry = null;
+
 /**
  * @type ZIMArchive
  */
@@ -4841,14 +4847,14 @@ function handleMessageChannelMessage (event) {
             if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
             // Intercept landing page if already transformed (because this might have a fake dirEntry)
             // Note that due to inconsistencies in Zimit archives, we need to test the encoded and the decoded version of the title
-            if (params.transformedHTML && params.transDirEntry && (title === params.transDirEntry.namespace + '/' + params.transDirEntry.url ||
-                decodeURIComponent(title) === params.transDirEntry.namespace + '/' + params.transDirEntry.url)) {
+            if (transformedHTML && transDirEntry && (title === transDirEntry.namespace + '/' + transDirEntry.url ||
+                decodeURIComponent(title) === transDirEntry.namespace + '/' + transDirEntry.url)) {
                 var message = {
                     action: 'giveContent',
                     title: title,
                     mimetype: 'text/html'
                 };
-                postTransformedHTML(message, messagePort, params.transDirEntry);
+                postTransformedHTML(message, messagePort, transDirEntry);
                 return;
             }
             var readFile = function (dirEntry) {
@@ -4897,11 +4903,11 @@ function handleMessageChannelMessage (event) {
                             mimetype: mimetype,
                             imageDisplay: imageDisplayMode
                         };
-                        if (!params.transformedHTML) {
+                        if (!transformedHTML) {
                             // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
                             if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
                             // Tell the read routine that the request comes from a messageChannel
-                            appstate.messageChannelWaiting = true;
+                            messageChannelWaiting = true;
                             readArticle(dirEntry);
                             setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
                         } else {
@@ -4983,10 +4989,10 @@ function handleMessageChannelMessage (event) {
 }
 
 function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
-    if (params.transformedHTML && /<html[^>]*>/i.test(params.transformedHTML)) {
+    if (transformedHTML && /<html[^>]*>/i.test(transformedHTML)) {
         // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
         // to be called from any external windows. NB messageChannelWaiting is only true when user requested article from a UWP window
-        if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
+        if (/UWP/.test(params.appType) && (appstate.target === 'window' || messageChannelWaiting) &&
             params.imageDisplay) { thisMessage.imageDisplay = 'all'; }
         // We need to do the same for Gutenberg and PHET ZIMs
         if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive.file.name)
@@ -4995,13 +5001,13 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             thisMessage.imageDisplay = 'all';
         }
         // Let's send the content to the ServiceWorker
-        thisMessage.content = params.transformedHTML;
-        params.transformedHTML = '';
-        params.transDirEntry = null;
+        thisMessage.content = transformedHTML;
+        transformedHTML = '';
+        transDirEntry = null;
         loaded = false;
         // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden)
         // NB Test for messageChannelWaiting filters out requests coming from a UWP window
-        if (articleContainer.kiwixType === 'iframe' && !appstate.messageChannelWaiting) {
+        if (articleContainer.kiwixType === 'iframe' && !messageChannelWaiting) {
             if (/UWP/.test(params.appType)) {
                 articleContainer.style.display = 'none';
                 setTimeout(function () {
@@ -5025,12 +5031,12 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             }
         }
         thisMessagePort.postMessage(thisMessage);
-        appstate.messageChannelWaiting = false;
+        messageChannelWaiting = false;
         // Failsafe to turn off spinner
         setTimeout(function () {
             uiUtil.clearSpinner();
         }, 5000);
-    } else if (appstate.messageChannelWaiting) {
+    } else if (messageChannelWaiting) {
         setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
     }
 }
@@ -5769,7 +5775,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Note that UWP apps cannot communicate to a newly opened window except via postmessage, but Service Worker can still
         // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
         // these browser types with 'MSBlobBuilder' (and also IE11).
-        if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
+        if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || messageChannelWaiting))) {
             htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' +
                 (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
             // NB Don't hide the document body if we don't have any window management, because native loading of documents in a new tab is slow, and we can't
@@ -5810,8 +5816,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (params.zimType === 'zimit') htmlArticle = htmlArticle.replace(/!(window._WBWombat)/, '$1');
             // Add doctype if missing so that scripts run in standards mode
             // (quirks mode prevents katex from running, and is incompatible with jQuery)
-            params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
-            params.transDirEntry = dirEntry;
+            transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
+            transDirEntry = dirEntry;
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
             var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : encodeURI(dirEntry.url);
@@ -5819,7 +5825,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             //     return encodeURIComponent(matchedSubstring);
             // });
             // If the request was not initiated by an existing controlled window, we instantiate the request here
-            if (!appstate.messageChannelWaiting) {
+            if (!messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                 var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
                 if (navigator.serviceWorker.controller) {
