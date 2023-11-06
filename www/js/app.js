@@ -2675,17 +2675,15 @@ function refreshCacheStatus () {
     }
 }
 
-var keepAliveServiceWorkerHandle = null;
+var initServiceWorkerHandle = null;
 var serviceWorkerRegistration = null;
 
 /**
- * Send an 'init' message to the ServiceWorker with a new MessageChannel
- * to initialize it, or to keep it alive.
- * This MessageChannel allows a 2-way communication between the ServiceWorker
- * and the application
+ * Sends an 'init' message to the ServiceWorker and inititalizes the onmessage event
+ * When the event is received, it will provide a MessageChannel port to respond to the ServiceWorker
  */
-function initOrKeepAliveServiceWorker () {
-    // If no ZIM archive is loaded, return
+function initServiceWorkerMessaging () {
+    // If no ZIM archive is loaded, return (it will be called when one is loaded)
     if (!appstate.selectedArchive) return;
     if (params.contentInjectionMode === 'serviceworker') {
         // Create a message listener
@@ -2699,7 +2697,7 @@ function initOrKeepAliveServiceWorker () {
             navigator.serviceWorker.controller.postMessage({
                 action: 'init'
             });
-        } else if (keepAliveServiceWorkerHandle) {
+        } else if (initServiceWorkerHandle) {
             console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
             // Turn off failsafe, as this is a controlled reboot
             settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
@@ -2707,7 +2705,7 @@ function initOrKeepAliveServiceWorker () {
         } else {
             // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
             console.debug('The Service Worker needs more time to load...');
-            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, 250);
+            initServiceWorkerHandle = setTimeout(initServiceWorkerMessaging, 250);
         }
    }
 }
@@ -3867,7 +3865,7 @@ function archiveReadyCallback (archive) {
     uiUtil.clearSpinner();
     // Initialize the Service Worker
     if (params.contentInjectionMode === 'serviceworker') {
-        initOrKeepAliveServiceWorker();
+        initServiceWorkerMessaging();
     }
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
     // (this only affects jQuery mode)
