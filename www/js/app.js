@@ -2686,6 +2686,12 @@ var serviceWorkerRegistration = null;
  */
 function initOrKeepAliveServiceWorker () {
     var delay = DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER;
+    var zimFileName = '';
+    var zimFileId = null;
+    // If no ZIM archive is loaded, return
+    if (!appstate.selectedArchive) return;
+    zimFileName = appstate.selectedArchive.file.name;
+    zimFileId = appstate.selectedArchive.file.id;
     if (params.contentInjectionMode === 'serviceworker') {
         // Create a new messageChannel
         var tmpMessageChannel = new MessageChannel();
@@ -2693,7 +2699,9 @@ function initOrKeepAliveServiceWorker () {
         // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
         if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
-                action: 'init'
+                action: 'init',
+                zimFileName: zimFileName,
+                zimFileId: zimFileId
             }, [tmpMessageChannel.port2]);
         } else if (keepAliveServiceWorkerHandle) {
             console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
@@ -2772,7 +2780,7 @@ function setContentInjectionMode (value) {
                 // Remove any jQuery hooks from a previous jQuery session
                 $('#articleContent').contents().remove();
                 // Create the MessageChannel and send 'init'
-                initOrKeepAliveServiceWorker();
+                // initOrKeepAliveServiceWorker();
                 refreshAPIStatus();
             } else {
                 navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
@@ -2787,7 +2795,7 @@ function setContentInjectionMode (value) {
                             // Remove any jQuery hooks from a previous jQuery session
                             $('#articleContent').contents().remove();
                             // Create the MessageChannel and send the 'init' message to the ServiceWorker
-                            initOrKeepAliveServiceWorker();
+                            // initOrKeepAliveServiceWorker();
                             // We need to refresh cache status here on first activation because SW was inaccessible till now
                             // We also initialize the ASSETS_CACHE constant in SW here
                             refreshCacheStatus();
@@ -2800,7 +2808,7 @@ function setContentInjectionMode (value) {
                         // We need to re-create the MessageChannel
                         // and send the 'init' message to the ServiceWorker
                         // in case it has been stopped and lost its context
-                        initOrKeepAliveServiceWorker();
+                        // initOrKeepAliveServiceWorker();
                     }
                     refreshAPIStatus();
                 }).catch(function (err) {
@@ -2829,7 +2837,7 @@ function setContentInjectionMode (value) {
         } else {
             // We need to set this variable earlier else the Service Worker does not get reactivated
             params.contentInjectionMode = value;
-            initOrKeepAliveServiceWorker();
+            // initOrKeepAliveServiceWorker();
         }
     }
     $('input:radio[name=contentInjectionMode]').prop('checked', false);
@@ -3869,6 +3877,10 @@ function archiveReadyCallback (archive) {
     // A blob cache significantly speeds up the loading of CSS files
     appstate.selectedArchive.cssBlobCache = new Map();
     uiUtil.clearSpinner();
+    // Initialize the Service Worker
+    if (params.contentInjectionMode === 'serviceworker') {
+        initOrKeepAliveServiceWorker();
+    }
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
     // (this only affects jQuery mode)
     appstate.target = 'iframe';
@@ -4833,6 +4845,11 @@ function handleMessageChannelMessage (event) {
     } else {
         // We received a message from the ServiceWorker
         if (event.data.action === 'askForContent') {
+            // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
+            if (event.data.zimFileId !== appstate.selectedArchive.file.id) {
+                console.warn('MessageChannel zimFileId ' + event.data.zimFileId + ' does not match currently open archive ' + appstate.selectedArchive.file.id + '. Ignoring message in this instance.');
+                return;
+            }
             loaded = false;
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;

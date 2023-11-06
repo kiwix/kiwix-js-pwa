@@ -258,6 +258,7 @@ self.addEventListener('install', function (event) {
 
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
+    console.debua('[SW] Activate Event processing');
     // "Claiming" the ServiceWorker is necessary to make it work right away,
     // without the need to reload the page.
     // See https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
@@ -277,7 +278,8 @@ self.addEventListener('activate', function (event) {
     );
 });
 
-let outgoingMessagePort = null;
+// eslint-disable-next-line prefer-const
+let outgoingMessagePorts = new Map();
 let fetchCaptureEnabled = false;
 
 /**
@@ -367,8 +369,8 @@ self.addEventListener('fetch', function (event) {
 self.addEventListener('message', function (event) {
     if (event.data.action) {
         if (event.data.action === 'init') {
-            // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
-            outgoingMessagePort = event.ports[0];
+            // On 'init' message, we add the outgoingMessagePort, zimFileName and zimileId to the map
+            outgoingMessagePorts.set(event.data.zimFileName, { id: event.data.zimFileId, port: event.ports[0] });
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
             // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
@@ -419,6 +421,7 @@ function fetchUrlFromZIM (urlObject, range) {
         var anchorTarget = urlObject.hash.replace(/^#/, '');
         var uriComponent = urlObject.search.replace(/\?kiwix-display/, '');
         var titleWithNameSpace = nameSpace + '/' + title;
+        var zimName = prefix.replace(/\/$/, '');
 
         // Let's instantiate a new messageChannel, to allow app.js to give us the content
         var messageChannel = new MessageChannel();
@@ -481,12 +484,27 @@ function fetchUrlFromZIM (urlObject, range) {
                 reject(msgPortEvent.data, titleWithNameSpace);
             }
         };
-        outgoingMessagePort.postMessage({
-            action: 'askForContent',
-            title: titleWithNameSpace,
-            search: uriComponent,
-            anchorTarget: anchorTarget
-        }, [messageChannel.port2]);
+        // Get all the messagePorts from the map where the key starts with the zimName
+        var messagePorts = [];
+        outgoingMessagePorts.forEach(function (value, key) {
+            if (key === zimName) {
+                messagePorts.push({
+                    messagePort: value.port,
+                    zimName: zimName,
+                    zimId: value.id
+                });
+            }
+        });
+        messagePorts.forEach(function (obj) {
+            obj.messagePort.postMessage({
+                action: 'askForContent',
+                title: titleWithNameSpace,
+                search: uriComponent,
+                anchorTarget: anchorTarget,
+                zimFileName: obj.zimName,
+                zimFileId: obj.zimId
+            }, [messageChannel.port2]);
+        });
     });
 }
 

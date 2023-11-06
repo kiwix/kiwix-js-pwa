@@ -70,10 +70,11 @@ params.decompressorAPI = {
 
 /**
  * A variable to keep track of the currently loaded ZIM archive, e.g., for labelling cache entries
- * The ID is temporary and is reset to 0 at each session start; it is incremented by 1 each time a new ZIM is loaded
+ * The ID is temporary and is reset to a random number at each session start; it is incremented by 1 each time a new ZIM is loaded
+ * It allows for up to 10,000 distinct ZIM archives to be loaded in any one session
  * @type {Integer}
  */
-var tempFileId = 0;
+var tempFileId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER / 10000);
 
 /**
  * A Map to keep track of temporary File IDs
