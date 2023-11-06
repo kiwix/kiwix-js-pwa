@@ -272,6 +272,8 @@ self.addEventListener('activate', function (event) {
                 if (key !== APP_CACHE && key !== ASSETS_CACHE) {
                     console.debug('[SW] App updated to version ' + appVersion + ': deleting old cache');
                     return caches.delete(key);
+                } else {
+                    return Promise.resolve();
                 }
             }));
         })
@@ -374,7 +376,9 @@ self.addEventListener('message', function (event) {
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
             // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
-            // outgoingMessagePort = null;
+            // Note that this code doesn't currently run because the app currently never sends a 'disable' message
+            // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in jQuery mode
+            outgoingMessagePorts = {};
             fetchCaptureEnabled = false;
         }
         var oldValue;

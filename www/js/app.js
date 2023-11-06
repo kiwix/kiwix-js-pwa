@@ -2743,10 +2743,6 @@ function setContentInjectionMode (value) {
                 navigator.serviceWorker.controller.postMessage({
                     action: { assetsCache: 'disable' }
                 }, [channel.port2]);
-                var channel2 = new MessageChannel();
-                navigator.serviceWorker.controller.postMessage({
-                    action: 'disable'
-                }, [channel2.port2]);
             }
             caches.delete(cache.ASSETS_CACHE);
         }
