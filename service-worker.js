@@ -282,7 +282,8 @@ self.addEventListener('activate', function (event) {
 
 // eslint-disable-next-line prefer-const
 let outgoingMessagePorts = new Map();
-let fetchCaptureEnabled = false;
+// For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled
+let fetchCaptureEnabled = true;
 
 /**
  * Intercept selected Fetch requests from the browser window
@@ -309,7 +310,7 @@ self.addEventListener('fetch', function (event) {
     // especially .js assets, where it may be significant). Anchor targets are irreleveant in this context.
     // @TODO DEV: This isn't true for Zimit ZIM types! So we will have to send the zimType from app.js
     if (cache === APP_CACHE) rqUrl = strippedUrl;
-    event.respondWith(
+    return event.respondWith(
         // First see if the content is in the cache
         fromCache(cache, rqUrl).then(function (response) {
             // The response was found in the cache so we respond with it
@@ -427,9 +428,7 @@ function fetchUrlFromZIM (urlObject, range) {
         var titleWithNameSpace = nameSpace + '/' + title;
         var zimName = prefix.replace(/\/$/, '');
 
-        // Let's instantiate a new messageChannel, to allow app.js to give us the content
-        var messageChannel = new MessageChannel();
-        messageChannel.port1.onmessage = function (msgPortEvent) {
+        var messageListener = function (msgPortEvent) {
             if (msgPortEvent.data.action === 'giveContent') {
                 // Content received from app.js
                 var contentLength = msgPortEvent.data.content ? (msgPortEvent.data.content.byteLength || msgPortEvent.data.content.length) : null;
@@ -488,26 +487,25 @@ function fetchUrlFromZIM (urlObject, range) {
                 reject(msgPortEvent.data, titleWithNameSpace);
             }
         };
-        // Get all the messagePorts from the map where the key starts with the zimName
-        var messagePorts = [];
-        outgoingMessagePorts.forEach(function (value, key) {
-            if (key === zimName) {
-                messagePorts.push({
-                    messagePort: value.port,
-                    zimName: zimName,
-                    zimId: value.id
-                });
-            }
-        });
-        messagePorts.forEach(function (obj) {
-            obj.messagePort.postMessage({
-                action: 'askForContent',
-                title: titleWithNameSpace,
-                search: uriComponent,
-                anchorTarget: anchorTarget,
-                zimFileName: obj.zimName,
-                zimFileId: obj.zimId
-            }, [messageChannel.port2]);
+        // Get all the clients currently being controlled and send them a message
+        self.clients.matchAll().then(function (clientList) {
+            clientList.forEach(function (client) {
+                if (client.frameType !== 'top-level') return;
+                // Let's instantiate a new messageChannel, to allow app.js to give us the content
+                var messageChannel = new MessageChannel();
+                messageChannel.port1.onmessage = messageListener;
+                // function (ev) {
+                //     console.debug('[SW] - Message received from client: ' + client + ' type ' + client.frameType);
+                //     messageListener(ev);
+                // }
+                client.postMessage({
+                    action: 'askForContent',
+                    title: titleWithNameSpace,
+                    search: uriComponent,
+                    anchorTarget: anchorTarget,
+                    zimFileName: zimName
+                }, [messageChannel.port2]);
+            });
         });
     });
 }

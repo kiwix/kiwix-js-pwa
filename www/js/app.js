@@ -2685,7 +2685,6 @@ var serviceWorkerRegistration = null;
  * and the application
  */
 function initOrKeepAliveServiceWorker () {
-    var delay = DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER;
     var zimFileName = '';
     var zimFileId = null;
     // If no ZIM archive is loaded, return
@@ -2693,9 +2692,13 @@ function initOrKeepAliveServiceWorker () {
     zimFileName = appstate.selectedArchive.file.name;
     zimFileId = appstate.selectedArchive.file.id;
     if (params.contentInjectionMode === 'serviceworker') {
-        // Create a new messageChannel
+        // Create a message listener
+        navigator.serviceWorker.onmessage = function (event) {
+            if (event.data.action === 'askForContent') {
+                handleMessageChannelMessage(event)
+            }
+        };
         var tmpMessageChannel = new MessageChannel();
-        tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
         // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
         if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
@@ -2711,13 +2714,9 @@ function initOrKeepAliveServiceWorker () {
         } else {
             // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
             console.debug('The Service Worker needs more time to load...');
-            delay = 0;
+            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, 100);
         }
-        // Schedule to do it again regularly to keep the 2-way communication alive.
-        // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
-        clearTimeout(keepAliveServiceWorkerHandle);
-        keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, delay, false);
-    }
+   }
 }
 
 /**
@@ -4842,8 +4841,8 @@ function handleMessageChannelMessage (event) {
         // We received a message from the ServiceWorker
         if (event.data.action === 'askForContent') {
             // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
-            if (event.data.zimFileId !== appstate.selectedArchive.file.id) {
-                console.warn('MessageChannel zimFileId ' + event.data.zimFileId + ' does not match currently open archive ' + appstate.selectedArchive.file.id + '. Ignoring message in this instance.');
+            if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
+                console.error('MessageChannel zimFileName ' + event.data.zimFileName + ' does not match currently open archive ' + appstate.selectedArchive.file.name + '. Ignoring message in this instance.');
                 return;
             }
             loaded = false;
