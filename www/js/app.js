@@ -2685,12 +2685,8 @@ var serviceWorkerRegistration = null;
  * and the application
  */
 function initOrKeepAliveServiceWorker () {
-    var zimFileName = '';
-    var zimFileId = null;
     // If no ZIM archive is loaded, return
     if (!appstate.selectedArchive) return;
-    zimFileName = appstate.selectedArchive.file.name;
-    zimFileId = appstate.selectedArchive.file.id;
     if (params.contentInjectionMode === 'serviceworker') {
         // Create a message listener
         navigator.serviceWorker.onmessage = function (event) {
@@ -2698,14 +2694,11 @@ function initOrKeepAliveServiceWorker () {
                 handleMessageChannelMessage(event)
             }
         };
-        var tmpMessageChannel = new MessageChannel();
-        // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
+        // Send the init message to the ServiceWorker
         if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
-                action: 'init',
-                zimFileName: zimFileName,
-                zimFileId: zimFileId
-            }, [tmpMessageChannel.port2]);
+                action: 'init'
+            });
         } else if (keepAliveServiceWorkerHandle) {
             console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
             // Turn off failsafe, as this is a controlled reboot
@@ -2714,7 +2707,7 @@ function initOrKeepAliveServiceWorker () {
         } else {
             // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
             console.debug('The Service Worker needs more time to load...');
-            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, 100);
+            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, 250);
         }
    }
 }

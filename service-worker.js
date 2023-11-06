@@ -280,8 +280,6 @@ self.addEventListener('activate', function (event) {
     );
 });
 
-// eslint-disable-next-line prefer-const
-let outgoingMessagePorts = new Map();
 // For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled
 let fetchCaptureEnabled = true;
 
@@ -372,14 +370,12 @@ self.addEventListener('fetch', function (event) {
 self.addEventListener('message', function (event) {
     if (event.data.action) {
         if (event.data.action === 'init') {
-            // On 'init' message, we add the outgoingMessagePort, zimFileName and zimileId to the map
-            outgoingMessagePorts.set(event.data.zimFileName, { id: event.data.zimFileId, port: event.ports[0] });
+            // On 'init' message, we enable the fetchEventListener
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
-            // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
+            // On 'disable' message, we disable the fetchEventListener
             // Note that this code doesn't currently run because the app currently never sends a 'disable' message
             // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in jQuery mode
-            outgoingMessagePorts = {};
             fetchCaptureEnabled = false;
         }
         var oldValue;
@@ -494,10 +490,6 @@ function fetchUrlFromZIM (urlObject, range) {
                 // Let's instantiate a new messageChannel, to allow app.js to give us the content
                 var messageChannel = new MessageChannel();
                 messageChannel.port1.onmessage = messageListener;
-                // function (ev) {
-                //     console.debug('[SW] - Message received from client: ' + client + ' type ' + client.frameType);
-                //     messageListener(ev);
-                // }
                 client.postMessage({
                     action: 'askForContent',
                     title: titleWithNameSpace,
