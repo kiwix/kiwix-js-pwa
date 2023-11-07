@@ -127,30 +127,8 @@ uiUtil.setupConfigurationToggles();
  * @param {Boolean} reload Allows reload of the app on resize
  */
 function resizeIFrame (reload) {
-    var scrollbox = document.getElementById('scrollbox');
-    var header = document.getElementById('top');
-    var iframe = document.getElementById('articleContent');
-    var navbarHeight = document.getElementById('navbar').getBoundingClientRect().height;
-
-    // Reset any hidden headers and footers and iframe shift
-    header.style.zIndex = 1;
-    header.style.transform = 'translateY(0)';
-    document.getElementById('footer').style.transform = 'translateY(0)';
-    iframe.style.transform = 'translateY(-1px)';
-    iframe.style.height = window.innerHeight + 'px';
-    // DEV: if we set the iframe with clientHeight, then it takes into account any zoom
-    // iframe.style.height = document.documentElement.clientHeight - 5 + 'px';
-    // This is needed to cause a reflow in Zimit ZIMs
-    setTimeout(function () {
-        iframe.style.height = document.documentElement.clientHeight + 'px';
-    }, 5);
-
-    // Re-enable top-level scrolling
-    scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
-
-    if (iframe.style.display !== 'none' && document.getElementById('prefix') !== document.activeElement) {
-        scrollbox.style.height = 0;
-    }
+    console.debug('Resizing iframe...');
+    uiUtil.showSlidingUIElements();
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
         ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -2705,7 +2683,7 @@ function initServiceWorkerMessaging () {
         } else {
             // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
             console.debug('The Service Worker needs more time to load...');
-            initServiceWorkerHandle = setTimeout(initServiceWorkerMessaging, 250);
+            initServiceWorkerHandle = setTimeout(initServiceWorkerMessaging, 0);
         }
    }
 }
@@ -4652,7 +4630,8 @@ function readArticle (dirEntry) {
                 }
             };
             if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
-            if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
+            // Zimit pages need to pass through transformZimit.js, so cannot be retrieved from last remembered html
+            if (!params.zimType === 'zimit' && params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                 if (!params.lastPageHTML) {
                     // DEV: Timout is needed here to allow time for cache capability to be tested before calling it
                     // otherwise the app will return only a memory capibility for apps that use indexedDB
@@ -4667,6 +4646,11 @@ function readArticle (dirEntry) {
                     htmlContent = params.lastPageHTML;
                     goToRetrievedContent(htmlContent);
                 }
+            } else if (params.zimType === 'zimit' && params.contentInjectionMode === 'serviceworker' && !messageChannelWaiting) {
+                // For Zimit archives, we need to use the SW to retrieve the article, but not if the messageChannel is waiting for transformed HTML
+                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + dirEntry.url + '?isKiwixHref';
+                loaded = false;
+                articleWindow.location.href = newLocation;
             } else {
                 goToRetrievedContent(htmlContent);
             }
@@ -4772,13 +4756,14 @@ var articleLoadedSW = function (dirEntry) {
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function () {
+            console.debug('articleLoadedSW RESIZING IFRAME');
             articleDocument.bgcolor = '';
             if (appstate.target === 'iframe') articleContainer.style.display = 'block';
             docBody.style.display = 'block';
             // Some contents need this to be able to display correctly (e.g. masonry landing pages)
             iframe.style.height = 'auto';
             resizeIFrame();
-        }, 30);
+        }, 200);
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
         // Because this is loading within docBody, it should only get set for HTML documents
@@ -4833,7 +4818,7 @@ function handleMessageChannelMessage (event) {
         if (event.data.action === 'askForContent') {
             // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
             if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
-                console.error('MessageChannel zimFileName ' + event.data.zimFileName + ' does not match currently open archive ' + appstate.selectedArchive.file.name + '. Ignoring message in this instance.');
+                console.warn('Ignoring SW request in this instansce', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
                 return;
             }
             loaded = false;
@@ -4841,8 +4826,10 @@ function handleMessageChannelMessage (event) {
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
             var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+            // For Zimit archives, pages other than those fast-retrieved will have a special parameter added to the URL
+            // if (~title.indexOf(params.lastPageVisit) && params.zimType === 'zimit') {
             if (params.zimType === 'zimit') {
-                titleIsAsset = !/\??isKiwixHref/.test(title);
+                titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
             }
             title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
@@ -4922,7 +4909,7 @@ function handleMessageChannelMessage (event) {
                     }
                     var cacheKey = appstate.selectedArchive.file.name + '/' + title;
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                        console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
+                        // console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
                         if (params.zimType === 'zimit' && loadingArticle) {
                             // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
                             // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
@@ -5824,16 +5811,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
             var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : encodeURI(dirEntry.url);
-            // .replace(/[^/]+/g, function (matchedSubstring) {
-            //     return encodeURIComponent(matchedSubstring);
-            // });
             // If the request was not initiated by an existing controlled window, we instantiate the request here
             if (!messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
+                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl + (params.zimType === 'zimit' ? '?isKiwixHref' : '');
                 if (navigator.serviceWorker.controller) {
                     loaded = false;
                     articleWindow.location.href = newLocation;
+                } else {
+                    console.error('No Service Worker controller found while waiting for transformed HTML to be loaded!');
                 }
             }
             return;
