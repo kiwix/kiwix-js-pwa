@@ -125,7 +125,7 @@ var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|te
  * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
  * @returns {String} The transformed data string
  */
-function transformReplayUrls (dirEntry, data, mimetype, callback) {
+function transformReplayUrls (dirEntry, data, mimetype) {
     /**
      * Transform URL links in HTML files
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
