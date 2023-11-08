@@ -335,7 +335,7 @@ if ($updatewinget) {
     }
     if ($package_url -match '\.appx') { 
       $winget_version = $numeric_tag + '.0'
-      $UrlsWithOverride = '"' + "$package_url|Neutral" + '"'
+      $UrlsWithOverride = '"' + "$package_url|X64" + '"'
     }
     if ($package_url -match '\.exe') {
       $package_id = $package_id + '.Electron'
