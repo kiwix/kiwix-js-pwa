@@ -4817,17 +4817,24 @@ function handleMessageChannelMessage (event) {
         // We received a message from the ServiceWorker
         if (event.data.action === 'askForContent') {
             // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
+            // Because the SW broadcasts its request to all open tabs or windows, we need to check that the request is for this instance
             if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
-                console.warn('Ignoring SW request in this instansce', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
-                return;
+                console.warn('SW request does not match this instansce', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
+                if (params.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title)) {
+                    // DEV: This is a hack to allow YouTube videos to play in Zimit archives:
+                    // Because links are embedded in a nested iframe, the SW cannot identify the top-level window from which to request the ZIM content
+                    // Until we find a way to tell where it is coming from, we allow the request through and try to load the content
+                    console.warn('>>> Allowing passthrough to process YouTube video <<<');
+                } else {
+                    return;
+                }
             }
             loaded = false;
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
             var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
-            // For Zimit archives, pages other than those fast-retrieved will have a special parameter added to the URL
-            // if (~title.indexOf(params.lastPageVisit) && params.zimType === 'zimit') {
+            // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
             if (params.zimType === 'zimit') {
                 titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
             }
@@ -4909,7 +4916,6 @@ function handleMessageChannelMessage (event) {
                     }
                     var cacheKey = appstate.selectedArchive.file.name + '/' + title;
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                        // console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
                         if (params.zimType === 'zimit' && loadingArticle) {
                             // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
                             // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
