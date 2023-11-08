@@ -102,6 +102,10 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>Support multiple instances of the PWA or browser tabs/windows with different ZIMs loaded in each</li>
+                                <li>File handling (opening ZIM from system file explorer) will open each ZIM in its own separate instance</li>
+                                <li>On non-scrollable pages, remove navbars with Ctrl/Cmd + UpArrow/DownArrow, long swipe or mousewheel</li>
+                                <li>Auto-dismiss (fade out) Zimit and active content warnings on scroll</li>
                                 <li>Add indicative colourization to archive list when using OPFS</li>
                                 <li>Show a spinner when adding and direct-downloading files to OPFS</li>
                                 <li>After failure to import or download to OPFS, delete file stub(s)</li>
@@ -109,12 +113,15 @@
                                 <li>Added new demo of OPFS features to Repository documentation</li>
                                 <li>When using locally cached CSS, the details/summary tags are restored where missing from ZIM</li>
                                 <li>Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)</li>
+                                <li>Fix dropdowns for languages and subjects in some download library directories</li>
+                                <li>Ensure archive list is displayed on open in browsers supporting the webkitdirectory property</li>
                                 <li>Empty the archive list when OPFS is deactivated</li>
                                 <li>Make sure spinner doesn't block the UI</li>
                                 <li>Ensure some HTML and entities do not appear in constructed article titles</li>
                                 <li>Better handling of empty directory entries or empty content</li>
                                 <li>Exception displaying plain text when a dirEntry does not have any HTML content</li>
                                 <li>Add some sanity checks to prevent runaway searches</li>
+                                <li>App no longer forces the Service Worker to stay alive: instead, SW resumes when needed</li>
                                 <li>Name of repository changed to kiwix-js-pwa, permalinks changed</li>
                                 <li>Provide facility for adding ZIM metadata to the ZIMArchive object</li>
                             </ul>

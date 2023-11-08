@@ -1,7 +1,11 @@
 # Changelog
 
-## In-progress release 2.7.6
+## In-progress release 2.7.8
 
+* FEATURE: Support multiple instances of the PWA or browser tabs/windows with different ZIMs loaded in each
+* FEATURE: File handling (opening ZIM from system file explorer) will open each ZIM in its own separate instance
+* ENHANCEMENT: On non-scrollable pages, remove navbars with Ctrl/Cmd + UpArrow/DownArrow, long swipe or mousewheel
+* ENHANCEMENT: Auto-dismiss (fade out) Zimit and active content warnings on scroll
 * ENHANCEMENT: Add indicative colourization to archive list when using OPFS
 * ENHANCEMENT: Show a spinner when adding and direct-downloading files to OPFS
 * ENHANCEMENT: After failure to import or download to OPFS, delete file stub(s)
@@ -11,6 +15,8 @@
 * FIX: Tested and fixed support for new dynamic UI in ZIMs produced by Kolibri scraper
 * FIX: When using locally cached CSS, the details/summary tags are restored where missing from ZIM
 * FIX: Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)
+* FIX: Dropdowns for languages and subjects in some download library directories
+* FIX: Ensure archive list is displayed on open in browsers supporting the webkitdirectory property
 * FIX: Empty archive list when OPFS is deactivated
 * FIX: Make sure spinner doesn't block the UI
 * FIX: Ensure some HTML and entities do not appear in constructed article titles
@@ -20,6 +26,7 @@
 * FIX: Better handling of missing ZIM assets
 * FIX: Exception displaying plain text when a dirEntry does not have any HTML content
 * FIX: Add some sanity checks to prevent runaway searches
+* DEV: App no longer forces the Service Worker to stay alive: instead, SW resumes when needed
 * DEV: Name of repository changed to kiwix-js-pwa, permalinks changed
 * DEV: Provide facility for adding ZIM metadata to the ZIMArchive object
 
