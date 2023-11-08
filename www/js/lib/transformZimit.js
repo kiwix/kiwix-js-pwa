@@ -131,6 +131,7 @@ function transformReplayUrls (dirEntry, data, mimetype) {
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
+    // console.debug('**** Transforming URLs in ' + dirEntry.namespace + '/' + dirEntry.url + ' ****');
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);
