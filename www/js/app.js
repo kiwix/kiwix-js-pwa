@@ -4630,8 +4630,8 @@ function readArticle (dirEntry) {
                 }
             };
             if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
-            // Zimit pages need to pass through transformZimit.js, so cannot be retrieved from last remembered html
-            if (!params.zimType === 'zimit' && params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
+            // If we have the HTML of the last loaded page, use it to save lookups
+            if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                 if (!params.lastPageHTML) {
                     // DEV: Timout is needed here to allow time for cache capability to be tested before calling it
                     // otherwise the app will return only a memory capibility for apps that use indexedDB
@@ -4646,11 +4646,12 @@ function readArticle (dirEntry) {
                     htmlContent = params.lastPageHTML;
                     goToRetrievedContent(htmlContent);
                 }
-            } else if (params.zimType === 'zimit' && params.contentInjectionMode === 'serviceworker' && !messageChannelWaiting) {
-                // For Zimit archives, we need to use the SW to retrieve the article, but not if the messageChannel is waiting for transformed HTML
-                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + dirEntry.url + '?isKiwixHref';
-                loaded = false;
-                articleWindow.location.href = newLocation;
+        // } else if (params.zimType === 'zimit' && params.contentInjectionMode === 'serviceworker' && !messageChannelWaiting) {
+        //     // DEF: If the messageChannel isn't waiting for transformed HTML, we could instruct the SW to load this article
+        //     // It uses more CPU, as it starts the lookups all over again, but it is arguably a "purer" method especially for Zimit
+        //     var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + dirEntry.url + '?isKiwixHref';
+        //     loaded = false;
+        //     articleWindow.location.href = newLocation;
             } else {
                 goToRetrievedContent(htmlContent);
             }
