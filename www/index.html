@@ -103,7 +103,7 @@
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
                                 <li>Support multiple instances of the PWA or browser tabs/windows with different ZIMs loaded in each</li>
-                                <li>File handling (opening ZIM from system file explorer) will open each ZIM in its own separate instance</li>
+                                <li>File handling in PWA (not Electron) will open each ZIM in its own separate instance</li>
                                 <li>On non-scrollable pages, remove navbars with Ctrl/Cmd + UpArrow/DownArrow, long swipe or mousewheel</li>
                                 <li>Auto-dismiss (fade out) Zimit and active content warnings on scroll</li>
                                 <li>Add indicative colourization to archive list when using OPFS</li>
@@ -440,6 +440,8 @@
                         Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
                         This allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer, it will open in the app. The first time
                         you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can change your choice in the browser settings.
+                        Each time you launch a ZIM, it will open in a separate instance of the app, allowing you to browse multiple ZIMs at the same time. Note that multiple instances are not
+                        currently supported in the Electron/UWP apps.
                     </p>
                     <h4 id="OPFS">Origin Private File System</h4>
                     <p>
