@@ -70,10 +70,11 @@ params.decompressorAPI = {
 
 /**
  * A variable to keep track of the currently loaded ZIM archive, e.g., for labelling cache entries
- * The ID is temporary and is reset to 0 at each session start; it is incremented by 1 each time a new ZIM is loaded
+ * The ID is temporary and is reset to a random number at each session start; it is incremented by 1 each time a new ZIM is loaded
+ * It allows for up to 10,000 distinct ZIM archives to be loaded in any one session
  * @type {Integer}
  */
-var tempFileId = 0;
+var tempFileId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER / 10000);
 
 /**
  * A Map to keep track of temporary File IDs
@@ -229,8 +230,7 @@ ZIMFile.prototype.dirEntry = function (offset) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-    var that = appstate.selectedArchive.file;
-    if (!that) return Promise.resolve(null);
+    var that = this || appstate.selectedArchive.file;
     return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
         return that.dirEntry(dirEntryPos);
     });
@@ -242,7 +242,7 @@ ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByTitleIndex = function (index) {
-    var that = appstate.selectedArchive.file;
+    var that = this || appstate.selectedArchive.file;
     // Use v1 title pointerlist if available, or fall back to legacy v0 list
     var ptrList = that.articlePtrPos || that.titlePtrPos;
     return that._readInteger(ptrList + index * 4, 4).then(function (urlIndex) {

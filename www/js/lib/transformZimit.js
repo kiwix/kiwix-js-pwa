@@ -125,12 +125,13 @@ var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|te
  * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
  * @returns {String} The transformed data string
  */
-function transformReplayUrls (dirEntry, data, mimetype, callback) {
+function transformReplayUrls (dirEntry, data, mimetype) {
     /**
      * Transform URL links in HTML files
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
+    // console.debug('**** Transforming URLs in ' + dirEntry.namespace + '/' + dirEntry.url + ' ****');
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);

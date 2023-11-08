@@ -307,15 +307,17 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
     search.rgxPrefix = null;
     var prefix = search.prefix;
     // Launch a full-text search if possible
-    if (LZ && !search.searchUrlIndex) that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
-        // If user initiated a new search, cancel this one
-        // In particular, do not set the search status back to 'complete'
-        // as that would cause outdated results to unexpectedly pop up
-        if (search.status === 'cancelled') return callback([], search);
-        dirEntries = fullTextDirEntries;
-        search.status = 'complete';
-        callback(dirEntries, search);
-    });
+    if (LZ && !search.searchUrlIndex) {
+        that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
+            // If user initiated a new search, cancel this one
+            // In particular, do not set the search status back to 'complete'
+            // as that would cause outdated results to unexpectedly pop up
+            if (search.status === 'cancelled') return callback([], search);
+            dirEntries = fullTextDirEntries;
+            search.status = 'complete';
+            callback(dirEntries, search);
+        });
+    }
     if (isPrefixRegExp) {
         // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
         prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
@@ -331,7 +333,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
             callback([], search);
             return;
         }
-    } 
+    }
     var prefixNameSpaces = '';
     if (search.searchUrlIndex) {
         var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
@@ -386,8 +388,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
                     search.status = 'complete';
                     callback(dirEntries, search);
                 });
-            }
-            else search.status = 'complete';
+            } else search.status = 'complete';
             return callback(dirEntries, search);
         }
         // Dynamically populate list of articles
@@ -465,7 +466,7 @@ ZIMArchive.prototype.getContentNamespace = function () {
  * @param {Integer} startIndex The index number with which to commence the search, or null
  */
 ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, search, callback, startIndex) {
-    // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
+    // Save the value of startIndex because value of null has a special meaning in combination with prefix:
     // produces a list of matches starting with first match and then next x dirEntries thereafter
     var saveStartIndex = startIndex;
     startIndex = startIndex || 0;
@@ -478,8 +479,8 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
         articleCount = this.file.entryCount;
         searchFunction = appstate.selectedArchive.file.dirEntryByUrlIndex;
     }
-    util.binarySearch(startIndex, articleCount, function(i) {
-        return searchFunction(i).then(function(dirEntry) {
+    util.binarySearch(startIndex, articleCount, function (i) {
+        return searchFunction(i).then(function (dirEntry) {
             if (search.status === 'cancelled') return 0;
             var ns = dirEntry.namespace;
             var ti = search.searchUrlIndex ? dirEntry.url : dirEntry.getTitleOrUrl();
@@ -506,8 +507,8 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
     }, true).then(function (firstIndex) {
         var vDirEntries = [];
         var addDirEntries = function (index, lastTitle) {
-            if (search.status === 'cancelled' || search.found >= search.size || index >= articleCount
-            || lastTitle && !~lastTitle.indexOf(prefix) || index - firstIndex >= search.window) {
+            if (search.status === 'cancelled' || search.found >= search.size || index >= articleCount ||
+                lastTitle && !~lastTitle.indexOf(prefix) || index - firstIndex >= search.window) {
                 // DEV: Diagnostics to be removed before merge
                 if (vDirEntries.length) {
                     console.debug('Scanned ' + (index - firstIndex) + ' titles for "' + prefix +
@@ -541,7 +542,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
             });
         };
         return addDirEntries(firstIndex);
-    }).then(function(objWithIndex) {
+    }).then(function (objWithIndex) {
         return callback(objWithIndex.dirEntries, objWithIndex.nextStart);
     });
 };
@@ -552,7 +553,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
  * @param {Object} search The appstate.search object
  * @param {Array} dirEntries The array of already found Directory Entries
  * @param {Integer} number Optional positive number of search results requested (otherwise params.maxSearchResults will be used)
- * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search 
+ * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search
  */
 ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries, number) {
     var cns = this.getContentNamespace();
@@ -655,10 +656,10 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         return callback(dirEntry, '');
     }
     var cns = appstate.selectedArchive.getContentNamespace();
-    return dirEntry.readData().then(function(data) {
+    return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         if (window.TextDecoder) {
-            data = new TextDecoder('utf-8').decode(data);    
+            data = new TextDecoder('utf-8').decode(data);
         } else {
             // Support for IE11 and Edge Legacy - only support UTF-8 decoding
             data = utf8.parse(data);
@@ -691,9 +692,9 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
-            if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
+            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype)) {
                 data = transformZimit.transformReplayUrls(dirEntry, data, mimetype);
-            } 
+            }
             callback(dirEntry, data);
         }
     }).catch(function (e) {
@@ -729,7 +730,7 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
-            if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
+            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype)) {
                 data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype);
             }
             callback(dirEntry, data);
@@ -759,9 +760,9 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
             path = revisedPath;
         }
     }
-    return util.binarySearch(0, this.file.entryCount, function(i) {
-        return that.file.dirEntryByUrlIndex(i).then(function(dirEntry) {
-            var url = dirEntry.namespace + "/" + dirEntry.url;
+    return util.binarySearch(0, this.file.entryCount, function (i) {
+        return that.file.dirEntryByUrlIndex(i).then(function (dirEntry) {
+            var url = dirEntry.namespace + '/' + dirEntry.url;
             if (path < url) {
                 return -1;
             } else if (path > url) {
@@ -799,7 +800,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
                 var search = {
                     rgxPrefix: new RegExp('.*' + rgxPath, 'i'),
                     searchUrlIndex: true,
-                    lc: true, // Make the comparator (e.g. dirEntry.url) lowercase 
+                    lc: true, // Make the comparator (e.g. dirEntry.url) lowercase
                     size: 1,
                     found: 0
                 }
@@ -807,7 +808,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
             } else {
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
-                console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
+                console.log('Article ' + path + ' not available, but moving up one directory to compensate for ZIM coding error...');
                 return that.getDirEntryByPath(newpath);
             }
         } else {
@@ -821,10 +822,10 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
 /**
  * Initiate a fuzzy search for dirEntries matching the search object
  * @param {String} path Human-readable path to search for
- * @param {Object} search The search object 
+ * @param {Object} search The search object
  * @returns {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found
  */
-function fuzzySearch(path, search) {
+function fuzzySearch (path, search) {
     return new Promise(function (resolve, reject) {
         console.log('Initiating fuzzy search for ' + path + '...');
         uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
@@ -850,7 +851,7 @@ function fuzzySearch(path, search) {
 }
 
 /**
- * 
+ *
  * @param {callbackDirEntry} callback
  */
 ZIMArchive.prototype.getRandomDirEntry = function (callback) {

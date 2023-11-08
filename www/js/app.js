@@ -63,6 +63,12 @@ articleContainer.kiwixType = 'iframe';
 var articleWindow = articleContainer.contentWindow;
 var articleDocument;
 
+// The following variables are used to store the current article and its state
+
+var messageChannelWaiting = false;
+var transformedHTML = '';
+var transDirEntry = null;
+
 /**
  * @type ZIMArchive
  */
@@ -121,30 +127,8 @@ uiUtil.setupConfigurationToggles();
  * @param {Boolean} reload Allows reload of the app on resize
  */
 function resizeIFrame (reload) {
-    var scrollbox = document.getElementById('scrollbox');
-    var header = document.getElementById('top');
-    var iframe = document.getElementById('articleContent');
-    var navbarHeight = document.getElementById('navbar').getBoundingClientRect().height;
-
-    // Reset any hidden headers and footers and iframe shift
-    header.style.zIndex = 1;
-    header.style.transform = 'translateY(0)';
-    document.getElementById('footer').style.transform = 'translateY(0)';
-    iframe.style.transform = 'translateY(-1px)';
-    iframe.style.height = window.innerHeight + 'px';
-    // DEV: if we set the iframe with clientHeight, then it takes into account any zoom
-    // iframe.style.height = document.documentElement.clientHeight - 5 + 'px';
-    // This is needed to cause a reflow in Zimit ZIMs
-    setTimeout(function () {
-        iframe.style.height = document.documentElement.clientHeight + 'px';
-    }, 5);
-
-    // Re-enable top-level scrolling
-    scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
-
-    if (iframe.style.display !== 'none' && document.getElementById('prefix') !== document.activeElement) {
-        scrollbox.style.height = 0;
-    }
+    console.debug('Resizing iframe...');
+    uiUtil.showSlidingUIElements();
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
         ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -2669,27 +2653,29 @@ function refreshCacheStatus () {
     }
 }
 
-var keepAliveServiceWorkerHandle = null;
+var initServiceWorkerHandle = null;
 var serviceWorkerRegistration = null;
 
 /**
- * Send an 'init' message to the ServiceWorker with a new MessageChannel
- * to initialize it, or to keep it alive.
- * This MessageChannel allows a 2-way communication between the ServiceWorker
- * and the application
+ * Sends an 'init' message to the ServiceWorker and inititalizes the onmessage event
+ * When the event is received, it will provide a MessageChannel port to respond to the ServiceWorker
  */
-function initOrKeepAliveServiceWorker () {
-    var delay = DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER;
+function initServiceWorkerMessaging () {
+    // If no ZIM archive is loaded, return (it will be called when one is loaded)
+    if (!appstate.selectedArchive) return;
     if (params.contentInjectionMode === 'serviceworker') {
-        // Create a new messageChannel
-        var tmpMessageChannel = new MessageChannel();
-        tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
-        // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
+        // Create a message listener
+        navigator.serviceWorker.onmessage = function (event) {
+            if (event.data.action === 'askForContent') {
+                handleMessageChannelMessage(event)
+            }
+        };
+        // Send the init message to the ServiceWorker
         if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({
                 action: 'init'
-            }, [tmpMessageChannel.port2]);
-        } else if (keepAliveServiceWorkerHandle) {
+            });
+        } else if (initServiceWorkerHandle) {
             console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
             // Turn off failsafe, as this is a controlled reboot
             settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
@@ -2697,13 +2683,9 @@ function initOrKeepAliveServiceWorker () {
         } else {
             // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
             console.debug('The Service Worker needs more time to load...');
-            delay = 0;
+            initServiceWorkerHandle = setTimeout(initServiceWorkerMessaging, 0);
         }
-        // Schedule to do it again regularly to keep the 2-way communication alive.
-        // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
-        clearTimeout(keepAliveServiceWorkerHandle);
-        keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, delay, false);
-    }
+   }
 }
 
 /**
@@ -2729,10 +2711,6 @@ function setContentInjectionMode (value) {
                 navigator.serviceWorker.controller.postMessage({
                     action: { assetsCache: 'disable' }
                 }, [channel.port2]);
-                var channel2 = new MessageChannel();
-                navigator.serviceWorker.controller.postMessage({
-                    action: 'disable'
-                }, [channel2.port2]);
             }
             caches.delete(cache.ASSETS_CACHE);
         }
@@ -2766,7 +2744,7 @@ function setContentInjectionMode (value) {
                 // Remove any jQuery hooks from a previous jQuery session
                 $('#articleContent').contents().remove();
                 // Create the MessageChannel and send 'init'
-                initOrKeepAliveServiceWorker();
+                // initOrKeepAliveServiceWorker();
                 refreshAPIStatus();
             } else {
                 navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
@@ -2781,7 +2759,7 @@ function setContentInjectionMode (value) {
                             // Remove any jQuery hooks from a previous jQuery session
                             $('#articleContent').contents().remove();
                             // Create the MessageChannel and send the 'init' message to the ServiceWorker
-                            initOrKeepAliveServiceWorker();
+                            // initOrKeepAliveServiceWorker();
                             // We need to refresh cache status here on first activation because SW was inaccessible till now
                             // We also initialize the ASSETS_CACHE constant in SW here
                             refreshCacheStatus();
@@ -2794,7 +2772,7 @@ function setContentInjectionMode (value) {
                         // We need to re-create the MessageChannel
                         // and send the 'init' message to the ServiceWorker
                         // in case it has been stopped and lost its context
-                        initOrKeepAliveServiceWorker();
+                        // initOrKeepAliveServiceWorker();
                     }
                     refreshAPIStatus();
                 }).catch(function (err) {
@@ -2823,7 +2801,7 @@ function setContentInjectionMode (value) {
         } else {
             // We need to set this variable earlier else the Service Worker does not get reactivated
             params.contentInjectionMode = value;
-            initOrKeepAliveServiceWorker();
+            // initOrKeepAliveServiceWorker();
         }
     }
     $('input:radio[name=contentInjectionMode]').prop('checked', false);
@@ -3389,11 +3367,7 @@ function setLocalArchiveFromArchiveList (archive) {
                 // }
             }
         }
-        // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-        if (cssBlobCache) {
-            cssBlobCache = new Map();
-        }
-        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
+        zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
         });
@@ -3850,10 +3824,8 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (files.length > 1 && firstSplitFileIndex === null) {
         files = [files[storedFileIndex]];
     }
-    // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-    if (cssBlobCache) cssBlobCache = new Map();
     // TODO: Turn this into a Promise
-    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
+    zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
         uiUtil.systemAlert(message, label);
     });
@@ -3865,7 +3837,14 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  * @param {ZIMArchive} archive The ZIM archive
  */
 function archiveReadyCallback (archive) {
+    appstate.selectedArchive = archive;
+    // A blob cache significantly speeds up the loading of CSS files
+    appstate.selectedArchive.cssBlobCache = new Map();
     uiUtil.clearSpinner();
+    // Initialize the Service Worker
+    if (params.contentInjectionMode === 'serviceworker') {
+        initServiceWorkerMessaging();
+    }
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
     // (this only affects jQuery mode)
     appstate.target = 'iframe';
@@ -4651,6 +4630,7 @@ function readArticle (dirEntry) {
                 }
             };
             if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
+            // If we have the HTML of the last loaded page, use it to save lookups
             if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                 if (!params.lastPageHTML) {
                     // DEV: Timout is needed here to allow time for cache capability to be tested before calling it
@@ -4666,6 +4646,12 @@ function readArticle (dirEntry) {
                     htmlContent = params.lastPageHTML;
                     goToRetrievedContent(htmlContent);
                 }
+        // } else if (params.zimType === 'zimit' && params.contentInjectionMode === 'serviceworker' && !messageChannelWaiting) {
+        //     // DEF: If the messageChannel isn't waiting for transformed HTML, we could instruct the SW to load this article
+        //     // It uses more CPU, as it starts the lookups all over again, but it is arguably a "purer" method especially for Zimit
+        //     var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + dirEntry.url + '?isKiwixHref';
+        //     loaded = false;
+        //     articleWindow.location.href = newLocation;
             } else {
                 goToRetrievedContent(htmlContent);
             }
@@ -4771,10 +4757,14 @@ var articleLoadedSW = function (dirEntry) {
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function () {
+            console.debug('articleLoadedSW RESIZING IFRAME');
             articleDocument.bgcolor = '';
             if (appstate.target === 'iframe') articleContainer.style.display = 'block';
             docBody.style.display = 'block';
-        }, 30);
+            // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+            iframe.style.height = 'auto';
+            resizeIFrame();
+        }, 200);
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
         // Because this is loading within docBody, it should only get set for HTML documents
@@ -4827,13 +4817,27 @@ function handleMessageChannelMessage (event) {
     } else {
         // We received a message from the ServiceWorker
         if (event.data.action === 'askForContent') {
+            // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
+            // Because the SW broadcasts its request to all open tabs or windows, we need to check that the request is for this instance
+            if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
+                console.warn('SW request does not match this instansce', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
+                if (params.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title)) {
+                    // DEV: This is a hack to allow YouTube videos to play in Zimit archives:
+                    // Because links are embedded in a nested iframe, the SW cannot identify the top-level window from which to request the ZIM content
+                    // Until we find a way to tell where it is coming from, we allow the request through and try to load the content
+                    console.warn('>>> Allowing passthrough to process YouTube video <<<');
+                } else {
+                    return;
+                }
+            }
             loaded = false;
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
             var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+            // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
             if (params.zimType === 'zimit') {
-                titleIsAsset = !/\??isKiwixHref/.test(title);
+                titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
             }
             title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
@@ -4841,14 +4845,14 @@ function handleMessageChannelMessage (event) {
             if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
             // Intercept landing page if already transformed (because this might have a fake dirEntry)
             // Note that due to inconsistencies in Zimit archives, we need to test the encoded and the decoded version of the title
-            if (params.transformedHTML && params.transDirEntry && (title === params.transDirEntry.namespace + '/' + params.transDirEntry.url ||
-                decodeURIComponent(title) === params.transDirEntry.namespace + '/' + params.transDirEntry.url)) {
+            if (transformedHTML && transDirEntry && (title === transDirEntry.namespace + '/' + transDirEntry.url ||
+                decodeURIComponent(title) === transDirEntry.namespace + '/' + transDirEntry.url)) {
                 var message = {
                     action: 'giveContent',
                     title: title,
                     mimetype: 'text/html'
                 };
-                postTransformedHTML(message, messagePort, params.transDirEntry);
+                postTransformedHTML(message, messagePort, transDirEntry);
                 return;
             }
             var readFile = function (dirEntry) {
@@ -4897,11 +4901,11 @@ function handleMessageChannelMessage (event) {
                             mimetype: mimetype,
                             imageDisplay: imageDisplayMode
                         };
-                        if (!params.transformedHTML) {
+                        if (!transformedHTML) {
                             // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
                             if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
                             // Tell the read routine that the request comes from a messageChannel
-                            appstate.messageChannelWaiting = true;
+                            messageChannelWaiting = true;
                             readArticle(dirEntry);
                             setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
                         } else {
@@ -4913,7 +4917,6 @@ function handleMessageChannelMessage (event) {
                     }
                     var cacheKey = appstate.selectedArchive.file.name + '/' + title;
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                        console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
                         if (params.zimType === 'zimit' && loadingArticle) {
                             // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
                             // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
@@ -4983,10 +4986,10 @@ function handleMessageChannelMessage (event) {
 }
 
 function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
-    if (params.transformedHTML && /<html[^>]*>/i.test(params.transformedHTML)) {
+    if (transformedHTML && /<html[^>]*>/i.test(transformedHTML)) {
         // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
         // to be called from any external windows. NB messageChannelWaiting is only true when user requested article from a UWP window
-        if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
+        if (/UWP/.test(params.appType) && (appstate.target === 'window' || messageChannelWaiting) &&
             params.imageDisplay) { thisMessage.imageDisplay = 'all'; }
         // We need to do the same for Gutenberg and PHET ZIMs
         if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive.file.name)
@@ -4995,13 +4998,13 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             thisMessage.imageDisplay = 'all';
         }
         // Let's send the content to the ServiceWorker
-        thisMessage.content = params.transformedHTML;
-        params.transformedHTML = '';
-        params.transDirEntry = null;
+        thisMessage.content = transformedHTML;
+        transformedHTML = '';
+        transDirEntry = null;
         loaded = false;
         // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden)
         // NB Test for messageChannelWaiting filters out requests coming from a UWP window
-        if (articleContainer.kiwixType === 'iframe' && !appstate.messageChannelWaiting) {
+        if (articleContainer.kiwixType === 'iframe' && !messageChannelWaiting) {
             if (/UWP/.test(params.appType)) {
                 articleContainer.style.display = 'none';
                 setTimeout(function () {
@@ -5025,12 +5028,12 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             }
         }
         thisMessagePort.postMessage(thisMessage);
-        appstate.messageChannelWaiting = false;
+        messageChannelWaiting = false;
         // Failsafe to turn off spinner
         setTimeout(function () {
             uiUtil.clearSpinner();
         }, 5000);
-    } else if (appstate.messageChannelWaiting) {
+    } else if (messageChannelWaiting) {
         setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
     }
 }
@@ -5078,12 +5081,6 @@ var anchorParameter;
 params.containsMathTexRaw = false;
 params.containsMathTex = false;
 params.containsMathSVG = false;
-
-// Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
-// When archive changes these caches should be reset.
-// Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
-// var cssDirEntryCache = new Map(); //This one is never hit!
-var cssBlobCache = new Map();
 
 /**
  * Display the the given HTML article in the web page,
@@ -5514,9 +5511,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
 
     function resolveCSS (title, index) {
-        if (cssBlobCache && cssBlobCache.has(title)) {
+        if (appstate.selectedArchive.cssBlobCache.has(title)) {
             console.log('*** cssBlobCache hit ***');
-            blobArray.push([title, cssBlobCache.get(title)]);
+            blobArray.push([title, appstate.selectedArchive.cssBlobCache.get(title)]);
             injectCSS();
         } else {
             var cacheKey = appstate.selectedArchive.file.name + '/' + title;
@@ -5532,17 +5529,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
                 var newURL = cssBlob ? [title, URL.createObjectURL(cssBlob)] : [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache) {
-                    cssBlobCache.set(newURL[0], newURL[1]);
-                }
+                appstate.selectedArchive.cssBlobCache.set(newURL[0], newURL[1]);
                 injectCSS(); // DO NOT move this: it must run within .then function to pass correct values
             }).catch(function (err) {
                 console.error(err);
                 var newURL = [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache) {
-                    cssBlobCache.set(newURL[0], newURL[1]);
-                }
+                appstate.selectedArchive.cssBlobCache.set(newURL[0], newURL[1]);
                 injectCSS();
             });
         }
@@ -5779,7 +5772,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Note that UWP apps cannot communicate to a newly opened window except via postmessage, but Service Worker can still
         // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
         // these browser types with 'MSBlobBuilder' (and also IE11).
-        if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
+        if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || messageChannelWaiting))) {
             htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' +
                 (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
             // NB Don't hide the document body if we don't have any window management, because native loading of documents in a new tab is slow, and we can't
@@ -5820,21 +5813,20 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (params.zimType === 'zimit') htmlArticle = htmlArticle.replace(/!(window._WBWombat)/, '$1');
             // Add doctype if missing so that scripts run in standards mode
             // (quirks mode prevents katex from running, and is incompatible with jQuery)
-            params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
-            params.transDirEntry = dirEntry;
+            transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
+            transDirEntry = dirEntry;
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
             var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : encodeURI(dirEntry.url);
-            // .replace(/[^/]+/g, function (matchedSubstring) {
-            //     return encodeURIComponent(matchedSubstring);
-            // });
             // If the request was not initiated by an existing controlled window, we instantiate the request here
-            if (!appstate.messageChannelWaiting) {
+            if (!messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
+                var newLocation = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl + (params.zimType === 'zimit' ? '?isKiwixHref' : '');
                 if (navigator.serviceWorker.controller) {
                     loaded = false;
                     articleWindow.location.href = newLocation;
+                } else {
+                    console.error('No Service Worker controller found while waiting for transformed HTML to be loaded!');
                 }
             }
             return;

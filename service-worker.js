@@ -258,6 +258,7 @@ self.addEventListener('install', function (event) {
 
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
+    console.debug('[SW] Activate Event processing');
     // "Claiming" the ServiceWorker is necessary to make it work right away,
     // without the need to reload the page.
     // See https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
@@ -271,14 +272,16 @@ self.addEventListener('activate', function (event) {
                 if (key !== APP_CACHE && key !== ASSETS_CACHE) {
                     console.debug('[SW] App updated to version ' + appVersion + ': deleting old cache');
                     return caches.delete(key);
+                } else {
+                    return Promise.resolve();
                 }
             }));
         })
     );
 });
 
-let outgoingMessagePort = null;
-let fetchCaptureEnabled = false;
+// For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled
+let fetchCaptureEnabled = true;
 
 /**
  * Intercept selected Fetch requests from the browser window
@@ -305,7 +308,7 @@ self.addEventListener('fetch', function (event) {
     // especially .js assets, where it may be significant). Anchor targets are irreleveant in this context.
     // @TODO DEV: This isn't true for Zimit ZIM types! So we will have to send the zimType from app.js
     if (cache === APP_CACHE) rqUrl = strippedUrl;
-    event.respondWith(
+    return event.respondWith(
         // First see if the content is in the cache
         fromCache(cache, rqUrl).then(function (response) {
             // The response was found in the cache so we respond with it
@@ -367,12 +370,12 @@ self.addEventListener('fetch', function (event) {
 self.addEventListener('message', function (event) {
     if (event.data.action) {
         if (event.data.action === 'init') {
-            // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
-            outgoingMessagePort = event.ports[0];
+            // On 'init' message, we enable the fetchEventListener
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
-            // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
-            // outgoingMessagePort = null;
+            // On 'disable' message, we disable the fetchEventListener
+            // Note that this code doesn't currently run because the app currently never sends a 'disable' message
+            // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in jQuery mode
             fetchCaptureEnabled = false;
         }
         var oldValue;
@@ -419,10 +422,9 @@ function fetchUrlFromZIM (urlObject, range) {
         var anchorTarget = urlObject.hash.replace(/^#/, '');
         var uriComponent = urlObject.search.replace(/\?kiwix-display/, '');
         var titleWithNameSpace = nameSpace + '/' + title;
+        var zimName = prefix.replace(/\/$/, '');
 
-        // Let's instantiate a new messageChannel, to allow app.js to give us the content
-        var messageChannel = new MessageChannel();
-        messageChannel.port1.onmessage = function (msgPortEvent) {
+        var messageListener = function (msgPortEvent) {
             if (msgPortEvent.data.action === 'giveContent') {
                 // Content received from app.js
                 var contentLength = msgPortEvent.data.content ? (msgPortEvent.data.content.byteLength || msgPortEvent.data.content.length) : null;
@@ -481,12 +483,22 @@ function fetchUrlFromZIM (urlObject, range) {
                 reject(msgPortEvent.data, titleWithNameSpace);
             }
         };
-        outgoingMessagePort.postMessage({
-            action: 'askForContent',
-            title: titleWithNameSpace,
-            search: uriComponent,
-            anchorTarget: anchorTarget
-        }, [messageChannel.port2]);
+        // Get all the clients currently being controlled and send them a message
+        self.clients.matchAll().then(function (clientList) {
+            clientList.forEach(function (client) {
+                if (client.frameType !== 'top-level') return;
+                // Let's instantiate a new messageChannel, to allow app.js to give us the content
+                var messageChannel = new MessageChannel();
+                messageChannel.port1.onmessage = messageListener;
+                client.postMessage({
+                    action: 'askForContent',
+                    title: titleWithNameSpace,
+                    search: uriComponent,
+                    anchorTarget: anchorTarget,
+                    zimFileName: zimName
+                }, [messageChannel.port2]);
+            });
+        });
     });
 }
 
