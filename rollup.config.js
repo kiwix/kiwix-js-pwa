@@ -63,11 +63,11 @@ if (process.env.BUILD === 'production') {
                     // Replace the entry point with the bundle
                         .replace(/(www[\\/]js[\\/])app.js/, '$1bundle.min.js')
                     // Remove all the lib files that will be included in the bundle
-                        .replace(/(?:<Content Include=)?"www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js"(?:\s*\/>|,)\s*/, '')
+                        .replace(/(?:<Content Include=)?['"]www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js['"](?:\s*\/>|,)\s*/, '')
                     // Alter remaining lib references
                         .replace(/([\\/])js[\\/]lib/g, '$1js')
                     // Remove unneeded ASM/WASM binaries
-                        .replace(/"www[\\/]js[\\/].*dec.*js",\s*/g, '')
+                        .replace(/['"]www[\\/]js[\\/].*dec.*js['"],\s*/g, '')
                 },
                 { src: 'www/index.html', dest: 'dist/www',
                     // Link the html to the new bundle entry point
@@ -95,11 +95,11 @@ if (process.env.BUILD === 'production') {
                     // Replace the entry point with the bundle
                         .replace(/(www[\\/]js[\\/])app.js/, '$1bundle.js')
                     // Remove all the lib files that will be included in the bundle
-                        .replace(/(?:<Content Include=)?"www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js"(?:\s*\/>|,)\s*/, '')
+                        .replace(/(?:<Content Include=)?['"]www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js['"](?:\s*\/>|,)\s*/, '')
                     // Alter remaining lib references
                         .replace(/([\\/])js[\\/]lib/g, '$1js')
                     // Remove unneeded ASM/WASM binaries
-                        .replace(/"www[\\/]js[\\/].*dec.*js",\s*/g, '')
+                        .replace(/['"]www[\\/]js[\\/].*dec.*js['"],\s*/g, '')
                 },
                 { src: 'www/index.html', dest: 'dist/www',
                     // Link the html to the new bundle entry point
