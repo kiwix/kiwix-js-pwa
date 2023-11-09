@@ -162,7 +162,6 @@
     <Content Include="www\C\static\img\external-link-ltr-icon.svg" />
     <Content Include="www\img\icons\favicon-16x16.png" />
     <Content Include="www\img\icons\favicon-192x192.png" />
-    <Content Include="www\img\icons\favicon-270x270.png" />
     <Content Include="www\img\icons\favicon-32x32.png" />
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\I\ArequipaBanner3.jpg" />
