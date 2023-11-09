@@ -55,7 +55,13 @@
       "accept": {
         "application/octet-stream": [ ".zim" ]
       },
-      "launch_type": "single-client"
+      "icons": [
+        {
+          "src": "www/img/icons/kiwix-256.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],"launch_type": "single-client"
     }
   ]
 }
