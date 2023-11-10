@@ -4,7 +4,7 @@ Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a dekstop browser a
 
 ![File handling demo](File_handling.gif)
 
-See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
+See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Folder picking](Folder-Picking.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
 
 ## How do I install the PWA?
 
@@ -37,4 +37,4 @@ This can sometimes happen with the installed PWA, if you have another app instal
 clicking the file, choose Properties, and click the "Change" button next to "Opens with" (in Windows), or under the "Open with" tab in Linux.
 Choose "Kiwix JS PWA Edition" under the list of suggested apps. Then click "Apply" (Windows) or "Set as Default" (Linux).
 
-See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
+See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Folder picking](Folder-Picking.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
