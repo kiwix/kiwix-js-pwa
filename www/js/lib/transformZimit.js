@@ -90,7 +90,9 @@ function getZimitRedirect (dirEntry, data, cns) {
     } else if (/301\s*moved\s+permanently/i.test(data)) {
         redirect = data.match(/moved\s+permanently(?:[^<]|<(?!a\s))+<a\s[^"']+["'](?:https?:)?\/?\/?([^"']+)/i);
         if (redirect && redirect[1]) {
-            dirEntry.zimitRedirect = cns + '/' + (cns === 'C' ? 'A/' : '') + redirect[1];
+            // Remove any port
+            var zimitRedirect = redirect[1].replace(/^([^/]+):\d+(\/)/, '$1$2');
+            dirEntry.zimitRedirect = cns + '/' + (cns === 'C' ? 'A/' : '') + zimitRedirect;
         }
         console.debug('*** Asset moved permanently! Redirecting to: ' + dirEntry.zimitRedirect + ' ***');
     } else {
