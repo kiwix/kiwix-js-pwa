@@ -120,7 +120,7 @@ div:not(.panel-success, .alert-message) {
 }
 
 #scrollbox {
-    position: absolute;
+    width: 100%;
 }
 
 #articleListWithHeader {

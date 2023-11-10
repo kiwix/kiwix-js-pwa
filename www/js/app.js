@@ -128,6 +128,13 @@ uiUtil.setupConfigurationToggles();
  */
 function resizeIFrame (reload) {
     console.debug('Resizing iframe...');
+    var scrollbox = document.getElementById('scrollbox');
+    // Re-enable top-level scrolling
+    if (iframe.style.display !== 'none' && document.getElementById('prefix') !== document.activeElement) {
+        scrollbox.style.height = 0;
+    } else {
+        scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    }
     uiUtil.showSlidingUIElements();
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
