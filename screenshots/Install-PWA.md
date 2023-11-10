@@ -4,7 +4,7 @@ Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser. R
 
 ![Install-PWA demo](Install-PWA_demo.gif)
 
-See also: [&ensp;[Install PWA in Firefox for Android](Install-PWA_Firefox_Android.gif)&ensp;]&emsp;[&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.gif)&ensp;]
+See also: [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Install PWA in Firefox for Android](Install-PWA_Firefox_Android.gif)&ensp;]  [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.gif)&ensp;]
 
 ## Install in Chrome/Edge, bookmark in Firefox, add to Home in Safari
 
@@ -39,3 +39,5 @@ the API and can't currently be avoided.
 ## Add the PWA to the Edge sidebar
 
 If you are using Microsoft Edge (Chromium), you can now add the PWA to the Edge sidebar. See our demo [Add Kiwix PWA to Edge sidebar](Add-KiwixPWA-to-Edge-sidebar.md).
+
+See also: [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Install PWA in Firefox for Android](Install-PWA_Firefox_Android.gif)&ensp;]  [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.gif)&ensp;]

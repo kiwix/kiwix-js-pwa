@@ -4,6 +4,8 @@ Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser. R
 
 ![Folder-picking demo](Firefox_folder_picking.gif)
 
+See also: [&ensp;[PWA Installation demo](Install-PWA.md)&ensp;]  [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
+
 ## Use the File System Access API or the Webkitdirectory API
 
 All modern desktop browsers now allow you to pick a folder of ZIM archives and switch quickly between archives in the folder. **Chromium browsers** (e.g. Chrome, Edge) use the
@@ -29,5 +31,7 @@ can drag-and-drop the whole set into the app.
 
 ## File Handling
 
-In **Chromium browsers**, if you install the app, it can also take advantage of the [File Handling API](https://web.dev/file-handling/). Together,
-these APIs provide a near-native experience. For more information, see our [PWA Installation demo](Install-PWA.md).
+In **Chromium browsers**, if you install the app, it can also take advantage of [File handling](Demo-FileHandling.md). Together, these APIs provide
+a near-native experience..
+
+See also: [&ensp;[PWA Installation demo](Install-PWA.md)&ensp;]  [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
