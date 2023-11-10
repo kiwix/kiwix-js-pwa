@@ -34,7 +34,7 @@ Chromium browsers have not yet implemented file system icons, though they intend
 ## Help, another app opens, or the app starts but doesn't open the ZIM!
 
 This can sometimes happen with the installed PWA, if you have another app installed that handles ZIM files. You can usually fix this by right
-clicking the file, choose Properties, and click the "Change" button next to "Opens with" (in Windows), or under the "Open with" tab in Linux.
+clicking the file, choose Properties, and click the "Change" button next to "Opens with" (in Windows), or under the "Open With" tab in Linux.
 Choose "Kiwix JS PWA Edition" under the list of suggested apps. Then click "Apply" (Windows) or "Set as Default" (Linux).
 
 See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Folder picking](Folder-Picking.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
