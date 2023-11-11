@@ -10,10 +10,9 @@ free for anyone to use. Get the app and download your choice of offline content 
 There are hundreds of multilingual archives to choose from, on many different topics and subjects. Build a whole digital library of
 offline knowledge!** 
 
-The app is available either as an offline-capable, [installable Web App](#universal-progressive-web-app) (PWA), for almost all modern
-browsers and devices, or else as app packages for various Windows and Linux operating systems: see
-**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline
-web app ([more info below](#universal-progressive-web-app)).
+The app is available either as an offline-capable, [installable Progressive Web App](#universal-progressive-web-app) (PWA), for almost
+all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see
+**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline PWA.
 
 We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** (a complete medical
 encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikivoyage)** (a complete travel guide) in
@@ -25,8 +24,8 @@ If you are using **Windows 10 or 11**, then all three apps are conveniently avai
 and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
 available. If you are using **Linux**, then the
 [Electron AppImage package](http://kiwix.github.io/kiwix-js-pwa/app) of Kiwix JS also (optionally) self-updates,
-as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-pwa/app). All other apps can
-(optionally) notify you when a new version is available, and give you a download link.
+as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-pwa/app). Other apps will notify you when an update
+is available.
 
 ## Universal Progressive Web App
 
@@ -40,13 +39,11 @@ or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) befor
 Once installed, bookmarked or added to your home screen, the PWA works even when your device is fully offline!
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
-And when we say "Universal", we mean Universal: Android, iOS, macOS, Linux, Windows...
-
 <img src="https://github.com/kiwix/kiwix-js-pwa/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
 
 ## How do I get all of Wikipedia offline?
 
-If you want it with images, then please be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
+If you want it with images, then please be aware that it's a big download: the English version is around 97 Gigabytes! We recommend you
 try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
 handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
 
@@ -58,7 +55,7 @@ want to download. It's much easier than it sounds!
 
 ## What about Zimit (Web Archive) format?
 
-Zimit is the new service that allows you to archive any web site as a ZIM. Try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have
+Zimit is a service that allows any Web site to be archived as a ZIM. Try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have
 _experimental_ support for Zimit archives: text, images, dynamic content will be displayed, but some content such as embedded video or audio may break.
 Try it and see! You don't have to make your own Zimit ZIMs: Kiwix download library (available in-app) publishes a number of fantastically useful refernce
 sites in the Zimit file format, such as the Ready.Gov disaster preparedness site, the fascinating Low-Tech magazine, the CIA World Factbook --
@@ -119,7 +116,7 @@ System Access API and the File Handling API for a native-like experience in brow
 APIs, see the bottom of this page:
 [File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
 
-All three apps are available in the WinGet Package Manager. You can sideload the UWP version (in Windows 10/11) by opening a Command
+The apps are also available in the WinGet Package Manager. You can sideload the UWP version (in Windows 10/11) by opening a Command
 Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (this version will not auto-update, but it will let you know when
 a new update is ready to install). Alternative sideloading instructions are available in the
 [release notes](https://kiwix.github.io/kiwix-js-pwa/app). The Electron version can be installed with
@@ -127,40 +124,41 @@ a new update is ready to install). Alternative sideloading instructions are avai
 [Releases](https://github.com/kiwix/kiwix-js-pwa/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
 mini archive of the top 100 Wikipedia articles (without images and with only the lede paragraph).
 
-This app is regularly tested fully on Wikimedia ZIM files, though many other ZIM file types work. There is experimental support for most
-Zimit ZIMs from version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0 onwards. Some archives are very large indeed: for
-most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these very large files in the storage
-with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and you wish to use an archive larger
-than 4GB, then you will need to split the ZIM: see
+Some ZIM archives are very large indeed, so the underlyin limits of the File System can be a consideration. For most storage types
+(including microSD cards) that are formatted as exFAT or NTFS, you can store even these very large files in the storage with no problem.
+However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and you wish to use an archive larger than 4GB, then
+you will need to split the ZIM: see
 [file splitting instructions](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
 actively. Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and
-then Kiwix HTML5, which eventually became Kiwix JS. The original source code runs almost "as is" on the UWP platform, which is testament
-to how well written that app is. The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey
+then Kiwix HTML5, which eventually became Kiwix JS. The port and further development of Kiwix JS PWA and other apps is by Geoffrey
 Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 ## Reporting bugs
 
-Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues) to report any bugs you have found with the software. Open a new
-issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly the version number you are using (see
-the About page in the app), and which browser or platform you are using. Please read the
+Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues) to report any bugs you have found with the
+software. Open a new issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly
+the version number you are using (see the About page in the app), and which browser or platform you are using. Please read the
 [Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/main/REPORT_BUG.md) before opening your issue.
 
 ## Contributing code
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream
 [Kiwix JS repository](https://kiwix.github.io/kiwix-js/), as much of the code contributed there is subsequently ported to this repository.
-Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
-If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
-aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We have now transitioned this app to ES6 code, which is
-transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code that is compatible with older browsers. Brief instructions:
+Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details. If you wish to contribute to a specific
+Kiwix JS PWA feature, then please open an issue on this repository explaining the feature or other code you aim to contribute and how you propose
+this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
+
+We have now transitioned this app to ES6 code, which is transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code
+that is compatible with older browsers. Brief instructions:
 
 * Clone this repo and run `npm install` to get the Node dependencies;
 * To serve the app with [Vite.js](https://vitejs.dev/), which includes Hot Module Replacement, run `npm run serve`;
 * You MUST turn on the option to Bypass the app cache in Configuration under Troubleshooting and development. If the app loads in a disordered way,
-you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode). Refresh the app with Ctrl-R;
+you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode).
+Refresh the app with Ctrl-R;
 * Vite will watch for changes and will refresh the app when you make any and save them;
 * To preview the bundled version of the app, run `npm run preview`, and Vite will build the app and open a browser window to view the bundled version;
 * To fully build the app, run `npm run build`. The built app will be saved to a directory called `dist` in your cloned repo; 
@@ -180,11 +178,13 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
-record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
-usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
-of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the
-last-visited page.
+This Privacy Policy applies to the Kiwix JS Progressive Web App and versions of it packaged for the Electron, NWJS and UWP frameworks that
+are published on Kiwix servers, and by official Kiwix accounts on GitHub and other third-party vendor stores ("app stores"). 
+
+When installed, this application is capable of working entirely offline. It does not collect or record any of your personal data, though
+if you installed it from a Store, the Store operator may collect anonymous usage data (see below). The app only remembers your browsing
+history for the duration of a session (for the purpose of returning to previously viewed pages). This history is lost on exiting the
+app with the optional exception of the last-visited page.
 
 If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
 is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
@@ -212,7 +212,7 @@ has a CSP, ours may be overwritten. Note that scripts only run if you enable Ser
 **If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut
 down your Internet access (Data or WiFi) before using the application.**
 
-Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may track your
+Additionally, if you obtained this app from a vendor store (including extensions), then the Store operator may track your
 usage of the app (e.g. download, install, uninstall, date and number/duration of sessions) for the purpose of providing
 anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant Store Privacy Policy
 for further information.
