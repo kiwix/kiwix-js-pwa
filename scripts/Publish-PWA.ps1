@@ -36,7 +36,7 @@ $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = $matches[1]
   if ($sw_tag -ne $app_tag) {
-    "*** WARNING: The version in init.js [$app_tag] does not match the version in service-worker.js [$sw_tag]! ***"
+    "`n*** WARNING: The version in init.js [$app_tag] does not match the version in service-worker.js [$sw_tag]! ***"
     "Please correct before continuing.`n"
     exit
   } else {
@@ -44,7 +44,7 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
     "Version in service-worker.js: $sw_tag`n"
   }
 } else {
-  "*** WARNING: App version is incorrectly set in service-worker.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in service-worker.js.`nPlease correct before continuing.`n"
   exit
 }
 
@@ -63,12 +63,9 @@ if ($machine_name -eq "") {
       "[DRYRUN]: Initiating dry run..."
     }
   }
-  ""
-  if ($target -eq "") {
-    $target = Read-Host "Which implementation (ghpages or docker) do you wish to update? Enter to accept suggested [ghpages]"
-  }
+
   $machine_name = Read-Host "`nGive the name to use for the docker build, or Enter to accept suggested name [$suggested_build]"
-  ""
+  
   if (-Not $machine_name) { 
     $machine_name = $suggested_build
     $warning_message = "Please note that ""$app_tag"" will be used as the appVersion. If you want to change that, press Ctrl-C and re-run this script entering a build number matching 9.9.9."
@@ -76,11 +73,26 @@ if ($machine_name -eq "") {
     $warning_message = "*** Please be aware that you have entered a release tag matching the format 9.9.9* [$machine_name], and so it will be used as the appVersion of the container " +
       "and will be visible to users. If this is NOT want you want, press Ctrl-C to abort this script, and re-run with the suggested build number." 
   }
-  if ($warning_message) { Write-Warning $warning_message }
+  if ($warning_message) {
+    ""
+    Write-Warning $warning_message
+  }
+}
+
+if ($target -eq "") {
+  $target = Read-Host "`nWhich implementation (ghpages or docker) do you wish to update? Enter to accept suggested [ghpages]"
 }
 
 if (-Not $target) {
   $target = "ghpages"
+}
+
+# If the target doesn't match "docker" or "ghpages", then show an error and exit
+if ($target -ne "docker" -and $target -ne "ghpages") {
+  ""
+  Write-Warning "Target must be either 'docker' or 'ghpages'."
+  ""
+  exit
 }
 
 if ($branch_name -eq "") {
