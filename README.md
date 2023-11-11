@@ -1,6 +1,6 @@
 # Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
-Demos:&emsp;[&ensp;[Instal the PWA on Desktop](screenshots/Install-PWA.md)&ensp;]&emsp;[&ensp;[Install PWA and use OPFS on Android](screenshots/Demo-OPFS_Chrome_Android.md)&ensp;]&emsp;[&ensp;[Picking a folder of archives](screenshots/Folder-Picking.md)&ensp;]&emsp;[&ensp;[File handling (desktop)](screenshots/Demo-FileHandling.md)&ensp;]&emsp;[&ensp;[Install PWA on Firefox Android](screenshots/Install-PWA_Firefox_Android.md)&ensp;]&emsp;[&ensp;[Demo of all OPFS features](screenshots/Demo-OPFS_all_features.md)&ensp;]&emsp;[&ensp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&ensp;]
+Demos:&emsp;[&nbsp;[Instal PWA on Desktop](screenshots/Install-PWA.md)&nbsp;]&emsp;[&nbsp;[Install and use: Android](screenshots/Demo-OPFS_Chrome_Android.md)&nbsp;]&emsp;[&nbsp;[Install and use: Firefox Android](screenshots/Install-PWA_Firefox_Android.md)&nbsp;]&emsp;[&nbsp;[Picking a folder of archives](screenshots/Folder-Picking.md)&nbsp;]&emsp;[&nbsp;[File handling (desktop)](screenshots/Demo-FileHandling.md)&nbsp;]&emsp;[&nbsp;[Demo all OPFS features](screenshots/Demo-OPFS_all_features.md)&nbsp;]&emsp;[&nbsp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&nbsp;]
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
