@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.7.81
+
+* FIX: Incorrect sizing of article area in UWP app
+* DEV: Various updates to demos and readme
+
 ## Release 2.7.8
 
 * FEATURE: Support multiple instances of the PWA or browser tabs/windows with different ZIMs loaded in each
