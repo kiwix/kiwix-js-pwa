@@ -2,8 +2,13 @@
 
 ## In-progress release 2.7.81
 
+* INFO: Provide info to user about how to change behaviour of opening external links in tab or window
 * FIX: Incorrect sizing of article area in UWP app
+* FIX: Remove unhandled port in some Zimit redirects, allowing resource to be located in archive
+* FIX: Failure to resize Configuration in rare circumstances
 * DEV: Various updates to demos and readme
+* DEV: Fix quote detection in rollup build chain
+* DEV: Changed favicon from white to black with white border
 
 ## Release 2.7.8
 
