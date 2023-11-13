@@ -100,12 +100,16 @@ Although deprecated, we will keep support for as long as is practical:
 * Firefox 45-59 (some versions require the user to switch manually to JQuery mode)
 * Chromium 49-58 (some versions only run in JQuery mode)
 
-## Software support
+## Reporting bugs and technical support
 
-If you are having difficulties with the software, have found a bug, or would like to see a new feature, please open a ticket using
-this repository's [Issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues), after first checking that there isn't a ticket already
-covering the same issue. Alternatively, please see the Feedback section on the About page in-app for other ways of getting support
-for your issue.
+Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues) to report any bugs you have found with the
+software. Open a new ticket (after checking that the issue you identified doesn't have a ticket already). Please state clearly
+the version number you are using (at the top of the Configuration page in the app), and which browser or platform you are using.
+
+If you are having difficulties with the software, or would like to see a new feature, please also open a ticket. Alternatively, see the
+Feedback section on the About page in the app for other ways of getting technical support for your issue. Feel free to get in contact
+(see About page of app) if you would just like to provide feedback, or leave a review if you obtained the app from a Store. If you like
+the app, please star this Repostiory (see top)!
 
 ## Technical information
 
@@ -141,13 +145,6 @@ A lot of development for this app happens upstream in the [Kiwix JS repository](
 actively. Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and
 then Kiwix HTML5, which eventually became Kiwix JS. The port and further development of Kiwix JS PWA and other apps is by Geoffrey
 Kantaris. I can be contacted by email: egk10 at cam ac uk.
-
-## Reporting bugs
-
-Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues) to report any bugs you have found with the
-software. Open a new issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly
-the version number you are using (see the About page in the app), and which browser or platform you are using. Please read the
-[Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/main/REPORT_BUG.md) before opening your issue.
 
 ## Contributing code
 
