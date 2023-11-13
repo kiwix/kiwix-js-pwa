@@ -10,8 +10,8 @@ free for anyone to use. Get the app and download your choice of offline content 
 There are hundreds of multilingual archives to choose from, on many different topics and subjects. Build a whole digital library of
 offline knowledge!** 
 
-The app is available either as an offline-capable, [installable Progressive Web App](#universal-progressive-web-app) (PWA), for almost
-all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see
+Part of the [Kiwix family](https://kiwix.org/), this app is available either as an offline-capable, [installable Progressive Web App](#universal-progressive-web-app)
+(PWA), for almost all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see
 **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline PWA.
 
 We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** (a complete medical
@@ -99,6 +99,13 @@ Although deprecated, we will keep support for as long as is practical:
 * Edge Legacy <= 17 (JQuery mode only, no offline use of PWA)
 * Firefox 45-59 (some versions require the user to switch manually to JQuery mode)
 * Chromium 49-58 (some versions only run in JQuery mode)
+
+## Software support
+
+If you are having difficulties with the software, have found a bug, or would like to see a new feature, please open a ticket using
+this repository's [Issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues), after first checking that there isn't a ticket already
+covering the same issue. Alternatively, please see the Feedback section on the About page in-app for other ways of getting support
+for your issue.
 
 ## Technical information
 
