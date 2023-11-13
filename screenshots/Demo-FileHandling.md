@@ -10,7 +10,8 @@ See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Folder picking](F
 
 In Chromium browsers (Chrome, Edge, Brave, etc.), an Install button will show in Configuration. In Safari on macOS you can use File ->
 Add to Dock, and in Firefox (desktop), you can bookmark the app. The demo shows file handling in a Chromium browser on Linux, but it's
-exactly the same process on Windows and macOS. For Firefox and Safari, see "What about Firefox and Safari?" below.
+exactly the same process on Windows and macOS. For Firefox and Safari, see "[What about Firefox and Safari](#what-about-firefox-and-safari)?"
+below. We also have a demo page with more info about [Installing the PWA](Install-PWA.md).
 
 ## The File Handling API is available on Chromium desktop browsers
 
@@ -20,7 +21,7 @@ allowing the app to always open ZIM files.
 
 ## What about Firefox and Safari?
 
-In all browsers, you can drag and drop a file from the file exploer, with very similar effect to the File Handling API. However, you might
+In all browsers, you can drag and drop a file from the file explorer, with very similar effect to the File Handling API. However, you might
 find it more convenient to put all your ZIM archives in one folder and [open the folder](Folder-Picking.md) from within the app. Then you
 can very quickly switch between archives. For a really seamless experience, consider using the [Private File system](Demo-OPFS_all_features.md)
 on (Firefox and Chromium) browsers. 
