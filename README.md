@@ -120,7 +120,7 @@ Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be
 buggy and change rapidly.
 
-The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the Kiwix Offline reader.
+The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the [Kiwix Offline reader](https://kiwix.org/).
 Significant development has gone into packaging this app for various frameworks, and to add some features which are often backported
 upstream. The PWA can be installed as a fully integrated system app if opened in a modern Chromium browser, and it uses the File
 System Access API and the File Handling API for a native-like experience in browsers supporting those APIs. For more info about these
