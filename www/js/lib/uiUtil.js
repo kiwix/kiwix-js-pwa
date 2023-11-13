@@ -53,8 +53,8 @@ function hideSlidingUIElements () {
     // articleContainer.style.height = document.documentElement.clientHeight + 'px';
     header.style.transform = 'translateY(-' + headerHeight + 'px)';
     articleElement.style.transform = 'translateY(-' + headerHeight + 'px)';
-    // Needed by IE11
-    if ('MSBlobBuilder' in window) articleContainer.style.transform = 'translateY(-' + headerHeight + 'px)';
+    // Needed by IE11 (only browser that has window.navigator.msSaveBlob)
+    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + headerHeight + 'px)';
 }
 
 /**
