@@ -30,7 +30,8 @@ your selected archive or folder between app launches. If you install the app, it
 these APIs provide a near-native experience.
 
 When installed, the first time you launch a ZIM archive from the file system, you will be asked for permission to open this type of file (this prompt isn't shown in the demo above).
-If you grant this permission permanently (tick the check box), you won't be bothered by future permission prompts when opening a ZIM from anywhere on your PC.
+If you grant this permission permanently (tick the check box), you won't be bothered by future permission prompts when opening a ZIM from anywhere on your PC. For more information,
+see our [File Handling demo](Demo-FileHandling.md).
 
 When you open a ZIM archive or folder *from within the app* (from Configuration), you are asked for permission to access the file or the folder containing your ZIM archives. On next
 launch, the selected file or folder is remembered. When you click on the archive name, you are given a quick permissions prompt (just once per launch). This is a security feature of
