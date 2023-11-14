@@ -121,11 +121,12 @@ div:not(.panel-success, .alert-message) {
 
 #scrollbox {
     width: 100%;
+    overflow: auto;
 }
 
 #articleListWithHeader {
-    position: absolute; 
-    top: 0; 
+    position: absolute;
+    top: 0;
     left: 5%;
     padding-left: 12px;
     padding-right: 12px;

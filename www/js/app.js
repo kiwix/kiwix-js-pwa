@@ -234,7 +234,9 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     searchDirEntriesFromPrefix(val);
     clearFindInArticle();
     // Re-enable top-level scrolling
-    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
+    scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
     // This flag is set to true in the mousedown event below
     searchArticlesFocused = false;
 });
@@ -318,7 +320,9 @@ prefix.addEventListener('focus', function () {
         document.getElementById('articleListWithHeader').style.display = '';
     }
     scrollbox.style.position = 'absolute';
-    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
+    scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
