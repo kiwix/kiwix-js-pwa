@@ -1,8 +1,9 @@
 # Changelog
 
-## In-progress release 2.7.81
+## In-progress release 2.7.82
 
 * INFO: Provide info to user about how to change behaviour of opening external links in tab or window
+* FIX: Critical bug that prevented scrolling of search results
 * FIX: Incorrect sizing of article area in UWP app
 * FIX: Remove unhandled port in some Zimit redirects, allowing resource to be located in archive
 * FIX: Failure to resize Configuration in rare circumstances
