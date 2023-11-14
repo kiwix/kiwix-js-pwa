@@ -128,9 +128,8 @@ uiUtil.setupConfigurationToggles();
  */
 function resizeIFrame (reload) {
     console.debug('Resizing iframe...');
-    var scrollbox = document.getElementById('scrollbox');
     // Re-enable top-level scrolling
-    if (iframe.style.display !== 'none' && document.getElementById('prefix') !== document.activeElement) {
+    if (iframe.style.display !== 'none' && prefix !== document.activeElement) {
         scrollbox.style.height = 0;
     } else {
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -218,7 +217,9 @@ function onPointerUp (e) {
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
 var prefix = document.getElementById('prefix');
+var scrollbox = document.getElementById('scrollbox');
 var searchArticlesFocused = false;
+
 document.getElementById('searchArticles').addEventListener('click', function () {
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
@@ -233,7 +234,7 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     searchDirEntriesFromPrefix(val);
     clearFindInArticle();
     // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     // This flag is set to true in the mousedown event below
     searchArticlesFocused = false;
 });
@@ -312,12 +313,12 @@ prefix.addEventListener('focus', function () {
     var val = prefix.value;
     if (/^\s/.test(val)) {
         // If user had previously had the archive index open, clear it
-        document.getElementById('prefix').value = '';
+        prefix.value = '';
     } else if (val !== '') {
         document.getElementById('articleListWithHeader').style.display = '';
     }
-    document.getElementById('scrollbox').style.position = 'absolute';
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    scrollbox.style.position = 'absolute';
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
@@ -328,7 +329,7 @@ prefix.addEventListener('blur', function () {
         setTimeout(function () {
             if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
             /^list-group/.test(document.activeElement.className))) {
-                document.getElementById('scrollbox').style.height = 0;
+                scrollbox.style.height = 0;
                 document.getElementById('articleListWithHeader').style.display = 'none';
                 appstate.tempPrefix = '';
                 uiUtil.clearSpinner();
@@ -702,7 +703,7 @@ function setRelativeUIFontSize (value) {
         heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + 'px';
     }
     document.getElementById('displaySettingsDiv').scrollIntoView();
-    // document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+    // prefix.style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
     if (value !== params.relativeUIFontSize) {
         params.relativeUIFontSize = value;
         settingsStore.setItem('relativeUIFontSize', value, Infinity);
@@ -826,7 +827,7 @@ function setTab (activeBtn) {
     document.getElementById('configuration').style.display = 'none';
     document.getElementById('formArticleSearch').style.display = '';
     if (!activeBtn || activeBtn === 'btnHome') {
-        document.getElementById('scrollbox').style.height = 0;
+        scrollbox.style.height = 0;
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
             if (appstate.target === 'iframe') {
@@ -877,7 +878,7 @@ function setDynamicIcons (btn) {
         }
     } else {
         // When the scrollbox height is 0, we are not in Configuration or About
-        if ((!btn && document.getElementById('scrollbox').offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
+        if ((!btn && scrollbox.offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
             btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
             btnAbout.title = 'Ctrl-P: Print';
         } else {
@@ -1039,7 +1040,7 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         document.getElementById('myModal').style.display = 'none';
         refreshAPIStatus();
         // Re-enable top-level scrolling
-        document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
         document.getElementById('search-article').style.overflowY = 'auto';
         // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
         if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
@@ -1138,7 +1139,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
         el.style.display = 'none';
     });
     // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     document.getElementById('search-article').style.overflowY = 'auto';
 });
 var selectFired = false;
@@ -2187,7 +2188,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementById('footer').classList.add('darkfooter');
         archiveFilesLegacy.classList.remove('btn');
         document.getElementById('findInArticle').classList.add('dark');
-        document.getElementById('prefix').classList.add('dark');
+        prefix.classList.add('dark');
         elements = document.querySelectorAll('.settings');
         for (var i = 0; i < elements.length; i++) {
             elements[i].style.border = '1px solid darkgray';
@@ -2202,7 +2203,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         archiveFilesLegacy.classList.remove('dark');
         archiveFilesLegacy.classList.add('btn');
         document.getElementById('findInArticle').classList.remove('dark');
-        document.getElementById('prefix').classList.remove('dark');
+        prefix.classList.remove('dark');
         elements = document.querySelectorAll('.settings');
         for (i = 0; i < elements.length; i++) {
             elements[i].style.border = '1px solid black';
@@ -2641,8 +2642,6 @@ function refreshCacheStatus () {
             else card.classList.add('panel-danger');
         });
     });
-    var scrollbox = document.getElementById('scrollbox');
-    var prefix = document.getElementById('prefix');
     if (params.appCache) {
         scrollbox.style.removeProperty('background');
         prefix.style.removeProperty('background');
@@ -3123,7 +3122,7 @@ var historyPop = function (event) {
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
             } else {
-                document.getElementById('prefix').focus();
+                prefix.focus();
             }
         }
     }
@@ -4178,7 +4177,6 @@ function onKeyUpPrefix (evt) {
         window.clearTimeout(window.timeoutKeyUpPrefix);
     }
     window.timeoutKeyUpPrefix = window.setTimeout(function () {
-        var prefix = document.getElementById('prefix').value;
         // Don't process anything if it's the same prefix as recently entered (this prevents searching
         // if user is simply using arrow key to correct something typed).
         if (!/^\s/.test(prefix) && prefix === appstate.tempPrefix) return;
@@ -4356,7 +4354,7 @@ function showZIMIndex (start, prefix) {
                     selector.addEventListener('click', function (event) {
                         event.preventDefault();
                         var char = selector.dataset.sel;
-                        document.getElementById('prefix').value = ' ' + char;
+                        prefix.value = ' ' + char;
                         showZIMIndex(null, char);
                     });
                 });
@@ -4452,7 +4450,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
             // Cancel search immediately
             appstate.search.status = 'cancelled';
             handleTitleClick(e);
-            document.getElementById('scrollbox').style.height = 0;
+            scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
         });
     });
