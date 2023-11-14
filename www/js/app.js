@@ -128,9 +128,8 @@ uiUtil.setupConfigurationToggles();
  */
 function resizeIFrame (reload) {
     console.debug('Resizing iframe...');
-    var scrollbox = document.getElementById('scrollbox');
     // Re-enable top-level scrolling
-    if (iframe.style.display !== 'none' && document.getElementById('prefix') !== document.activeElement) {
+    if (iframe.style.display !== 'none' && prefix !== document.activeElement) {
         scrollbox.style.height = 0;
     } else {
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -218,7 +217,9 @@ function onPointerUp (e) {
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
 var prefix = document.getElementById('prefix');
+var scrollbox = document.getElementById('scrollbox');
 var searchArticlesFocused = false;
+
 document.getElementById('searchArticles').addEventListener('click', function () {
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
@@ -233,7 +234,9 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     searchDirEntriesFromPrefix(val);
     clearFindInArticle();
     // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
+    scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
     // This flag is set to true in the mousedown event below
     searchArticlesFocused = false;
 });
@@ -312,12 +315,14 @@ prefix.addEventListener('focus', function () {
     var val = prefix.value;
     if (/^\s/.test(val)) {
         // If user had previously had the archive index open, clear it
-        document.getElementById('prefix').value = '';
+        prefix.value = '';
     } else if (val !== '') {
         document.getElementById('articleListWithHeader').style.display = '';
     }
-    document.getElementById('scrollbox').style.position = 'absolute';
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    scrollbox.style.position = 'absolute';
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
+    scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
@@ -328,7 +333,7 @@ prefix.addEventListener('blur', function () {
         setTimeout(function () {
             if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
             /^list-group/.test(document.activeElement.className))) {
-                document.getElementById('scrollbox').style.height = 0;
+                scrollbox.style.height = 0;
                 document.getElementById('articleListWithHeader').style.display = 'none';
                 appstate.tempPrefix = '';
                 uiUtil.clearSpinner();
@@ -702,7 +707,7 @@ function setRelativeUIFontSize (value) {
         heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + 'px';
     }
     document.getElementById('displaySettingsDiv').scrollIntoView();
-    // document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+    // prefix.style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
     if (value !== params.relativeUIFontSize) {
         params.relativeUIFontSize = value;
         settingsStore.setItem('relativeUIFontSize', value, Infinity);
@@ -826,7 +831,7 @@ function setTab (activeBtn) {
     document.getElementById('configuration').style.display = 'none';
     document.getElementById('formArticleSearch').style.display = '';
     if (!activeBtn || activeBtn === 'btnHome') {
-        document.getElementById('scrollbox').style.height = 0;
+        scrollbox.style.height = 0;
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
             if (appstate.target === 'iframe') {
@@ -877,7 +882,7 @@ function setDynamicIcons (btn) {
         }
     } else {
         // When the scrollbox height is 0, we are not in Configuration or About
-        if ((!btn && document.getElementById('scrollbox').offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
+        if ((!btn && scrollbox.offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
             btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
             btnAbout.title = 'Ctrl-P: Print';
         } else {
@@ -1039,7 +1044,7 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         document.getElementById('myModal').style.display = 'none';
         refreshAPIStatus();
         // Re-enable top-level scrolling
-        document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
         document.getElementById('search-article').style.overflowY = 'auto';
         // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
         if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
@@ -1138,7 +1143,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
         el.style.display = 'none';
     });
     // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     document.getElementById('search-article').style.overflowY = 'auto';
 });
 var selectFired = false;
@@ -2187,7 +2192,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementById('footer').classList.add('darkfooter');
         archiveFilesLegacy.classList.remove('btn');
         document.getElementById('findInArticle').classList.add('dark');
-        document.getElementById('prefix').classList.add('dark');
+        prefix.classList.add('dark');
         elements = document.querySelectorAll('.settings');
         for (var i = 0; i < elements.length; i++) {
             elements[i].style.border = '1px solid darkgray';
@@ -2202,7 +2207,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         archiveFilesLegacy.classList.remove('dark');
         archiveFilesLegacy.classList.add('btn');
         document.getElementById('findInArticle').classList.remove('dark');
-        document.getElementById('prefix').classList.remove('dark');
+        prefix.classList.remove('dark');
         elements = document.querySelectorAll('.settings');
         for (i = 0; i < elements.length; i++) {
             elements[i].style.border = '1px solid black';
@@ -2234,23 +2239,23 @@ function switchCSSTheme () {
     var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
     var breakoutLink = doc.getElementById('breakoutLink');
     // Construct an absolute reference becuase Service Worker needs this
-    var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
+    var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
     if (determinedWikiTheme !== 'light' && params.cssTheme !== 'darkReader') {
         var link = doc.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', prefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
+        link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         doc.head.appendChild(link);
         if (articleWindow.DarkReader) {
             articleWindow.DarkReader.disable();
         }
-        if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window_lb.svg';
+        if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window_lb.svg';
     } else {
         if (params.contentInjectionMode === 'serviceworker' && params.cssTheme === 'darkReader') {
             if (!articleWindow.DarkReader) {
                 var darkReader = doc.createElement('script');
                 darkReader.setAttribute('type', 'text/javascript');
-                darkReader.setAttribute('src', prefix + '/js/lib/darkreader.min.js');
+                darkReader.setAttribute('src', locationPrefix + '/js/lib/darkreader.min.js');
                 doc.head.appendChild(darkReader);
             }
             setTimeout(function () {
@@ -2258,7 +2263,7 @@ function switchCSSTheme () {
                 articleWindow.DarkReader.enable();
             }, 500);
         }
-        if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
+        if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
     document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
@@ -2641,8 +2646,6 @@ function refreshCacheStatus () {
             else card.classList.add('panel-danger');
         });
     });
-    var scrollbox = document.getElementById('scrollbox');
-    var prefix = document.getElementById('prefix');
     if (params.appCache) {
         scrollbox.style.removeProperty('background');
         prefix.style.removeProperty('background');
@@ -3123,7 +3126,7 @@ var historyPop = function (event) {
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
             } else {
-                document.getElementById('prefix').focus();
+                prefix.focus();
             }
         }
     }
@@ -4178,12 +4181,11 @@ function onKeyUpPrefix (evt) {
         window.clearTimeout(window.timeoutKeyUpPrefix);
     }
     window.timeoutKeyUpPrefix = window.setTimeout(function () {
-        var prefix = document.getElementById('prefix').value;
         // Don't process anything if it's the same prefix as recently entered (this prevents searching
         // if user is simply using arrow key to correct something typed).
-        if (!/^\s/.test(prefix) && prefix === appstate.tempPrefix) return;
-        if (prefix && prefix.length > 0 && (prefix !== appstate.search.prefix || /^\s/.test(prefix))) {
-            appstate.tempPrefix = prefix;
+        if (!/^\s/.test(prefix.value) && prefix.value === appstate.tempPrefix) return;
+        if (prefix.value && prefix.value.length > 0 && (prefix.value !== appstate.search.prefix || /^\s/.test(prefix.value))) {
+            appstate.tempPrefix = prefix.value;
             document.getElementById('searchArticles').click();
         }
     }, 1000);
@@ -4263,19 +4265,19 @@ function searchDirEntriesFromPrefix (prefix) {
 /**
  * Extracts and displays in htmlArticle the first params.maxSearchResultsSize articles beginning with start
  * @param {String} start Optional index number to begin the list with
- * @param {String} prefix Optional search prefix from which to start an alphabetical search
+ * @param {String} search Optional search prefix from which to start an alphabetical search
  */
-function showZIMIndex (start, prefix) {
-    var searchUrlIndex = /^[-ABCHIJMUVWX]?\//.test(prefix);
+function showZIMIndex (start, search) {
+    var searchUrlIndex = /^[-ABCHIJMUVWX]?\//.test(search);
     // If we're searching by title index number (other than 0 or null), we should ignore any prefix
     if (isNaN(start)) {
-        prefix = prefix || '';
+        search = search || '';
     } else {
-        prefix = start > 0 ? '' : prefix;
+        search = start > 0 ? '' : search;
     }
-    appstate.search = { prefix: prefix, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize };
+    appstate.search = { prefix: search, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize };
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
-        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, appstate.search, function (dirEntryArray, nextStart) {
+        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(search, appstate.search, function (dirEntryArray, nextStart) {
             var docBody = document.getElementById('mymodalVariableContent');
             var newHtml = '';
             for (var i = 0; i < dirEntryArray.length; i++) {
@@ -4356,7 +4358,7 @@ function showZIMIndex (start, prefix) {
                     selector.addEventListener('click', function (event) {
                         event.preventDefault();
                         var char = selector.dataset.sel;
-                        document.getElementById('prefix').value = ' ' + char;
+                        prefix.value = ' ' + char;
                         showZIMIndex(null, char);
                     });
                 });
@@ -4452,7 +4454,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
             // Cancel search immediately
             appstate.search.status = 'cancelled';
             handleTitleClick(e);
-            document.getElementById('scrollbox').style.height = 0;
+            scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
         });
     });
@@ -5463,7 +5465,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Preload stylesheets [kiwix-js #149]
         console.log('Loading stylesheets...');
         // Set up blobArray of promises
-        var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
+        var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
         var cssSource = params.cssSource;
@@ -5474,8 +5476,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         } else {
             // Apply dark or light content theme if necessary
             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            var contentThemeStyle = (determinedTheme == 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-                : params.cssTheme == 'invert' ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
+            var contentThemeStyle = (determinedTheme == 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
+                : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
             injectHTML();
         }
@@ -5591,8 +5593,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
             // Add dark mode CSS if required
             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-                : params.cssTheme == 'invert' ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
+            cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
+                : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
             // Ensure all headings are open
             // htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + '$1');
