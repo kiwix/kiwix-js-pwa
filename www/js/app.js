@@ -2235,23 +2235,23 @@ function switchCSSTheme () {
     var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
     var breakoutLink = doc.getElementById('breakoutLink');
     // Construct an absolute reference becuase Service Worker needs this
-    var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
+    var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
     if (determinedWikiTheme !== 'light' && params.cssTheme !== 'darkReader') {
         var link = doc.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', prefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
+        link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         doc.head.appendChild(link);
         if (articleWindow.DarkReader) {
             articleWindow.DarkReader.disable();
         }
-        if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window_lb.svg';
+        if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window_lb.svg';
     } else {
         if (params.contentInjectionMode === 'serviceworker' && params.cssTheme === 'darkReader') {
             if (!articleWindow.DarkReader) {
                 var darkReader = doc.createElement('script');
                 darkReader.setAttribute('type', 'text/javascript');
-                darkReader.setAttribute('src', prefix + '/js/lib/darkreader.min.js');
+                darkReader.setAttribute('src', locationPrefix + '/js/lib/darkreader.min.js');
                 doc.head.appendChild(darkReader);
             }
             setTimeout(function () {
@@ -2259,7 +2259,7 @@ function switchCSSTheme () {
                 articleWindow.DarkReader.enable();
             }, 500);
         }
-        if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
+        if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
     document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
@@ -4179,9 +4179,9 @@ function onKeyUpPrefix (evt) {
     window.timeoutKeyUpPrefix = window.setTimeout(function () {
         // Don't process anything if it's the same prefix as recently entered (this prevents searching
         // if user is simply using arrow key to correct something typed).
-        if (!/^\s/.test(prefix) && prefix === appstate.tempPrefix) return;
-        if (prefix && prefix.length > 0 && (prefix !== appstate.search.prefix || /^\s/.test(prefix))) {
-            appstate.tempPrefix = prefix;
+        if (!/^\s/.test(prefix.value) && prefix.value === appstate.tempPrefix) return;
+        if (prefix.value && prefix.value.length > 0 && (prefix.value !== appstate.search.prefix || /^\s/.test(prefix.value))) {
+            appstate.tempPrefix = prefix.value;
             document.getElementById('searchArticles').click();
         }
     }, 1000);
@@ -4261,19 +4261,19 @@ function searchDirEntriesFromPrefix (prefix) {
 /**
  * Extracts and displays in htmlArticle the first params.maxSearchResultsSize articles beginning with start
  * @param {String} start Optional index number to begin the list with
- * @param {String} prefix Optional search prefix from which to start an alphabetical search
+ * @param {String} search Optional search prefix from which to start an alphabetical search
  */
-function showZIMIndex (start, prefix) {
-    var searchUrlIndex = /^[-ABCHIJMUVWX]?\//.test(prefix);
+function showZIMIndex (start, search) {
+    var searchUrlIndex = /^[-ABCHIJMUVWX]?\//.test(search);
     // If we're searching by title index number (other than 0 or null), we should ignore any prefix
     if (isNaN(start)) {
-        prefix = prefix || '';
+        search = search || '';
     } else {
-        prefix = start > 0 ? '' : prefix;
+        search = start > 0 ? '' : search;
     }
-    appstate.search = { prefix: prefix, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize };
+    appstate.search = { prefix: search, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize };
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
-        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, appstate.search, function (dirEntryArray, nextStart) {
+        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(search, appstate.search, function (dirEntryArray, nextStart) {
             var docBody = document.getElementById('mymodalVariableContent');
             var newHtml = '';
             for (var i = 0; i < dirEntryArray.length; i++) {
@@ -5461,7 +5461,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Preload stylesheets [kiwix-js #149]
         console.log('Loading stylesheets...');
         // Set up blobArray of promises
-        var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
+        var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
         var cssSource = params.cssSource;
@@ -5472,8 +5472,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         } else {
             // Apply dark or light content theme if necessary
             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            var contentThemeStyle = (determinedTheme == 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-                : params.cssTheme == 'invert' ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
+            var contentThemeStyle = (determinedTheme == 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
+                : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
             injectHTML();
         }
@@ -5589,8 +5589,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
             // Add dark mode CSS if required
             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-                : params.cssTheme == 'invert' ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
+            cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
+                : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
             // Ensure all headings are open
             // htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + '$1');
