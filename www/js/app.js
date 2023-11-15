@@ -2680,12 +2680,16 @@ function initServiceWorkerMessaging () {
                 console.warn('Message from SW received, but no archive is selected!');
                 return;
             }
+            if (event.data.error) {
+                console.error('Error in MessageChannel', event.data.error);
+                throw event.data.error;
+            }
             if (event.data.action === 'askForContent') {
                 // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
                 // Because the SW broadcasts its request to all open tabs or windows, we need to check that the request is for this instance
-                if (event.data.zimFileName !== selectedArchive.file.name) {
-                    console.warn('SW request does not match this insstance', '[zimFileName:' + event.data.zimFileName + ' !== ' + selectedArchive.file.name + ']');
-                    if (selectedArchive.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title)) {
+                if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
+                    console.warn('SW request does not match this insstance', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
+                    if (appstate.selectedArchive.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title)) {
                         // DEV: This is a hack to allow YouTube videos to play in Zimit archives:
                         // Because links are embedded in a nested iframe, the SW cannot identify the top-level window from which to request the ZIM content
                         // Until we find a way to tell where it is coming from, we allow the request through and try to load the content
@@ -2693,8 +2697,10 @@ function initServiceWorkerMessaging () {
                     } else {
                         return;
                     }
-                }          
+                }
                 handleMessageChannelMessage(event)
+            } else {
+                console.error('Invalid message received', event.data);
             }
         };
         // Send the init message to the ServiceWorker
@@ -4833,165 +4839,156 @@ var loadingArticle = '';
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelMessage (event) {
-    if (event.data.error) {
-        console.error('Error in MessageChannel', event.data.error);
-        throw event.data.error;
-    } else {
-        // We received a message from the ServiceWorker
-        if (event.data.action === 'askForContent') {
-            loaded = false;
-            // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-            var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
-            // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
-            var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
-            // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
-            if (params.zimType === 'zimit') {
-                titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
-            }
-            title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
-            if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
-            var messagePort = event.ports[0];
-            if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
-            // Intercept landing page if already transformed (because this might have a fake dirEntry)
-            // Note that due to inconsistencies in Zimit archives, we need to test the encoded and the decoded version of the title
-            if (transformedHTML && transDirEntry && (title === transDirEntry.namespace + '/' + transDirEntry.url ||
-                decodeURIComponent(title) === transDirEntry.namespace + '/' + transDirEntry.url)) {
-                var message = {
-                    action: 'giveContent',
-                    title: title,
-                    mimetype: 'text/html'
-                };
-                postTransformedHTML(message, messagePort, transDirEntry);
-                return;
-            }
-            var readFile = function (dirEntry) {
-                if (dirEntry === null) {
-                    console.error('Title ' + title + ' not found in archive.');
-                    if (!titleIsAsset && params.zimType === 'zimit') {
-                        // Use special routine to handle not-found titles for Zimit
-                        goToArticle(decodeURI(title));
-                    } else if (title === loadingArticle) {
-                        goToMainArticle();
-                    } else {
-                        messagePort.postMessage({
-                            action: 'giveContent',
-                            title: title,
-                            content: ''
-                        });
-                    }
-                } else if (dirEntry.isRedirect()) {
-                    appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
-                        var redirectURL = resolvedDirEntry.namespace + '/' + resolvedDirEntry.url;
-                        // Ask the ServiceWork to send an HTTP redirect to the browser.
-                        // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
-                        // Else, if the redirect URL is in a different directory than the original URL,
-                        // the relative links in the HTML content would fail. See #312
-                        messagePort.postMessage({
-                            action: 'sendRedirect',
-                            title: title,
-                            redirectUrl: redirectURL
-                        });
-                    });
-                } else {
-                    var mimetype = dirEntry.getMimetype();
-                    var imageDisplayMode = params.imageDisplayMode;
-                    if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
-                        var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
-                        uiUtil.pollSpinner('Getting ' + shortTitle + '...');
-                    }
-                    // If it's an HTML type and not an asset, and we're not using pureMode, then we load it in a new page instance
-                    if (/\bx?html\b/i.test(mimetype) && !appstate.pureMode &&
-                    !dirEntry.isAsset && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(dirEntry.url)) {
-                        loadingArticle = title;
-                        // Intercept files of type html and apply transformations
-                        var message = {
-                            action: 'giveContent',
-                            title: title,
-                            mimetype: mimetype,
-                            imageDisplay: imageDisplayMode
-                        };
-                        if (!transformedHTML) {
-                            // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
-                            if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
-                            // Tell the read routine that the request comes from a messageChannel
-                            messageChannelWaiting = true;
-                            readArticle(dirEntry);
-                            setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
-                        } else {
-                            postTransformedHTML(message, messagePort, dirEntry);
-                        }
-                        return;
-                    } else {
-                        loadingArticle = '';
-                    }
-                    var cacheKey = appstate.selectedArchive.file.name + '/' + title;
-                    cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                        if (params.zimType === 'zimit' && loadingArticle) {
-                            // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
-                            // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
-                            content = content.replace(/!(window._WBWombat)/, '$1');
-                        }
-                        // Let's send the content to the ServiceWorker
-                        var buffer = content.buffer ? content.buffer : content;
-                        var message = {
-                            action: 'giveContent',
-                            title: title,
-                            mimetype: mimetype,
-                            imageDisplay: imageDisplayMode,
-                            content: buffer
-                        };
-                        if (dirEntry.nullify) {
-                            message.content = '';
-                        } else if (!params.windowOpener && /\/pdf\b/.test(mimetype)) {
-                            // This is a last gasp attempt to avoid a CSP violation with PDFs. If windowOpener is set, then they should open
-                            // in a new window, but if user has turned that off, we need to offer PDFs as a download
-                            uiUtil.displayFileDownloadAlert(title, true, mimetype, content);
-                            uiUtil.clearSpinner();
-                            return;
-                        }
-                        // if (content.buffer) {
-                        //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
-                        //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
-                        //     // if ('MSBlobBuilder' in window) buffer = [buffer];
-                        //     messagePort.postMessage(message, [buffer]);
-                        // }
-                        // It appears doing it simply like this works in all browsers...
-                        messagePort.postMessage(message);
-                    });
-                }
-            };
-            if (params.zimType === 'zimit') {
-                title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
-                    // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
-                    return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
-                });
-            }
-            // Intercept YouTube video requests
-            if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
-                var cns = appstate.selectedArchive.getContentNamespace();
-                var newTitle = (cns === 'C' ? 'C/' : '') + 'A/' + 'youtube.com/embed/' + title.replace(/^[^?]+\?key=([^&]+).*/, '$1');
-                newTitle = 'videoembed/' + newTitle; // This is purely to match the regex in transformZimit
-                transformZimit.transformVideoUrl(newTitle, articleDocument, function (newVideoUrl) {
-                    // NB this will intentionally fail, as we don't want to look up content yet
-                    return newVideoUrl;
-                });
-                return;
-            }
-            appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
-                if (dirEntry) dirEntry.isAsset = titleIsAsset;
-                return readFile(dirEntry);
-            }).catch(function (err) {
-                console.error('Failed to read ' + title, err);
+    // We received a message from the ServiceWorker
+    loaded = false;
+    // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
+    var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
+    // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
+    var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+    // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
+    if (params.zimType === 'zimit') {
+        titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
+    }
+    title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
+    if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
+    var messagePort = event.ports[0];
+    if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
+    // Intercept landing page if already transformed (because this might have a fake dirEntry)
+    // Note that due to inconsistencies in Zimit archives, we need to test the encoded and the decoded version of the title
+    if (transformedHTML && transDirEntry && (title === transDirEntry.namespace + '/' + transDirEntry.url ||
+        decodeURIComponent(title) === transDirEntry.namespace + '/' + transDirEntry.url)) {
+        var message = {
+            action: 'giveContent',
+            title: title,
+            mimetype: 'text/html'
+        };
+        postTransformedHTML(message, messagePort, transDirEntry);
+        return;
+    }
+    var readFile = function (dirEntry) {
+        if (dirEntry === null) {
+            console.error('Title ' + title + ' not found in archive.');
+            if (!titleIsAsset && params.zimType === 'zimit') {
+                // Use special routine to handle not-found titles for Zimit
+                goToArticle(decodeURI(title));
+            } else if (title === loadingArticle) {
+                goToMainArticle();
+            } else {
                 messagePort.postMessage({
                     action: 'giveContent',
                     title: title,
-                    content: new Uint8Array()
+                    content: ''
+                });
+            }
+        } else if (dirEntry.isRedirect()) {
+            appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
+                var redirectURL = resolvedDirEntry.namespace + '/' + resolvedDirEntry.url;
+                // Ask the ServiceWork to send an HTTP redirect to the browser.
+                // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
+                // Else, if the redirect URL is in a different directory than the original URL,
+                // the relative links in the HTML content would fail. See #312
+                messagePort.postMessage({
+                    action: 'sendRedirect',
+                    title: title,
+                    redirectUrl: redirectURL
                 });
             });
         } else {
-            console.error('Invalid message received', event.data);
+            var mimetype = dirEntry.getMimetype();
+            var imageDisplayMode = params.imageDisplayMode;
+            if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
+                var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
+                uiUtil.pollSpinner('Getting ' + shortTitle + '...');
+            }
+            // If it's an HTML type and not an asset, and we're not using pureMode, then we load it in a new page instance
+            if (/\bx?html\b/i.test(mimetype) && !appstate.pureMode &&
+            !dirEntry.isAsset && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(dirEntry.url)) {
+                loadingArticle = title;
+                // Intercept files of type html and apply transformations
+                var message = {
+                    action: 'giveContent',
+                    title: title,
+                    mimetype: mimetype,
+                    imageDisplay: imageDisplayMode
+                };
+                if (!transformedHTML) {
+                    // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
+                    if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
+                    // Tell the read routine that the request comes from a messageChannel
+                    messageChannelWaiting = true;
+                    readArticle(dirEntry);
+                    setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
+                } else {
+                    postTransformedHTML(message, messagePort, dirEntry);
+                }
+                return;
+            } else {
+                loadingArticle = '';
+            }
+            var cacheKey = appstate.selectedArchive.file.name + '/' + title;
+            cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
+                if (params.zimType === 'zimit' && loadingArticle) {
+                    // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
+                    // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
+                    content = content.replace(/!(window._WBWombat)/, '$1');
+                }
+                // Let's send the content to the ServiceWorker
+                var buffer = content.buffer ? content.buffer : content;
+                var message = {
+                    action: 'giveContent',
+                    title: title,
+                    mimetype: mimetype,
+                    imageDisplay: imageDisplayMode,
+                    content: buffer
+                };
+                if (dirEntry.nullify) {
+                    message.content = '';
+                } else if (!params.windowOpener && /\/pdf\b/.test(mimetype)) {
+                    // This is a last gasp attempt to avoid a CSP violation with PDFs. If windowOpener is set, then they should open
+                    // in a new window, but if user has turned that off, we need to offer PDFs as a download
+                    uiUtil.displayFileDownloadAlert(title, true, mimetype, content);
+                    uiUtil.clearSpinner();
+                    return;
+                }
+                // if (content.buffer) {
+                //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
+                //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
+                //     // if ('MSBlobBuilder' in window) buffer = [buffer];
+                //     messagePort.postMessage(message, [buffer]);
+                // }
+                // It appears doing it simply like this works in all browsers...
+                messagePort.postMessage(message);
+            });
         }
+    };
+    if (params.zimType === 'zimit') {
+        title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
+            // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
+            return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
+        });
     }
+    // Intercept YouTube video requests
+    if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
+        var cns = appstate.selectedArchive.getContentNamespace();
+        var newTitle = (cns === 'C' ? 'C/' : '') + 'A/' + 'youtube.com/embed/' + title.replace(/^[^?]+\?key=([^&]+).*/, '$1');
+        newTitle = 'videoembed/' + newTitle; // This is purely to match the regex in transformZimit
+        transformZimit.transformVideoUrl(newTitle, articleDocument, function (newVideoUrl) {
+            // NB this will intentionally fail, as we don't want to look up content yet
+            return newVideoUrl;
+        });
+        return;
+    }
+    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+        if (dirEntry) dirEntry.isAsset = titleIsAsset;
+        return readFile(dirEntry);
+    }).catch(function (err) {
+        console.error('Failed to read ' + title, err);
+        messagePort.postMessage({
+            action: 'giveContent',
+            title: title,
+            content: new Uint8Array()
+        });
+    });
 }
 
 function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
