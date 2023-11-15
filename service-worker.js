@@ -4,21 +4,21 @@
  * corresponding content, coming from the archive
  *
  * Copyright 2022 Mossroy, Jaifroid and contributors
- * License GPL v3:
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
@@ -232,6 +232,16 @@ if ('WebAssembly' in self) {
     );
 }
 
+/**
+ * If we're in a Chromium extension, add a listener to launch the tab when the icon is clicked
+ */
+if (typeof chrome !== 'undefined' && chrome.action) {
+    chrome.action.onClicked.addListener(function () {
+        var newURL = chrome.runtime.getURL('www/index.html');
+        chrome.tabs.create({ url: newURL });
+    });
+}
+
 // Process install event
 self.addEventListener('install', function (event) {
     console.debug('[SW] Install Event processing');
@@ -242,21 +252,19 @@ self.addEventListener('install', function (event) {
         return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
     });
     if (!regexpExcludedURLSchema.test(requests[0].url)) {
-        event.waitUntil(
-            caches.open(APP_CACHE).then(function (cache) {
-                return Promise.all(
-                    requests.map(function (request) {
-                        return fetch(request).then(function (response) {
-                            // Fail on 404, 500 etc
-                            if (!response.ok) throw Error('Could not fetch ' + request.url);
-                            return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
-                        }).catch(function (err) {
-                            console.error('There was an error pre-caching files', err);
-                        });
-                    })
-                );
-            })
-        );
+        event.waitUntil(caches.open(APP_CACHE).then(function (cache) {
+            return Promise.all(
+                requests.map(function (request) {
+                    return fetch(request).then(function (response) {
+                        // Fail on 404, 500 etc
+                        if (!response.ok) throw Error('Could not fetch ' + request.url);
+                        return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
+                    }).catch(function (err) {
+                        console.error('There was an error pre-caching files', err);
+                    });
+                })
+            );
+        }));
     }
 });
 
@@ -514,10 +522,14 @@ function fetchUrlFromZIM (urlObject, range) {
  */
 function fromCache (cache, requestUrl) {
     // Prevents use of Cache API if user has disabled it
-    if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) return Promise.reject(new Error('Cache disabled'));
+    if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) {
+        return Promise.reject(new Error('Cache disabled'));
+    }
     return caches.open(cache).then(function (cacheObj) {
         return cacheObj.match(requestUrl).then(function (matching) {
-            if (!matching || matching.status === 404) return Promise.reject(new Error('no-match'));
+            if (!matching || matching.status === 404) {
+                return Promise.reject(new Error('no-match'));
+            }
             console.debug('[SW] Supplying ' + requestUrl + ' from ' + cache + '...');
             return matching;
         });

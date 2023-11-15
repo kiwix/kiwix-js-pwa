@@ -2832,7 +2832,7 @@ setContentInjectionMode(params.contentInjectionMode);
 // }
 
 /**
- * Tells if the ServiceWorker API is available
+ * Detects whether the ServiceWorker API is available
  * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker
  * @returns {Boolean}
  */
@@ -2841,7 +2841,7 @@ function isServiceWorkerAvailable () {
 }
 
 /**
- * Tells if the MessageChannel API is available
+ * Detects whether the MessageChannel API is available
  * https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel
  * @returns {Boolean}
  */
