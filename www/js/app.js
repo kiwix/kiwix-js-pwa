@@ -3,21 +3,21 @@
  * This file handles the interaction between the Kiwix JS back end and the user
  *
  * Copyright 2013-2023 Jaifroid, Mossroy and contributors
- * License GPL v3:
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -57,11 +57,13 @@ const DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
 // The global parameter and app state objects are defined in init.js
 /* global params, appstate, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
-// Placeholders for the article container, the article window and the article DOM
+// Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
 articleContainer.kiwixType = 'iframe';
 var articleWindow = articleContainer.contentWindow;
 var articleDocument;
+var scrollbox = document.getElementById('scrollbox');
+var prefix = document.getElementById('prefix');
 
 // The following variables are used to store the current article and its state
 
@@ -104,8 +106,13 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
     }, false);
 }
 
+// At launch, we set the correct content injection mode
+setContentInjectionMode(params.contentInjectionMode);
+setTimeout(initServiceWorkerMessaging, 600);
+
 // Test caching capability
 cache.test(function () {});
+
 // Unique identifier of the article expected to be displayed
 appstate.expectedArticleURLToBeDisplayed = '';
 // Check if we have managed to switch to PWA mode (if running UWP app)
@@ -216,8 +223,6 @@ function onPointerUp (e) {
 
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
-var prefix = document.getElementById('prefix');
-var scrollbox = document.getElementById('scrollbox');
 var searchArticlesFocused = false;
 
 document.getElementById('searchArticles').addEventListener('click', function () {
@@ -2663,61 +2668,71 @@ function refreshCacheStatus () {
     }
 }
 
-var initServiceWorkerHandle = null;
 var serviceWorkerRegistration = null;
 
 /**
  * Sends an 'init' message to the ServiceWorker and inititalizes the onmessage event
- * When the event is received, it will provide a MessageChannel port to respond to the ServiceWorker
+ * It is called when the Service Worker is first activated, and also when a new archive is loaded
+ * When a message is received, it will provide a MessageChannel port to respond to the ServiceWorker
  */
 function initServiceWorkerMessaging () {
-    // If no ZIM archive is loaded, return (it will be called when one is loaded)
-    if (!appstate.selectedArchive) return;
-    if (params.contentInjectionMode === 'serviceworker') {
-        // Create a message listener
-        navigator.serviceWorker.onmessage = function (event) {
+    if (!params.contentInjectionMode === 'serviceworker') {
+        console.error('Cannot initiate Service Worker messaging, because the app is not in ServiceWorker mode!');
+        return;
+    };
+    // Create a message listener
+    navigator.serviceWorker.onmessage = function (event) {
+        if (event.data.error) {
+            console.error('Error in MessageChannel', event.data.error);
+            throw event.data.error;
+        } else if (event.data.action === 'acknowledge') {
+            // The Service Worker is acknowledging receipt of init message
+            console.log('SW acknowledged init message');
+            serviceWorkerRegistration = true;
+            refreshAPIStatus();
+        } else if (event.data.action === 'askForContent') {
+            // The Service Worker is asking for content. Check we have a loaded ZIM in this instance.
+            // DEV: This can happen if there are various instances of the app open in different tabs or windows, and no archive has been selected in this instance.
             if (!appstate.selectedArchive) {
                 console.warn('Message from SW received, but no archive is selected!');
                 return;
             }
-            if (event.data.error) {
-                console.error('Error in MessageChannel', event.data.error);
-                throw event.data.error;
-            }
-            if (event.data.action === 'askForContent') {
-                // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
-                // Because the SW broadcasts its request to all open tabs or windows, we need to check that the request is for this instance
-                if (event.data.zimFileName !== appstate.selectedArchive.file.name) {
-                    console.warn('SW request does not match this insstance', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
-                    if (appstate.selectedArchive.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title)) {
-                        // DEV: This is a hack to allow YouTube videos to play in Zimit archives:
-                        // Because links are embedded in a nested iframe, the SW cannot identify the top-level window from which to request the ZIM content
-                        // Until we find a way to tell where it is coming from, we allow the request through and try to load the content
-                        console.warn('>>> Allowing passthrough to process YouTube video <<<');
-                    } else {
-                        return;
-                    }
-                }
-                handleMessageChannelMessage(event)
+            // See below for explanation of this exception
+            const videoException = appstate.selectedArchive.zimType === 'zimit' && /\/\/youtubei.*player/.test(event.data.title);
+            // Check that the zimFileId in the messageChannel event data is the same as the one in the currently open archive
+            // Because the SW broadcasts its request to all open tabs or windows, we need to check that the request is for this instance
+            if (event.data.zimFileName !== appstate.selectedArchive.file.name && !videoException) {
+                // Do nothing if the request is not for this instance
+                // console.debug('SW request does not match this instance', '[zimFileName:' + event.data.zimFileName + ' !== ' + appstate.selectedArchive.file.name + ']');
             } else {
-                console.error('Invalid message received', event.data);
+                if (videoException) {
+                    // DEV: This is a hack to allow YouTube videos to play in Zimit archives:
+                    // Because links are embedded in a nested iframe, the SW cannot identify the top-level window from which to request the ZIM content
+                    // Until we find a way to tell where it is coming from, we allow the request through on all controlled clients and try to load the content
+                    console.warn('>>> Allowing passthrough of SW request to process Zimit video <<<');
+                }
+                handleMessageChannelMessage(event);
             }
-        };
-        // Send the init message to the ServiceWorker
-        if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-                action: 'init'
-            });
-        } else if (initServiceWorkerHandle) {
-            console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
-            // Turn off failsafe, as this is a controlled reboot
-            settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
-            window.location.reload();
         } else {
-            // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
-            console.debug('The Service Worker needs more time to load...');
-            initServiceWorkerHandle = setTimeout(initServiceWorkerMessaging, 0);
+            console.error('Invalid message received', event.data);
         }
+    };
+    // Send the init message to the ServiceWorker
+    if (navigator.serviceWorker.controller) {
+        console.log('Initializing SW messaging...');
+        navigator.serviceWorker.controller.postMessage({
+            action: 'init'
+        });
+    } else if (serviceWorkerRegistration) {
+        // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
+        console.warn('The Service Worker needs more time to load, or else the app was force-refrshed...');
+        serviceWorkerRegistration = null;
+        setTimeout(initServiceWorkerMessaging, 1200);
+    } else {
+        console.error('The Service Worker is not controlling the current page! We have to reload.');
+        // Turn off failsafe, as this is a controlled reboot
+        settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
+        window.location.reload();
     }
 }
 
@@ -2844,15 +2859,6 @@ function setContentInjectionMode (value) {
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
 }
-
-// At launch, we try to set the last content injection mode (stored in Settings Store)
-setContentInjectionMode(params.contentInjectionMode);
-// var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-// if (contentInjectionMode) {
-//     setContentInjectionMode(contentInjectionMode);
-// } else {
-//     setContentInjectionMode('jquery');
-// }
 
 /**
  * Detects whether the ServiceWorker API is available
