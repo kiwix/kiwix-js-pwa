@@ -108,7 +108,6 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 
 // At launch, we set the correct content injection mode
 setContentInjectionMode(params.contentInjectionMode);
-setTimeout(initServiceWorkerMessaging, 600);
 
 // Test caching capability
 cache.test(function () {});
@@ -2676,8 +2675,8 @@ var serviceWorkerRegistration = null;
  * When a message is received, it will provide a MessageChannel port to respond to the ServiceWorker
  */
 function initServiceWorkerMessaging () {
-    if (params.contentInjectionMode !== 'serviceworker') {
-        console.warn('Cannot initiate Service Worker messaging, because the app is not in ServiceWorker mode!');
+    if (isServiceWorkerAvailable() && isMessageChannelAvailable()) {
+        console.warn('Cannot initiate ServiceWorker messaging, because one or more API is unavailable!');
         return;
     };
     // Create a message listener
@@ -2751,17 +2750,16 @@ function setContentInjectionMode (value) {
         if ('serviceWorker' in navigator) {
             serviceWorkerRegistration = null;
         }
-        // User has switched to jQuery mode, so no longer needs ASSETS_CACHE
-        // We should empty it and turn it off to prevent unnecessary space usage
-        if ('caches' in window && isMessageChannelAvailable()) {
-            if (isServiceWorkerAvailable() && navigator.serviceWorker.controller) {
-                var channel = new MessageChannel();
-                navigator.serviceWorker.controller.postMessage({
-                    action: { assetsCache: 'disable' }
-                }, [channel.port2]);
-            }
-            caches.delete(cache.ASSETS_CACHE);
-        }
+        // User has switched to jQuery mode, so no longer needs ASSETS_CACHE on SW side (it will still be used app-side)
+        // if ('caches' in window && isMessageChannelAvailable()) {
+        //     if (isServiceWorkerAvailable() && navigator.serviceWorker.controller) {
+        //         var channel = new MessageChannel();
+        //         navigator.serviceWorker.controller.postMessage({
+        //             action: { assetsCache: 'disable' }
+        //         }, [channel.port2]);
+        //     }
+        //     caches.delete(cache.ASSETS_CACHE);
+        // }
         refreshAPIStatus();
     } else if (value === 'serviceworker') {
         if (!isServiceWorkerAvailable()) {
@@ -2854,10 +2852,11 @@ function setContentInjectionMode (value) {
     }
     $('input:radio[name=contentInjectionMode]').prop('checked', false);
     $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
-    params.contentInjectionMode = value;
-    // Save the value in a cookie, so that to be able to keep it after a reload/restart
+    // Save the value in the Settings Store, so that to be able to keep it after a reload/restart
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
+    // Even in JQuery mode, the PWA needs to be able to serve the app in offline mode
+    setTimeout(initServiceWorkerMessaging, 600);
 }
 
 /**
