@@ -2710,7 +2710,11 @@ function initServiceWorkerMessaging () {
                     // Until we find a way to tell where it is coming from, we allow the request through on all controlled clients and try to load the content
                     console.warn('>>> Allowing passthrough of SW request to process Zimit video <<<');
                 }
-                handleMessageChannelMessage(event);
+                if (params.useLibzim) {
+                    handleMessageChannelForLibzim(event);
+                } else {
+                    handleMessageChannelMessage(event);
+                }
             }
         } else {
             console.error('Invalid message received', event.data);
@@ -4834,6 +4838,45 @@ var articleLoadedSW = function (dirEntry) {
         // }
     };
 };
+
+/**
+ * Function that handles a messaging from the Service Worker when using libzim as the backend.
+ * It tries to read the content in the backend, and sends it back to the ServiceWorker
+ *
+ * @param {Event} event The event object of the message channel
+ */
+function handleMessageChannelForLibzim (event) {
+    if (event.data.error) {
+        console.error('Error in MessageChannel', event.data.error);
+        throw event.data.error;
+    } else {
+        // We received a message from the ServiceWorker
+        if (event.data.action === 'askForContent') {
+            // The ServiceWorker asks for some content
+            var title = event.data.title;
+            var messagePort = event.ports[0];
+            var readFile = function (dirEntry) {
+                if (dirEntry === null) {
+                    console.error('Title ' + title + ' not found in archive.');
+                    messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
+                } else if (dirEntry.isRedirect) {
+                    var redirectPath = dirEntry.redirectPath;
+                    // Ask the ServiceWorker to send an HTTP redirect to the browser.
+                    messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
+                } else {
+                    var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype };
+                    messagePort.postMessage(message);
+                    articleContainer.onload = resizeIFrame;
+                }
+            };
+            appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false }).then(readFile).catch(function () {
+                messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
+            });
+        } else {
+            console.error('Invalid message received', event.data);
+        }
+    }
+}
 
 var loadingArticle = '';
 
