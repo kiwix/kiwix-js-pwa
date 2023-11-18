@@ -2602,9 +2602,9 @@ function refreshAPIStatus () {
 
     // Update Decompressor API section of panel
     var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
-    apiName = params.decompressorAPI.assemblerMachineType;
+    apiName = params.useLibzim ? 'LIBZIM' : params.decompressorAPI.assemblerMachineType;
     if (apiName && params.decompressorAPI.decompressorLastUsed) {
-        apiName += ' [&nbsp;' + params.decompressorAPI.decompressorLastUsed + '&nbsp;]';
+        apiName += ' [&nbsp;' + (params.useLibzim ? (params.debugLibzimASM || 'default') : params.decompressorAPI.decompressorLastUsed) + '&nbsp;]';
     }
     apiPanelClass = params.decompressorAPI.errorStatus ? 'panel-danger' : apiName ? apiPanelClass : 'panel-warning';
     decompAPIStatusDiv.className = apiName ? params.decompressorAPI.errorStatus ? 'apiBroken' : 'apiAvailable' : 'apiUnavailable';
@@ -2665,7 +2665,7 @@ function refreshCacheStatus () {
     var expertSettings = document.getElementById('expertSettingsDiv');
     expertSettings.classList.remove('panel-warning');
     expertSettings.classList.remove('panel-danger');
-    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM) {
+    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim) {
         expertSettings.classList.add('panel-danger');
     } else {
         expertSettings.classList.add('panel-warning');
