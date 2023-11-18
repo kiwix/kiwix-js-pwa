@@ -1231,7 +1231,12 @@
                                         <option value="asm.dev">ASM debug</option>
                                         <option id="libzimDisable" value="disable">Disable</option>
                                     </select>
-                                    <p><i>Warning! Disables OS/ZIM checks and may make title search unresponsive!</i></p>
+                                    <p><i>Warning! Disables OS/ZIM checks and may make title search and article reading unresponsive!</i></p>
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="useLibzimReader" id="useLibzimReaderCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Also use selected libzim for reading ZIM content</b> (<i>unstable</i>)
+                                    </label>
                                     <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction and make it difficult to select text, and other operations. Disable it here if it is causing issues." >
                                         <input type="checkbox" name="disableDragAndDrop" id="disableDragAndDropCheck">
                                         <span class="checkmark"></span>

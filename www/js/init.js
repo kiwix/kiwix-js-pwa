@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * init.js : Configuration for the app
  * This file sets the app's main parameters and variables
  *
@@ -97,6 +97,7 @@ params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
+params['useLibzim'] = getSetting('useLibzim') == true; // Set to true to use libzim for decoding ZIM files (experimental)
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
@@ -248,6 +249,7 @@ document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
+document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
 document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;

@@ -133,7 +133,7 @@ uiUtil.setupConfigurationToggles();
  * @param {Boolean} reload Allows reload of the app on resize
  */
 function resizeIFrame (reload) {
-    console.debug('Resizing iframe...');
+    // console.debug('Resizing iframe...');
     // Re-enable top-level scrolling
     if (iframe.style.display !== 'none' && prefix !== document.activeElement) {
         scrollbox.style.height = 0;
@@ -1813,6 +1813,11 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
 document.getElementById('hideActiveContentWarningCheck').addEventListener('change', function () {
     params.hideActiveContentWarning = this.checked;
     settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+    refreshCacheStatus();
+});
+document.getElementById('useLibzimReaderCheck').addEventListener('change', function (e) {
+    params.useLibzim = e.target.checked;
+    settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
     refreshCacheStatus();
 });
 
@@ -4798,7 +4803,6 @@ var articleLoadedSW = function (dirEntry) {
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function () {
-            console.debug('articleLoadedSW RESIZING IFRAME');
             articleDocument.bgcolor = '';
             if (appstate.target === 'iframe') articleContainer.style.display = 'block';
             docBody.style.display = 'block';
