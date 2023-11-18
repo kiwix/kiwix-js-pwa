@@ -139,7 +139,7 @@ function count (callback) {
         var channel = new MessageChannel();
         navigator.serviceWorker.controller.postMessage({
             action: {
-                assetsCache: params.assetsCache ? 'enable' : 'disable',
+                assetsCache: params.assetsCache && params.contentInjectionMode === 'serviceworker' ? 'enable' : 'disable',
                 appCache: params.appCache ? 'enable' : 'disable',
                 checkCache: window.location.href
             }
