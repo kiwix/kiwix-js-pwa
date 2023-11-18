@@ -1816,9 +1816,15 @@ document.getElementById('hideActiveContentWarningCheck').addEventListener('chang
     refreshCacheStatus();
 });
 document.getElementById('useLibzimReaderCheck').addEventListener('change', function (e) {
-    params.useLibzim = e.target.checked;
+    if (params.debugLibzimASM === 'disable') {
+        uiUtil.systemAlert('You cannot use the libzim reader if you have disabled it in the dropdown above!');
+        this.checked = false;
+        params.useLibzim = false;
+    } else {
+        params.useLibzim = e.target.checked;
+    }
     settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
-    refreshCacheStatus();
+    refreshAPIStatus();
 });
 
 // Function to restore the fullscreen/orientation lock state on user click in-app
@@ -1915,6 +1921,10 @@ document.getElementById('debugLibzimASMDrop').addEventListener('change', functio
         'Developer option!', true).then(function (confirm) {
         if (confirm) {
             params.debugLibzimASM = event.target.value || false;
+            // If user disabled use of libzim for search, also turn off libzim for reading
+            if (params.debugLibzimASM === 'disable' && params.useLibzim) {
+                document.getElementById('useLibzimReaderCheck').click();
+            }
             settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
             window.location.reload();
         } else {
