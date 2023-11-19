@@ -350,13 +350,13 @@ self.addEventListener('fetch', function (event) {
                         }
                     });
                 }
-                return fetchUrlFromZIM(urlObject, range).then(function (response) {
-                    // DEV: This is now done in app.js
+                return fetchUrlFromZIM(urlObject, range).then(function ({ response, data }) {
+                    // DEV: For normal reads, this is now done in app.js, but for lizim, we have to do it here
                     // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
-                    // if (regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
-                    //     !regexpExcludedURLSchema.test(event.request.url)) {
-                    //     event.waitUntil(updateCache(ASSETS_CACHE, rqUrl, response.clone()));
-                    // }
+                    if (data && data.origin === 'libzim' && regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
+                        !regexpExcludedURLSchema.test(event.request.url)) {
+                        event.waitUntil(updateCache(ASSETS_CACHE, rqUrl, response.clone()));
+                    }
                     return response;
                 }).catch(function (msgPortData) {
                     console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
@@ -496,9 +496,9 @@ function fetchUrlFromZIM (urlObject, range) {
                 var httpResponse = new Response(slicedData, responseInit);
 
                 // Let's send the content back from the ServiceWorker
-                resolve(httpResponse);
+                resolve({ response: httpResponse, data: msgPortEvent.data });
             } else if (msgPortEvent.data.action === 'sendRedirect') {
-                resolve(Response.redirect(prefix + msgPortEvent.data.redirectUrl));
+                resolve({ response: Response.redirect(prefix + msgPortEvent.data.redirectUrl) });
             } else {
                 reject(msgPortEvent.data, titleWithNameSpace);
             }
