@@ -4860,36 +4860,45 @@ var articleLoadedSW = function (dirEntry) {
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelForLibzim (event) {
-    if (event.data.error) {
-        console.error('Error in MessageChannel', event.data.error);
-        throw event.data.error;
-    } else {
-        // We received a message from the ServiceWorker
-        if (event.data.action === 'askForContent') {
-            // The ServiceWorker asks for some content
-            var title = event.data.title;
-            var messagePort = event.ports[0];
-            var readFile = function (dirEntry) {
-                if (dirEntry === null) {
-                    console.error('Title ' + title + ' not found in archive.');
-                    messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
-                } else if (dirEntry.isRedirect) {
-                    var redirectPath = dirEntry.redirectPath;
-                    // Ask the ServiceWorker to send an HTTP redirect to the browser.
-                    messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
-                } else {
-                    var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype };
-                    messagePort.postMessage(message);
-                    articleContainer.onload = resizeIFrame;
-                }
-            };
-            appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false }).then(readFile).catch(function () {
-                messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
-            });
-        } else {
-            console.error('Invalid message received', event.data);
-        }
-    }
+    // The ServiceWorker asks for some content
+    var title = event.data.title;
+    var messagePort = event.ports[0];
+    return new Promise(function (resolve, reject) {
+        var checkReady = function () {
+            if (appstate.selectedArchive.libzimReady === 'ready') {
+                clearInterval(intervalId);
+                resolve();
+                uiUtil.pollSpinner();
+            } else if (appstate.selectedArchive.libzimReady !== 'loading') {
+                clearInterval(intervalId);
+                reject(new Error('Libzim not available for this ZIM'));
+            } else {
+                uiUtil.pollSpinner('Waiting for libzim...');
+            }
+        };
+        checkReady();
+        var intervalId = setInterval(checkReady, 100); // check every 100ms
+    }).then(function () {
+        return appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false })
+        .then(function (dirEntry) {
+            if (dirEntry === null) {
+                console.error('Title ' + title + ' not found in archive.');
+                messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
+            } else if (dirEntry.isRedirect) {
+                var redirectPath = dirEntry.redirectPath;
+                // Ask the ServiceWorker to send an HTTP redirect to the browser.
+                messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
+            } else {
+                var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype };
+                messagePort.postMessage(message);
+                articleContainer.onload = resizeIFrame;
+            }
+        }).catch(function () {
+            messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
+        });
+    }).catch(function (err) {
+        console.error(err);
+    });
 }
 
 var loadingArticle = '';
@@ -5012,13 +5021,6 @@ function handleMessageChannelMessage (event) {
                     uiUtil.clearSpinner();
                     return;
                 }
-                // if (content.buffer) {
-                //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
-                //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
-                //     // if ('MSBlobBuilder' in window) buffer = [buffer];
-                //     messagePort.postMessage(message, [buffer]);
-                // }
-                // It appears doing it simply like this works in all browsers...
                 messagePort.postMessage(message);
             });
         }
