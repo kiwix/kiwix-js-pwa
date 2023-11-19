@@ -133,7 +133,7 @@ uiUtil.setupConfigurationToggles();
  * @param {Boolean} reload Allows reload of the app on resize
  */
 function resizeIFrame (reload) {
-    console.debug('Resizing iframe...');
+    // console.debug('Resizing iframe...');
     // Re-enable top-level scrolling
     if (iframe.style.display !== 'none' && prefix !== document.activeElement) {
         scrollbox.style.height = 0;
@@ -1815,6 +1815,17 @@ document.getElementById('hideActiveContentWarningCheck').addEventListener('chang
     settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
     refreshCacheStatus();
 });
+document.getElementById('useLibzimReaderCheck').addEventListener('change', function (e) {
+    if (params.debugLibzimASM === 'disable') {
+        uiUtil.systemAlert('You cannot use the libzim reader if you have disabled it in the dropdown above!');
+        this.checked = false;
+        params.useLibzim = false;
+    } else {
+        params.useLibzim = e.target.checked;
+    }
+    settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
+    refreshAPIStatus();
+});
 
 // Function to restore the fullscreen/orientation lock state on user click in-app
 // This is necessary because the browser will not restore the state without a user gesture
@@ -1910,6 +1921,10 @@ document.getElementById('debugLibzimASMDrop').addEventListener('change', functio
         'Developer option!', true).then(function (confirm) {
         if (confirm) {
             params.debugLibzimASM = event.target.value || false;
+            // If user disabled use of libzim for search, also turn off libzim for reading
+            if (params.debugLibzimASM === 'disable' && params.useLibzim) {
+                document.getElementById('useLibzimReaderCheck').click();
+            }
             settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
             window.location.reload();
         } else {
@@ -2597,9 +2612,9 @@ function refreshAPIStatus () {
 
     // Update Decompressor API section of panel
     var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
-    apiName = params.decompressorAPI.assemblerMachineType;
+    apiName = params.useLibzim ? 'LIBZIM' : params.decompressorAPI.assemblerMachineType;
     if (apiName && params.decompressorAPI.decompressorLastUsed) {
-        apiName += ' [&nbsp;' + params.decompressorAPI.decompressorLastUsed + '&nbsp;]';
+        apiName += ' [&nbsp;' + (params.useLibzim ? (params.debugLibzimASM || 'default') : params.decompressorAPI.decompressorLastUsed) + '&nbsp;]';
     }
     apiPanelClass = params.decompressorAPI.errorStatus ? 'panel-danger' : apiName ? apiPanelClass : 'panel-warning';
     decompAPIStatusDiv.className = apiName ? params.decompressorAPI.errorStatus ? 'apiBroken' : 'apiAvailable' : 'apiUnavailable';
@@ -2660,7 +2675,7 @@ function refreshCacheStatus () {
     var expertSettings = document.getElementById('expertSettingsDiv');
     expertSettings.classList.remove('panel-warning');
     expertSettings.classList.remove('panel-danger');
-    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM) {
+    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim) {
         expertSettings.classList.add('panel-danger');
     } else {
         expertSettings.classList.add('panel-warning');
@@ -2710,7 +2725,11 @@ function initServiceWorkerMessaging () {
                     // Until we find a way to tell where it is coming from, we allow the request through on all controlled clients and try to load the content
                     console.warn('>>> Allowing passthrough of SW request to process Zimit video <<<');
                 }
-                handleMessageChannelMessage(event);
+                if (params.useLibzim) {
+                    handleMessageChannelForLibzim(event);
+                } else {
+                    handleMessageChannelMessage(event);
+                }
             }
         } else {
             console.error('Invalid message received', event.data);
@@ -4773,12 +4792,12 @@ var articleLoadedSW = function (dirEntry) {
         listenForNavigationKeys();
         // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
         // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener && !appstate.pureMode) {
+        if (params.windowOpener && !appstate.pureMode && !params.useLibzim) {
             setTimeout(function () {
                 parseAnchorsJQuery(dirEntry);
             }, 1500);
         }
-        if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
+        if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
             images.prepareImagesServiceWorker(articleWindow);
         } else {
             setTimeout(function () {
@@ -4794,7 +4813,6 @@ var articleLoadedSW = function (dirEntry) {
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function () {
-            console.debug('articleLoadedSW RESIZING IFRAME');
             articleDocument.bgcolor = '';
             if (appstate.target === 'iframe') articleContainer.style.display = 'block';
             docBody.style.display = 'block';
@@ -4834,6 +4852,69 @@ var articleLoadedSW = function (dirEntry) {
         // }
     };
 };
+
+/**
+ * Function that handles a messaging from the Service Worker when using libzim as the backend.
+ * It tries to read the content in the backend, and sends it back to the ServiceWorker
+ *
+ * @param {Event} event The event object of the message channel
+ */
+function handleMessageChannelForLibzim (event) {
+    // The ServiceWorker asks for some content
+    loaded = false;
+    var title = event.data.title;
+    var messagePort = event.ports[0];
+    return new Promise(function (resolve, reject) {
+        var checkReady = function () {
+            if (appstate.selectedArchive.libzimReady === 'ready') {
+                clearInterval(intervalId);
+                resolve();
+            } else if (appstate.selectedArchive.libzimReady !== 'loading') {
+                clearInterval(intervalId);
+                reject(new Error('Libzim not available for this ZIM'));
+            } else {
+                uiUtil.pollSpinner('Waiting for libzim...');
+            }
+        };
+        checkReady();
+        var intervalId = setInterval(checkReady, 100); // check every 100ms
+    }).then(function () {
+        return appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false })
+        .then(function (dirEntry) {
+            if (dirEntry === null) {
+                console.error('Title ' + title + ' not found in archive.');
+                messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
+            } else if (dirEntry.isRedirect) {
+                var redirectPath = dirEntry.redirectPath;
+                // Ask the ServiceWorker to send an HTTP redirect to the browser.
+                messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
+                // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
+                // loaded = true;
+            } else {
+                dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
+                // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
+                var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
+                if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
+                    if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
+                    articleContainer.onload = function () {
+                        // if (loaded) return;
+                        // articleContainer.style.display = '';
+                        // resizeIFrame();
+                        // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+                        // articleWindow.removeEventListener('click', filterClickEvent, true);
+                        // articleWindow.addEventListener('click', filterClickEvent, true);
+                        articleLoadedSW(dirEntry);
+                    };
+                }
+                messagePort.postMessage(message);
+            }
+        }).catch(function () {
+            messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
+        });
+    }).catch(function (err) {
+        console.error(err);
+    });
+}
 
 var loadingArticle = '';
 
@@ -4955,13 +5036,6 @@ function handleMessageChannelMessage (event) {
                     uiUtil.clearSpinner();
                     return;
                 }
-                // if (content.buffer) {
-                //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
-                //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
-                //     // if ('MSBlobBuilder' in window) buffer = [buffer];
-                //     messagePort.postMessage(message, [buffer]);
-                // }
-                // It appears doing it simply like this works in all browsers...
                 messagePort.postMessage(message);
             });
         }

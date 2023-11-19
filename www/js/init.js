@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * init.js : Configuration for the app
  * This file sets the app's main parameters and variables
  *
@@ -97,6 +97,7 @@ params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
+params['useLibzim'] = getSetting('useLibzim') == true; // Set to true to use libzim for decoding ZIM files (experimental)
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
@@ -138,7 +139,7 @@ params['lockDisplayOrientation'] = getSetting('lockDisplayOrientation'); // 'por
 params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== null ? getSetting('noHiddenElementsWarning') : false; // A one-time warning about Hidden elements display
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
-(function overrideParams() {
+(function overrideParams () {
     var rgx = /[?&]([^=]+)=([^&]+)/g;
     var matches = rgx.exec(window.location.search);
     while (matches) {
@@ -248,6 +249,7 @@ document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
+document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
 document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
@@ -283,7 +285,7 @@ if (/^http/i.test(window.location.protocol)) {
 }
 
 // Get app type
-function getAppType() {
+function getAppType () {
     var type = 'HTML5';
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
     if (window.fs || window.nw) type = 'Electron';
@@ -297,7 +299,7 @@ function getAppType() {
 
 // Set up storage types
 // First check that we have not simply upgraded the app and the packaged file
-params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/(?:-app_maxi)?_[\d-]+\.zim\w?\w?$/, ''): null;
+params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/(?:-app_maxi)?_[\d-]+\.zim\w?\w?$/, '') : null;
 if (params.packagedFileStub && params.appVersion !== getSetting('appVersion') && ~params.storedFile.indexOf(params.packagedFileStub)) {
     console.log('The packaged archive has been upgraded: resetting file pointers to point to ' + params.packagedFile);
     params.lastPageVisit = '';
@@ -355,7 +357,7 @@ var divInstall2 = document.getElementById('divInstall2');
 var btnInstall2 = document.getElementById('btnInstall2');
 var btnLater = document.getElementById('btnLater');
 
-window.addEventListener('beforeinstallprompt', function(e) {
+window.addEventListener('beforeinstallprompt', function (e) {
     console.debug('beforeinstallprompt fired');
     // Prevent Chrome 76 and earlier from automatically showing a prompt
     e.preventDefault();
@@ -371,7 +373,7 @@ window.addEventListener('beforeinstallprompt', function(e) {
         btnLater.addEventListener('click', function (e) {
             e.preventDefault();
             divInstall1.innerHTML = '<b>You can install this app later from Configuration</b>';
-            setTimeout(function() {
+            setTimeout(function () {
                 divInstall1.style.display = 'none';
             }, 4000);
             params.installLater = true;
@@ -381,14 +383,14 @@ window.addEventListener('beforeinstallprompt', function(e) {
     deleteSetting('PWAInstalled');
 });
 
-function installApp(e) {
+function installApp (e) {
     e.preventDefault();
     // Show the prompt
     deferredPrompt.prompt();
     btnInstall1.disabled = true;
     btnInstall2.disabled = true;
     // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then(function(choiceResult) {
+    deferredPrompt.userChoice.then(function (choiceResult) {
         if (choiceResult.outcome === 'accepted') {
             console.log('PWA installation accepted');
             divInstall1.style.display = 'none';
@@ -403,12 +405,12 @@ function installApp(e) {
     });
 }
 
-window.addEventListener('appinstalled', function(e) {
+window.addEventListener('appinstalled', function (e) {
     params.PWAInstalled = params.appVersion;
     setSetting('PWAInstalled', params.PWAInstalled);
 });
 
-function getSetting(name) {
+function getSetting (name) {
     var result;
     if (params.storeType === 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
@@ -421,7 +423,7 @@ function getSetting(name) {
     return result === null || result === 'undefined' ? null : result === 'true' ? true : result === 'false' ? false : result;
 }
 
-function setSetting(name, val) {
+function setSetting (name, val) {
     if (params.storeType === 'cookie') {
         document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(val) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
     }
@@ -433,7 +435,7 @@ function setSetting(name, val) {
 }
 
 // NB This only deals with simple names that don't need to be URI-encoded
-function deleteSetting(name) {
+function deleteSetting (name) {
     if (params.storeType === 'cookie') {
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
     } else if (params.storeType === 'local_storage') {
@@ -445,7 +447,7 @@ function deleteSetting(name) {
 // DEV: This function is replicated from settingsStore.js because it's not available from init
 // It returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
 // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
-function getBestAvailableStorageAPI() {
+function getBestAvailableStorageAPI () {
     var type = 'none';
     var localStorageTest;
     try {
