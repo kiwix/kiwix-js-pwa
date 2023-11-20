@@ -2743,9 +2743,9 @@ function initServiceWorkerMessaging () {
         });
     } else if (serviceWorkerRegistration) {
         // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
-        console.warn('The Service Worker needs more time to load, or else the app was force-refrshed...');
+        console.warn('The Service Worker needs more time to load, or else the app was force-refreshed...');
         serviceWorkerRegistration = null;
-        setTimeout(initServiceWorkerMessaging, 1200);
+        setTimeout(initServiceWorkerMessaging, 1600);
     } else {
         console.error('The Service Worker is not controlling the current page! We have to reload.');
         // Turn off failsafe, as this is a controlled reboot
