@@ -4865,59 +4865,44 @@ var articleLoadedSW = function (dirEntry) {
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelForLibzim (event) {
+    if (appstate.selectedArchive.libzimReady !== 'ready') {
+        return uiUtil.systemAlert("We're sorry, but the experimental libzim file reader isn't ready yet. Please wait a few seconds and try again, or reload the app.");
+    }
     // The ServiceWorker asks for some content
     loaded = false;
     var title = event.data.title;
     var messagePort = event.ports[0];
-    return new Promise(function (resolve, reject) {
-        var checkReady = function () {
-            if (appstate.selectedArchive.libzimReady === 'ready') {
-                clearInterval(intervalId);
-                resolve();
-            } else if (appstate.selectedArchive.libzimReady !== 'loading') {
-                clearInterval(intervalId);
-                reject(new Error('Libzim not available for this ZIM'));
-            } else {
-                uiUtil.pollSpinner('Waiting for libzim...');
+    return appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false })
+    .then(function (dirEntry) {
+        if (dirEntry === null) {
+            console.error('Title ' + title + ' not found in archive.');
+            messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
+        } else if (dirEntry.isRedirect) {
+            var redirectPath = dirEntry.redirectPath;
+            // Ask the ServiceWorker to send an HTTP redirect to the browser.
+            messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
+            // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
+            // loaded = true;
+        } else {
+            dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
+            // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
+            var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
+            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
+                if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
+                articleContainer.onload = function () {
+                    // if (loaded) return;
+                    // articleContainer.style.display = '';
+                    // resizeIFrame();
+                    // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+                    // articleWindow.removeEventListener('click', filterClickEvent, true);
+                    // articleWindow.addEventListener('click', filterClickEvent, true);
+                    articleLoadedSW(dirEntry);
+                };
             }
-        };
-        checkReady();
-        var intervalId = setInterval(checkReady, 100); // check every 100ms
-    }).then(function () {
-        return appstate.selectedArchive.callLibzimWorker({ action: 'getEntryByPath', path: title, follow: false })
-        .then(function (dirEntry) {
-            if (dirEntry === null) {
-                console.error('Title ' + title + ' not found in archive.');
-                messagePort.postMessage({ action: 'giveContent', title: title, content: '' });
-            } else if (dirEntry.isRedirect) {
-                var redirectPath = dirEntry.redirectPath;
-                // Ask the ServiceWorker to send an HTTP redirect to the browser.
-                messagePort.postMessage({ action: 'sendRedirect', title: title, redirectUrl: redirectPath });
-                // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
-                // loaded = true;
-            } else {
-                dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
-                // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
-                var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
-                if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
-                    if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
-                    articleContainer.onload = function () {
-                        // if (loaded) return;
-                        // articleContainer.style.display = '';
-                        // resizeIFrame();
-                        // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-                        // articleWindow.removeEventListener('click', filterClickEvent, true);
-                        // articleWindow.addEventListener('click', filterClickEvent, true);
-                        articleLoadedSW(dirEntry);
-                    };
-                }
-                messagePort.postMessage(message);
-            }
-        }).catch(function () {
-            messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
-        });
-    }).catch(function (err) {
-        console.error(err);
+            messagePort.postMessage(message);
+        }
+    }).catch(function () {
+        messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
     });
 }
 
