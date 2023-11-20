@@ -85,6 +85,21 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
             console.debug('ZIMArchive ready, metadata will be added in the background');
             // All listings should be loaded, so we can now call the callback
             callbackReady(that);
+            // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
+            // DEV: Note that it does not make sense to extract illustration (icon) metadata here. Instead, if you implement use of the illustration
+            // metadata as icons for the loaded ZIM [kiwix-js #886], you should simply use the ZIMArdhive.getMetadata() function when needed
+            setTimeout(function () {
+                Promise.all([
+                    that.addMetadataToZIMFile('Counter'),
+                    that.addMetadataToZIMFile('Date'),
+                    that.addMetadataToZIMFile('Description'),
+                    that.addMetadataToZIMFile('Name'),
+                    that.addMetadataToZIMFile('Publisher'),
+                    that.addMetadataToZIMFile('Title')
+                ]).then(function () {
+                    console.debug('ZIMArchive metadata loaded:', that);
+                });
+            }, 2000); // DEV: If you need any of the above earlier, you can alter this delay
         });
     };
     var createZimfile = function (fileArray) {
@@ -163,21 +178,6 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 params.zimType = that.setZimType();
                 // If user is not using libzim for reading the file, we can call the ready callback now
                 if (!params.useLibzim) whenZimReady();
-                // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
-                // DEV: Note that it does not make sense to extract illustration (icon) metadata here. Instead, if you implement use of the illustration
-                // metadata as icons for the loaded ZIM [kiwix-js #886], you should simply use the ZIMArdhive.getMetadata() function when needed
-                setTimeout(function () {
-                    Promise.all([
-                        that.addMetadataToZIMFile('Counter'),
-                        that.addMetadataToZIMFile('Date'),
-                        that.addMetadataToZIMFile('Description'),
-                        that.addMetadataToZIMFile('Name'),
-                        that.addMetadataToZIMFile('Publisher'),
-                        that.addMetadataToZIMFile('Title')
-                    ]).then(function () {
-                        console.debug('ZIMArchive metadata loaded:', that);
-                    });
-                }, 1500); // DEV: If you need any of the above earlier, you can alter this delay
             }).catch(function (err) {
                 console.warn('Error setting archive listings: ', err);
             });
