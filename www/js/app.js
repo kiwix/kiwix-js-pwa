@@ -3424,6 +3424,8 @@ function setLocalArchiveFromArchiveList (archive) {
                 // }
             }
         }
+        // Show spinner with archive name
+        uiUtil.pollSpinner('Loading ' + archive + '...', true);
         zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
@@ -3881,6 +3883,8 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (files.length > 1 && firstSplitFileIndex === null) {
         files = [files[storedFileIndex]];
     }
+    // Show the spinner
+    uiUtil.pollSpinner('Loading archive ' + files[0].name + '...', true);
     // TODO: Turn this into a Promise
     zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error

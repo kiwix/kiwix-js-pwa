@@ -83,6 +83,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
             that.addMetadataToZIMFile('Language')
         ]).then(function () {
             console.debug('ZIMArchive ready, metadata will be added in the background');
+            uiUtil.clearSpinner();
             // All listings should be loaded, so we can now call the callback
             callbackReady(that);
             // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
@@ -144,6 +145,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that.file._files[0].readMode === 'electron'))) {
                     that.libzimReady = 'loading';
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
+                    if (params.useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that.file._files }).then(function () {
                         that.libzimReady = 'ready';
