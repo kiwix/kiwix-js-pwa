@@ -162,7 +162,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 // Set the archive file type ('open' or 'zimit')
                 params.zimType = that.setZimType();
                 // If user is not using libzim for reading the file, we can call the ready callback now
-                if (!params.useLibzim) return whenZimReady();
+                if (!params.useLibzim) whenZimReady();
                 // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
                 // DEV: Note that it does not make sense to extract illustration (icon) metadata here. Instead, if you implement use of the illustration
                 // metadata as icons for the loaded ZIM [kiwix-js #886], you should simply use the ZIMArdhive.getMetadata() function when needed
