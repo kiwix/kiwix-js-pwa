@@ -4595,13 +4595,18 @@ function readArticle (dirEntry) {
             // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
             if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) &&
                 /\/(plain|.*javascript|css|csv|.*officedocument|.*opendocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
-                var download = true;
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    var filename = dirEntry.title || dirEntry.url;
                     if (/^text|\/.*javascript|\/warc-headers/i.test(mimeType)) {
-                        if (typeof content !== 'string') content = utf8.parse(content);
-                        displayArticleContentInContainer(fileDirEntry, content);
+                        var contentString = content;
+                        if (typeof content !== 'string') contentString = utf8.parse(content);
+                        displayArticleContentInContainer(fileDirEntry, contentString);
+                        // Provide a download link for js and css asset types at least
+                        if (!(/plain|warc-headers/i.test(mimeType))) {
+                            uiUtil.displayFileDownloadAlert(filename, false, mimeType, content);
+                        }
                     } else {
-                        uiUtil.displayFileDownloadAlert(dirEntry.title || mimeType.replace(/\//, '-'), download, mimeType, content);
+                        uiUtil.displayFileDownloadAlert(filename, true, mimeType, content);
                     }
                     uiUtil.clearSpinner();
                 });

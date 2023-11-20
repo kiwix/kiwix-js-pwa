@@ -657,7 +657,7 @@ function displayFileDownloadAlert (title, download, contentType, content, autoDi
     var a = document.createElement('a');
     var blob = new Blob([content], { type: contentType });
     // If the filename to use for saving has not been specified, construct it from title
-    var filename = download === true ? title.replace(/^.*\/([^\\/?#&]*).*$/, '$1') : download;
+    var filename = (typeof download !== 'string') ? title.replace(/^.*\/([^\\/?#&]*).*$/, '$1') : download;
     // If not match was possible from the title, give it a generic name
     if (filename === title || !filename) filename = 'downloadfile';
     // Make filename safe
@@ -688,7 +688,8 @@ function displayFileDownloadAlert (title, download, contentType, content, autoDi
     a.classList.add('alert-link');
     a.innerHTML = filename;
     var alertMessage = document.getElementById('alertMessage');
-    alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
+    alertMessage.innerHTML = download !== false ? '<strong>Download</strong> If the download does not start, please tap the following link: '
+        : '<strong>Download</strong> To download the contents, please tap the following link: ';
     // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
     alertMessage.appendChild(a);
     var downloadAlert = document.getElementById('downloadAlert');
@@ -702,27 +703,29 @@ function displayFileDownloadAlert (title, download, contentType, content, autoDi
     document.getElementById('downloaAlertClose').addEventListener('click', function () {
         downloadAlert.style.display = 'none';
     });
-    try {
-        a.click();
-        // Following line should run only if there was no error, leaving the alert showing in case of error
-        if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
-        return;
-    } catch (err) {
-        // Edge will error out unless there is a download added but Chrome works better without the attribute
-        a.download = filename;
-    }
-    try {
-        a.click();
-        // Following line should run only if there was no error, leaving the alert showing in case of error
-        if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
-    } catch (err) {
-        // And try to launch through UWP download
-        if (typeof Windows !== 'undefined' && Windows.Storage) {
-            downloadBlobUWP(blob, filename, alertMessage);
+    if (download !== false) {
+        try {
+            a.click();
+            // Following line should run only if there was no error, leaving the alert showing in case of error
             if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
-        } else {
-            // Last gasp attempt to open automatically
-            window.open(a.href);
+            return;
+        } catch (err) {
+            // Edge will error out unless there is a download added but Chrome works better without the attribute
+            a.download = filename;
+        }
+        try {
+            a.click();
+            // Following line should run only if there was no error, leaving the alert showing in case of error
+            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
+        } catch (err) {
+            // And try to launch through UWP download
+            if (typeof Windows !== 'undefined' && Windows.Storage) {
+                downloadBlobUWP(blob, filename, alertMessage);
+                if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
+            } else {
+                // Last gasp attempt to open automatically
+                window.open(a.href);
+            }
         }
     }
 }
