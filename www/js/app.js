@@ -44,13 +44,6 @@ import updater from './lib/updater.js';
 // document.adoptedStyleSheets = [styles, bootstrap];
 
 /**
- * The delay (in milliseconds) between two "keepalive" messages sent to the ServiceWorker (so that it is not stopped
- * by the browser, and keeps the MessageChannel to communicate with the application)
- * @type Integer
- */
-const DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
-
-/**
  * Define global state variables:
  */
 
@@ -2746,11 +2739,22 @@ function initServiceWorkerMessaging () {
         console.warn('The Service Worker needs more time to load, or else the app was force-refreshed...');
         serviceWorkerRegistration = null;
         setTimeout(initServiceWorkerMessaging, 1600);
-    } else {
+    } else if (params.contentInjectionMode === 'serviceworker') {
         console.error('The Service Worker is not controlling the current page! We have to reload.');
         // Turn off failsafe, as this is a controlled reboot
         settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
         window.location.reload();
+    } else if (navigator && navigator.serviceWorker && !navigator.serviceWorker.controller) {
+        uiUtil.systemAlert('<p>No Service Worker is registered, meaning this app will not currently work offline!</p><p>Would you like to switch to ServiceWorker mode?</p>',
+        'Offline use is disabled!', true).then(function (response) {
+            if (response) {
+                setContentInjectionMode('serviceworker');
+                setTimeout(function () {
+                    params.themeChanged = true;
+                    document.getElementById('btnHome').click();
+                }, 750);
+            }
+        });
     }
 }
 
