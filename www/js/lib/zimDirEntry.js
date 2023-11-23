@@ -22,7 +22,7 @@
 
 'use strict';
 
-function DirEntry(zimfile, dirEntryData) {
+function DirEntry (zimfile, dirEntryData) {
     this._zimfile = zimfile;
     this.redirect = dirEntryData.redirect;
     this.offset = dirEntryData.offset;
@@ -33,6 +33,7 @@ function DirEntry(zimfile, dirEntryData) {
     this.blob = dirEntryData.blob;
     this.url = dirEntryData.url;
     this.title = dirEntryData.title;
+    this.fromArticleList = dirEntryData.fromArticleList || false;
 }
 
 /**
@@ -81,6 +82,7 @@ DirEntry.fromStringId = function (zimfile, stringId) {
     data.title = idParts[6];
     data.redirect = (idParts[7] === 'true');
     data.redirectTarget = idParts[8];
+    data.fromArticleList = true;
     return new DirEntry(zimfile, data);
 };
 

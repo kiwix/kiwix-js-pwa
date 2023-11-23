@@ -2749,10 +2749,12 @@ function initServiceWorkerMessaging () {
         'Offline use is disabled!', true).then(function (response) {
             if (response) {
                 setContentInjectionMode('serviceworker');
-                setTimeout(function () {
-                    params.themeChanged = true;
-                    document.getElementById('btnHome').click();
-                }, 750);
+                if (appstate.selectedArchive) {
+                    setTimeout(function () {
+                        params.themeChanged = true;
+                        document.getElementById('btnHome').click();
+                    }, 750);
+                }
             }
         });
     }

@@ -703,7 +703,9 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
-            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype)) {
+            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype) &&
+            // DEV: We do not want to transform CSS and JS files that the user wishes to inspect the contents of
+            !(dirEntry.fromArticleList && /\/(?:css|javascript)\b/i.test(mimetype))) {
                 data = transformZimit.transformReplayUrls(dirEntry, data, mimetype);
             }
             callback(dirEntry, data);
@@ -741,7 +743,9 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
-            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype)) {
+            if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype) &&
+            // DEV: We do not want to transform CSS and JS files that the user wishes to inspect the contents of
+            !(dirEntry.fromArticleList && /\/(?:css|javascript)\b/i.test(mimetype))) {
                 data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype);
             }
             callback(dirEntry, data);
