@@ -59,7 +59,7 @@ function filterReplayFiles (dirEntry) {
     params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url)) {
         dirEntry.inspect = true;
     }
-    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
+    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js|webpushr.*\.com.*\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         dirEntry.nullify = true;
     }
     return dirEntry;
@@ -197,6 +197,9 @@ function transformReplayUrls (dirEntry, data, mimetype) {
         // DEV: You should probably deal with this more intelligently, changing absolute links rather than just removing,
         // but so far, removing it seems to do the job
         data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
+
+        // Remove wordpress link tracker
+        data = data.replace(/<script[^>]+type="text\/javascript"[^<]+setTrackerUrl[^<]+<\/script>/i, '');
 
         // Remove any residual analytics and ads
         data = data.replace(regexpRemoveAnalytics1, '');
