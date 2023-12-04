@@ -59,7 +59,7 @@ function filterReplayFiles (dirEntry) {
     params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url)) {
         dirEntry.inspect = true;
     }
-    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
+    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js|webpushr.*\.com.*\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         dirEntry.nullify = true;
     }
     return dirEntry;
@@ -133,7 +133,7 @@ function transformReplayUrls (dirEntry, data, mimetype) {
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
-    // console.debug('**** Transforming URLs in ' + dirEntry.namespace + '/' + dirEntry.url + ' ****');
+    console.debug('**** Transforming URLs in ' + dirEntry.namespace + '/' + dirEntry.url + ' ****');
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);
@@ -167,7 +167,7 @@ function transformReplayUrls (dirEntry, data, mimetype) {
             if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixHref' : ''));
             // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
             else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
-            // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
 
@@ -197,6 +197,9 @@ function transformReplayUrls (dirEntry, data, mimetype) {
         // DEV: You should probably deal with this more intelligently, changing absolute links rather than just removing,
         // but so far, removing it seems to do the job
         data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
+
+        // Remove wordpress link tracker
+        data = data.replace(/<script[^>]+type="text\/javascript"[^<]+setTrackerUrl[^<]+<\/script>/i, '');
 
         // Remove any residual analytics and ads
         data = data.replace(regexpRemoveAnalytics1, '');
@@ -243,7 +246,7 @@ function transformReplayUrls (dirEntry, data, mimetype) {
             // Relative assets
             newBlock = assetUrl === url ? newBlock
                 : newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
-            // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
     } // End of css transformations
@@ -263,7 +266,7 @@ function transformReplayUrls (dirEntry, data, mimetype) {
             assetUrl = /analytics|(typepad|api).*stats|googleads|doubleclick|syndication|jnn-pa\.googleapis|play\.google\.com/i.test(assetUrl) ? '' : assetUrl;
             // Relative assets
             newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
-            // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
         data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
