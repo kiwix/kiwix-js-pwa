@@ -1,15 +1,21 @@
 # Changelog
 
-## In-progress release 2.7.82
+## In-progress release 2.8.2
 
 * INFO: Provide info to user about how to change behaviour of opening external links in tab or window
+* ENHANCEMENT: Option to download viewed assets when searching by URL (e.g. C/.*interesting_asset.js)
 * FIX: Critical bug that prevented scrolling of search results
+* FIX: Critical bug causing a boot loop when the app is in JQuery mode and SW cannot be registered
+* FIX: Remove WordPress link tracker code in some Zimit ZIMs preventing access to ZIM contents
 * FIX: Incorrect sizing of article area in UWP app
 * FIX: Remove unhandled port in some Zimit redirects, allowing resource to be located in archive
 * FIX: Failure to resize Configuration in rare circumstances
 * DEV: Various updates to demos and readme
 * DEV: Fix quote detection in rollup build chain
 * DEV: Changed favicon from white to black with white border
+* DEV: RollupJS updated to v3.5.0
+* DEV: New, more robust, way to wake up and initialize the Service Worker when needed
+* DEV: Developer options now provided to use libzim for reading archive contents
 
 ## Release 2.7.8
 
