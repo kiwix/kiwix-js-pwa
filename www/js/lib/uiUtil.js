@@ -1149,7 +1149,7 @@ function reportSearchProviderToAPIStatusPanel (provider) {
 }
 
 /**
- * Warn the user that he/she clicked on an external link, and open it in a new tab
+ * Warn the user that they clicked on an external link, and open it in a new tab
  *
  * @param {Event} event The click event (on an anchor) to handle (optional, but if not provided, clickedAnchor must be provided)
  * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)

@@ -5462,7 +5462,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
     // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened
-        htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
+    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
 
     // Maker return links
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-/* global params */
+/* global params, assetsCache */
 /* eslint-disable indent */
 
 import uiUtil from './uiUtil.js';
@@ -31,7 +31,7 @@ var deprecatedKeys = [
 var keyPrefix = params.keyPrefix;
 
 // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
-function getBestAvailableStorageAPI() {
+function getBestAvailableStorageAPI () {
   // DEV: In FF extensions, cookies are blocked since at least FF 68.6 but possibly since FF 55 [kiwix-js #612]
   var type = 'none';
   // First test for localStorage API support
@@ -73,7 +73,7 @@ function getBestAvailableStorageAPI() {
  * Or, if a parameter is supplied, deletes or disables the object
  * @param {String} object Optional name of the object to disable or delete ('cookie', 'localStorage', 'cacheAPI')
  */
-function reset(object) {
+function reset (object) {
   var performReset = function () {
     // 1. Clear any cookie entries
     if (!object || object === 'cookie') {
@@ -158,7 +158,7 @@ function reset(object) {
 }
 
 // Gets cache names from Service Worker, as we cannot rely on having them in params.cacheNames
-function getCacheNames(callback) {
+function getCacheNames (callback) {
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     var channel = new MessageChannel();
     channel.port1.onmessage = function (event) {
@@ -174,7 +174,7 @@ function getCacheNames(callback) {
 }
 
 // Deregisters all Service Workers and reboots the app
-function _reloadApp() {
+function _reloadApp () {
   var reboot = function () {
     console.debug('Performing app reload...');
     setTimeout(function () {
@@ -223,7 +223,7 @@ var settingsStore = {
       return null;
     }
     if (params.storeType !== 'local_storage') {
-      return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+      return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(sKey).replace(/[-.+*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
     } else {
       return localStorage.getItem(keyPrefix + sKey);
     }
@@ -233,21 +233,21 @@ var settingsStore = {
       if (!sKey || /^(?:expires|max-age|path|domain|secure)$/i.test(sKey)) {
         return false;
       }
-      var sExpires = "";
+      var sExpires = '';
       if (vEnd) {
         switch (vEnd.constructor) {
           case Number:
-            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            sExpires = vEnd === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + vEnd;
             break;
           case String:
-            sExpires = "; expires=" + vEnd;
+            sExpires = '; expires=' + vEnd;
             break;
           case Date:
-            sExpires = "; expires=" + vEnd.toUTCString();
+            sExpires = '; expires=' + vEnd.toUTCString();
             break;
         }
       }
-      document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+      document.cookie = encodeURIComponent(sKey) + '=' + encodeURIComponent(sValue) + sExpires + (sDomain ? '; domain=' + sDomain : '') + (sPath ? '; path=' + sPath : '') + (bSecure ? '; secure' : '');
     } else {
       localStorage.setItem(keyPrefix + sKey, sValue);
     }
@@ -258,7 +258,7 @@ var settingsStore = {
       return false;
     }
     if (params.storeType !== 'local_storage') {
-      document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+      document.cookie = encodeURIComponent(sKey) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + (sDomain ? '; domain=' + sDomain : '') + (sPath ? '; path=' + sPath : '');
     } else {
       localStorage.removeItem(keyPrefix + sKey);
     }
@@ -269,12 +269,14 @@ var settingsStore = {
       return false;
     }
     if (params.storeType !== 'local_storage') {
-      return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+      return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(sKey).replace(/[-.+*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
     } else {
       return localStorage.getItem(keyPrefix + sKey) !== null;
     }
   },
   _cookieKeys: function () {
+    // Disabling linter check because this is library code
+    // eslint-disable-next-line no-useless-backreference
     var aKeys = document.cookie.replace(/((?:^|\s*;)[^=]+)(?=;|$)|^\s*|\s*(?:=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:=[^;]*)?;\s*/);
     for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) {
       aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
@@ -284,7 +286,7 @@ var settingsStore = {
 };
 
 // One-off migration of storage settings from cookies to localStorage
-function _migrateStorageSettings() {
+function _migrateStorageSettings () {
   console.log('Migrating Settings Store from cookies to localStorage...');
   var cookieKeys = settingsStore._cookieKeys();
   // Note that because migration occurs before setting params.storeType, settingsStore.getItem() will get the item from
