@@ -2512,6 +2512,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result === false) console.log('Unable to delete old idxDB databases (this is normal in non-Chromium browsers');
             else console.log('Deleted ' + result + ' deprecated database(s).');
         });
+        var noPackagedZIM = document.getElementById('noPackagedZIM');
+        if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
+            noPackagedZIM.style.display = 'none';
+        }
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
         setTimeout(function () {
             uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
