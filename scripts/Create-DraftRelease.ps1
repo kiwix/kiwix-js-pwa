@@ -209,8 +209,8 @@ if ($tag_name -cmatch 'E\+N') {
 }
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
-  $release_title = "Kiwix JS Windows/Linux $base_tag"
-  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Windows/Linux) $base_tag" }
+  $release_title = "Kiwix JS Linux/Windows $base_tag"
+  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Linux/Windows) $base_tag" }
   $release_tag_name = $tag_name -creplace '\+E', ''
 }
 if ($tag_name -match '\+E\+N') {
@@ -226,7 +226,7 @@ if ($base_tag -match '[EN]$') {
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
   }
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Windows/Linux) " + '$1')
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Linux/Windows) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 # Get package name
@@ -750,7 +750,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $permalinkFile = "$PSScriptRoot/../app/uwp.html"
   $permalinkFile2 = ""
   $permalinkFile3 = ""
-  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'app', 'wikiumed' }
+  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'app', 'wikimed' }
   if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'app', 'wikivoyage' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }

@@ -1,6 +1,6 @@
-## Portable and installable builds for UWP and Electron
+## Portable and installable builds for Electron and UWP
 
-WikiMed by Kiwix is an offline medical encyclopaedia with content curated by [MDwiki](https://mdwiki.org/) and Wikipedia's WikiProject Medicine. Containing more than 55,000 medical and health-related articles, it makes medical knowledge available to people with limited Internet access or anyone who needs quick reference access to in-depth medical information. Other languages can be downloaded within the app.
+WikiMed by Kiwix is an offline medical encyclopaedia with content curated by [MDwiki](https://mdwiki.org/) and Wikipedia's WikiProject Medicine. Containing more than 67,000 medical and health-related articles, it makes medical knowledge available to people with limited Internet access or anyone who needs quick reference access to in-depth medical information. Other languages can be downloaded within the app.
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 

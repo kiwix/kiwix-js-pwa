@@ -2512,6 +2512,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result === false) console.log('Unable to delete old idxDB databases (this is normal in non-Chromium browsers');
             else console.log('Deleted ' + result + ' deprecated database(s).');
         });
+        var noPackagedZIM = document.getElementById('noPackagedZIM');
+        if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
+            noPackagedZIM.style.display = 'none';
+        }
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
         setTimeout(function () {
             uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
@@ -2534,20 +2538,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             settingsStore.setItem('appVersion', params.appVersion, Infinity);
         }, 1000);
-        // Show or hide sampleZIM spans
-        var sampleZIM = document.getElementById('sampleZIM');
-        var noSampleZIM = document.getElementById('noSampleZIM');
-        if (params.packagedFile && /Electron|UWP/.test(params.appType)) {
-            if (/mdwiki|wikivoyage|medicine/i.test(params.packagedFile)) {
-                sampleZIM.innerHTML = 'This app is packaged with the following ZIM archive: <b>' + params.packagedFile + '</b>. Versions in many different languages are available for download.';
-                noSampleZIM.style.display = 'none';
-            }
-            sampleZIM.style.display = 'inline';
-        } else {
-            sampleZIM.style.display = 'none';
-            noSampleZIM.innerHTML = 'To use this app,' + noSampleZIM.innerHTML;
-            noSampleZIM.style.display = 'inline';
-        }
     } else if (appstate.launchUWPServiceWorker) {
         launchUWPServiceWorker();
     }
@@ -2744,9 +2734,9 @@ function initServiceWorkerMessaging () {
         // Turn off failsafe, as this is a controlled reboot
         settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
         window.location.reload();
-    } else if (navigator && navigator.serviceWorker && !navigator.serviceWorker.controller) {
-        uiUtil.systemAlert('<p>No Service Worker is registered, meaning this app will not currently work offline!</p><p>Would you like to switch to ServiceWorker mode?</p>',
-        'Offline use is disabled!', true).then(function (response) {
+    } else if (/^https/.test(window.location.protocol) && navigator && navigator.serviceWorker && !navigator.serviceWorker.controller) {
+        return uiUtil.systemAlert('<p>No Service Worker is registered, meaning this app will not currently work offline!</p><p>Would you like to switch to ServiceWorker mode?</p>',
+          'Offline use is disabled!', true).then(function (response) {
             if (response) {
                 setContentInjectionMode('serviceworker');
                 if (appstate.selectedArchive) {
