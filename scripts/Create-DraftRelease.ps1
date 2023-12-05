@@ -750,7 +750,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $permalinkFile = "$PSScriptRoot/../app/uwp.html"
   $permalinkFile2 = ""
   $permalinkFile3 = ""
-  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'app', 'wikiumed' }
+  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'app', 'wikimed' }
   if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'app', 'wikivoyage' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }
