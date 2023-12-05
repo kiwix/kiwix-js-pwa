@@ -2534,20 +2534,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             settingsStore.setItem('appVersion', params.appVersion, Infinity);
         }, 1000);
-        // Show or hide sampleZIM spans
-        var sampleZIM = document.getElementById('sampleZIM');
-        var noSampleZIM = document.getElementById('noSampleZIM');
-        if (params.packagedFile && /Electron|UWP/.test(params.appType)) {
-            if (/mdwiki|wikivoyage|medicine/i.test(params.packagedFile)) {
-                sampleZIM.innerHTML = 'This app is packaged with the following ZIM archive: <b>' + params.packagedFile + '</b>. Versions in many different languages are available for download.';
-                noSampleZIM.style.display = 'none';
-            }
-            sampleZIM.style.display = 'inline';
-        } else {
-            sampleZIM.style.display = 'none';
-            noSampleZIM.innerHTML = 'To use this app,' + noSampleZIM.innerHTML;
-            noSampleZIM.style.display = 'inline';
-        }
     } else if (appstate.launchUWPServiceWorker) {
         launchUWPServiceWorker();
     }
