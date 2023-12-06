@@ -182,8 +182,6 @@ const precacheFiles = [
     'www/js/lib/cache.js',
     'www/js/lib/filecache.js',
     'www/js/lib/images.js',
-    'www/js/lib/jquery.module.js',
-    'www/js/lib/jquery-3.7.0.slim.js',
     'www/js/lib/kiwixServe.js',
     'www/js/lib/settingsStore.js',
     'www/js/lib/transformStyles.js',
@@ -214,7 +212,9 @@ const precacheFiles = [
     'www/js/katex/fonts/KaTeX_Size1-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size2-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size3-Regular.woff2',
-    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2'
+    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2',
+    'node_modules/jquery/dist/jquery.slim.min.js',
+    'node_modules/jquery/dist/jquery.slim.min.map'
 ];
 
 if ('WebAssembly' in self) {
