@@ -173,7 +173,6 @@
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />
-    <Content Include="www\js\lib\jquery-3.7.0.slim.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
@@ -193,7 +192,7 @@
     <Content Include="www\js\lib\zimfile.js" />
     <Content Include="www\js\lib\xzdec-wasm.wasm" />
     <Content Include="www\js\lib\zstddec-wasm.wasm" />
-    <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
+    <Content Include="www\js\lib\webpHeroBundle_0.0.2.js" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="manifest.json" />
     <Content Include="service-worker.js" />
@@ -329,6 +328,8 @@
     <Content Include="www\js\katex\katex.min.css" />
     <Content Include="www\js\katex\katex.min.js" />
     <Content Include="www\js\katex\README.md" />
+    <Content Include="node_modules/jquery/dist/jquery.slim.min.js" />
+    <Content Include="node_modules/jquery/dist/jquery.slim.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4a0dddb5-7a95-4fbf-97cc-616d07737a77}" />
