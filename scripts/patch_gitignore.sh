@@ -4,7 +4,7 @@
 sed -i "/^\/dist\/$/d" .gitignore
 
 # Replace the /node_modules*/ entry in gitignore with the following
-sed -i 's|/node_modules\*\/|/node_modules/*\
+sed -i 's|/node_modules\*/|/node_modules/*\
 !/node_modules/jquery\
 /node_modules/jquery/*\
 !/node_modules/jquery/dist\
