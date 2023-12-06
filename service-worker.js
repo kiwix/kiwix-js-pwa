@@ -197,7 +197,7 @@ const precacheFiles = [
     'www/js/lib/zimDirEntry.js',
     'www/js/lib/zimfile.js',
     'www/js/lib/darkreader.min.js', // Don't move this or below to prevent them being deleted by the build process
-    'www/js/lib/webpHeroBundle_0.0.0-dev.27.js',
+    'www/js/lib/webpHeroBundle_0.0.2.js',
     'www/js/katex/katex.min.js',
     'www/js/katex/katex.min.css',
     'www/js/katex/contrib/auto-render.min.js',
