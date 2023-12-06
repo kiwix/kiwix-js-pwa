@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* global Windows, launchArgumentsUWP */
+/* global Windows, launchArgumentsUWP, webpHero */
 /* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
@@ -485,7 +485,7 @@ var webpMachine = false;
         webpScript.onload = function () {
             webpMachine = new webpHero.WebpMachine();
         }
-        webpScript.src = 'js/webpHeroBundle_0.0.0-dev.27.js';
+        webpScript.src = 'js/webpHeroBundle_0.0.2.js';
         document.head.appendChild(webpScript);
     }
 });

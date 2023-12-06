@@ -18,7 +18,7 @@ $ListOfExemptions = (
   'www/img/icons/kiwix-64.png',
   'www/img/icons/kiwix-90.png',
   'www/img/Kiwix_icon_transparent_600x600.png',
-  'www/js/lib/webpHeroBundle_0.0.0-dev.27.js'
+  'www/js/lib/webpHeroBundle_0.0.2.js'
 )
 
 # Get the absolute root directory
