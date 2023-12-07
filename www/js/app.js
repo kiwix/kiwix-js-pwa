@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
@@ -5120,14 +5120,14 @@ var regexpPath = /^(.*\/)[^/]+$/;
 // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
 params.regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
 
-// The case-insensitive regex below finds images, scripts, stylesheets (not tracks) with ZIM-type metadata and image namespaces.
+// The case-insensitive regex below finds images, scripts, and stylesheets with ZIM-type metadata and image namespaces.
 // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] or href=["']
 // (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing negative lookahead (?!...) that excludes
-// absolute URIs with protocols that conform to RFC 3986 (e.g. 'http:', 'data:'). It then captures the whole of the URL up until either
-// the opening delimiter (" or ', which is capture group \3) or a querystring or hash character (? or #). When the regex is used
-// below, it will be further processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single
-// quote marks (') in the URL.
-params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
+// absolute URIs with protocols that conform to RFC 3986 (e.g. 'http:', 'data:'). It then captures the whole of the URL up until any
+// querystring (? character) which (if it is exists) is captured with its contents in another gourp. The regex then tests for the end
+// of the URL with the opening delimiter (" or ', which is capture group \3) or a hash character (#). When the regex is used below, it
+// will be further processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single quote marks (') in the URL.
+params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(\?.*?)?(?=\3|#)([\s\S]*?>)/ig;
 
 // Similar to above, but tailored for Zimit links
 // params.regexpZimitLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?!#)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
@@ -5237,12 +5237,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     var assetZIMUrlEnc;
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
     if (params.contentInjectionMode == 'jquery') {
-        htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, blockClose) {
+        htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, querystring, blockClose) {
             // Don't process data URIs (yet)
             if (/data:image/i.test(relAssetUrl)) return match;
+            // We need to save the query string if any for Zimit-style archives
+            querystring = querystring || '';
             newBlock = match;
-            if (params.zimType === 'zimit' && !(relAssetUrl).indexOf(indexRoot)) {
+            if (params.zimType === 'zimit') {
                 assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
+                assetZIMUrlEnc = assetZIMUrlEnc + querystring;
             } else {
                 // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                 // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
@@ -5265,7 +5268,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
         });
     } else if (wikiLang || params.manipulateImages) {
-        htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, blockClose) {
+        htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, querystring, blockClose) {
             // Don't process data URIs (yet)
             if (/data:image/i.test(relAssetUrl)) return match;
             newBlock = match;
@@ -5526,7 +5529,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             ? htmlArticle.match(/<script\b[^>]+['"][^'"]*(?:nautilus|zim_prefix)\.js[^'"]*[^>]*>[^<]*<\/script>\s*/i) : null;
     }
 
-    if (params.zimType === 'open' && !nautilus || params.contentInjectionMode === 'jquery') {
+    if (params.zimType === 'open' && !nautilus) {
         // Preload stylesheets [kiwix-js #149]
         console.log('Loading stylesheets...');
         // Set up blobArray of promises
@@ -5547,7 +5550,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             injectHTML();
         }
     } else {
-        // Zimit ZIMs in SW mode should not manipulate styles
+        // Zimit ZIMs, or nautilus, should not manipulate styles
         injectHTML();
     }
 
@@ -5738,7 +5741,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             var docElStyle = articleDocument.style;
             var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
             docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
-            docElStyle[zoomProp] = ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
+            docElStyle[zoomProp] = zimType && ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
             // Set page width according to user preference
             removePageMaxWidth();
             setupHeadings();
@@ -5787,6 +5790,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (!params.isLandingPage) openAllSections();
 
             parseAnchorsJQuery(dirEntry);
+            loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
             // loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
@@ -5986,6 +5990,65 @@ function parseAnchorsJQuery (dirEntry) {
     if (articleWindow.document.body) {
         var h1 = articleWindow.document.body.querySelector('h1');
         if (h1) addListenersToLink(h1, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), params.baseURL);
+    }
+}
+
+function loadCSSJQuery () {
+    // Ensure all sections are open for clients that lack JavaScript support, or that have some restrictive CSP [kiwix-js #355].
+    // This is needed only for some versions of ZIM files generated by mwoffliner (at least in early 2018), where the article sections are closed by default on small screens.
+    // These sections can be opened by clicking on them, but this is done with some javascript.
+    // The code below is a workaround we still need for compatibility with ZIM files generated by mwoffliner in 2018.
+    // A better fix has been made for more recent ZIM files, with the use of noscript tags : see https://github.com/openzim/mwoffliner/issues/324
+    var iframe = articleContainer.contentDocument;
+    var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+    // Using decrementing loop to optimize performance : see https://stackoverflow.com/questions/3520688
+    for (var i = collapsedBlocks.length; i--;) {
+        collapsedBlocks[i].classList.add('open-block');
+    }
+    var cssCount = 0;
+    var cssFulfilled = 0;
+    Array.prototype.slice.call(iframe.querySelectorAll('link[data-kiwixurl]')).forEach(function (link) {
+        cssCount++;
+        var linkUrl = link.getAttribute('data-kiwixurl');
+        var url = decodeURIComponent(appstate.selectedArchive.zimType === 'zimit' ? linkUrl : uiUtil.removeUrlParameters(linkUrl));
+        if (assetsCache.has(url)) {
+            var nodeContent = assetsCache.get(url);
+            uiUtil.feedNodeWithBlob(link, 'href', nodeContent, link.type || 'image', true);
+            cssFulfilled++;
+        } else {
+            if (params.assetsCache) document.getElementById('cachingAssets').style.display = '';
+            appstate.selectedArchive.getDirEntryByPath(url).then(function (dirEntry) {
+                if (!dirEntry) {
+                    assetsCache.set(url, ''); // Prevent repeated lookups of this unfindable asset
+                    throw new Error('DirEntry ' + typeof dirEntry);
+                }
+                var mimetype = dirEntry.getMimetype();
+                var readFile = /^text\//i.test(mimetype) ? appstate.selectedArchive.readUtf8File : appstate.selectedArchive.readBinaryFile;
+                return readFile(dirEntry, function (fileDirEntry, content) {
+                    var fullUrl = fileDirEntry.namespace + '/' + fileDirEntry.url;
+                    if (params.assetsCache) assetsCache.set(fullUrl, content);
+                    uiUtil.feedNodeWithBlob(link, 'href', content, mimetype, true);
+                    cssFulfilled++;
+                    renderIfCSSFulfilled(fileDirEntry.url);
+                });
+            }).catch(function (e) {
+                console.error('Could not find DirEntry for link element: ' + url, e);
+                cssCount--;
+                renderIfCSSFulfilled();
+            });
+        }
+    });
+    renderIfCSSFulfilled();
+
+    // Some pages are extremely heavy to render, so we prevent rendering by keeping the iframe hidden
+    // until all CSS content is available [kiwix-js #381]
+    function renderIfCSSFulfilled (title) {
+        if (cssFulfilled >= cssCount) {
+            uiUtil.clearSpinner();
+            document.getElementById('articleContent').style.display = '';
+            // We have to resize here for devices with On Screen Keyboards when loading from the article search list
+            resizeIFrame();
+        }
     }
 }
 
