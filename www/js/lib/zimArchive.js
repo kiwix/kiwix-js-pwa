@@ -83,8 +83,6 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
             that.addMetadataToZIMFile('Language')
         ]).then(function () {
             console.debug('ZIMArchive ready, metadata will be added in the background');
-            // All listings should be loaded, so we can now call the callback
-            callbackReady(that);
             // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
             // DEV: Note that it does not make sense to extract illustration (icon) metadata here. Instead, if you implement use of the illustration
             // metadata as icons for the loaded ZIM [kiwix-js #886], you should simply use the ZIMArdhive.getMetadata() function when needed
@@ -100,6 +98,15 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                     console.debug('ZIMArchive metadata loaded:', that);
                 });
             }, 2000); // DEV: If you need any of the above earlier, you can alter this delay
+            // We need to get the landing page of any Zimit archive opened
+            if (that.zimType === 'zimit') {
+                return that.setZimitMetadata().then(function () {
+                    callbackReady(that);
+                });
+            } else {
+                // All listings should be loaded, so we can now call the callback
+                callbackReady(that);
+            }
         });
     };
     var createZimfile = function (fileArray) {
@@ -661,19 +668,19 @@ ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
+    // if (params.isLandingPage && this.zimType === 'zimit') {
+    //     // Mark the directory entry as a redirect
+    //     dirEntry.zimitRedirect = this.zimitStartPage;
+    // }
+    var that = this || appstate.selectedArchive;
     if (!dirEntry) {
         console.warn('No directory entry found for requested URL!');
         return callback(dirEntry, '');
     }
-    var cns = appstate.selectedArchive.getContentNamespace();
+    var cns = that.getContentNamespace();
     return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
-        if (window.TextDecoder) {
-            data = new TextDecoder('utf-8').decode(data);
-        } else {
-            // Support for IE11 and Edge Legacy - only support UTF-8 decoding
-            data = utf8.parse(data);
-        }
+        var html = that.getUtf8FromData(data);
         if (/\bx?html\b/i.test(mimetype)) {
             // If the data were encoded with a different mimtype, here is how to change it
             // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
@@ -681,11 +688,11 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
             // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
 
             // Some Zimit assets have moved location and we need to follow the moved permanently data
-            if (/301\s*moved\s+permanently/i.test(data)) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
+            if (/301\s*moved\s+permanently/i.test(html)) dirEntry = transformZimit.getZimitRedirect(dirEntry, html, cns);
 
             // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
             // So we remove it!
-            data = data.replace(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)[^>]+>\s*/i, function (m0, m1) {
+            html = html.replace(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)[^>]+>\s*/i, function (m0, m1) {
                 if (!/utf-8/i.test(m1)) {
                     return '';
                 }
@@ -693,10 +700,10 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
             });
         }
         if (dirEntry.inspect || dirEntry.zimitRedirect) {
-            if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
+            if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, html, cns);
             if (dirEntry.zimitRedirect) {
-                return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return appstate.selectedArchive.readUtf8File(rd, callback);
+                return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return that.readUtf8File(rd, callback);
                 });
             }
         } else {
@@ -705,9 +712,9 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
             if (params.zimType === 'zimit' && /\/(?:x?html|css|javascript)\b/i.test(mimetype) &&
             // DEV: We do not want to transform CSS and JS files that the user wishes to inspect the contents of
             !(dirEntry.fromArticleList && /\/(?:css|javascript)\b/i.test(mimetype))) {
-                data = transformZimit.transformReplayUrls(dirEntry, data, mimetype);
+                html = transformZimit.transformReplayUrls(dirEntry, html, mimetype);
             }
-            callback(dirEntry, data);
+            callback(dirEntry, html);
         }
     }).catch(function (e) {
         console.error('Error reading directory entry', e);
@@ -730,6 +737,10 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
         console.warn('Directory entry for requested URL was empty!');
         return callback(dirEntry, '');
     }
+    // if (this.zimType === 'zimit' && params.isLandingPage) {
+    //     // Mark the directory entry as a redirect
+    //     dirEntry.zimitRedirect = this.zimitStartPage;
+    // }
     return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         if (dirEntry.inspect) {
@@ -751,6 +762,22 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
         }
     });
 };
+
+/**
+ * Gets the UTF-8 string from the binary data
+ * @param {Blob} data Binary content
+ * @returns {String} UTF-8 string
+ */
+ZIMArchive.prototype.getUtf8FromData = function (data) {
+    var decData;
+    if (window.TextDecoder) {
+        decData = new TextDecoder('utf-8').decode(data);
+    } else {
+        // Support for IE11 and Edge Legacy - only support UTF-8 decoding
+        decData = utf8.parse(data);
+    }
+    return decData;
+}
 
 /**
  * Searches the URL pointer list of Directory Entries by pathname
@@ -913,6 +940,41 @@ ZIMArchive.prototype.addMetadataToZIMFile = function (key) {
         });
     });
 };
+
+/**
+ * Sets the Zimit metadata for the archive
+ */
+ZIMArchive.prototype.setZimitMetadata = function () {
+    var that = this;
+    // Get the landing page
+    return this.file.dirEntryByUrlIndex(this.file.mainPage).then(function (dirEntry) {
+        var findRedirectTarget = dirEntry.redirect ? function (dirEntry) {
+            // If the landing page is a redirect, we need to find the target
+            return that.file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (newEntry) {
+                return newEntry;
+            });
+        } : function (dirEntry) {
+            return Promise.resolve(dirEntry);
+        };
+        return findRedirectTarget(dirEntry).then(function (reEntry) {
+            return reEntry.readData().then(function (data) {
+                var html = that.getUtf8FromData(data);
+                var redirect = html.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^/]+)(.+?)\1/);
+                if (redirect && redirect[2] && redirect[3]) {
+                    // Logic added to distinguish between Type 0 and Type 1 Zimit ZIMs
+                    var relativeZimitPrefix = (reEntry.namespace === 'C' ? 'A/' : '') + redirect[2];
+                    var zimitStartPage = reEntry.namespace + '/' + relativeZimitPrefix + redirect[3];
+                    // Store a full Zimit prefix in the archive object
+                    that.zimitPrefix = relativeZimitPrefix + '/';
+                    that.zimitStartPage = zimitStartPage;
+                    that.zimitPseudoContentNamespace = reEntry.namespace + '/' + (reEntry.namespace === 'C' ? 'A/' : '');
+                }
+            });
+        });
+    }).catch(function (e) {
+        console.warn('Zimit metadata not found in this archive!', e);
+    });
+}
 
 export default {
     ZIMArchive: ZIMArchive
