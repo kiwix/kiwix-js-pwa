@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
@@ -47,7 +47,7 @@ import updater from './lib/updater.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
+/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -3906,6 +3906,8 @@ function archiveReadyCallback (archive) {
     appstate.target = 'iframe';
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.pureMode = false;
+    // Reset params.assetsCache in case it was changed below
+    params.assetsCache = settingsStore.getItem('assetsCache') === 'true';
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
     if (/gutenberg|phet/i.test(archive.file.name) ||
@@ -3918,6 +3920,10 @@ function archiveReadyCallback (archive) {
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
+        } else if (params.zimType === 'zimit') {
+            // Tuen off the assetsCache for now in jQuery mode
+            // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
+            params.assetsCache = params.contentInjectionMode !== 'jquery';
         }
     }
     if (params.contentInjectionMode === 'serviceworker') {
@@ -5242,7 +5248,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (/data:image/i.test(relAssetUrl)) return match;
             // We need to save the query string if any for Zimit-style archives
             querystring = querystring || '';
-            newBlock = match;
             if (params.zimType === 'zimit') {
                 assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
                 assetZIMUrlEnc = assetZIMUrlEnc + querystring;
@@ -5253,6 +5258,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 assetZIMUrlEnc = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL));
             }
             newBlock = blockStart + 'data-kiwixurl' + equals + assetZIMUrlEnc + blockClose;
+            // Replace any srcset with data-kiwixsrcset
+            newBlock = newBlock.replace(/\bsrcset\s*=/, 'data-kiwixsrcset=');
             // For Wikipedia archives, hyperlink the image to the File version
             if (wikiLang && /^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                 newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +

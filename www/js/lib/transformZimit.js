@@ -174,12 +174,13 @@ function transformReplayUrls (dirEntry, data, mimetype) {
         // Deal with image srcsets
         data = data.replace(/<img\b[^>]+srcset=["']([^"']+)/ig, function (match, srcset) {
             var srcsetArr = srcset.split(',');
+            var swPrefix = params.contentInjectionMode === 'serviceworker' ? indexRoot + '/' : '';
             for (var i = 0; i < srcsetArr.length; i++) {
                 // For root-relative links, we need to add the zimitPrefix
-                srcsetArr[i] = srcsetArr[i].replace(/^\s?\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                srcsetArr[i] = srcsetArr[i].replace(/^\s*\/(?!\/)/, swPrefix + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // Zimit prefix is in the URL for absolute URLs
-                srcsetArr[i] = srcsetArr[i].replace(/^(?:\s?https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-                if (rootDirectory) srcsetArr[i] = srcsetArr[i].replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                srcsetArr[i] = srcsetArr[i].replace(/^(?:\s*https?:)?\/\//i, swPrefix + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                if (rootDirectory) srcsetArr[i] = srcsetArr[i].replace(/^(\.\.\/?)+/, swPrefix + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 srcsetArr[i] = '@kiwixtransformed@' + srcsetArr[i];
             }
             match = match.replace(srcset, srcsetArr.join(', '));

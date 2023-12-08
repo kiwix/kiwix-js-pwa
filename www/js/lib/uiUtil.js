@@ -208,21 +208,20 @@ function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, 
             if (callback) callback();
         });
     } else {
-        var blob = new Blob([content], { type: mimeType });
         var url;
         if (makeDataURI) {
             // Because btoa fails on utf8 strings (in SVGs, for example) we need to use FileReader method
             // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
             // url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
-            var myReader = new FileReader();
-            myReader.onloadend = function () {
-                url = myReader.result;
-                node.setAttribute(nodeAttribute, url);
-                if (callback) callback(url);
-            };
-            myReader.readAsDataURL(blob);
+            getDataUriFromUint8Array(content, mimeType).then(function (uri) {
+                node.setAttribute(nodeAttribute, uri);
+                if (callback) callback(uri);
+            }).catch(function (err) {
+                console.error('There was an error converting binary content to data URI', err);
+                if (callback) callback(null);
+            });
         } else {
-            blob = new Blob([content], {
+            var blob = new Blob([content], {
                 type: mimeType
             });
             // Establish the current window (avoids having to pass it to this function)
@@ -235,6 +234,29 @@ function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, 
             node.setAttribute(nodeAttribute, url);
         }
     }
+}
+
+/**
+ * Creates a data: URI from the given content
+ * @param {Uint8Array} content The binary content to convert to a URI
+ * @param {String} mimeType The MIME type of the content
+ * @returns {Promise<String>} A promise that resolves to the data URI
+ */
+function getDataUriFromUint8Array (content, mimeType) {
+    // Use FileReader method because btoa fails on utf8 strings (in SVGs, for example)
+    // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
+    // This native browser method is very fast: see https://stackoverflow.com/a/66046176/9727685
+    return new Promise((resolve, reject) => {
+        var myReader = new FileReader();
+        myReader.onloadend = function () {
+            var url = myReader.result;
+            resolve(url);
+        };
+        myReader.onerror = function (err) {
+            reject(err);
+        };
+        myReader.readAsDataURL(new Blob([content], { type: mimeType }));
+    });
 }
 
 /**
@@ -1391,6 +1413,7 @@ export default {
     systemAlert: systemAlert,
     showUpgradeReady: showUpgradeReady,
     feedNodeWithBlob: feedNodeWithBlob,
+    getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,

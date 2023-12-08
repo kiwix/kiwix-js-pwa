@@ -80,6 +80,13 @@ function extractImages (images, callback) {
         } else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
         var title = decodeURIComponent(imageUrl);
+        // Get any data-kiwixsrcset
+        var srcset = image.getAttribute('data-kiwixsrcset');
+        var srcsetArr = [];
+        if (srcset) {
+            // We need to get the array of images in the srcset
+            srcsetArr = srcset.split(',');
+        }
         extractorBusy++;
         if (/^data:image\/webp/i.test(imageUrl)) {
             image.style.transition = 'opacity 0.3s ease-in';
@@ -118,7 +125,39 @@ function extractImages (images, callback) {
                 image.style.background = '';
                 var mimetype = dirEntry.getMimetype();
                 uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages || params.allowHTMLExtraction, function () {
-                    checkBatch();
+                    if (srcsetArr.length) {
+                        // We need to process each image in the srcset
+                        // Empty or make a new srcset
+                        image.srcset = '';
+                        var srcsetCount = srcsetArr.length;
+                        srcsetArr.forEach(function (imgAndResolutionUrl) {
+                            srcsetCount--;
+                            // Get the url and the resolution from the srcset entry
+                            var urlMatch = imgAndResolutionUrl.match(/^\s*([^\s]+)\s+([0-9.]+\w+)\s*$/);
+                            var url = urlMatch ? urlMatch[1] : '';
+                            var resolution = urlMatch ? urlMatch[2]: '';
+                            appstate.selectedArchive.getDirEntryByPath(url).then(function (srcEntry) {
+                                appstate.selectedArchive.readBinaryFile(srcEntry, function (fileDirEntry, content) {
+                                    var mimetype = srcEntry.getMimetype();
+                                    uiUtil.getDataUriFromUint8Array(content, mimetype).then(function (dataUri) {
+                                        // Add the dataUri to the srcset
+                                        image.srcset += (image.srcset ? ', ' : '') + dataUri + ' ' + resolution;
+                                        if (srcsetCount === 0) {
+                                            checkBatch();
+                                        }
+                                    }).catch(function (e) {
+                                        console.error('Could not get dataUri for image:' + url, e);
+                                        if (srcsetCount === 0) checkBatch();
+                                    });
+                                });
+                            }).catch(function (e) {
+                                console.error('Could not find DirEntry for image:' + url, e);
+                                if (srcsetCount === 0) checkBatch();
+                            });
+                        });
+                    } else {
+                        checkBatch();
+                    }
                 });
                 image.style.transition = 'opacity 0.3s ease-in';
                 image.style.opacity = '1';
@@ -316,7 +355,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
 function prepareImagesJQuery (win, forPrinting) {
     container = win;
     var doc = container.document;
-    var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
+    var documentImages = doc.querySelectorAll('img[data-kiwixurl], img[data-kiwixsrcset], video, audio');
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
     indexRoot = indexRoot.replace(/^\//, '');
     // Zimit ZIMs work better if all images are extracted
