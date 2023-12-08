@@ -2795,6 +2795,8 @@ function setContentInjectionMode (value) {
             });
             return;
         }
+        // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in jQuery mode
+        params.assetsCache = settingsStore.getItem('assetsCache') === 'true';
         if (!isServiceWorkerReady()) {
             var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
             serviceWorkerStatus.textContent = 'ServiceWorker API available : trying to register it...';
