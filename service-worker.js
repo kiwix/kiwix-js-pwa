@@ -70,7 +70,7 @@ var useAppCache = true;
  * A Boolean that governs whether images are displayed
  * app.js can alter this variable via messaging
  */
-let imageDisplay;
+let imageDisplay = 'all';
 
 // Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
@@ -373,50 +373,60 @@ self.addEventListener('fetch', function (event) {
         }, function () {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
-            // YouTube links from Zimit archives are dealt with specially
-            if (/youtubei.*player/.test(strippedUrl) || cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
-                const range = event.request.headers.get('range');
-                if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
-                    // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
-                    // A URL without "?kiwix-display" query string acts as a passthrough so that the regex will not match and
-                    // the image will be fetched by app.js
-                    // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
-                    var svgResponse;
-                    if (imageDisplay === 'manual') {
-                        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
-                    } else {
-                        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
-                    }
-                    return new Response(svgResponse, {
-                        headers: {
-                            'Content-Type': 'image/svg+xml'
+            return zimitResolver(event).then(function (modRequestOrResponse) {
+                if (modRequestOrResponse instanceof Response) {
+                    // The request was modified by the ReplayWorker and it returned a modified response, so we return it
+                    // console.debug('[SW] Returning modified response from ReplayWorker', modRequest);
+                    return cacheAndReturnResponseForAsset(event, modRequestOrResponse);
+                }
+                rqUrl = modRequestOrResponse.url;
+                urlObject = new URL(rqUrl);
+                strippedUrl = urlObject.pathname;
+                // YouTube links from Zimit archives are dealt with specially (for ZIMs not being read by the ReplayWorker)
+                if (/youtubei.*player/.test(strippedUrl) || cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
+                    if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
+                        // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
+                        // A URL without "?kiwix-display" query string acts as a passthrough so that the regex will not match and
+                        // the image will be fetched by app.js
+                        // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
+                        var svgResponse;
+                        if (imageDisplay === 'manual') {
+                            svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
+                        } else {
+                            svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
                         }
+                        return new Response(svgResponse, {
+                            headers: {
+                                'Content-Type': 'image/svg+xml'
+                            }
+                        });
+                    }
+                    const range = modRequestOrResponse.headers.get('range');
+                    return fetchUrlFromZIM(urlObject, range).then(function (response) {
+                    //     // DEV: For normal reads, this is now done in app.js, but for libzim, we have to do it here
+                    //     // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
+                    //     if (data && data.origin === 'libzim' && regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
+                    //         !regexpExcludedURLSchema.test(event.request.url)) {
+                    //         event.waitUntil(updateCache(ASSETS_CACHE, rqUrl, response.clone()));
+                    //     }
+                        return cacheAndReturnResponseForAsset(event, response);
+                    }).catch(function (msgPortData) {
+                        console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
+                        return msgPortData;
+                    });
+                } else {
+                    // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
+                    return fetch(modRequestOrResponse).then(function (response) {
+                        // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
+                        if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
+                            event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
+                        }
+                        return response;
+                    }).catch(function (error) {
+                        console.debug('[SW] Network request failed and no cache.', error);
                     });
                 }
-                return fetchUrlFromZIM(urlObject, range).then(function ({ response, data }) {
-                    // DEV: For normal reads, this is now done in app.js, but for lizim, we have to do it here
-                    // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
-                    if (data && data.origin === 'libzim' && regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
-                        !regexpExcludedURLSchema.test(event.request.url)) {
-                        event.waitUntil(updateCache(ASSETS_CACHE, rqUrl, response.clone()));
-                    }
-                    return response;
-                }).catch(function (msgPortData) {
-                    console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
-                    return msgPortData;
-                });
-            } else {
-                // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
-                return fetch(event.request).then(function (response) {
-                    // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
-                    if (!regexpExcludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
-                        event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
-                    }
-                    return response;
-                }).catch(function (error) {
-                    console.debug('[SW] Network request failed and no cache.', error);
-                });
-            }
+            });
         })
     );
 });
@@ -716,10 +726,12 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
                 var httpResponse = new Response(slicedData, responseInit);
 
                 // Let's send the content back from the ServiceWorker
-                resolve({ response: httpResponse, data: msgPortEvent.data });
+                // resolve({ response: httpResponse, data: msgPortEvent.data });
+                resolve(httpResponse);
             } else if (msgPortEvent.data.action === 'sendRedirect') {
                 console.debug('[SW] Redirecting to ' + msgPortEvent.data.redirectUrl);
-                resolve({ response: Response.redirect(prefix + msgPortEvent.data.redirectUrl) });
+                // resolve({ response: Response.redirect(prefix + msgPortEvent.data.redirectUrl) });
+                resolve(Response.redirect(prefix + msgPortEvent.data.redirectUrl));
             } else {
                 reject(msgPortEvent.data, titleWithNameSpace);
             }

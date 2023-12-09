@@ -1,4 +1,4 @@
-﻿/**
+/**
  * zimArchive.js: Support for archives in ZIM format.
  *
  * Copyright 2015-2023 Mossroy, Jaifroid and contributors
@@ -276,7 +276,7 @@ ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
         var that = this;
         this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
             // Filter out Zimit files that we cannot handle without error
-            if (that.zimType === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
+            if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) dirEntry = transformZimit.filterReplayFiles(dirEntry);
             callback(dirEntry);
         });
     }
@@ -652,7 +652,7 @@ ZIMArchive.prototype.callLibzimWorker = function (parameters) {
 ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
     var that = this;
     this.file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
-        if (that.zimType === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
+        if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
         callback(resolvedDirEntry);
     });
 };
@@ -681,6 +681,11 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
     return dirEntry.readData().then(function (data) {
         var mimetype = dirEntry.getMimetype();
         var html = that.getUtf8FromData(data);
+        // Bypass everything if we're using Replay Worker
+        if (appstate.isReplayWorkerAvailable) {
+            callback(dirEntry, html);
+            return;
+        }
         if (/\bx?html\b/i.test(mimetype)) {
             // If the data were encoded with a different mimtype, here is how to change it
             // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
@@ -737,11 +742,12 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
         console.warn('Directory entry for requested URL was empty!');
         return callback(dirEntry, '');
     }
-    // if (this.zimType === 'zimit' && params.isLandingPage) {
-    //     // Mark the directory entry as a redirect
-    //     dirEntry.zimitRedirect = this.zimitStartPage;
-    // }
     return dirEntry.readData().then(function (data) {
+        // Bypass everything if we're using Replay Worker
+        if (appstate.selectedArchive.zimType === 'zimit' && appstate.isReplayWorkerAvailable) {
+            callback(dirEntry, data);
+            return;
+        }
         var mimetype = dirEntry.getMimetype();
         if (dirEntry.inspect) {
             dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());
@@ -788,17 +794,19 @@ ZIMArchive.prototype.getUtf8FromData = function (data) {
  */
 ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath) {
     var that = this;
-    if (originalPath) appstate.originalPath = originalPath;
-    path = path.replace(/\?kiwix-display/, '');
-    // Correct obvious errors
-    if (!originalPath) {
-        var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
-        if (revisedPath !== path) {
-            console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
-            if (appstate.selectedArchive.zimType === 'zimit') {
-                console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
+    if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) {
+        if (originalPath) appstate.originalPath = originalPath;
+        path = path.replace(/\?kiwix-display/, '');
+        // Correct obvious errors
+        if (!originalPath) {
+            var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
+            if (revisedPath !== path) {
+                console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
+                if (appstate.selectedArchive.zimType === 'zimit') {
+                    console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
+                }
+                path = revisedPath;
             }
-            path = revisedPath;
         }
     }
     return util.binarySearch(0, this.file.entryCount, function (i) {
@@ -817,10 +825,10 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
         return that.file.dirEntryByUrlIndex(index);
     }).then(function (dirEntry) {
         // Filter Zimit dirEntries and do somee initial transforms
-        if (that.zimType === 'zimit') {
+        if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) {
             dirEntry = transformZimit.filterReplayFiles(dirEntry);
         }
-        if (!dirEntry) {
+        if (!dirEntry && !appstate.isReplayWorkerAvailable) {
             // We couldn't get the dirEntry, so look it up the Zimit header
             if (!zimitResolving && that.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
                 // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)

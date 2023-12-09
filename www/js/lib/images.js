@@ -310,7 +310,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
                 documentImages[i].style.opacity = '0';
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
-                documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, blockEnd) {
+                documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, querystring, blockEnd) {
                     var parameters = relAssetUrl.replace(/^[^?]+/, '');
                     var assetZIMUrlEnc;
                     if (params.zimType === 'zimit' && !relAssetUrl.indexOf(indexRoot)) {
