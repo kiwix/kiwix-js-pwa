@@ -339,16 +339,15 @@ prefix.addEventListener('blur', function () {
 
 // Add keyboard shortcuts
 window.addEventListener('keyup', function (e) {
-    e = e || window.event;
     // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-    if ((e.ctrlKey || e.altKey) && e.which === 70) {
+    if ((e.ctrlKey || e.altKey) && e.key === 'F') {
         document.getElementById('findText').click();
     }
 });
 
 window.addEventListener('keydown', function (e) {
     // Ctrl-P to patch printing support, so iframe gets printed
-    if (e.ctrlKey && e.which === 80) {
+    if (e.ctrlKey && e.key === 'P') {
         e.stopPropagation();
         e.preventDefault();
         printIntercept();
@@ -546,7 +545,10 @@ document.getElementById('findText').addEventListener('click', function () {
         return;
     }
     var findInArticle = null;
-    var innerDocument = window.frames[0].frameElement.contentDocument;
+    var innerDocument = document.getElementById('articleContent').contentDocument;
+    if (appstate.isReplayWorkerAvailable) {
+        innerDocument = innerDocument ? innerDocument.getElementById('replay_iframe').contentDocument : null;
+    }
     innerDocument = innerDocument ? innerDocument.body : null;
     if (!innerDocument || innerDocument.innerHTML.length < 10) return;
     setTab('findText');
@@ -562,10 +564,10 @@ document.getElementById('findText').addEventListener('click', function () {
     // TODO: MatchType should be language specific
     findInArticle.addEventListener('keyup', function (e) {
         // If user pressed Alt-F or Ctrl-F, exit
-        if ((e.altKey || e.ctrlKey) && e.which === 70) return;
+        if ((e.altKey || e.ctrlKey) && e.key === 'F') return;
         var val = this.value;
         // If user pressed enter / return key
-        if (val && e.which === 13) {
+        if (val && (e.key === 'Enter' || e.keyCode === 13)) {
             localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
             return;
         }
@@ -5026,6 +5028,7 @@ function handleClickOnReplayLink (ev, anchor) {
                     params.isLandingPage = false;
                     readArticle(dirEntry); */
                 } else {
+                    clearFindInArticle();
                     // Fingers crossed, let Replay handle this link
                     anchor.passthrough = true;
                     // Handle middle-clicks and ctrl-clicks (these should be filtered out above, but...)
