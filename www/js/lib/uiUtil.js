@@ -404,9 +404,7 @@ function clearSpinner () {
     cachingAssets.style.display = 'none';
 }
 
-function printCustomElements () {
-    // var innerDocument = window.frames[0].frameElement.contentDocument;
-    var innerDocument = document.getElementById('articleContent').contentDocument;
+function printCustomElements (innerDocument) {
     // For now, adding a printing stylesheet to a zimit ZIM appears to diasble printing of any images!
     if (appstate.wikimediaZimLoaded) {
         // Add any missing classes
@@ -451,7 +449,7 @@ function printCustomElements () {
     // Using @media print on images doesn't get rid of them all, so use brute force
     if (!document.getElementById('printImageCheck').checked) {
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
-    } else {
+    } else if (appstate.selectedArchive.zimType === 'open') {
         // Remove any breakout link
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]+id="breakoutLink"[^>]*>\s*/, '');
     }

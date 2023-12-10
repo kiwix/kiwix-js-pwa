@@ -356,14 +356,14 @@ window.addEventListener('keydown', function (e) {
 }, true);
 
 // Set up listeners for print dialogues
-function printArticle () {
-    uiUtil.printCustomElements();
+function printArticle (doc) {
+    uiUtil.printCustomElements(doc);
     uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
         printCleanup();
     });
     // innerDocument.execCommand("print", false, null);
     // if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
-        window.frames[0].frameElement.contentWindow.print();
+        doc.defaultView.print();
     // } else {
     //     // We are in an Electron app and need to use export to browser to print
     //     params.preloadingAllImages = false;
@@ -451,11 +451,17 @@ function printIntercept () {
     // If document is in wrong style, or images are one-time BLOBs, reload it
     // var innerDoc = window.frames[0].frameElement.contentDocument;
     var innerDoc = document.getElementById('articleContent').contentDocument;
+    if (appstate.isReplayWorkerAvailable) {
+        innerDoc = innerDoc ? innerDoc.getElementById('replay_iframe').contentDocument : null;
+    }
+    if (!innerDoc) {
+        return uiUtil.systemAlert('Sorry, we could not find a document to print! Please load one first.', 'Warning');
+    }
     var printDesktopCheck = document.getElementById('printDesktopCheck').checked;
     var printImageCheck = document.getElementById('printImageCheck').checked;
     var styleIsDesktop = !/href\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
     // if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction || params.contentInjectionMode == 'serviceworker') {
-    if (styleIsDesktop !== printDesktopCheck || (printImageCheck && !params.allowHTMLExtraction)) {
+    if (!appstate.isReplayWorkerAvailable && (styleIsDesktop !== printDesktopCheck || (printImageCheck && !params.allowHTMLExtraction))) {
         // We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
         params.cssSource = printDesktopCheck ? 'desktop' : 'mobile';
         params.rememberLastPage = true; // Re-enable caching to speed up reloading of page
@@ -509,7 +515,7 @@ function printIntercept () {
         // Restore temporarily changed values
         params.cssSource = settingsStore.getItem('cssSource') || 'auto';
         params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-        if (result) printArticle();
+        if (result) printArticle(innerDoc);
         else printCleanup();
     });
 }
@@ -4289,13 +4295,17 @@ function listenForNavigationKeys () {
 
 function listenForSearchKeys () {
     // Listen to iframe key presses for in-page search
-    document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+    var iframeContentWindow = articleWindow;
+    if (appstate.isReplayWorkerAvailable) {
+        iframeContentWindow = articleWindow.document.getElementById('replay_iframe').contentWindow;
+    }
+    iframeContentWindow.addEventListener('keyup', function (e) {
         // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
         if ((e.ctrlKey || e.altKey) && e.which == 70) {
             document.getElementById('findText').click();
         }
     });
-    document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+    iframeContentWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
         if (e.ctrlKey && e.which == 80) {
             e.stopPropagation();
@@ -4890,6 +4900,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     loaded = true;
     params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
     var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
+    articleDocument = doc;
     var docBody = doc ? doc.body : null;
     // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
     iframeArticleContent.contentWindow.onclick = filterClickEvent;
@@ -6532,10 +6543,12 @@ function setupTableOfContents () {
 function openAllSections (override, node) {
     var open = override === false ? false : override || params.openAllSections;
     var container = node || articleDocument;
-    var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
-    if (node) processSection(open, node);
-    for (var x = blocks.length; x--;) {
-        processSection(open, blocks[x]);
+    if (container) {
+        var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
+        if (node) processSection(open, node);
+        for (var x = blocks.length; x--;) {
+            processSection(open, blocks[x]);
+        }
     }
 }
 
