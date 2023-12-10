@@ -47,7 +47,7 @@ import updater from './lib/updater.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
+/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp, $ */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -2241,7 +2241,8 @@ function cssUIThemeGetOrSet (value, getOnly) {
 }
 
 function switchCSSTheme () {
-    var doc = window.frames[0].frameElement.contentDocument;
+    var doc = window.frames[0].frameElement ? window.frames[0].frameElement.contentDocument : '';
+    if (!doc) return;
     var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, '../');
     // If something went wrong, use the page reload method
     if (!treePath) {
@@ -2753,7 +2754,7 @@ function initServiceWorkerMessaging () {
                 'Offline use is disabled!', true).then(function (response) {
                 if (response) {
                     setContentInjectionMode('serviceworker');
-                    if (selectedArchive) {
+                    if (appstate.selectedArchive) {
                         setTimeout(function () {
                             params.themeChanged = true;
                             document.getElementById('btnHome').click();
@@ -4618,7 +4619,7 @@ function readArticle (dirEntry) {
         });
 
         // Set up article onload handler
-        articleLoader();
+        articleLoader(dirEntry);
 
         if (!isDirEntryExpectedToBeDisplayed(dirEntry)) {
             return;
@@ -4817,20 +4818,20 @@ function readArticle (dirEntry) {
 /**
  * Selects the iframe to which to attach the onload event, and attaches it
  */
-function articleLoader () {
+function articleLoader (entry) {
     if (appstate.selectedArchive.zimType === 'zimit') {
         var doc = articleContainer.contentDocument || null;
         if (doc) {
             var replayIframe = doc.getElementById('replay_iframe');
             if (replayIframe) {
                 replayIframe.onload = function () {
-                    articleLoadedSW(replayIframe);
+                    articleLoadedSW(entry, replayIframe);
                 };
             }
         }
     } else {
         articleContainer.onload = function () {
-            articleLoadedSW(articleContainer);
+            articleLoadedSW(entry, articleContainer);
         };
     }
 }
@@ -4845,6 +4846,11 @@ var filterClickEvent = function (event) {
     if (params.lockDisplayOrientation) refreshFullScreen(event);
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
+    // If the anchor has a passthrough property, then we have already checked it is safe, so we can return
+    if (clickedAnchor && clickedAnchor.passthrough) {
+        clickedAnchor.passthrough = false;
+        return;
+    }
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
         if (appstate.isReplayWorkerAvailable) {
@@ -4879,16 +4885,14 @@ var filterClickEvent = function (event) {
 };
 
 var loaded = false;
-var articleLoadedSW = function (dirEntry) {
+var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     if (loaded) return;
     loaded = true;
     params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
-    articleDocument = articleWindow.document.documentElement;
-    var doc = articleWindow.document;
-    var docBody = doc.body;
+    var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
+    var docBody = doc ? doc.body : null;
     // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-    articleWindow.removeEventListener('click', filterClickEvent, true);
-    articleWindow.addEventListener('click', filterClickEvent, true);
+    iframeArticleContent.contentWindow.onclick = filterClickEvent;
     if (docBody) {
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
@@ -4900,51 +4904,54 @@ var articleLoadedSW = function (dirEntry) {
             listenForSearchKeys();
         }
         switchCSSTheme();
-        // Set relative font size + Stackexchange-family multiplier
-        var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? 'desktop' : 'mobile';
-        zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? 'desktop-stx' : zimType; // Support stackexchange
-        zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? 'mobile' : zimType;
-        var docElStyle = articleDocument.style;
-        var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
-        docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
-        docElStyle[zoomProp] = ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
-        // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
+        if (appstate.selectedArchive.zimType === 'open') {
+            // Set relative font size + Stackexchange-family multiplier
+            var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? 'desktop' : 'mobile';
+            zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? 'desktop-stx' : zimType; // Support stackexchange
+            zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? 'mobile' : zimType;
+            var docElStyle = doc.style;
+            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+            docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
+            docElStyle[zoomProp] = ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
+            if (!params.isLandingPage) openAllSections();
+        }
         checkToolbar();
         // Set page width according to user preference
         removePageMaxWidth();
-        if (!params.isLandingPage) openAllSections();
         setupHeadings();
         listenForNavigationKeys();
-        // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
-        // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener && !appstate.pureMode && !params.useLibzim) {
+        if (!appstate.isReplayWorkerAvailable) {
+            // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
+            // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
+            if (params.windowOpener && !appstate.pureMode && !params.useLibzim) {
+                setTimeout(function () {
+                    parseAnchorsJQuery(dirEntry);
+                }, 1500);
+            }
+            if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
+                images.prepareImagesServiceWorker(articleWindow);
+            } else {
+                setTimeout(function () {
+                    images.loadMathJax(articleWindow);
+                }, 1000);
+            }
+            if (params.allowHTMLExtraction && appstate.target === 'iframe') {
+                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                uiUtil.insertBreakoutLink(determinedTheme);
+            }
+            // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
+            if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
+            // The content is ready : we can hide the spinner
+            setTab();
             setTimeout(function () {
-                parseAnchorsJQuery(dirEntry);
-            }, 1500);
+                doc.bgcolor = '';
+                if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                docBody.style.display = 'block';
+                // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+                iframe.style.height = 'auto';
+                resizeIFrame();
+            }, 200);
         }
-        if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
-            images.prepareImagesServiceWorker(articleWindow);
-        } else {
-            setTimeout(function () {
-                images.loadMathJax(articleWindow);
-            }, 1000);
-        }
-        if (params.allowHTMLExtraction && appstate.target === 'iframe') {
-            var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
-            uiUtil.insertBreakoutLink(determinedTheme);
-        }
-        // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
-        if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
-        // The content is ready : we can hide the spinner
-        setTab();
-        setTimeout(function () {
-            articleDocument.bgcolor = '';
-            if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-            docBody.style.display = 'block';
-            // Some contents need this to be able to display correctly (e.g. masonry landing pages)
-            iframe.style.height = 'auto';
-            resizeIFrame();
-        }, 200);
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
         // Because this is loading within docBody, it should only get set for HTML documents
@@ -4972,9 +4979,6 @@ var articleLoadedSW = function (dirEntry) {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
         }
-        // if (filterClickEvent) {
-        //     articleWindow.removeEventListener('mousedown', filterClickEvent, true);
-        // }
     };
 };
 
@@ -5158,7 +5162,7 @@ function handleMessageChannelMessage (event) {
                 if (!/moved/i.test(shortTitle) && !/image|javascript|warc-headers|jsonp?/.test(mimetype)) {
                     uiUtil.pollSpinner(shortTitle);
                     // Ensure the article onload event gets attached to the right iframe
-                    articleLoader();
+                    articleLoader(dirEntry);
                 }
                 // Let's send the content to the ServiceWorker
                 var buffer = content.buffer ? content.buffer : content;
