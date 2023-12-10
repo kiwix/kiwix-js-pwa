@@ -2068,11 +2068,20 @@ function checkToolbar () {
         params.hideToolbars = settingsStore.getItem('hideToolbars');
         params.hideToolbars = params.hideToolbars === null ? true : params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
     }
+
     iframeWindow.removeEventListener('scroll', uiUtil.scroller);
     iframeWindow.removeEventListener('touchstart', uiUtil.scroller);
     iframeWindow.removeEventListener('touchend', uiUtil.scroller);
     iframeWindow.removeEventListener('wheel', uiUtil.scroller);
     iframeWindow.removeEventListener('keydown', uiUtil.scroller);
+
+    // Get the contentWindow of the iframe to operate on
+    if (articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
+        iframeWindow = articleContainer.contentWindow.document.getElementById('replay_iframe').contentWindow;
+    } else {
+        iframeWindow = iframe.contentWindow;
+    }
+
     if (params.hideToolbars) {
         iframeWindow.addEventListener('scroll', uiUtil.scroller);
         iframeWindow.addEventListener('touchstart', uiUtil.scroller);
@@ -4837,6 +4846,11 @@ var filterClickEvent = function (event) {
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
     if (clickedAnchor) {
+        // Check for Zimit links that would normally be handled by the Replay Worker
+        if (appstate.isReplayWorkerAvailable) {
+            handleClickOnReplayLink(event, clickedAnchor);
+            return;
+        }
         var href = clickedAnchor.getAttribute('href');
         // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
         // We also do it for ftp even if it's not supported any more by recent browsers...

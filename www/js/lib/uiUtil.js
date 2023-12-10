@@ -1,22 +1,22 @@
 ﻿/**
  * uiUtil.js : Utility functions for the User Interface
  *
- * Copyright 2013-2023 Mossroy, Jaifroid and contributors
- * License GPL v3:
+ * Copyright 2013-2024 Mossroy, Jaifroid and contributors
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -32,9 +32,10 @@ import util from './util.js';
  */
 var itemsCount = false;
 
-// Placeholders for the header and footer
+// Placeholders for the articleContainer, header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
+let articleContainer = document.getElementById('articleContent');
 
 /**
  * Hides slide-away UI elements
@@ -80,7 +81,12 @@ let scrollThrottle = false;
  * Luuncher for the slide-away function, including a throttle to prevent it being called too often
  */
 function scroller (e) {
-    const articleContainer = document.getElementById('articleContent');
+    // We have to refresh the articleContainer when the window changes
+    articleContainer = document.getElementById('articleContent');
+    // Get the replay_iframe if it exists
+    if (articleContainer.contentWindow && articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
+        articleContainer = articleContainer.contentWindow.document.getElementById('replay_iframe');
+    }
     if (scrollThrottle) return;
     // windowIsScrollable gets set and reset in slideAway()
     if (windowIsScrollable && e.type === 'wheel') return;
@@ -123,7 +129,6 @@ let windowIsScrollable = false;
 
 // Slides away or restores the header and footer
 function slideAway (e) {
-    const articleContainer = document.getElementById('articleContent');
     const newScrollY = articleContainer.contentWindow.pageYOffset;
     let delta;
     const visibleState = /\(0p?x?\)/.test(header.style.transform);
