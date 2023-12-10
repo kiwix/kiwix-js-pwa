@@ -566,7 +566,7 @@ function displayActiveContentWarning (type) {
             // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' +
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
             'class="alert-link">switch to Service Worker mode</a> if your platform supports it.<br />'
-                : 'Support for <b>Zimit</b> archives is experimental. Audio/video and some dynamic content may fail.<br />') +
+                : 'Legacy support for <b>Zimit</b> archives. Audio/video and some dynamic content may fail.<br />') +
             'Start search with <b>.*</b> to match part of a title, type <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';

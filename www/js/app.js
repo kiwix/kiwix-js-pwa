@@ -4653,10 +4653,14 @@ function readArticle (dirEntry) {
                     console.error('Reading Zimit archives with the Replay system is not supported in this browser', event.data.error);
                     return handleUnsupportedReplayWorker(dirEntry);
                 } else if (event.data.success) {
-                    // console.debug(event.data.success);
-                    appstate.isReplayWorkerAvailable = true;
-                    // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                    articleContainer.src = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
+                    // For now Electron apps cannot use the Replay Worker because of the file:// protocol
+                    if (document.location.protocol !== 'file:') {
+                        appstate.isReplayWorkerAvailable = true;
+                        // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
+                        articleContainer.src = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
+                    } else {
+                        return handleUnsupportedReplayWorker(dirEntry);
+                    }
                 }
             };
             // If we are dealing with a Zimit ZIM, we need to instruct Replay to add the file as a new collection
@@ -5044,12 +5048,14 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     // params.originalContentInjectionMode = params.contentInjectionMode;
     // params.contentInjectionMode = 'jquery';
     readArticle(unhandledDirEntry);
-    // if (!params.hideActiveContentWarning) uiUtil.displayActiveContentWarning();
-    return uiUtil.systemAlert('<p>You are attempting to open a Zimit-style archive, ' +
-        'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><pWe are using a legacy ' +
-        'fallback method to read this archive, but some highly dynamic content may not work.</p>',
-        'Legacy support for Zimit archives'
-    );
+    if (!params.hideActiveContentWarning) {
+        uiUtil.displayActiveContentWarning();
+        return uiUtil.systemAlert('<p>You are attempting to open a Zimit-style archive, ' +
+            'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
+            'fallback method to read this archive, but some highly dynamic content may not work.</p>',
+            'Legacy support for Zimit archives'
+        );
+    }
 }
 
 /**

@@ -356,7 +356,11 @@ self.addEventListener('fetch', function (event) {
     // Test if we're in an Electron app
     // DEV: Electron uses the file:// protocol and hacks it to work with SW, but it has CORS issues when using the Fetch API to fetch local files,
     // so we must bypass it here if we're fetching a local file
-    if (/^file:/i.test(rqUrl) && !(regexpZIMUrlWithNamespace.test(strippedUrl) && /\.zim\//i.test(strippedUrl))) return;
+    if (/^file:/i.test(rqUrl)) {
+        // For now the Replay Worke doesn't work with the file:// protocol
+        isReplayWorkerAvailable = false;
+        if (!(regexpZIMUrlWithNamespace.test(strippedUrl) && /\.zim\//i.test(strippedUrl))) return;
+    }
     // Don't cache download links
     if (regexpKiwixDownloadLinks.test(rqUrl)) return;
     // Select cache depending on request format
