@@ -5079,7 +5079,7 @@ function handleMessageChannelForLibzim (event) {
                     // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
                     // articleWindow.removeEventListener('click', filterClickEvent, true);
                     // articleWindow.addEventListener('click', filterClickEvent, true);
-                    articleLoadedSW(dirEntry);
+                    articleLoadedSW(dirEntry, articleContainer);
                 };
             }
             messagePort.postMessage(message);
@@ -5279,11 +5279,11 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             if (/UWP/.test(params.appType)) {
                 articleContainer.style.display = 'none';
                 setTimeout(function () {
-                    if (!loaded) articleLoadedSW(thisDirEntry);
+                    if (!loaded) articleLoadedSW(thisDirEntry, articleContainer);
                 }, 800);
             }
             articleContainer.onload = function () {
-                if (!loaded) articleLoadedSW(thisDirEntry);
+                if (!loaded) articleLoadedSW(thisDirEntry, articleContainer);
             };
         } else {
             // New windows do not respect the onload event because they've been pre-populated,
@@ -5294,7 +5294,7 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
             }, 2000);
             if (!/UWP/.test(params.appType)) {
                 setTimeout(function () {
-                    if (!loaded) articleLoadedSW(thisDirEntry);
+                    if (!loaded) articleLoadedSW(thisDirEntry, articleContainer);
                 }, 400);
             }
         }
