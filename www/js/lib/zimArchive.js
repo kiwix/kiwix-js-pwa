@@ -668,7 +668,7 @@ ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
-    if (params.isLandingPage && this.zimType === 'zimit' && !appstate.isReplayWorkerAvailable && dirEntry.namespace !== 'M') {
+    if (params.isLandingPage && appstate.selectedArchive.zimType === 'zimit' && !appstate.isReplayWorkerAvailable && dirEntry.namespace !== 'M') {
         // Mark the directory entry as a redirect
         dirEntry.zimitRedirect = this.zimitStartPage;
         // Prevent reload loop!

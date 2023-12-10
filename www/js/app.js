@@ -4909,7 +4909,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
             var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? 'desktop' : 'mobile';
             zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? 'desktop-stx' : zimType; // Support stackexchange
             zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? 'mobile' : zimType;
-            var docElStyle = doc.style;
+            var docElStyle = doc.documentElement.style;
             var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
             docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
             docElStyle[zoomProp] = ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
@@ -5375,10 +5375,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
-        articleDocument = articleWindow.document;
-        articleDocument.open();
-        articleDocument.write(htmlArticle);
-        articleDocument.close();
+        var articleDoc = articleWindow.document;
+        articleDoc.open();
+        articleDoc.write(htmlArticle);
+        articleDoc.close();
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
@@ -5871,6 +5871,18 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     // End of preload stylesheets code
 
     function injectHTML () {
+        // For articles loaded in the iframe, we need to set the articleWindow (but if the user is opening a new tab/window,
+        // then the articleWindow has already been set in the click event of the ZIM link)
+        if (appstate.target === 'iframe') {
+            // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
+            $('#articleContent').contents().remove();
+            articleContainer = document.getElementById('articleContent');
+            articleContainer.kiwixType = 'iframe';
+            articleWindow = articleContainer.contentWindow;
+        }
+
+        articleDocument = articleWindow.document.documentElement;
+
         // Inject htmlArticle into iframe
         // uiUtil.pollSpinner(); //Void progress messages
         // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
@@ -6029,16 +6041,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             params.isLandingPage = false;
         };
-
-        // For articles loaded in the iframe, we need to set the articleWindow (but if the user is opening a new tab/window,
-        // then the articleWindow has already been set in the click event of the ZIM link)
-        if (appstate.target === 'iframe') {
-            // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
-            $('#articleContent').contents().remove();
-            articleContainer = document.getElementById('articleContent');
-            articleContainer.kiwixType = 'iframe';
-            articleWindow = articleContainer.contentWindow;
-        }
 
         // Hide the document to avoid display flash before stylesheets are loaded; also improves performance during loading of
         // assets in most browsers

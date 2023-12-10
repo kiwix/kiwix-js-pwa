@@ -463,11 +463,10 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                 return;
             }
             // Bypass getting dirEntry if we already have it
-            var getDirEntry = dirEntry ? Promise.resolve()
-                : selectedArchive.getDirEntryByPath(title);
+            var getDirEntry = dirEntry ? function () { return Promise.resolve(dirEntry); }
+                : selectedArchive['getDirEntryByPath'];
             // Read data from ZIM
-            getDirEntry.then(function (resolvedDirEntry) {
-                if (dirEntry) resolvedDirEntry = dirEntry;
+            getDirEntry(title).then(function (resolvedDirEntry) {
                 if (resolvedDirEntry === null) {
                     console.log('Error: asset file not found: ' + title);
                     resolve(null);
@@ -489,7 +488,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                     }
                     // Set the read function to use according to filetype
                     var readFile = /\b(?:x?html|css|javascript)\b/i.test(mimetype)
-                        ? selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
+                        ? selectedArchive['readUtf8File'] : selectedArchive['readBinaryFile'];
                     readFile(resolvedDirEntry, function (fileDirEntry, content) {
                         if (!fileDirEntry && !content) {
                             console.warn('Could not read asset ' + title);
