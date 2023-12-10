@@ -4650,7 +4650,7 @@ function readArticle (dirEntry) {
             var zimitMessageChannel = new MessageChannel();
             zimitMessageChannel.port1.onmessage = function (event) {
                 if (event.data.error) {
-                    console.error('Reading Zimit archives in ServiceWorker mode is not supported in this browser', event.data.error);
+                    console.error('Reading Zimit archives with the Replay system is not supported in this browser', event.data.error);
                     return handleUnsupportedReplayWorker(dirEntry);
                 } else if (event.data.success) {
                     // console.debug(event.data.success);
@@ -5041,14 +5041,14 @@ function handleClickOnReplayLink (ev, anchor) {
 
 function handleUnsupportedReplayWorker (unhandledDirEntry) {
     appstate.isReplayWorkerAvailable = false;
-    params.originalContentInjectionMode = params.contentInjectionMode;
-    params.contentInjectionMode = 'jquery';
+    // params.originalContentInjectionMode = params.contentInjectionMode;
+    // params.contentInjectionMode = 'jquery';
     readArticle(unhandledDirEntry);
     // if (!params.hideActiveContentWarning) uiUtil.displayActiveContentWarning();
     return uiUtil.systemAlert('<p>You are attempting to open a Zimit-style archive, ' +
-        'which is not supported by your browser in ServiceWorker(Local) mode.</p><p>We have temporarily switched you to JQuery mode ' +
-        'so you can view static content, but a lot of content is non-functional in this configuration.</p>',
-        'Unsupported archive type!'
+        'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><pWe are using a legacy ' +
+        'fallback method to read this archive, but some highly dynamic content may not work.</p>',
+        'Legacy support for Zimit archives'
     );
 }
 
