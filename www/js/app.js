@@ -2737,20 +2737,22 @@ function initServiceWorkerMessaging () {
         console.error('The Service Worker is not controlling the current page! We have to reload.');
         // Turn off failsafe, as this is a controlled reboot
         settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
-        window.location.reload();
+        if (!appstate.preventAutoReboot) window.location.reload();
     } else if (/^https/.test(window.location.protocol) && navigator && navigator.serviceWorker && !navigator.serviceWorker.controller) {
-        return uiUtil.systemAlert('<p>No Service Worker is registered, meaning this app will not currently work offline!</p><p>Would you like to switch to ServiceWorker mode?</p>',
-          'Offline use is disabled!', true).then(function (response) {
-            if (response) {
-                setContentInjectionMode('serviceworker');
-                if (appstate.selectedArchive) {
-                    setTimeout(function () {
-                        params.themeChanged = true;
-                        document.getElementById('btnHome').click();
-                    }, 750);
+        if (!params.noPrompts) {
+            uiUtil.systemAlert('<p>No Service Worker is registered, meaning this app will not currently work offline!</p><p>Would you like to switch to ServiceWorker mode?</p>',
+                'Offline use is disabled!', true).then(function (response) {
+                if (response) {
+                    setContentInjectionMode('serviceworker');
+                    if (selectedArchive) {
+                        setTimeout(function () {
+                            params.themeChanged = true;
+                            document.getElementById('btnHome').click();
+                        }, 750);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
 
@@ -2861,6 +2863,7 @@ function setContentInjectionMode (value) {
                     } else if (protocol === 'file:') {
                         message += '\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)';
                     }
+                    appstate.preventAutoReboot = true;
                     if (message) uiUtil.systemAlert(message, 'Information');
                     setContentInjectionMode('jquery');
                 });
@@ -5373,8 +5376,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
 
     // Display Bootstrap warning alert if the landing page contains active content
-    if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' ||
-        params.manipulateImages || params.allowHTMLExtraction || params.zimType === 'zimit')) {
+    if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
+        (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || params.zimType === 'zimit')) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {

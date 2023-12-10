@@ -1,4 +1,4 @@
-/**
+﻿/**
  * zimArchive.js: Support for archives in ZIM format.
  *
  * Copyright 2015-2023 Mossroy, Jaifroid and contributors
@@ -668,10 +668,12 @@ ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
-    // if (params.isLandingPage && this.zimType === 'zimit') {
-    //     // Mark the directory entry as a redirect
-    //     dirEntry.zimitRedirect = this.zimitStartPage;
-    // }
+    if (params.isLandingPage && this.zimType === 'zimit' && !appstate.isReplayWorkerAvailable && dirEntry.namespace !== 'M') {
+        // Mark the directory entry as a redirect
+        dirEntry.zimitRedirect = this.zimitStartPage;
+        // Prevent reload loop!
+        params.isLandingPage = false;
+    }
     var that = this || appstate.selectedArchive;
     if (!dirEntry) {
         console.warn('No directory entry found for requested URL!');
