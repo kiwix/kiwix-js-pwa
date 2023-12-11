@@ -4684,6 +4684,10 @@ function readArticle (dirEntry) {
                     // For now Electron apps cannot use the Replay Worker because of the file:// protocol
                     if (document.location.protocol !== 'file:' && !params.useLegacyZimitSupport) {
                         appstate.isReplayWorkerAvailable = true;
+                        // Make sure the configuration panel is closed
+                        if (document.getElementById('configuration').style.display !== 'none') {
+                            btnConfigure.click();
+                        }
                         // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                         articleContainer.src = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
                     } else {
