@@ -2271,7 +2271,9 @@ function cssUIThemeGetOrSet (value, getOnly) {
 }
 
 function switchCSSTheme () {
-    var doc = window.frames[0].frameElement ? window.frames[0].frameElement.contentDocument : '';
+    // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
+    var doc = articleContainer ? articleContainer.contentDocument: '';
+    doc = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe').contentDocument : doc;
     if (!doc) return;
     var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, '../');
     // If something went wrong, use the page reload method
@@ -2282,7 +2284,7 @@ function switchCSSTheme () {
     var styleSheets = doc.getElementsByTagName('link');
     // Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
     for (var i = styleSheets.length - 1; i > -1; i--) {
-        if (~styleSheets[i].href.search(/\/style-dark/)) {
+        if (~styleSheets[i].href.search(/-\/s\/style-dark/)) {
             styleSheets[i].disabled = true;
             styleSheets[i].parentNode.removeChild(styleSheets[i]);
         }
@@ -2303,16 +2305,16 @@ function switchCSSTheme () {
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window_lb.svg';
     } else {
         if (params.contentInjectionMode === 'serviceworker' && params.cssTheme === 'darkReader') {
-            if (!articleWindow.DarkReader) {
+            if (!doc.defaultView.DarkReader) {
                 var darkReader = doc.createElement('script');
                 darkReader.setAttribute('type', 'text/javascript');
                 darkReader.setAttribute('src', locationPrefix + '/js/lib/darkreader.min.js');
                 doc.head.appendChild(darkReader);
             }
             setTimeout(function () {
-                articleWindow.DarkReader.setFetchMethod(articleWindow.fetch);
-                articleWindow.DarkReader.enable();
-            }, 500);
+                doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
+                doc.defaultView.DarkReader.enable();
+            }, 100);
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
