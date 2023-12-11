@@ -454,6 +454,18 @@ self.addEventListener('message', function (event) {
             // Note that this code doesn't currently run because the app currently never sends a 'disable' message
             // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in jQuery mode
             fetchCaptureEnabled = false;
+        } else if (/(disable|enable)ReplayWorker/.test(event.data.action)) {
+            // On 'disableReplayWorker' or 'enableReplayWorker' message, we disable or enable the ReplayWorker
+            // Note that we set it to null rather than false, as false is reserved for when the ReplayWorker is not available at all
+            if (isReplayWorkerAvailable !== false) {
+                if (event.data.action === 'enableReplayWorker') {
+                    isReplayWorkerAvailable = true;
+                    console.debug('[SW] ReplayWorker is enabled');
+                } else if (event.data.action === 'disableReplayWorker') {
+                    isReplayWorkerAvailable = null;
+                    console.debug('[SW] ReplayWorker is disabled');
+                }
+            }
         }
         var oldValue;
         if (event.data.action.assetsCache) {

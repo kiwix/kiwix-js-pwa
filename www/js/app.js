@@ -1826,6 +1826,28 @@ document.getElementById('useLibzimReaderCheck').addEventListener('change', funct
     settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
     refreshAPIStatus();
 });
+document.getElementById('useLegacyZimitSupportCheck').addEventListener('change', function (e) {
+    if (navigator.serviceWorker.controller) {
+        params.useLegacyZimitSupport = e.target.checked;
+        refreshAPIStatus();
+        return uiUtil.systemAlert('<p>We need to reload the app to apply the new setting</p>', 'Reload app', true)
+        .then(function (input) {
+            if (input) {
+                settingsStore.setItem('useLegacyZimitSupport', params.useLegacyZimitSupport, Infinity);
+                console.log('Sending message to Service Worker to ' + (params.useLegacyZimitSupport ? 'deisable': 'enable') + ' Zimit support...');
+                navigator.serviceWorker.controller.postMessage({
+                    action: params.useLegacyZimitSupport ? 'disableReplayWorker' : 'enableReplayWorker'
+                });
+                window.location.reload();
+            } else {
+                // Revert the checkbox
+                e.target.checked = !e.target.checked;
+                params.useLegacyZimitSupport = e.target.checked;
+                refreshAPIStatus();
+            }
+        });
+    }
+});
 
 // Function to restore the fullscreen/orientation lock state on user click in-app
 // This is necessary because the browser will not restore the state without a user gesture
@@ -2675,7 +2697,7 @@ function refreshCacheStatus () {
     var expertSettings = document.getElementById('expertSettingsDiv');
     expertSettings.classList.remove('panel-warning');
     expertSettings.classList.remove('panel-danger');
-    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim) {
+    if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim || params.useLegacyZimitSupport) {
         expertSettings.classList.add('panel-danger');
     } else {
         expertSettings.classList.add('panel-warning');
@@ -4642,6 +4664,10 @@ function readArticle (dirEntry) {
                 // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to jQuery mode
                 return handleUnsupportedReplayWorker(dirEntry);
             }
+            if (params.useLegacyZimitSupport) {
+                navigator.serviceWorker.controller.postMessage({ action: 'disableZimitSupport' });
+                return handleUnsupportedReplayWorker(dirEntry);
+            }
             var archiveName = appstate.selectedArchive.file.name.replace(/\.zim\w{0,2}$/i, '');
             var cns = appstate.selectedArchive.getContentNamespace();
             // Support type 0 and type 1 Zimit archives
@@ -4656,7 +4682,7 @@ function readArticle (dirEntry) {
                     return handleUnsupportedReplayWorker(dirEntry);
                 } else if (event.data.success) {
                     // For now Electron apps cannot use the Replay Worker because of the file:// protocol
-                    if (document.location.protocol !== 'file:') {
+                    if (document.location.protocol !== 'file:' && !params.useLegacyZimitSupport) {
                         appstate.isReplayWorkerAvailable = true;
                         // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                         articleContainer.src = '../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl;
@@ -5121,13 +5147,12 @@ function handleMessageChannelMessage (event) {
     // We received a message from the ServiceWorker
     loaded = false;
     var title = event.data.title;
-    if (appstate.selectedArchive.zimType === 'zimit') {
+    if (appstate.isReplayWorkerAvailable) {
         // Zimit ZIMs store assets with the querystring, so we need to add it!
         title = title + event.data.search;
-    }
-    // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-    // var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
-    if (!appstate.isReplayWorkerAvailable) {
+    } else {
+        // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
+        title = encodeURI(event.data.title) + event.data.search;
         // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
         var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
         // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
