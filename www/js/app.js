@@ -4930,7 +4930,6 @@ var loaded = false;
 var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     if (loaded) return;
     loaded = true;
-    params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
     var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
     articleDocument = doc;
     var docBody = doc ? doc.body : null;
@@ -4997,8 +4996,12 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
         }
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
-        // Because this is loading within docBody, it should only get set for HTML documents
-        if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+        if (!appstate.isReplayWorkerAvailable) {
+            // Because this is loading within docBody, it should only get set for HTML documents
+            // For loads using the Replay Worker, we set this in handleClickedOnReplayLink()
+            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
+            if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+        }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
         if (params.printIntercept) printIntercept();
@@ -5055,6 +5058,14 @@ function handleClickOnReplayLink (ev, anchor) {
                     readArticle(dirEntry); */
                 } else {
                     clearFindInArticle();
+                    if (/\bx?html\b/i.test(mimetype)) {
+                        // We need to remember this page as the last-visted page
+                        params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
+                        if (params.rememberLastPage) {
+                            settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                            settingsStore.setItem(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, Infinity);
+                        }
+                    }
                     // Fingers crossed, let Replay handle this link
                     anchor.passthrough = true;
                     // Handle middle-clicks and ctrl-clicks (these should be filtered out above, but...)
@@ -6765,6 +6776,8 @@ function goToArticle (path, download, contentType, pathEnc) {
             document.querySelectorAll('.alert').forEach(function (el) {
                 el.style.display = 'none';
             });
+            document.getElementById('welcomeText').style.display = 'none';
+            resizeIFrame();
             readArticle(dirEntry);
         }
     }).catch(function (e) {
