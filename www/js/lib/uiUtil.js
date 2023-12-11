@@ -1,22 +1,22 @@
 ﻿/**
  * uiUtil.js : Utility functions for the User Interface
  *
- * Copyright 2013-2023 Mossroy, Jaifroid and contributors
- * License GPL v3:
+ * Copyright 2013-2024 Mossroy, Jaifroid and contributors
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -32,9 +32,10 @@ import util from './util.js';
  */
 var itemsCount = false;
 
-// Placeholders for the header and footer
+// Placeholders for the articleContainer, header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
+let articleContainer = document.getElementById('articleContent');
 
 /**
  * Hides slide-away UI elements
@@ -80,7 +81,12 @@ let scrollThrottle = false;
  * Luuncher for the slide-away function, including a throttle to prevent it being called too often
  */
 function scroller (e) {
-    const articleContainer = document.getElementById('articleContent');
+    // We have to refresh the articleContainer when the window changes
+    articleContainer = document.getElementById('articleContent');
+    // Get the replay_iframe if it exists
+    if (articleContainer.contentWindow && articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
+        articleContainer = articleContainer.contentWindow.document.getElementById('replay_iframe');
+    }
     if (scrollThrottle) return;
     // windowIsScrollable gets set and reset in slideAway()
     if (windowIsScrollable && e.type === 'wheel') return;
@@ -123,7 +129,6 @@ let windowIsScrollable = false;
 
 // Slides away or restores the header and footer
 function slideAway (e) {
-    const articleContainer = document.getElementById('articleContent');
     const newScrollY = articleContainer.contentWindow.pageYOffset;
     let delta;
     const visibleState = /\(0p?x?\)/.test(header.style.transform);
@@ -208,21 +213,20 @@ function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, 
             if (callback) callback();
         });
     } else {
-        var blob = new Blob([content], { type: mimeType });
         var url;
         if (makeDataURI) {
             // Because btoa fails on utf8 strings (in SVGs, for example) we need to use FileReader method
             // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
             // url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
-            var myReader = new FileReader();
-            myReader.onloadend = function () {
-                url = myReader.result;
-                node.setAttribute(nodeAttribute, url);
-                if (callback) callback(url);
-            };
-            myReader.readAsDataURL(blob);
+            getDataUriFromUint8Array(content, mimeType).then(function (uri) {
+                node.setAttribute(nodeAttribute, uri);
+                if (callback) callback(uri);
+            }).catch(function (err) {
+                console.error('There was an error converting binary content to data URI', err);
+                if (callback) callback(null);
+            });
         } else {
-            blob = new Blob([content], {
+            var blob = new Blob([content], {
                 type: mimeType
             });
             // Establish the current window (avoids having to pass it to this function)
@@ -235,6 +239,29 @@ function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, 
             node.setAttribute(nodeAttribute, url);
         }
     }
+}
+
+/**
+ * Creates a data: URI from the given content
+ * @param {Uint8Array} content The binary content to convert to a URI
+ * @param {String} mimeType The MIME type of the content
+ * @returns {Promise<String>} A promise that resolves to the data URI
+ */
+function getDataUriFromUint8Array (content, mimeType) {
+    // Use FileReader method because btoa fails on utf8 strings (in SVGs, for example)
+    // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
+    // This native browser method is very fast: see https://stackoverflow.com/a/66046176/9727685
+    return new Promise((resolve, reject) => {
+        var myReader = new FileReader();
+        myReader.onloadend = function () {
+            var url = myReader.result;
+            resolve(url);
+        };
+        myReader.onerror = function (err) {
+            reject(err);
+        };
+        myReader.readAsDataURL(new Blob([content], { type: mimeType }));
+    });
 }
 
 /**
@@ -377,9 +404,7 @@ function clearSpinner () {
     cachingAssets.style.display = 'none';
 }
 
-function printCustomElements () {
-    // var innerDocument = window.frames[0].frameElement.contentDocument;
-    var innerDocument = document.getElementById('articleContent').contentDocument;
+function printCustomElements (innerDocument) {
     // For now, adding a printing stylesheet to a zimit ZIM appears to diasble printing of any images!
     if (appstate.wikimediaZimLoaded) {
         // Add any missing classes
@@ -424,7 +449,7 @@ function printCustomElements () {
     // Using @media print on images doesn't get rid of them all, so use brute force
     if (!document.getElementById('printImageCheck').checked) {
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
-    } else {
+    } else if (appstate.selectedArchive.zimType === 'open') {
         // Remove any breakout link
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]+id="breakoutLink"[^>]*>\s*/, '');
     }
@@ -541,7 +566,7 @@ function displayActiveContentWarning (type) {
             // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' +
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
             'class="alert-link">switch to Service Worker mode</a> if your platform supports it.<br />'
-                : 'Support for <b>Zimit</b> archives is experimental. Audio/video and some dynamic content may fail.<br />') +
+                : 'Legacy support for <b>Zimit</b> archives. Audio/video and some dynamic content may fail.<br />') +
             'Start search with <b>.*</b> to match part of a title, type <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
@@ -1391,6 +1416,7 @@ export default {
     systemAlert: systemAlert,
     showUpgradeReady: showUpgradeReady,
     feedNodeWithBlob: feedNodeWithBlob,
+    getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,

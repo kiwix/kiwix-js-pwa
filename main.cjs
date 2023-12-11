@@ -55,6 +55,10 @@ function createWindow () {
             preload: path.join(__dirname, 'preload.cjs'),
             nativeWindowOpen: true,
             nodeIntegrationInWorker: true
+            // nodeIntegration: false,
+            // contextIsolation: true,
+            // enableRemoteModule: false,
+            // sandbox: true
         }
     });
 
@@ -62,6 +66,7 @@ function createWindow () {
     // mainWindow.webContents.openDevTools();
 
     mainWindow.loadFile('www/index.html');
+    // mainWindow.loadURL('https://pwa.kiwix.org/www/index.html');
 }
 
 function registerListeners () {

@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* global fs, params */
+/* global fs, params, appstate */
 
 'use strict';
 
@@ -484,6 +484,9 @@ function Hilitor (node, tag) {
             var nodeText = subNodes.join(' ');
             if (testInput.test(nodeText)) {
                 var iframeWindow = document.getElementById('articleContent').contentWindow;
+                if (appstate.isReplayWorkerAvailable) {
+                    iframeWindow = document.getElementById('articleContent').contentDocument.getElementById('replay_iframe').contentWindow;
+                }
                 var scrollOffset = hilitedNodes[start].offsetTop - window.innerHeight / 4;
                 if ('scrollBehavior' in document.documentElement.style) {
                     iframeWindow.scrollTo({
