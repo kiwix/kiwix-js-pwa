@@ -5047,7 +5047,10 @@ function handleClickOnReplayLink (ev, anchor) {
     if (zimUrl) {
         ev.preventDefault();
         ev.stopPropagation();
+        // We have to turn off replay detection so that we can use the resolving function of getDirectoryByPath()
+        appstate.isReplayWorkerAvailable = false;
         appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
+            appstate.isReplayWorkerAvailable = true;
             if (dirEntry) {
                 var pathToArticleDocumentRoot = document.location.href.replace(/www\/index\.html.*$/, appstate.selectedArchive.file.name + '/');
                 var mimetype = dirEntry.getMimetype();
