@@ -4951,6 +4951,8 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
             setupTableOfContents();
             listenForSearchKeys();
         }
+        // Note that switchCSSTheme() requires access to params.lastPageVisit
+        params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         switchCSSTheme();
         if (appstate.selectedArchive.zimType === 'open') {
             // Set relative font size + Stackexchange-family multiplier
@@ -5004,8 +5006,6 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
         if (!appstate.isReplayWorkerAvailable) {
             // Because this is loading within docBody, it should only get set for HTML documents
-            // For loads using the Replay Worker, we set this in handleClickedOnReplayLink()
-            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
             if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
         }
         uiUtil.clearSpinner();
