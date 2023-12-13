@@ -54,7 +54,7 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '2.8.2'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '2.8.5'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
 params['packagedFile'] = getSetting('packagedFile') || 'wikipedia_en_100_mini_2023-10.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
@@ -109,6 +109,7 @@ params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A set
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
+params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
@@ -250,6 +251,7 @@ document.getElementById('rememberLastPageCheck').checked = params.rememberLastPa
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
+document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
 document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
