@@ -2186,8 +2186,8 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', func
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked && determinedValue == 'dark'
-        ? (appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit' ? 'darkReader' : params.cssTheme) : params.cssTheme;
+    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit' : false;
+    params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     switchCSSTheme();
@@ -5051,6 +5051,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
             }
             anchorParameter = '';
         }
+        uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         params.isLandingPage = false;
     } else {
         loaded = false;
