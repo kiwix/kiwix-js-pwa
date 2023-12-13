@@ -1,9 +1,15 @@
 # Changelog
 
-## In-progress release 2.8.2
+## In-progress release 2.8.5
 
-* INFO: Provide info to user about how to change behaviour of opening external links in tab or window
+* FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)
+* FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
+* KNOWN ISSUE: DarkReader may fail to load, or prevent display of some pages on some sites. If affected, reload app or turn feature off.
+* FEATURE: Legacy methods for reading Zimit ZIMs provided as fallback
+* FEATURE: Greatly improved Zimit-archive reading in JQuery mode (static content only)
+* FEATURE: Printing articles from Zimit-based archives supported in PWA (not available in Firefox)
 * ENHANCEMENT: Option to download viewed assets when searching by URL (e.g. C/.*interesting_asset.js)
+* INFO: Provide info to user about how to change behaviour of opening external links in tab or window
 * FIX: Critical bug that prevented scrolling of search results
 * FIX: Critical bug causing a boot loop when the app is in JQuery mode and SW cannot be registered
 * FIX: Remove WordPress link tracker code in some Zimit ZIMs preventing access to ZIM contents
@@ -13,9 +19,13 @@
 * DEV: Various updates to demos and readme
 * DEV: Fix quote detection in rollup build chain
 * DEV: Changed favicon from white to black with white border
-* DEV: RollupJS updated to v3.5.0
 * DEV: New, more robust, way to wake up and initialize the Service Worker when needed
 * DEV: Developer options now provided to use libzim for reading archive contents
+* DEV: Updated, standard method for bundling JQuery
+* DEPENDENCIES: RollupJS updated to v3.5.0
+* DEPENDENCIES: Updated WebpHero to v0.0.2
+* DEPENDENCIES: Updated DarkReader to v4.9.73
+* DEPENDENCIES: Javascript-libzim updated to v0.6
 
 ## Release 2.7.8
 

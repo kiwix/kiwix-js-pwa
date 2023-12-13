@@ -102,30 +102,27 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)</li>
+                                <li>Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)</li>
+                                <li>KNOWN ISSUE: DarkReader may fail to load, or prevent display of some pages on some sites. If affected, reload app or turn feature off.</li>
+                                <li>Legacy methods for reading Zimit ZIMs provided as fallback (see Troubleshooting section of Configuration)</li>
+                                <li>Greatly improved Zimit-archive reading in JQuery mode (static content only)</li>
+                                <li>Printing articles from Zimit-based archives supported in PWA (not available in Firefox)</li>
+                                <li>Option to download viewed assets when searching by URL (e.g. C/.*interesting_asset.js)</li>
+                                <li>Provide info to user about how to change behaviour of opening external links in tab or window</li>
                                 <li>Bugfix: critical bug that prevented scrolling of search results</li>
+                                <li>Critical bug causing a boot loop when the app is in JQuery mode and SW cannot be registered</li>
+                                <li>Remove WordPress link tracker code in some Zimit ZIMs preventing access to ZIM contents</li>
                                 <li>Bugfix: incorrect sizing of article area in UWP app</li>
-                                <li>Support multiple instances of the PWA or browser tabs/windows with different ZIMs loaded in each</li>
-                                <li>File handling in PWA (not Electron) will open each ZIM in its own separate instance</li>
-                                <li>On non-scrollable pages, remove navbars with Ctrl/Cmd + UpArrow/DownArrow, long swipe or mousewheel</li>
-                                <li>Auto-dismiss (fade out) Zimit and active content warnings on scroll</li>
-                                <li>Add indicative colourization to archive list when using OPFS</li>
-                                <li>Show a spinner when adding and direct-downloading files to OPFS</li>
-                                <li>After failure to import or download to OPFS, delete file stub(s)</li>
-                                <li>Inform user that OPFS files are preserved on app reset</li>
-                                <li>Added new demo of OPFS features to Repository documentation</li>
-                                <li>When using locally cached CSS, the details/summary tags are restored where missing from ZIM</li>
-                                <li>Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)</li>
-                                <li>Fix dropdowns for languages and subjects in some download library directories</li>
-                                <li>Ensure archive list is displayed on open in browsers supporting the webkitdirectory property</li>
-                                <li>Empty the archive list when OPFS is deactivated</li>
-                                <li>Make sure spinner doesn't block the UI</li>
-                                <li>Ensure some HTML and entities do not appear in constructed article titles</li>
-                                <li>Better handling of empty directory entries or empty content</li>
-                                <li>Exception displaying plain text when a dirEntry does not have any HTML content</li>
-                                <li>Add some sanity checks to prevent runaway searches</li>
-                                <li>App no longer forces the Service Worker to stay alive: instead, SW resumes when needed</li>
-                                <li>Name of repository changed to kiwix-js-pwa, permalinks changed</li>
-                                <li>Provide facility for adding ZIM metadata to the ZIMArchive object</li>
+                                <li>Remove unhandled port in some Zimit redirects, allowing resource to be located in archive</li>
+                                <li>Fix failure to resize Configuration in rare circumstances</li>
+                                <li>Various updates to demos and readme</li>
+                                <li>Fix quote detection in rollup build chain</li>
+                                <li>Changed favicon from white to black with white border</li>
+                                <li>New, more robust, way to wake up and initialize the Service Worker when needed</li>
+                                <li>Developer options now provided to use libzim for reading archive contents</li>
+                                <li>Updated, standard method for bundling JQuery</li>
+                                <li>Various dependencies updated</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
