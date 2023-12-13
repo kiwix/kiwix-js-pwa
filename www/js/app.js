@@ -2106,7 +2106,7 @@ function checkToolbar () {
     iframeWindow.removeEventListener('keydown', uiUtil.scroller);
 
     // Get the contentWindow of the iframe to operate on
-    if (articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
+    if (articleContainer.contentWindow && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
         iframeWindow = articleContainer.contentWindow.document.getElementById('replay_iframe').contentWindow;
     } else {
         iframeWindow = iframe.contentWindow;
@@ -4647,6 +4647,7 @@ function readArticle (dirEntry) {
     var message = dirEntry.url.match(/(?:^|\/)([^/]{1,13})[^/]*?$/);
     message = message ? message[1] + '...' : '...';
     uiUtil.pollSpinner('Loading ' + message);
+    var mimeType = dirEntry.getMimetype();
 
     // For Zimit ZIMS and pureMode, we need to go straight to article loading, and not look for cached content
     if (params.contentInjectionMode === 'serviceworker' && (appstate.pureMode || appstate.selectedArchive.zimType === 'zimit' && appstate.isReplayWorkerAvailable !== false)) {
@@ -4656,7 +4657,6 @@ function readArticle (dirEntry) {
             return encodeURIComponent(matchedSubstring);
         });
 
-        var mimeType = dirEntry.getMimetype();
         // Set up article onload handler
         articleLoader(dirEntry, mimeType);
 
@@ -4949,9 +4949,9 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
     articleDocument = doc;
     var docBody = doc ? doc.body : null;
-    // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-    iframeArticleContent.contentWindow.onclick = filterClickEvent;
     if (docBody) {
+        // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+        iframeArticleContent.contentWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Deflect drag-and-drop of ZIM file on the iframe to Config
