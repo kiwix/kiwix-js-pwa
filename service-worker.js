@@ -381,7 +381,7 @@ self.addEventListener('fetch', function (event) {
         }, function () {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
-            return zimitResolver(event).then(function (modRequestOrResponse) {
+            return zimitResolver(event, rqUrl).then(function (modRequestOrResponse) {
                 if (modRequestOrResponse instanceof Response) {
                     // The request was modified by the ReplayWorker and it returned a modified response, so we return it
                     // console.debug('[SW] Returning modified response from ReplayWorker', modRequest);
@@ -563,8 +563,8 @@ function setReplayCollectionAsRoot (prefix, name) {
  * @param {FetchEvent} event The FetchEvent to be processed
  * @returns {Promise<Response>} A Promise for the Response, or rejects with the invalid message port data
  */
-function zimitResolver (event) {
-    var rqUrl = event.request.url;
+function zimitResolver (event, rqUrl) {
+    rqUrl = rqUrl || event.request.url;
     var zimStem = rqUrl.replace(/^.*?\/([^/]+?)\.zim\w?\w?\/.*/, '$1');
     if (/\/A\/load\.js$/.test(rqUrl)) {
         // If the request is for load.js, we should filter its contents to load the mainUrl, as we don't need the other stuff
@@ -623,7 +623,9 @@ function zimitResolver (event) {
         });
     } else {
         // The loaded ZIM archive is not a Zimit archive, or sw-Zimit is unsupported, so we should just return the request
-        return Promise.resolve(event.request);
+        // If the reqUrl is not the same as event.request.url, we need to modify the request
+        var rtnRequest = (rqUrl === event.request.url || event.request.mode === 'navigate') ? event.request : new Request(rqUrl, event.request);
+        return Promise.resolve(rtnRequest);
     }
 }
 

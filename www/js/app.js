@@ -99,7 +99,12 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 }
 
 // At launch, we set the correct content injection mode
-setContentInjectionMode(params.contentInjectionMode);
+if (params.contentInjectionMode === 'serviceworker' && window.nw) {
+    // Failsafe for Windows XP version: reset app to jQuery mode because it cannot run in SW mode in Windows XP
+    if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
+} else {
+    setContentInjectionMode(params.contentInjectionMode);
+}
 
 // Test caching capability
 cache.test(function () {});
@@ -111,11 +116,6 @@ appstate.expectedArticleURLToBeDisplayed = '';
 if (/UWP\|PWA/.test(params.appType) && /^http/i.test(window.location.protocol)) {
     // We are in a PWA, so signal success
     params.localUWPSettings.PWA_launch = 'success';
-}
-// Failsafe for Windows XP version
-if (params.contentInjectionMode === 'serviceworker' && window.nw) {
-    // Reset app to jQuery mode because it cannot run in SW mode in Windows XP
-    if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
 }
 // Make Configuration headings collapsible
 uiUtil.setupConfigurationToggles();
@@ -1834,7 +1834,7 @@ document.getElementById('useLegacyZimitSupportCheck').addEventListener('change',
         .then(function (input) {
             if (input) {
                 settingsStore.setItem('useLegacyZimitSupport', params.useLegacyZimitSupport, Infinity);
-                console.log('Sending message to Service Worker to ' + (params.useLegacyZimitSupport ? 'deisable': 'enable') + ' Zimit support...');
+                console.log('Sending message to Service Worker to ' + (params.useLegacyZimitSupport ? 'deisable' : 'enable') + ' Zimit support...');
                 navigator.serviceWorker.controller.postMessage({
                     action: params.useLegacyZimitSupport ? 'disableReplayWorker' : 'enableReplayWorker'
                 });
@@ -2272,8 +2272,9 @@ function cssUIThemeGetOrSet (value, getOnly) {
 
 function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
-    var doc = articleContainer ? articleContainer.contentDocument: '';
-    doc = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe').contentDocument : doc;
+    var doc = articleContainer ? articleContainer.contentDocument : '';
+    var replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
+    doc = replayIframe ? replayIframe.contentDocument : doc;
     if (!doc) return;
     var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, '../');
     // If something went wrong, use the page reload method
@@ -2314,6 +2315,7 @@ function switchCSSTheme () {
             setTimeout(function () {
                 doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                 doc.defaultView.DarkReader.enable();
+                if (replayIframe) replayIframe.style.display = '';
             }, 100);
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
@@ -2774,7 +2776,7 @@ function initServiceWorkerMessaging () {
         // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
         console.warn('The Service Worker needs more time to load, or else the app was force-refreshed...');
         serviceWorkerRegistration = null;
-        setTimeout(initServiceWorkerMessaging, 1600);
+        setTimeout(initServiceWorkerMessaging, 1800);
     } else if (params.contentInjectionMode === 'serviceworker') {
         console.error('The Service Worker is not controlling the current page! We have to reload.');
         // Turn off failsafe, as this is a controlled reboot
@@ -2790,7 +2792,7 @@ function initServiceWorkerMessaging () {
                         setTimeout(function () {
                             params.themeChanged = true;
                             document.getElementById('btnHome').click();
-                        }, 750);
+                        }, 800);
                     }
                 }
             });
@@ -2922,7 +2924,7 @@ function setContentInjectionMode (value) {
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
     // Even in JQuery mode, the PWA needs to be able to serve the app in offline mode
-    setTimeout(initServiceWorkerMessaging, 600);
+    setTimeout(initServiceWorkerMessaging, 1000);
 }
 
 /**
@@ -4654,8 +4656,9 @@ function readArticle (dirEntry) {
             return encodeURIComponent(matchedSubstring);
         });
 
+        var mimeType = dirEntry.getMimetype();
         // Set up article onload handler
-        articleLoader(dirEntry);
+        articleLoader(dirEntry, mimeType);
 
         if (!isDirEntryExpectedToBeDisplayed(dirEntry)) {
             return;
@@ -4721,7 +4724,6 @@ function readArticle (dirEntry) {
     } else if (dirEntry.isRedirect()) {
         appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
     } else {
-        var mimeType = dirEntry.getMimetype();
         // TESTING//
         console.log('Initiating ' + mimeType + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + '...');
         uiUtil.hideActiveContentWarning();
@@ -4863,18 +4865,26 @@ function readArticle (dirEntry) {
     }
 }
 
+var previousReplayDocLocation = '';
+
 /**
  * Selects the iframe to which to attach the onload event, and attaches it
  */
-function articleLoader (entry) {
+function articleLoader (entry, mimeType) {
     if (appstate.selectedArchive.zimType === 'zimit') {
         var doc = articleContainer.contentDocument || null;
         if (doc) {
             var replayIframe = doc.getElementById('replay_iframe');
             if (replayIframe) {
                 replayIframe.onload = function () {
+                    replayIframe.style.display = '';
                     articleLoadedSW(entry, replayIframe);
                 };
+                var replayDoc = replayIframe.contentDocument || null;
+                if (replayDoc && replayDoc.location.href !== previousReplayDocLocation) {
+                    previousReplayDocLocation = replayDoc.location.href;
+                    switchCSSTheme();
+                }
             }
         }
     } else {
@@ -4953,7 +4963,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
         }
         // Note that switchCSSTheme() requires access to params.lastPageVisit
         params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
-        switchCSSTheme();
+        if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
         if (appstate.selectedArchive.zimType === 'open') {
             // Set relative font size + Stackexchange-family multiplier
             var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? 'desktop' : 'mobile';
@@ -5027,7 +5037,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     }
 
     // Show spinner when the article unloads
-    articleContainer.onunload = function () {
+    iframeArticleContent.onunload = function () {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
         }
@@ -5042,8 +5052,7 @@ function handleClickOnReplayLink (ev, anchor) {
     // If it's for a different protocol (e.g. javascript:) we should let Replay handle that, or if the paths are identical, then we are dealing
     // with a link to an anchor in the same document, or if the user has pressed the ctrl or command key, the document will open in a new window
     // anyway, so we can return. Note that some PDFs are served with a protocol of http: instead of https:, so we need to account for that.
-    if (anchor.protocol.replace(/s:/, ':') !== document.location.protocol.replace(/s:/, ':') || pseudoDomainPath === containingDocDomainPath ||
-        ev.ctrlKey || ev.metaKey || ev.button === 1) return;
+    if (anchor.protocol.replace(/s:/, ':') !== document.location.protocol.replace(/s:/, ':') || pseudoDomainPath === containingDocDomainPath) return;
     var zimUrl = pseudoNamespace + pseudoDomainPath + anchor.search;
     // We are dealing with a ZIM link transformed by Wombat, so we need to reconstruct the ZIM link
     if (zimUrl) {
@@ -5075,19 +5084,38 @@ function handleClickOnReplayLink (ev, anchor) {
                             settingsStore.setItem(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, Infinity);
                         }
                     }
-                    // Fingers crossed, let Replay handle this link
                     anchor.passthrough = true;
-                    // Handle middle-clicks and ctrl-clicks (these should be filtered out above, but...)
+                    // Handle middle-clicks and ctrl-clicks
                     if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
-                        window.open(pathToArticleDocumentRoot + zimUrl, '_blank');
+                        articleContainer = window.open(pathToArticleDocumentRoot + zimUrl,
+                            params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimetype),
+                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                            appstate.target = 'window';
+                            articleContainer.kiwixType = appstate.target;
+                        articleWindow = articleContainer;
+                        uiUtil.clearSpinner();
                     } else {
+                        // Let Replay handle this link
+                        articleContainer = document.getElementById('articleContent');
+                        articleWindow = articleContainer.contentWindow;
+                        appstate.target = 'iframe';
+                        articleContainer.kiwixType = appstate.target;
                         anchor.click();
+                        var replayIframe = articleContainer.contentDocument.getElementById('replay_iframe');
+                        if (replayIframe && replayIframe.contentWindow.DarkReader) {
+                            if (replayIframe.contentWindow.DarkReader.isEnabled()) {
+                                replayIframe.style.display = 'none';
+                            }
+                        }
                     }
                 }
             } else {
                 // If dirEntry was not-found, it's probably an external link, so warn user before opening a new tab/window
                 uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
             }
+        }).catch(function (err) {
+            console.error('Error getting dirEntry for ' + zimUrl, err);
+            appstate.isReplayWorkerAvailable = true;
         });
     }
 }
@@ -5224,10 +5252,10 @@ function handleMessageChannelMessage (event) {
                 var mimetype = fileDirEntry.getMimetype();
                 // Show the spinner
                 var shortTitle = dirEntry.getTitleOrUrl().replace(/^.*?([^/]{3,18})[^/]*\/?$/, '$1 ...');
-                if (!/moved/i.test(shortTitle) && !/image|javascript|warc-headers|jsonp?/.test(mimetype)) {
+                if (!/moved/i.test(shortTitle) && !/image|woff|warc-headers|jsonp?/.test(mimetype)) {
                     uiUtil.pollSpinner(shortTitle);
                     // Ensure the article onload event gets attached to the right iframe
-                    articleLoader(dirEntry);
+                    articleLoader(dirEntry, mimetype);
                 }
                 // Let's send the content to the ServiceWorker
                 var buffer = content.buffer ? content.buffer : content;
