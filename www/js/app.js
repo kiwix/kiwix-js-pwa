@@ -2152,7 +2152,7 @@ function initializeUISettings () {
 // similar code also runs in switchCSSTheme(), but that is not evoked on startup
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
-document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
+document.getElementById('cssUIDarkThemeCheck').addEventListener('change', function () {
     // This code implements a tri-state checkbox
     // if (this.readOnly) this.checked = this.readOnly = false;
     // else if (!this.checked) this.readOnly = this.indeterminate = true;
@@ -2169,7 +2169,7 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('click', functio
     if (params.cssUITheme != params.cssTheme) document.getElementById('cssWikiDarkThemeCheck').click();
     params.cssThemeOriginal = null;
 });
-document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
+document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', function () {
     // if (this.readOnly) this.checked = this.readOnly = false;
     // else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Invert order:
@@ -2186,13 +2186,14 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    params.cssTheme = document.getElementById('darkDarkReader').checked && determinedValue == 'dark' ? 'darkReader' : params.cssTheme;
+    params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked && determinedValue == 'dark'
+        ? (appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit' ? 'darkReader' : params.cssTheme) : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     switchCSSTheme();
     params.cssThemeOriginal = null;
 });
-document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('click', function () {
+document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change', function () {
     if (this.checked) {
         params.cssTheme = 'invert';
         document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
@@ -2205,7 +2206,7 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('click',
     switchCSSTheme();
     params.cssThemeOriginal = null;
 });
-document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('click', function () {
+document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
     if (this.checked) {
         params.cssTheme = 'darkReader';
         document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
@@ -2276,12 +2277,6 @@ function switchCSSTheme () {
     var replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
     doc = replayIframe ? replayIframe.contentDocument : doc;
     if (!doc) return;
-    var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, '../');
-    // If something went wrong, use the page reload method
-    if (!treePath) {
-        params.themeChanged = true;
-        return;
-    }
     var styleSheets = doc.getElementsByTagName('link');
     // Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
     for (var i = styleSheets.length - 1; i > -1; i--) {
@@ -2300,23 +2295,44 @@ function switchCSSTheme () {
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         doc.head.appendChild(link);
-        if (articleWindow.DarkReader) {
-            articleWindow.DarkReader.disable();
+        if (doc.defaultView.DarkReader) {
+            doc.defaultView.DarkReader.disable();
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window_lb.svg';
     } else {
         if (params.contentInjectionMode === 'serviceworker' && params.cssTheme === 'darkReader') {
-            if (!doc.defaultView.DarkReader) {
+            var loadDarkReader = function () {
                 var darkReader = doc.createElement('script');
-                darkReader.setAttribute('type', 'text/javascript');
-                darkReader.setAttribute('src', locationPrefix + '/js/lib/darkreader.min.js');
+                darkReader.onload = function () {
+                    doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
+                    doc.defaultView.DarkReader.enable();
+                    setTimeout(function () {
+                        replayIframe.style.display = '';
+                    }, 0);
+                }
+                darkReader.type = 'text/javascript';
+                darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
                 doc.head.appendChild(darkReader);
-            }
-            setTimeout(function () {
-                doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
-                doc.defaultView.DarkReader.enable();
-                if (replayIframe) replayIframe.style.display = '';
+            };
+            // Use setInterval to keep attempting to load darkReader until doc.defaultView.DarkReader is available
+            var interval = setInterval(function () {
+                if (doc && doc.defaultView) {
+                    if (!doc.defaultView.DarkReader) {
+                        clearInterval(interval);
+                            loadDarkReader();
+                    }
+                } else {
+                    // Oops, we no longer have a handle on the iframe document, so get it again
+                    doc = articleContainer ? articleContainer.contentDocument : '';
+                    replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
+                    doc = replayIframe ? replayIframe.contentDocument : doc;
+                }
             }, 100);
+            // If the interval has not succeeded after 3 seconds, give up
+            setTimeout(function () {
+                replayIframe.style.display = '';
+                clearInterval(interval);
+            }, 3000);
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
@@ -4701,6 +4717,10 @@ function readArticle (dirEntry) {
                 }
             };
             // If we are dealing with a Zimit ZIM, we need to instruct Replay to add the file as a new collection
+            if (!navigator.serviceWorker.controller) {
+                uiUtil.clearSpinner();
+                return;
+            }
             navigator.serviceWorker.controller.postMessage({
                 msg_type: 'addColl',
                 name: archiveName,
@@ -4877,7 +4897,7 @@ function articleLoader (entry, mimeType) {
             var replayIframe = doc.getElementById('replay_iframe');
             if (replayIframe) {
                 replayIframe.onload = function () {
-                    replayIframe.style.display = '';
+                    // replayIframe.style.display = '';
                     articleLoadedSW(entry, replayIframe);
                 };
                 var replayDoc = replayIframe.contentDocument || null;
@@ -5005,7 +5025,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
             setTab();
             setTimeout(function () {
                 doc.bgcolor = '';
-                if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                if (appstate.target === 'iframe') iframeArticleContent.style.display = '';
                 docBody.style.display = 'block';
                 // Some contents need this to be able to display correctly (e.g. masonry landing pages)
                 iframe.style.height = 'auto';
@@ -5037,6 +5057,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     }
 
     // Show spinner when the article unloads
+    // DEV: Note that this doesn't fire on the Replay iframe, because the src is set programmatically
     iframeArticleContent.onunload = function () {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
@@ -5102,7 +5123,7 @@ function handleClickOnReplayLink (ev, anchor) {
                         articleContainer.kiwixType = appstate.target;
                         anchor.click();
                         var replayIframe = articleContainer.contentDocument.getElementById('replay_iframe');
-                        if (replayIframe && replayIframe.contentWindow.DarkReader) {
+                        if (params.cssTheme === 'darkReader' && replayIframe && replayIframe.contentWindow.DarkReader) {
                             if (replayIframe.contentWindow.DarkReader.isEnabled()) {
                                 replayIframe.style.display = 'none';
                             }

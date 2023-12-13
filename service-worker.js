@@ -351,8 +351,8 @@ self.addEventListener('fetch', function (event) {
     // Filter out requests that do not match the scope of the Service Worker
     if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     // Filter darkReader request transformed by wombat.js
-    if (/\.zim.*\/www\/js\/(?:lib\/)?darkreader\.min\.js/.test(rqUrl)) {
-        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+)(?:[^/]|\/(?!js_\/))+\/js_\/[^:]+:\/\/[^/]+(.+)/, '$1$2');
+    if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark\.css)/.test(rqUrl)) {
+        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+)(?:[^/]|\/(?![jc]s_\/))+\/[jc]s_\/[^:]+:\/\/[^/]+(.+)/, '$1$2');
     }
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
