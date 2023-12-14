@@ -2306,9 +2306,11 @@ function switchCSSTheme () {
                 darkReader.onload = function () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
-                    setTimeout(function () {
-                        replayIframe.style.display = '';
-                    }, 0);
+                    if (replayIframe) {
+                        setTimeout(function () {
+                            replayIframe.style.display = '';
+                        }, 0);
+                    }
                 }
                 darkReader.type = 'text/javascript';
                 darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
@@ -2329,10 +2331,12 @@ function switchCSSTheme () {
                 }
             }, 100);
             // If the interval has not succeeded after 3 seconds, give up
-            setTimeout(function () {
-                replayIframe.style.display = '';
-                clearInterval(interval);
-            }, 3000);
+            if (replayIframe) {
+                setTimeout(function () {
+                    replayIframe.style.display = '';
+                    clearInterval(interval);
+                }, 3000);
+            }
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
@@ -2863,7 +2867,7 @@ function setContentInjectionMode (value) {
             return;
         }
         // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in jQuery mode
-        params.assetsCache = settingsStore.getItem('assetsCache') === 'true';
+        params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
         if (!isServiceWorkerReady()) {
             var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
             serviceWorkerStatus.textContent = 'ServiceWorker API available : trying to register it...';
@@ -3980,20 +3984,20 @@ function archiveReadyCallback (archive) {
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.pureMode = false;
     // Reset params.assetsCache in case it was changed below
-    params.assetsCache = settingsStore.getItem('assetsCache') === 'true';
+    params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
     if (/gutenberg|phet/i.test(archive.file.name) ||
       // params.isLandingPage ||
       /kolibri/i.test(archive.creator) ||
-      params.zimType === 'zimit') {
+      archive.zimType === 'zimit') {
         if (params.imageDisplay) params.imageDisplayMode = 'all';
         if (params.zimType !== 'zimit') {
             // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
-        } else if (params.zimType === 'zimit') {
+        } else if (archive.zimType === 'zimit') {
             // Tuen off the assetsCache for now in jQuery mode
             // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
             params.assetsCache = params.contentInjectionMode !== 'jquery';
