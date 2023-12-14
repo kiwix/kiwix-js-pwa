@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.8.5-E",
+  "version": "2.8.6-E",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
