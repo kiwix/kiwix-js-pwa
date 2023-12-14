@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.8.5
+## In-progress release 2.8.6
 
 * FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)
 * FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
@@ -16,6 +16,7 @@
 * FIX: Incorrect sizing of article area in UWP app
 * FIX: Remove unhandled port in some Zimit redirects, allowing resource to be located in archive
 * FIX: Failure to resize Configuration in rare circumstances
+* FIX: Accidental disabling of assetsCache when user loads a non-Zimit-based archive
 * DEV: Various updates to demos and readme
 * DEV: Fix quote detection in rollup build chain
 * DEV: Changed favicon from white to black with white border
