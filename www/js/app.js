@@ -4902,6 +4902,7 @@ function articleLoader (entry, mimeType) {
             if (replayIframe) {
                 replayIframe.onload = function () {
                     // replayIframe.style.display = '';
+                    uiUtil.showSlidingUIElements();
                     articleLoadedSW(entry, replayIframe);
                 };
                 var replayDoc = replayIframe.contentDocument || null;
@@ -4909,6 +4910,14 @@ function articleLoader (entry, mimeType) {
                     previousReplayDocLocation = replayDoc.location.href;
                     switchCSSTheme();
                 }
+                // Add a failsafe to ensure that the iframe is displayed after 3 seconds
+                // if (replayIframe.style.display === 'none') {
+                    if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
+                    replayIframe.timeout = setTimeout(function () {
+                        replayIframe.style.display = '';
+                        uiUtil.showSlidingUIElements();
+                    }, 1000);
+                // }
             }
         }
     } else {
@@ -5084,10 +5093,8 @@ function handleClickOnReplayLink (ev, anchor) {
     if (zimUrl) {
         ev.preventDefault();
         ev.stopPropagation();
-        // We have to turn off replay detection so that we can use the resolving function of getDirectoryByPath()
-        appstate.isReplayWorkerAvailable = false;
-        appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
-            appstate.isReplayWorkerAvailable = true;
+        // Note that true in the fourth argument instructs getDirEntryByPath to follow redirects by looking up the Header
+        appstate.selectedArchive.getDirEntryByPath(zimUrl, null, null, true).then(function (dirEntry) {
             if (dirEntry) {
                 var pathToArticleDocumentRoot = document.location.href.replace(/www\/index\.html.*$/, appstate.selectedArchive.file.name + '/');
                 var mimetype = dirEntry.getMimetype();
@@ -5095,11 +5102,6 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
                     window.open(pathToArticleDocumentRoot + zimUrl, '_blank');
-                /*
-                } else if (/\bx?html\b/i.test(mimetype)) {
-                    // If the SW has gone to sleep, loading this way gives it a chance to reload configuration
-                    params.isLandingPage = false;
-                    readArticle(dirEntry); */
                 } else {
                     clearFindInArticle();
                     if (/\bx?html\b/i.test(mimetype)) {
@@ -5127,11 +5129,12 @@ function handleClickOnReplayLink (ev, anchor) {
                         appstate.target = 'iframe';
                         articleContainer.kiwixType = appstate.target;
                         anchor.click();
+                        // Poll spinner with abbreviated title
+                        uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                         var replayIframe = articleContainer.contentDocument.getElementById('replay_iframe');
-                        if (params.cssTheme === 'darkReader' && replayIframe && replayIframe.contentWindow.DarkReader) {
-                            if (replayIframe.contentWindow.DarkReader.isEnabled()) {
-                                replayIframe.style.display = 'none';
-                            }
+                        if (params.cssTheme === 'darkReader' && replayIframe) {
+                            replayIframe.style.display = 'none';
+                            uiUtil.hideSlidingUIElements();
                         }
                     }
                 }
@@ -5278,15 +5281,15 @@ function handleMessageChannelMessage (event) {
                 var mimetype = fileDirEntry.getMimetype();
                 // Show the spinner
                 var shortTitle = dirEntry.getTitleOrUrl().replace(/^.*?([^/]{3,18})[^/]*\/?$/, '$1 ...');
-                if (!/moved/i.test(shortTitle) && !/image|woff|warc-headers|jsonp?/.test(mimetype)) {
+                if (!/moved/i.test(shortTitle) && !/javascript|image|woff|warc-headers|jsonp?/.test(mimetype)) {
                     uiUtil.pollSpinner(shortTitle);
-                    // Ensure the article onload event gets attached to the right iframe
-                    articleLoader(dirEntry, mimetype);
                 }
                 // Let's send the content to the ServiceWorker
                 var buffer = content.buffer ? content.buffer : content;
                 var message = { action: 'giveContent', title: title, content: buffer, mimetype: mimetype, zimType: appstate.selectedArchive.zimType };
                 messagePort.postMessage(message);
+                // Ensure the article onload event gets attached to the right iframe
+                articleLoader(dirEntry, mimetype);
             });
         } else {
             var mimetype = dirEntry.getMimetype();

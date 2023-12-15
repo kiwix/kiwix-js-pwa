@@ -792,11 +792,12 @@ ZIMArchive.prototype.getUtf8FromData = function (data) {
  * @param {String} path The pathname of the DirEntry that is required (namespace + filename)
  * @param {Boolean} zimitResolving A flag to indicate that the a Zimit path is in a lookup loop
  * @param {String} originalPath Optional string used internally to prevent infinite loop
+ * @param {Boolean} followRedirects A flag to indicate that redirects should be followed
  * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
  */
-ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath) {
+ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath, followRedirects) {
     var that = this;
-    if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) {
+    if (that.zimType === 'zimit' && (!appstate.isReplayWorkerAvailable || followRedirects)) {
         if (originalPath) appstate.originalPath = originalPath;
         path = path.replace(/\?kiwix-display/, '');
         // Correct obvious errors
@@ -830,16 +831,15 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
         if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) {
             dirEntry = transformZimit.filterReplayFiles(dirEntry);
         }
-        if (!dirEntry && !appstate.isReplayWorkerAvailable) {
+        if (!dirEntry && (!appstate.isReplayWorkerAvailable || followRedirects)) {
             // We couldn't get the dirEntry, so look it up the Zimit header
             if (!zimitResolving && that.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
                 // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                 var oldPath = path;
                 path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                 console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
-                return that.getDirEntryByPath(path, true, oldPath);
-            // } else if (zimitResolving) {
-            } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
+                return that.getDirEntryByPath(path, true, oldPath, followRedirects);
+            } else if (zimitResolving && !appstate.isReplayWorkerAvailable && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
                 // We couldn't find the Header, so try a fuzzy search only if the user is loading an article
                 path = appstate.originalPath;
                 var ns = path.replace(/^((?:C\/)?A\/).*/, '$1'); // If Zimit pseudo-namespaces are changed, will need to edit this
@@ -856,11 +856,14 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
                     found: 0
                 }
                 return fuzzySearch(path, search);
-            } else {
+            } else if (!appstate.isReplayWorkerAvailable) {
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
                 console.log('Article ' + path + ' not available, but moving up one directory to compensate for ZIM coding error...');
                 return that.getDirEntryByPath(newpath);
+            } else {
+                // Not found!
+                return null;
             }
         } else {
             // DEBUG: List found Directory Entry
