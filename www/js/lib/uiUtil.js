@@ -81,13 +81,14 @@ let scrollThrottle = false;
  * Luuncher for the slide-away function, including a throttle to prevent it being called too often
  */
 function scroller (e) {
+    if (scrollThrottle || params.hideToolbars === false) return;
     // We have to refresh the articleContainer when the window changes
     articleContainer = document.getElementById('articleContent');
     // Get the replay_iframe if it exists
     if (articleContainer.contentWindow && articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
         articleContainer = articleContainer.contentWindow.document.getElementById('replay_iframe');
     }
-    if (scrollThrottle) return;
+    if (articleContainer.style.display === 'none') return;
     // windowIsScrollable gets set and reset in slideAway()
     if (windowIsScrollable && e.type === 'wheel') return;
     const newScrollY = articleContainer.contentWindow.pageYOffset;
