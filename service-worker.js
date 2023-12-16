@@ -675,6 +675,10 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
         if (typeof urlObjectOrString === 'object') {
             anchorTarget = urlObjectOrString.hash.replace(/^#/, '');
             uriComponent = urlObjectOrString.search.replace(/\?kiwix-display/, '');
+        } else {
+            var components = /^([^?]+)(.*)$/.exec(title);
+            title = components[1];
+            uriComponent = components[2];
         }
         var titleWithNameSpace = nameSpace + '/' + title;
         var zimName = prefix.replace(/\/$/, '');
