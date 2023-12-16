@@ -1,10 +1,21 @@
 # Changelog
 
-## In-progress release 2.8.6
+## In-progress release 2.8.7
+
+FIXES since 2.8.5 was announced:
+
+* Accidental disabling of assetsCache with non-Zimit ZIMS
+* DarkReader now working properly with Zimit ZIMs using Replay system
+
+KNOWN issues:
+
+* PDFs from the ZIM are blocked on Android
+* PDFs in Nautilus ZIMs (non-Zimit) cannot be found
+
+Main features and fixes of in-progress release:
 
 * FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)
 * FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
-* KNOWN ISSUE: DarkReader may fail to load, or prevent display of some pages on some sites. If affected, reload app or turn feature off.
 * FEATURE: Legacy methods for reading Zimit ZIMs provided as fallback
 * FEATURE: Greatly improved Zimit-archive reading in JQuery mode (static content only)
 * FEATURE: Printing articles from Zimit-based archives supported in PWA (not available in Firefox)
