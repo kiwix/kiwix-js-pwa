@@ -2099,12 +2099,6 @@ function checkToolbar () {
         params.hideToolbars = params.hideToolbars === null ? true : params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
     }
 
-    iframeWindow.removeEventListener('scroll', uiUtil.scroller);
-    iframeWindow.removeEventListener('touchstart', uiUtil.scroller);
-    iframeWindow.removeEventListener('touchend', uiUtil.scroller);
-    iframeWindow.removeEventListener('wheel', uiUtil.scroller);
-    iframeWindow.removeEventListener('keydown', uiUtil.scroller);
-
     // Get the contentWindow of the iframe to operate on
     if (articleContainer.contentWindow && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
         iframeWindow = articleContainer.contentWindow.document.getElementById('replay_iframe').contentWindow;
@@ -2113,12 +2107,17 @@ function checkToolbar () {
     }
 
     if (params.hideToolbars) {
-        iframeWindow.addEventListener('scroll', uiUtil.scroller);
-        iframeWindow.addEventListener('touchstart', uiUtil.scroller);
-        iframeWindow.addEventListener('touchend', uiUtil.scroller);
-        iframeWindow.addEventListener('wheel', uiUtil.scroller);
-        iframeWindow.addEventListener('keydown', uiUtil.scroller);
+        iframeWindow.onscroll = uiUtil.scroller;
+        iframeWindow.ontouchstart = uiUtil.scroller;
+        iframeWindow.ontouchend = uiUtil.scroller;
+        iframeWindow.onwheel = uiUtil.scroller;
+        iframeWindow.onkeydown = uiUtil.scroller;
     } else {
+        iframeWindow.onscroll = null;
+        iframeWindow.ontouchstart = null;
+        iframeWindow.ontouchend = null;
+        iframeWindow.onwheel = null;
+        iframeWindow.onkeydown = null;
         uiUtil.showSlidingUIElements();
     }
 }
@@ -4902,7 +4901,6 @@ function articleLoader (entry, mimeType) {
             if (replayIframe) {
                 replayIframe.onload = function () {
                     // replayIframe.style.display = '';
-                    uiUtil.showSlidingUIElements();
                     articleLoadedSW(entry, replayIframe);
                 };
                 var replayDoc = replayIframe.contentDocument || null;
@@ -4910,13 +4908,13 @@ function articleLoader (entry, mimeType) {
                     previousReplayDocLocation = replayDoc.location.href;
                     switchCSSTheme();
                 }
-                // Add a failsafe to ensure that the iframe is displayed after 3 seconds
+                // Add a failsafe to ensure that the iframe is displayed after 1.5 seconds
                 // if (replayIframe.style.display === 'none') {
                     if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
                     replayIframe.timeout = setTimeout(function () {
                         replayIframe.style.display = '';
                         uiUtil.showSlidingUIElements();
-                    }, 1000);
+                    }, 1500);
                 // }
             }
         }
@@ -4969,7 +4967,7 @@ var filterClickEvent = function (event) {
             var decHref = decodeURIComponent(href);
             if (!/^(?:#|javascript)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
-                uiUtil.showSlidingUIElements();
+                // uiUtil.showSlidingUIElements();
             }
         }
     }
@@ -4979,6 +4977,8 @@ var loaded = false;
 var articleLoadedSW = function (dirEntry, iframeArticleContent) {
     if (loaded) return;
     loaded = true;
+    // if (!(appstate.isReplayWorkerAvailable && params.cssTheme === 'darkReader')) uiUtil.showSlidingUIElements();
+    uiUtil.showSlidingUIElements();
     var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
     articleDocument = doc;
     var docBody = doc ? doc.body : null;
@@ -6023,6 +6023,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
                 return true;
             };
+            uiUtil.showSlidingUIElements();
             uiUtil.clearSpinner();
             if (appstate.target === 'iframe' && !articleContainer.contentDocument && window.location.protocol === 'file:') {
                 uiUtil.systemAlert("<p>You seem to be opening kiwix-js with the file:// protocol, which blocks access to the app's iframe. " +
@@ -6473,7 +6474,7 @@ function addListenersToLink (a, href, baseUrl) {
         }
         // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
         a.newcontainer = true; // Prevents double activation
-        uiUtil.showSlidingUIElements();
+        // uiUtil.showSlidingUIElements();
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
     };
