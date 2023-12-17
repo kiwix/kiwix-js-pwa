@@ -796,7 +796,7 @@ ZIMArchive.prototype.getUtf8FromData = function (data) {
  * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
  */
 ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath, followRedirects) {
-    var that = this;
+    var that = this || appstate.selectedArchive;
     if (that.zimType === 'zimit' && (!appstate.isReplayWorkerAvailable || followRedirects)) {
         if (originalPath) appstate.originalPath = originalPath;
         path = path.replace(/\?kiwix-display/, '');
@@ -812,7 +812,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
             }
         }
     }
-    return util.binarySearch(0, this.file.entryCount, function (i) {
+    return util.binarySearch(0, that.file.entryCount, function (i) {
         return that.file.dirEntryByUrlIndex(i).then(function (dirEntry) {
             var url = dirEntry.namespace + '/' + dirEntry.url;
             if (path < url) {
