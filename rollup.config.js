@@ -90,14 +90,14 @@ if (process.env.BUILD === 'production') {
                             // Remove all the lib files that will be included in the bundle
                                 .replace(/(?:<Content Include=)?["']www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js["'](?:\s*\/>|,)\s*/, '')
                             // Replace any references to node_modules
-                                .replace(/node_modules\/.*dist\/((?:js|css)\/)?/g, function (m, p1) {
+                                .replace(/node_modules[\\/].*dist[\\/]((?:js|css)[\\/])?/g, function (m, p1) {
                                     p1 = p1 || 'js/';
                                     return 'www/' + p1;
                                 })
                             // Alter remaining lib references
                                 .replace(/([\\/])js[\\/]lib/g, '$1js')
                             // Remove unneeded ASM/WASM binaries
-                                .replace(/["']www[\\/]js[\\/].*dec.*js["'],\s*/g, '')
+                                .replace(/['"]www[\\/]js[\\/].*dec.*js['"],\s*/g, '')
                         );
                         return result.code;
                     }
