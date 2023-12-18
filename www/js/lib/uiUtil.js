@@ -81,6 +81,7 @@ let scrollThrottle = false;
  * Luuncher for the slide-away function, including a throttle to prevent it being called too often
  */
 function scroller (e) {
+    if (!e) return;
     if (scrollThrottle || params.hideToolbars === false) return;
     // We have to refresh the articleContainer when the window changes
     articleContainer = document.getElementById('articleContent');

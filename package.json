@@ -52,7 +52,7 @@
       "asar": "false",
       "extraResources": {
         "from": "archives",
-        "to": "app/archives"
+        "to": "archives"
       },
       "fileAssociations": [
         {
@@ -111,6 +111,7 @@
       "CHANGELOG.md",
       "LICENCE",
       "manifest.json",
+      "replayWorker.js",
       "www/**",
       "preload.cjs",
       "main.cjs",
