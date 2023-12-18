@@ -49,7 +49,7 @@
       ]
     },
     "linux": {
-      "asar": "false",
+      "asar": "true",
       "extraResources": {
         "from": "archives",
         "to": "archives"
