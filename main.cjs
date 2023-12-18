@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, dialog, ipcMain, BrowserWindow } = require('electron');
+const express = require('express')
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
@@ -54,9 +55,9 @@ function createWindow () {
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'),
             nativeWindowOpen: true,
-            nodeIntegrationInWorker: true
-            // nodeIntegration: false,
-            // contextIsolation: true,
+            nodeIntegrationInWorker: true,
+            nodeIntegration: false,
+            contextIsolation: true
             // enableRemoteModule: false,
             // sandbox: true
         }
@@ -65,8 +66,8 @@ function createWindow () {
     // DEV: Uncomment this to open dev tools early in load process
     // mainWindow.webContents.openDevTools();
 
-    mainWindow.loadFile('www/index.html');
-    // mainWindow.loadURL('https://pwa.kiwix.org/www/index.html');
+    // mainWindow.loadFile('www/index.html');
+    mainWindow.loadURL('http://localhost:3000');
 }
 
 function registerListeners () {
@@ -169,9 +170,20 @@ if (!gotSingleInstanceLock) {
 }
 
 app.whenReady().then(() => {
-    // Create the new window
-    createWindow();
-    registerListeners();
+    const server = express()
+
+    // Serve static files from the www directory
+    server.use(express.static(path.join(__dirname, '/')));
+
+    server.listen(3000, () => {
+        // Create the new window
+        createWindow();
+        registerListeners();
+        mainWindow.webContents.on('did-finish-load', () => {
+            const launchFilePath = processLaunchFilePath(process.argv);
+            mainWindow.webContents.send('get-launch-file-path', launchFilePath);
+        });
+    })
 
     var appName = app.getName();
     console.log('App name: ' + appName);
@@ -185,11 +197,6 @@ app.whenReady().then(() => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
-
-    mainWindow.webContents.on('did-finish-load', () => {
-        const launchFilePath = processLaunchFilePath(process.argv);
-        mainWindow.webContents.send('get-launch-file-path', launchFilePath);
     });
 });
 
