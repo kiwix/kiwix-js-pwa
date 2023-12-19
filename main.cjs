@@ -4,6 +4,8 @@ const express = require('express')
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
+// const https = require('https');
+// const fs = require('fs');
 
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 
@@ -168,6 +170,12 @@ if (!gotSingleInstanceLock) {
         }
     });
 }
+
+// SSL options
+// var options = {
+//     key: fs.readFileSync('path/to/your/key.pem'),
+//     cert: fs.readFileSync('path/to/your/cert.pem')
+// };
 
 app.whenReady().then(() => {
     const server = express()
