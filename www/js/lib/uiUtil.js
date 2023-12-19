@@ -104,7 +104,7 @@ function scroller (e) {
     }
     // Value below is checked in app.js articleLoader() to prevent showing the UI elements if the user has already started scrolling
     articleContainer.contentWindow.scrollFired = true;
-    console.debug('scrollFired:', articleContainer.id, e.type);
+    // console.debug('scrollFired:', articleContainer.id, e.type);
     scrollThrottle = true;
     // Call the main function
     slideAway(e);
