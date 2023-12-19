@@ -5109,7 +5109,41 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    window.open(pathToArticleDocumentRoot + zimUrl, '_blank');
+                    if (/Android/.test(params.appType)) {
+                        // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
+                        // so we need to download the PDF instead
+                        var readAndDownloadBinaryContent = function (zimUrl) {
+                            return appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
+                                if (dirEntry) {
+                                    appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                        var mimetype = fileDirEntry.getMimetype();
+                                        uiUtil.displayFileDownloadAlert(zimUrl, true, mimetype, content);
+                                        uiUtil.clearSpinner();
+                                    });
+                                } else {
+                                    return uiUtil.systemAlert('We could not find a PDF document at ' + zimUrl, 'PDF not found');
+                                }
+                            });
+                        };
+                        // If the document is in fact an html redirect, we need to follow it first till we get the underlying PDF document
+                        if (/\bx?html\b/.test(mimetype)) {
+                            appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
+                                var redirectURL = data.match(/<meta[^>]*http-equiv="refresh"[^>]*content="[^;]*;url='?([^"']+)/i);
+                                if (redirectURL) {
+                                    redirectURL = redirectURL[1];
+                                    var contentUrl = pseudoNamespace + redirectURL.replace(/^[^/]+\/\//, '');
+                                    return readAndDownloadBinaryContent(contentUrl);
+                                } else {
+                                    readAndDownloadBinaryContent(zimUrl);
+                                }
+                            });
+                        } else {
+                            return readAndDownloadBinaryContent(zimUrl);
+                        }
+                    } else {
+                        window.open(pathToArticleDocumentRoot + zimUrl, params.windowOpener === 'tab' ? '_blank' : dirEntry.title,
+                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                    }
                 } else {
                     clearFindInArticle();
                     if (/\bx?html\b/i.test(mimetype)) {

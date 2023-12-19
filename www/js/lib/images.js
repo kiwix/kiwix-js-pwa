@@ -135,7 +135,7 @@ function extractImages (images, callback) {
                             // Get the url and the resolution from the srcset entry
                             var urlMatch = imgAndResolutionUrl.match(/^\s*([^\s]+)\s+([0-9.]+\w+)\s*$/);
                             var url = urlMatch ? urlMatch[1] : '';
-                            var resolution = urlMatch ? urlMatch[2]: '';
+                            var resolution = urlMatch ? urlMatch[2] : '';
                             appstate.selectedArchive.getDirEntryByPath(url).then(function (srcEntry) {
                                 appstate.selectedArchive.readBinaryFile(srcEntry, function (fileDirEntry, content) {
                                     var mimetype = srcEntry.getMimetype();
