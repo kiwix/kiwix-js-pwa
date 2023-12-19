@@ -5109,19 +5109,21 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    if (/Android/.test(params.appType)) {
-                        // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
-                        // so we need to download the PDF instead
-                        var link = document.createElement('a');
-                        link.href = pathToArticleDocumentRoot + zimUrl;
-                        link.download = ''; // The download attribute can be left empty to use the file name from the href, or you can provide a custom file name
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        window.open(pathToArticleDocumentRoot + zimUrl, '_blank');
-                    }
+                    // if (/Android/.test(params.appType)) {
+                    //     // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
+                    //     // so we need to download the PDF instead
+                    //     var link = document.createElement('a');
+                    //     link.href = pathToArticleDocumentRoot + zimUrl;
+                    //     link.download = ''; // The download attribute can be left empty to use the file name from the href, or you can provide a custom file name
+                    //     link.style.display = 'none';
+                    //     document.body.appendChild(link);
+                    //     link.click();
+                    //     document.body.removeChild(link);
+                    // } else {
+                    window.open(pathToArticleDocumentRoot + zimUrl, params.windowOpener === 'tab' ? '_blank' : dirEntry.title,
+                        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                    // window.open(pathToArticleDocumentRoot + zimUrl, '_blank');
+                    // }
                 } else {
                     clearFindInArticle();
                     if (/\bx?html\b/i.test(mimetype)) {
