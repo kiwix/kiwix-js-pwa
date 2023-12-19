@@ -1,16 +1,13 @@
 # Changelog
 
-## In-progress release 2.8.7
+## In-progress release 2.8.8
 
 FIXES since 2.8.5 was announced:
 
 * Accidental disabling of assetsCache with non-Zimit ZIMS
 * DarkReader now working properly with Zimit ZIMs using Replay system
-
-KNOWN issues:
-
-* PDFs from the ZIM are blocked on Android
-* PDFs in Nautilus ZIMs (non-Zimit) cannot be found
+* PDFs from the ZIM now have a workaround for Android
+* Resolved issue with PDFs in Nautilus ZIMs failing to download
 
 Main features and fixes of in-progress release:
 
