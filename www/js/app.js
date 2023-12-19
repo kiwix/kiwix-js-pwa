@@ -5112,39 +5112,33 @@ function handleClickOnReplayLink (ev, anchor) {
                     if (/Android/.test(params.appType)) {
                         // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
                         // so we need to download the PDF instead
-                        // However, if the document is in fact an html redirect, we need to follow it first till we get the underlying PDF document
-                        var downloadPDF = function (url) {
-                            var link = document.createElement('a');
-                            link.href = url;
-                            link.download = ''; // The download attribute can be left empty to use the file name from the href, or you can provide a custom file name
-                            link.style.display = 'none';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        }
+                        var readAndDownloadBinaryContent = function (zimUrl) {
+                            return appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
+                                if (dirEntry) {
+                                    appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                        var mimetype = fileDirEntry.getMimetype();
+                                        uiUtil.displayFileDownloadAlert(zimUrl, true, mimetype, content);
+                                        uiUtil.clearSpinner();
+                                    });
+                                } else {
+                                    return uiUtil.systemAlert('We could not find a PDF document at ' + zimUrl, 'PDF not found');
+                                }
+                            });
+                        };
+                        // If the document is in fact an html redirect, we need to follow it first till we get the underlying PDF document
                         if (/\bx?html\b/.test(mimetype)) {
                             appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
                                 var redirectURL = data.match(/<meta[^>]*http-equiv="refresh"[^>]*content="[^;]*;url='?([^"']+)/i);
                                 if (redirectURL) {
                                     redirectURL = redirectURL[1];
-                                    var zimUrl = pseudoNamespace + redirectURL.replace(/^[^/]+\/\//, '');
-                                    return appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
-                                        if (dirEntry) {
-                                            appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                                var mimetype = fileDirEntry.getMimetype();
-                                                uiUtil.displayFileDownloadAlert(zimUrl, true, mimetype, content);
-                                                uiUtil.clearSpinner();
-                                            });
-                                        } else {
-                                            return uiUtil.systemAlert('We could not find a PDF document at ' + zimUrl, 'PDF not found');
-                                        }
-                                    });
+                                    var contentUrl = pseudoNamespace + redirectURL.replace(/^[^/]+\/\//, '');
+                                    return readAndDownloadBinaryContent(contentUrl);
                                 } else {
-                                    downloadPDF(pathToArticleDocumentRoot + dirEntry.url);
+                                    readAndDownloadBinaryContent(zimUrl);
                                 }
                             });
                         } else {
-                            downloadPDF(pathToArticleDocumentRoot + zimUrl);
+                            return readAndDownloadBinaryContent(zimUrl);
                         }
                     } else {
                         window.open(pathToArticleDocumentRoot + zimUrl, params.windowOpener === 'tab' ? '_blank' : dirEntry.title,
