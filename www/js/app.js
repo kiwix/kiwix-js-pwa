@@ -5237,7 +5237,9 @@ function handleMessageChannelMessage (event) {
         title = title + event.data.search;
     } else {
         // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-        title = encodeURI(event.data.title) + event.data.search;
+        if (params.zimType === 'zimit') {
+            title = encodeURI(event.data.title) + event.data.search;
+        }
         // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
         var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
         // For Zimit archives, articles will have a special parameter added to the URL to help distinguish an article from an asset
