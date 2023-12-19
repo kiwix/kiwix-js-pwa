@@ -78,7 +78,7 @@ function showSlidingUIElements () {
 let scrollThrottle = false;
 
 /**
- * Luuncher for the slide-away function, including a throttle to prevent it being called too often
+ * Launcher for the slide-away function, including a throttle to prevent it being called too often
  */
 function scroller (e) {
     if (!e) return;
@@ -86,11 +86,11 @@ function scroller (e) {
     // We have to refresh the articleContainer when the window changes
     articleContainer = document.getElementById('articleContent');
     // Get the replay_iframe if it exists
-    if (articleContainer.contentWindow && articleContainer.contentWindow.document && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
-        articleContainer = articleContainer.contentWindow.document.getElementById('replay_iframe');
-    }
+    var replayIframe = articleContainer.contentWindow ? articleContainer.contentWindow.document ? articleContainer.contentWindow.document.getElementById('replay_iframe') : null : null;
+    articleContainer = replayIframe || articleContainer;
+
     if (articleContainer.style.display === 'none') return;
-    // windowIsScrollable gets set and reset in slideAway()
+    // DEV: windowIsScrollable gets set and reset in slideAway()
     if (windowIsScrollable && e.type === 'wheel') return;
     const newScrollY = articleContainer.contentWindow.pageYOffset;
     // If it's a non-scroll event and we're actually scrolling, get out of the way and let the scroll event handle it
@@ -102,6 +102,9 @@ function scroller (e) {
         oldTouchY = e.touches[0].screenY;
         return;
     }
+    // Value below is checked in app.js articleLoader() to prevent showing the UI elements if the user has already started scrolling
+    articleContainer.contentWindow.scrollFired = true;
+    console.debug('scrollFired:', articleContainer.id, e.type);
     scrollThrottle = true;
     // Call the main function
     slideAway(e);
@@ -144,7 +147,7 @@ function slideAway (e) {
         if (newScrollY === oldScrollY) return;
         if (newScrollY < oldScrollY) {
             showSlidingUIElements();
-        } else if (newScrollY - oldScrollY > 50 && /\(0p?x?\)/.test(header.style.transform)) {
+        } else if (newScrollY - oldScrollY > 30) {
             // Hide the toolbars if user has scrolled and not already hidden
             hideSlidingUIElements();
         }

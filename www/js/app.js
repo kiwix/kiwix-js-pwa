@@ -2090,7 +2090,7 @@ Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(func
 });
 
 var iframe = document.getElementById('articleContent');
-var iframeWindow = iframe.contentWindow;
+var iframeWindow = null;
 
 function checkToolbar () {
     if (document.getElementById('row2').style.display === 'none') {
@@ -2100,20 +2100,21 @@ function checkToolbar () {
     }
 
     // Get the contentWindow of the iframe to operate on
-    if (articleContainer.contentWindow && articleContainer.contentWindow.document.getElementById('replay_iframe')) {
-        iframeWindow = articleContainer.contentWindow.document.getElementById('replay_iframe').contentWindow;
-    } else {
-        iframeWindow = iframe.contentWindow;
-    }
+    var replayIframe = iframe.contentWindow ? iframe.contentWindow.document ? iframe.contentWindow.document.getElementById('replay_iframe') : null : null;
+    iframeWindow = replayIframe ? replayIframe.contentWindow : iframe.contentWindow;
+
+    if (!iframeWindow) return;
+
+    iframeWindow.removeEventListener('scroll', uiUtil.scroller);
 
     if (params.hideToolbars) {
-        iframeWindow.onscroll = uiUtil.scroller;
+        // We have to add this one this way, because another function is using the onscroll event
+        iframeWindow.addEventListener('scroll', uiUtil.scroller);
         iframeWindow.ontouchstart = uiUtil.scroller;
         iframeWindow.ontouchend = uiUtil.scroller;
         iframeWindow.onwheel = uiUtil.scroller;
         iframeWindow.onkeydown = uiUtil.scroller;
     } else {
-        iframeWindow.onscroll = null;
         iframeWindow.ontouchstart = null;
         iframeWindow.ontouchend = null;
         iframeWindow.onwheel = null;
@@ -4917,7 +4918,10 @@ function articleLoader (entry, mimeType) {
                     if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
                     replayIframe.timeout = setTimeout(function () {
                         replayIframe.style.display = '';
-                        uiUtil.showSlidingUIElements();
+                        // Only show the sliding UI elements if the iframe window has not already been scrolled
+                        if (replayIframe.contentWindow && !replayIframe.contentWindow.scrollFired) {
+                            uiUtil.showSlidingUIElements();
+                        }
                     }, 1500);
                 // }
             }
