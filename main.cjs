@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, dialog, ipcMain, BrowserWindow } = require('electron');
+const { app, dialog, ipcMain, BrowserWindow, shell } = require('electron');
 const express = require('express');
 const Store = require('electron-store');
 const path = require('path');
@@ -115,6 +115,10 @@ function registerListeners () {
         var value = store.get(key);
         console.log('Store value for key ' + key + ' is ' + value);
         event.reply('get-store-value', key, value);
+    });
+    ipcMain.on('open-external', function (event, url) {
+        console.log('Opening external URL: ' + url);
+        shell.openExternal(url);
     });
     // Registers listener for download events
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {

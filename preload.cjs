@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getStoreValue: function (key) {
         ipcRenderer.send('get-store-value', key);
     },
+    openExternal: function (url) {
+        ipcRenderer.send('open-external', url);
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(window.location.pathname),
     on: function (event, callback) {
         ipcRenderer.on(event, function (_, data1, data2) {
