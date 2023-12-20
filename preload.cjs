@@ -10,7 +10,7 @@ console.log('[Preload] Is app installed from Microsoft Store? ' + (process.windo
 console.log('Window location: ' + window.location.pathname + '\nStore publisher hash: ' + regexpInstalledFromMicrosoftStore);
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
-const { ipcRenderer, contextBridge } = require('electron');
+const { ipcRenderer, contextBridge, webFrame } = require('electron');
 const { open, read, close, stat, readdir } = require('fs');
 
 console.log('Inserting required Electron functions into DOM...');
@@ -57,6 +57,9 @@ contextBridge.exposeInMainWorld('dialog', {
         });
     }
 });
+
+// Enable pinch-to-zoom
+webFrame.setVisualZoomLevelLimits(1, 3);
 
 // window.Buffer = Buffer;
 
