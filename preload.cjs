@@ -28,6 +28,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     checkForUpdates: function () {
         ipcRenderer.send('check-updates');
     },
+    setStoreValue: function (key, value) {
+        ipcRenderer.send('set-store-value', key, value);
+    },
+    getStoreValue: function (key) {
+        ipcRenderer.send('get-store-value', key);
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(window.location.pathname),
     on: function (event, callback) {
         ipcRenderer.on(event, function (_, data1, data2) {

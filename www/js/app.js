@@ -926,6 +926,14 @@ if (window.electronAPI) {
         params.upgradeNeeded = true;
         uiUtil.showUpgradeReady(data.version, 'install');
     });
+    electronAPI.on('get-store-value', function (key, value) {
+        if (key === 'expressPort') {
+            params.expressPort = value;
+            document.getElementById('expressPortInput').innerHTML = value;
+            document.getElementById('expressPortInputDiv').style.display = 'block';
+            console.log('Express port was reported as ' + params.expressPort);
+        }
+    });
     electronAPI.on('dl-received', function (received, total) {
         kiwixServe.reportDownloadProgress(received, total);
     });
@@ -1787,7 +1795,6 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
 document.getElementById('btnRefreshApp').addEventListener('click', function () {
     window.location.reload();
 });
-
 document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
     if (params.contentInjectionMode !== 'serviceworker') {
         uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
@@ -1800,6 +1807,21 @@ document.getElementById('bypassAppCacheCheck').addEventListener('change', functi
     // This will also send any new values to Service Worker
     refreshCacheStatus();
 });
+if (window.electronAPI) {
+    // DEV to find the callback for this call, search for electronAPI.on('get-store-value' above
+    electronAPI.getStoreValue('expressPort');
+    document.getElementById('expressPortInput').addEventListener('change', function (e) {
+        // Ensure the port is a number and the value matches a permitted value
+        var proposedPort = parseInt(e.target.value);
+        if (proposedPort !== e.target.value && (proposedPort < 1024 || proposedPort > 65535)) {
+            return uiUtil.systemAlert('Please enter a valid port number between 1024 and 65535!');
+        } else {
+            params.expressPort = proposedPort;
+            electronAPI.setStoreValue('expressPort', params.expressPort);
+            return uiUtil.systemAlert('Please note that the new port setting will only be applied after restarting the app.');
+        }
+    });
+}
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
     params.disableDragAndDrop = this.checked;
     settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);

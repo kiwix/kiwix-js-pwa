@@ -1,11 +1,18 @@
 // Modules to control application life and create native browser window
 const { app, dialog, ipcMain, BrowserWindow } = require('electron');
-const express = require('express')
+const express = require('express');
+const Store = require('electron-store');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
 // const https = require('https');
 // const fs = require('fs');
+
+const store = new Store();
+
+// Get the stored port value or 3000 if not set
+const port = store.get('expressPort', 3000);
+console.log('Express Port: ' + port);
 
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 
@@ -69,7 +76,7 @@ function createWindow () {
     // mainWindow.webContents.openDevTools();
 
     // mainWindow.loadFile('www/index.html');
-    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadURL('http://localhost:' + port + '/www/index.html');
 }
 
 function registerListeners () {
@@ -97,6 +104,17 @@ function registerListeners () {
     ipcMain.on('check-updates', function (event) {
         console.log('Auto-update check request received...\n');
         autoUpdater.checkForUpdates();
+    });
+    // Set a value using the Electron Store API
+    ipcMain.on('set-store-value', function (event, key, value) {
+        console.log('Setting store value for key ' + key + ' to ' + value);
+        store.set(key, value);
+    });
+    // Get a value from the Electron Store API
+    ipcMain.on('get-store-value', function (event, key) {
+        var value = store.get(key);
+        console.log('Store value for key ' + key + ' is ' + value);
+        event.reply('get-store-value', key, value);
     });
     // Registers listener for download events
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
@@ -183,7 +201,8 @@ app.whenReady().then(() => {
     // Serve static files from the www directory
     server.use(express.static(path.join(__dirname, '/')));
 
-    server.listen(3000, () => {
+    // https.createServer(options, server).listen(3000, '0.0.0.0', () => {
+    server.listen(port, () => {
         // Create the new window
         createWindow();
         registerListeners();
