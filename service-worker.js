@@ -624,7 +624,9 @@ function zimitResolver (event, rqUrl) {
     } else {
         // The loaded ZIM archive is not a Zimit archive, or sw-Zimit is unsupported, so we should just return the request
         // If the reqUrl is not the same as event.request.url, we need to modify the request
-        var rtnRequest = (rqUrl === event.request.url || event.request.mode === 'navigate') ? event.request : new Request(rqUrl, event.request);
+        // Note that we can't clone requests with streaming bodies, hence we check for bodyUsed (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
+        var rtnRequest = ~event.request.url.indexOf(rqUrl) || event.request.mode === 'navigate' || !event.request.bodyUsed
+            ? event.request : new Request(rqUrl, event.request);
         return Promise.resolve(rtnRequest);
     }
 }
