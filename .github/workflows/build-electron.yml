@@ -54,6 +54,11 @@ jobs:
         cd dist && pwd
         # Get archive name
         packagedFile=$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E "s/^.+'([^']+\.zim)'.+/\1/")
+        # If packagedFile doesn't match a zim file, we don't need to download anything, so exit
+        if [[ ! $packagedFile =~ \.zim$ ]]; then
+          echo -e "\nNo zim file to download.\n"
+          exit 0
+        fi
         # If file doesn't exist in FS, download it
         if [ ! -f "archives/$packagedFile" ]; then
           # Generalize the name if cron_launched and download it
