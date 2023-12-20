@@ -928,10 +928,7 @@ if (window.electronAPI) {
     });
     electronAPI.on('get-store-value', function (key, value) {
         if (key === 'expressPort') {
-            params.expressPort = value;
-            document.getElementById('expressPortInput').innerHTML = value;
-            document.getElementById('expressPortInputDiv').style.display = 'block';
-            console.log('Express port was reported as ' + params.expressPort);
+            setExpressServerUI(value);
         }
     });
     electronAPI.on('dl-received', function (received, total) {
@@ -1658,7 +1655,6 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
 document.getElementById('downloadTrigger').addEventListener('click', function () {
     kiwixServe.requestXhttpData(params.kiwixDownloadLink);
 });
-
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {
         if (this.value === 'jquery' && !params.appCache) {
@@ -1814,11 +1810,16 @@ if (window.electronAPI) {
         // Ensure the port is a number and the value matches a permitted value
         var proposedPort = parseInt(e.target.value);
         if (proposedPort !== e.target.value && (proposedPort < 1024 || proposedPort > 65535)) {
-            return uiUtil.systemAlert('Please enter a valid port number between 1024 and 65535!');
+            e.target.value = params.expressPort || 3000;
+            setTimeout(function () {
+                uiUtil.systemAlert('Please enter a valid port number between 1024 and 65535!');
+            }, 250);
         } else {
             params.expressPort = proposedPort;
             electronAPI.setStoreValue('expressPort', params.expressPort);
-            return uiUtil.systemAlert('Please note that the new port setting will only be applied after restarting the app.');
+            setTimeout(function () {
+                uiUtil.systemAlert('Please note that the new port setting will only be applied after restarting the app.');
+            }, 250);
         }
     });
 }
@@ -2291,6 +2292,20 @@ function cssUIThemeGetOrSet (value, getOnly) {
     refreshCacheStatus();
     setOPFSUI();
     return value;
+}
+
+function setExpressServerUI (value) {
+    params.expressPort = value || 3000;
+    document.getElementById('expressPortInput').value = params.expressPort;
+    document.getElementById('expressPortInputDiv').style.display = 'block';
+    console.log('Express port was reported as ' + params.expressPort);
+    var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
+    openAppInBrowserSpan.style.display = 'inline';
+    var openAppInBrowserLink = document.getElementById('openAppInBrowserLink');
+    openAppInBrowserLink.innerHTML = 'http://localhost:' + params.expressPort + '/';
+    openAppInBrowserLink.addEventListener('click', function () {
+        electronAPI.openExternal('http://localhost:' + params.expressPort + '/www/index.html');
+    });
 }
 
 function switchCSSTheme () {
@@ -5391,9 +5406,9 @@ function handleMessageChannelMessage (event) {
             }
             var cacheKey = appstate.selectedArchive.file.name + '/' + title;
             cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                if (params.zimType === 'zimit' && loadingArticle) {
-                    // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
-                    // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
+                if (params.zimType === 'zimit' && (loadingArticle || /\bx?html/.test(mimetype) && /window._WBWombat/.test(content))) {
+                    // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a frame
+                    // or as a new window
                     content = content.replace(/!(window._WBWombat)/, '$1');
                 }
                 // Let's send the content to the ServiceWorker
