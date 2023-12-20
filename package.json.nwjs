@@ -40,6 +40,7 @@
     "nwVersion": "0.72.0",
     "output": "bld/nwjs/win-x64",
     "files": [
+      "replayWorker.js",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
@@ -58,6 +59,7 @@
     "nwVersion": "0.72.0",
     "output": "bld/nwjs/win-x86",
     "files": [
+      "replayWorker.js",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
