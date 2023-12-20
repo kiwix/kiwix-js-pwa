@@ -150,6 +150,11 @@ jobs:
         echo "Changing to the dist directory"
         cd dist && pwd
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace "^.+'([^']+\.zim)'.+", '$1'
+        # If packagedFile doesn't match a zim file, we don't need to download anything, so exit
+        if ($packagedFile -and ! ($packagedFile -match '\.zim$')) {
+          Write-Host "`nNo zim file to download.`n"
+          exit 0
+        }
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name (if nightly) and download it
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFile"
@@ -247,6 +252,11 @@ jobs:
         echo "Changing to the dist directory"
         cd dist && pwd
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace "^.+'([^']+\.zim)'.+", '$1'
+        # If packagedFile doesn't match a zim file, we don't need to download anything, so exit
+        if ($packagedFile -and ! ($packagedFile -match '\.zim$')) {
+          Write-Host "`nNo zim file to download.`n"
+          exit 0
+        }
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name (if nightly) and download it
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFile"

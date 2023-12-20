@@ -16,18 +16,20 @@ $appBuild = "2.8.8-N" # <<< value updated auotmatically from package.json if lau
 # Check that the dev has included the correct archive in this branch
 $init_params = Get-Content -Raw "$PSScriptRoot\..\dist\www\js\init.js"
 $PackagedArchive = $init_params -imatch 'params\[.packagedFile.][^;]+?[''"]([^\s]+?\.zim)[''"];'
+$PackagedArchive = $matches[1]
 $archiveExists = $false
-if ($PackagedArchive) { 
-    $PackagedArchive = $matches[1]
+if ($PackagedArchive -and $PackagedArchive -match '[^\s]+?\.zim$') { 
     "`nSearching for packaged archive $PackagedArchive..."
     $archiveExists = Test-Path "$PSScriptRoot\..\dist\archives\$PackagedArchive" -PathType Leaf
+    if (-Not $archiveExists) {
+        "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"
+        "Please place the requested package in this folder and run script again.`n"
+        exit 1
+    }
+    "Found."
+} else {
+    "No packaged filew as specified.`n"
 }
-if (-Not $archiveExists) {
-    "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"
-    "Please place the requested package in this folder and run script again.`n"
-    exit 1
-}
-"Found."
 
 foreach ($build in $builds) {
     $version = $version10
