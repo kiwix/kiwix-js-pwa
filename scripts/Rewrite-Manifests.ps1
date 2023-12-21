@@ -15,9 +15,13 @@ if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
 $FILE = ''
 if ($init_params -match 'params\[[''"]packagedFile[''"]]\s*=\s*[^|]+[^''"]*[''"]([^''"]+)') {
     $FILE = $matches[1] 
+    ## If the file doesn't match a ZIM archive, empty it
+    if ($FILE -notmatch '\.zim$') {
+        $FILE = ''
+    }
 }
 
-if (($VERSION -ne '') -and ($FILE -ne '')) {
+if ($VERSION -ne '') {
 
     "`nUpdating appxmanifests..."
     $FileList = ls *.appxmanifest
@@ -38,7 +42,11 @@ if (($VERSION -ne '') -and ($FILE -ne '')) {
     ForEach ($Manifest in $FileList) {
         "Rewriting $Manifest..."
         $FileContent = (Get-Content $Manifest -Raw)
-        $FileContent = $FileContent -ireplace '(<Content Include="archives\\)[^.]+\.zim[^"]*', "`${1}$FILE"
+        ## Remove any packaged file
+        $FileContent = $FileContent -ireplace '<Content\sInclude="archives\\[^.]+\.zim[^"]*"\s+/>\s*', ""
+        if ($FILE) {
+            $FileContent = $FileContent -ireplace '(<ItemGroup>)(\s+)(?=<Content\sInclude=)', "`${1}`${2}<Content Include=`"archives`\$FILE`" />`${2}"
+        }
         $FileContent = $FileContent -replace '\s+$', ''
         if (!$dryrun) {
             $FileContent | Set-Content -encoding "utf8BOM" $Manifest
