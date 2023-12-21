@@ -5146,7 +5146,7 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    if (/Android/.test(params.appType)) {
+                    if (/Android/.test(params.appType) || window.nw) {
                         // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
                         // so we need to download the PDF instead
                         var readAndDownloadBinaryContent = function (zimUrl) {
