@@ -4,7 +4,7 @@ Kiwix is an offline browser of archival content from Wikipedia, Project Gutenber
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218414297-a087c014-fe79-4a3d-a60a-87690732dc91.png)
 
-To use this app, download your choice of free content in-app from the Download Library on the Configuration page. There is only a small **sample** archive provided in the UWP, Electron and NWJS versions (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE).
+To use this app, download your choice of free content in-app from the Download Library on the Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE).
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -12,7 +12,7 @@ To use this app, download your choice of free content in-app from the Download L
 Please choose the correct version (those marked [**AUTO**] will self-update automatically when there is a new version):
 
 * **Any modern OS (PWA)**
-  + Try out our **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO**]. Incredibly light, no store or download required, no heavy framework! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it). On iOS (Safari), you can add it to your home screen - NB on iOS only you must use Safari because Apple bans Service Workers in other browsers. No sample archive is included. 
+  + Try out our **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO**]. Incredibly light, no store or download required, no heavy framework! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it). On iOS (Safari), you can add it to your home screen - NB on iOS only you must use Safari because Apple bans Service Workers in other browsers. 
 
 * **Linux** (see installation instructions below screenshot):
   - **Portable (Electron)** - *recommended*
@@ -58,9 +58,8 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ## Release Notes
 
-* In order to minimize download size, the sample archive (where provided) has no images in articles apart from the landing page, and only the lede (summary) of each article is included. The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder for more information.
 * You can download many different archives in multiple languages from the Configuration page.
-* There is experimental support for reading Zimit archives, most of which require you to enable ServiceWorker mode to read most content (this is not available in older browsers or OSs).
+* There is full support for reading Zimit archives in the PWA and Electron apps (also modern NWJS app, but see Known Issues belos), and legacy support in the older UWP app. If your browser cannot use the full support, it will fall back to legacy support and/or very limited support in JQuery mode.
 * The app natively supports dark mode for Wikimedia, Gutenberg and Stack Exchange ZIMs (see Configuration). For Zimit archives in particular, we recommend you try the new DarkReader plugin (you can enable this from Configuration in ServiceWorker mode only).
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print. Printing works best with Wikimedia ZIMs.
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration).
@@ -72,9 +71,10 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ### Known Issues
 
-* **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them).
+* PDFs in Zimit-based archives are blocked from viewing in the NWJS app.
+* **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them). It is not possible to print Zimit-based articles in Firefox.
 * In the **NWJS** app, if you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed.
-* The **NWJS app** for Windows 7/8/10/11 will occasionally crash and exit when running in ServiceWorker mode. For now, it is recommended to use this app only in JQuery mode until this issue is resolved.
+* The **NWJS app** for Windows 7/8/10/11 will occasionally crash and exit when running in ServiceWorker mode. For now, it is recommended to use this app only in JQuery mode until this issue is resolved. We recommend using the Electron versions instead.
 * In the **NWJS app** only, YouTube-based videos in **Zimit archives** do not play with sound (this does not affect other archives such as TED Talks or Khan Academy).
 * Image manipulation (e.g. saving image to disk) does not currently work with the **NWJS app**.
 * On the **XP build** with some recent ZIMs __there is a CSS error in rendering image-heavy landing pages__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__.
