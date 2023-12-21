@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.8.8
+## In-progress release 2.8.9
 
 FIXES since 2.8.5 was announced:
 
@@ -8,6 +8,7 @@ FIXES since 2.8.5 was announced:
 * DarkReader now working properly with Zimit ZIMs using Replay system
 * PDFs from the ZIM now have a workaround for Android
 * Resolved issue with PDFs in Nautilus ZIMs failing to download
+* Zimit reading with Replay now working in Electron and NWJS (nightly) builds
 
 Main features and fixes of in-progress release:
 
@@ -15,11 +16,16 @@ Main features and fixes of in-progress release:
 * FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
 * FEATURE: Legacy methods for reading Zimit ZIMs provided as fallback
 * FEATURE: Greatly improved Zimit-archive reading in JQuery mode (static content only)
+* FEATURE: The Electron app can now act as a local server for other browsers
 * FEATURE: Printing articles from Zimit-based archives supported in PWA (not available in Firefox)
+* ENHANCEMENT: Added ability to set the localhost server port in the UI of the Electron app
 * ENHANCEMENT: Option to download viewed assets when searching by URL (e.g. C/.*interesting_asset.js)
 * INFO: Provide info to user about how to change behaviour of opening external links in tab or window
 * FIX: Critical bug that prevented scrolling of search results
 * FIX: Critical bug causing a boot loop when the app is in JQuery mode and SW cannot be registered
+* FIX: Critical reload loop and video replay in legacy Zimit reading
+* FIX: Critical failure to load PDFs in Nautilus ZIMs and Android
+* FIX: Pinch-to-zoom now works in the Electron app
 * FIX: Remove WordPress link tracker code in some Zimit ZIMs preventing access to ZIM contents
 * FIX: Incorrect sizing of article area in UWP app
 * FIX: Remove unhandled port in some Zimit redirects, allowing resource to be located in archive
