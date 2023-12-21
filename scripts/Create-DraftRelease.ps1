@@ -504,6 +504,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
       # Check for the existence of the requested packaged archive
       $packagedFile = (Select-String 'packagedFile' "dist\www\js\init.js" -List) -ireplace "^.+['`"]([^'`"]+\.zim)['`"].+", '$1'
+      # If $packagedFile doesn't match a ZIM, make sure it is empty
+      if ($packagedFile -and -not ($packagedFile -imatch '\.zim$')) {
+        $packagedFile = ''
+      }
       if ($packagedFile -and ! (Test-Path "dist\archives\$packagedFile" -PathType Leaf)) {
         # File not in archives
         $downloadArchiveChk = Read-Host "`nWe could not find the packaged archive, do you wish to download it? Y/N"
