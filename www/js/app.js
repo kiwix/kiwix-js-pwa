@@ -4726,7 +4726,7 @@ function readArticle (dirEntry) {
         }
 
         if (appstate.selectedArchive.zimType === 'zimit' && appstate.isReplayWorkerAvailable === null) {
-            if (window.location.protocol === 'chrome-extension:') {
+            if (window.location.protocol === 'chrome-extension:' && !window.nw) {
                 // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to jQuery mode
                 return handleUnsupportedReplayWorker(dirEntry);
             }
