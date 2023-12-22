@@ -3,8 +3,8 @@
 ## Release 2.9.2
 
 * UPDATE: Removed sample archive from app package - please download the archive of your choice in-app
-* FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)
-* FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
+* FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader
+* FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader
 * FEATURE: Legacy methods for reading Zimit ZIMs provided as fallback
 * FEATURE: Greatly improved Zimit-archive reading in JQuery mode (static content only)
 * FEATURE: The Electron app can now act as a local server for other browsers
