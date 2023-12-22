@@ -2,6 +2,7 @@
 
 ## Release 2.9.2
 
+* UPDATE: Removed sample archive from app package - please download the archive of your choice in-app
 * FEATURE: High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)
 * FEATURE: Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)
 * FEATURE: Legacy methods for reading Zimit ZIMs provided as fallback
