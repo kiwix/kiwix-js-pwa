@@ -526,11 +526,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
       }
       ls dist\archives
-      if ($packagedFile -and (Test-Path "dist\archives\$packagedFile" -PathType Leaf)) {
-        Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
-      } elseif (-not $dryrun) {
-        Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
-        exit 1
+      if ($packagedFile) {
+        if (Test-Path "dist\archives\$packagedFile" -PathType Leaf) {
+          Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
+        } elseif (-not $dryrun) {
+          Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
+          exit 1
+        }
       }
       # Adding BOM to procution bundle
       $bundleFile = "$PSScriptRoot/../dist/www/js/bundle.min.js"
