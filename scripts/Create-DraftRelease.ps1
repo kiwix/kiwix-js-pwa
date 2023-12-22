@@ -534,16 +534,19 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           exit 1
         }
       }
-      # Adding BOM to procution bundle
-      $bundleFile = "$PSScriptRoot/../dist/www/js/bundle.min.js"
-      $bundle = Get-Content -encoding "UTF8" $bundleFile
-      if ($bundle -match "^(?!\xEF\xBB\xBF)") { 
-          Write-Host "Adding missing BOM to production bundle!`n" -ForegroundColor Yellow
-          if (-not $dryrun) {
-            $bundle | Set-Content -encoding "utf8BOM" $bundleFile 
-          } else {
-            "[DRYRUN] Would have added BOM to $bundleFile"
-          }
+      # Adding BOM to some files
+      $bundleFiles = @("$PSScriptRoot/../dist/www/js/bundle.min.js", "$PSScriptRoot/../dist/service-worker.js", "$PSScriptRoot/../dist/replayWorker.js")
+      # Add BOM to each file if it doesn't already have one
+      foreach ($bundleFile in $bundleFiles) {
+        $bundle = Get-Content -encoding "UTF8" $bundleFile
+        if ($bundle -match "^(?!\xEF\xBB\xBF)") { 
+            Write-Host "Adding missing BOM to bundle file $bundleFile`n" -ForegroundColor Yellow
+            if (-not $dryrun) {
+              $bundle | Set-Content -encoding "utf8BOM" $bundleFile 
+            } else {
+              "[DRYRUN] Would have added BOM to $bundleFile"
+            }
+        }
       }
       
       if (-not $dryrun) {
