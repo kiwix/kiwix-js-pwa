@@ -4009,6 +4009,10 @@ function archiveReadyCallback (archive) {
     appstate.selectedArchive = archive;
     // A blob cache significantly speeds up the loading of CSS files
     appstate.selectedArchive.cssBlobCache = new Map();
+    // As a new ZIM only opens in the iframe, we need to reset the pointers in case they were changed
+    articleContainer = document.getElementById('articleContent');
+    articleContainer.kiwixType = 'iframe';
+    articleWindow = articleContainer.contentWindow;
     uiUtil.clearSpinner();
     // When a new ZIM is loaded, we turn this flag to null, so that we don't get false positive attempts to use the Worker
     // It will be defined as false or true when the first article is loaded
