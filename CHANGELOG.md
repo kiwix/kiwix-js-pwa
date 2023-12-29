@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.9.3
+
+* Fix opening article in new window or tab for non-Zimit archives
+* Fix detection of apps installed from the Microsoft Store
+
 ## Release 2.9.2
 
 * UPDATE: Removed sample archive from app package - please download the archive of your choice in-app
