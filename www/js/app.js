@@ -4702,7 +4702,7 @@ function readArticle (dirEntry) {
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both jQuery and SW modes),
-    if (!params.isLandingPage) articleContainer.contentWindow.focus();
+    if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
     var message = dirEntry.url.match(/(?:^|\/)([^/]{1,13})[^/]*?$/);
@@ -5019,17 +5019,18 @@ var filterClickEvent = function (event) {
 };
 
 var loaded = false;
-var articleLoadedSW = function (dirEntry, iframeArticleContent) {
+var articleLoadedSW = function (dirEntry, container) {
     if (loaded) return;
     loaded = true;
-    // if (!(appstate.isReplayWorkerAvailable && params.cssTheme === 'darkReader')) uiUtil.showSlidingUIElements();
+    // Get the container windows
+    var articleWindow = container.contentWindow || container;
     uiUtil.showSlidingUIElements();
-    var doc = iframeArticleContent.contentWindow ? iframeArticleContent.contentWindow.document : null;
+    var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
     var docBody = doc ? doc.body : null;
     if (docBody) {
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-        iframeArticleContent.contentWindow.onclick = filterClickEvent;
+        articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Deflect drag-and-drop of ZIM file on the iframe to Config
@@ -5083,7 +5084,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
             setTab();
             setTimeout(function () {
                 doc.bgcolor = '';
-                if (appstate.target === 'iframe') iframeArticleContent.style.display = '';
+                if (appstate.target === 'iframe') container.style.display = '';
                 docBody.style.display = 'block';
                 // Some contents need this to be able to display correctly (e.g. masonry landing pages)
                 iframe.style.height = 'auto';
@@ -5117,7 +5118,7 @@ var articleLoadedSW = function (dirEntry, iframeArticleContent) {
 
     // Show spinner when the article unloads
     // DEV: Note that this doesn't fire on the Replay iframe, because the src is set programmatically
-    iframeArticleContent.onunload = function () {
+    container.onunload = function () {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
         }
