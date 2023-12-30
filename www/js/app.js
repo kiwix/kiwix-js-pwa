@@ -4390,7 +4390,10 @@ function listenForSearchKeys () {
     // Listen to iframe key presses for in-page search
     var iframeContentWindow = articleWindow;
     if (appstate.isReplayWorkerAvailable) {
-        iframeContentWindow = articleWindow.document.getElementById('replay_iframe').contentWindow;
+        var replayIframe = articleWindow.document.getElementById('replay_iframe');
+        if (replayIframe) {
+            iframeContentWindow = replayIframe.contentWindow;
+        }
     }
     iframeContentWindow.addEventListener('keyup', function (e) {
         // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
@@ -4829,9 +4832,11 @@ function readArticle (dirEntry) {
                 articleContainer = window.open('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodeURIComponent(dirEntry.url),
                     params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimeType),
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
-                appstate.target = 'window';
-                articleContainer.kiwixType = appstate.target;
-                articleWindow = articleContainer;
+                if (articleContainer) {
+                    appstate.target = 'window';
+                    articleContainer.kiwixType = appstate.target;
+                    articleWindow = articleContainer;
+                }
                 uiUtil.clearSpinner();
                 return;
             }
@@ -4992,8 +4997,7 @@ var filterClickEvent = function (event) {
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
         if (appstate.isReplayWorkerAvailable) {
-            handleClickOnReplayLink(event, clickedAnchor);
-            return;
+            return handleClickOnReplayLink(event, clickedAnchor);
         }
         var href = clickedAnchor.getAttribute('href');
         // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
@@ -5144,7 +5148,7 @@ function handleClickOnReplayLink (ev, anchor) {
         ev.preventDefault();
         ev.stopPropagation();
         // Note that true in the fourth argument instructs getDirEntryByPath to follow redirects by looking up the Header
-        appstate.selectedArchive.getDirEntryByPath(zimUrl, null, null, true).then(function (dirEntry) {
+        return appstate.selectedArchive.getDirEntryByPath(zimUrl, null, null, true).then(function (dirEntry) {
             if (dirEntry) {
                 var pathToArticleDocumentRoot = document.location.href.replace(/www\/index\.html.*$/, appstate.selectedArchive.file.name + '/');
                 var mimetype = dirEntry.getMimetype();
@@ -5176,7 +5180,7 @@ function handleClickOnReplayLink (ev, anchor) {
                                     var contentUrl = pseudoNamespace + redirectURL.replace(/^[^/]+\/\//, '');
                                     return readAndDownloadBinaryContent(contentUrl);
                                 } else {
-                                    readAndDownloadBinaryContent(zimUrl);
+                                    return readAndDownloadBinaryContent(zimUrl);
                                 }
                             });
                         } else {
@@ -5196,18 +5200,23 @@ function handleClickOnReplayLink (ev, anchor) {
                             settingsStore.setItem(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, Infinity);
                         }
                     }
-                    anchor.passthrough = true;
                     // Handle middle-clicks and ctrl-clicks
                     if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
+                        var encodedTitle = encodeURIComponent(dirEntry.getTitleOrUrl());
                         articleContainer = window.open(pathToArticleDocumentRoot + zimUrl,
-                            params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimetype),
-                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                            params.windowOpener === 'tab' ? '_blank' : encodedTitle,
+                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null
+                        );
+                        // Conditional, because opening a new window can be blocked by the browser
+                        if (articleContainer) {
                             appstate.target = 'window';
                             articleContainer.kiwixType = appstate.target;
-                        articleWindow = articleContainer;
+                            articleWindow = articleContainer;
+                        }
                         uiUtil.clearSpinner();
                     } else {
                         // Let Replay handle this link
+                        anchor.passthrough = true;
                         articleContainer = document.getElementById('articleContent');
                         articleWindow = articleContainer.contentWindow;
                         appstate.target = 'iframe';
@@ -6122,10 +6131,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 'on Chrome, you can start it with the <code>--allow-file-access-from-files</code> command-line argument; on Firefox, ' +
                 'you can set <code>privacy.file_unique_origin</code> to <code>false</code> in about:config.</p>');
                 articleContainer = window.open('', dirEntry.title, 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1');
-                params.windowOpener = 'window';
-                appstate.target = 'window';
-                articleContainer.kiwixType = appstate.target;
-                articleWindow = articleContainer;
+                if (articleContainer) {
+                    params.windowOpener = 'window';
+                    appstate.target = 'window';
+                    articleContainer.kiwixType = appstate.target;
+                    articleWindow = articleContainer;
+                }
             }
 
             // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
