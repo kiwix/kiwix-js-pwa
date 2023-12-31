@@ -2,8 +2,10 @@
 
 ## In-progress release 2.9.3
 
-* Fix opening article in new window or tab for non-Zimit archives
-* Fix detection of apps installed from the Microsoft Store
+* FIX: Blank landing page after opening article in new window or tab 
+* FIX: Opening article in new window or tab for non-Zimit archives
+* FIX: (partial) Zimit articles only open in new tab even if new window was requested
+* FIX: Detection of apps installed from the Microsoft Store
 
 ## Release 2.9.2
 
