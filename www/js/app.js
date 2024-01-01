@@ -5070,7 +5070,7 @@ var articleLoadedSW = function (dirEntry, container) {
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
             // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-            if (params.windowOpener && !appstate.pureMode && !params.useLibzim) {
+            if (params.windowOpener && !appstate.pureMode && !params.useLibzim && dirEntry) {
                 setTimeout(function () {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
@@ -5118,7 +5118,7 @@ var articleLoadedSW = function (dirEntry, container) {
             }
             anchorParameter = '';
         }
-        uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
+        if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         params.isLandingPage = false;
     } else {
         loaded = false;
