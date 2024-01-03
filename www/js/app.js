@@ -2981,7 +2981,7 @@ function setContentInjectionMode (value) {
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
     // Even in JQuery mode, the PWA needs to be able to serve the app in offline mode
-    setTimeout(initServiceWorkerMessaging, 1200);
+    setTimeout(initServiceWorkerMessaging, 2000);
 }
 
 /**
