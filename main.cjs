@@ -54,7 +54,7 @@ function createWindow () {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'build/64x64.png'),
         // titleBarStyle: 'hidden',
         // titleBarOverlay: {
         //     color: '#000000',

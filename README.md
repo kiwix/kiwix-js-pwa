@@ -4,69 +4,36 @@ Demos:&emsp;[&nbsp;[Instal PWA on Desktop](screenshots/Install-PWA.md)&nbsp;]&em
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
-**Kiwix is an offline browser for Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other sites and resources.
-It makes knowledge available, in many different languages, to people with limited or no Internet access. The software and the content are
-free for anyone to use. Get the app and download your choice of offline content (ZIM archives, which can be downloaded free in-app).
-There are hundreds of multilingual archives to choose from, on many different topics and subjects. Build a whole digital library of
-offline knowledge!** 
+**WikiMed by Kiwix is an offline reader for multilingual medical content from Wikipedia Project Medicine and MDWiki. It
+makes medical knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
+The app comes packaged with WikiMed in English, but you can also download your choice of language (a ZIM archive, which can be downloaded in the app). There are different, multilingual editions of the WikiMed archives to choose from.** 
 
-Part of the [Kiwix family](https://kiwix.org/), this app is available either as an offline-capable, [installable Progressive Web App](#universal-progressive-web-app)
-(PWA), for almost all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see
-**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline PWA.
+See **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** for the latest release packages for various
+Windows and Linux operating systems. We also have packaged apps of
+**[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikivoyage)** (a complete travel guide) in English. For a
+lighter download, or for older operating systems, you can download the base app
+**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)** (from which WikiMed by Kiwix is built)
+and download your choice of archive or language in-app. 
 
-We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** (a complete medical
-encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikivoyage)** (a complete travel guide) in
-English -- no extra download needed! (You can, however, download other languages in these apps.)
+If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store. These versions are lighter
+than the Electron versions, but *please note that the Store apps do not currently support Full-Text search* (only title search, which is
+usually sufficient for Wikimedia apps):
 
-If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store:
-**[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**,
-**[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
-and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
-available. If you are using **Linux**, then the
-[Electron AppImage package](http://kiwix.github.io/kiwix-js-pwa/app) of Kiwix JS also (optionally) self-updates,
-as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-pwa/app). Other apps will notify you when an update
-is available.
+* **[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
+* **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**,
+* **[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**.
 
-## Universal Progressive Web App
+The Store apps will automatically update when a new package is available (but note that it does not have Full-Text search). The
+**[Electron versions](http://kiwix.github.io/kiwix-js-pwa/wikimed)** (Linux and Windows) will notify you when an update
+is available (if you allow Internet access), and give you a download link.
 
-*Don't like stores or packages?* We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
-(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. This works in any browser that
-supports Service Workers: modern Chrome, Edge, Firefox and Safari (note that on iOS devices, you must use Safari because Apple
-bans the use of Service Workers in any other browser on i-devices).
+*Don't like stores or packages?* We've got you covered! Launch Kiwix JS instantly by opening the installable, offline-capable PWA
+(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. This works in any browser that supports Service Workers: modern Chrome, Edge, Firefox and Safari (note that on iOS devices, you must use Safari).
 
 Get a free ZIM archive to use with the PWA from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app,
 or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) before you download one.
 Once installed, bookmarked or added to your home screen, the PWA works even when your device is fully offline!
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
-
-<img src="https://github.com/kiwix/kiwix-js-pwa/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
-
-## How do I get all of Wikipedia offline?
-
-If you want it with images, then please be aware that it's a big download: the English version is around 97 Gigabytes! We recommend you
-try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
-handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
-
-If you really want full English Wikipedia with images, then we strongly recommend you use the open-source app
-[qBittorrent](https://www.qbittorrent.org/) to download it on a PC with plenty of disk space. First install qBittorrent. Then, when you
-select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
-download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
-want to download. It's much easier than it sounds!
-
-## What about Zimit (Web Archive) format?
-
-Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
-you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS **PWA** has full support for
-Zimit-based archives as of v.2.8.5 using the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html), while the
-Electron and other apps currently only support Zimit archives with largely static content (text, images, dynamic content will be displayed,
-but some content such as embedded video or audio may break). If you want to browse Zimit-based archives, we recommend you use the PWA.
-
-The Kiwix download library (available in-app) publishes a number of fantastically useful refernce sites in the Zimit file format, such as
-the **Ready.Gov disaster preparedness site**, the fascinating **Low-Tech magazine**, the **CIA World Factbook**, the **Harmony Project**
-library of sheet music, and the **Internet Encyclopaedia of Philosophy** -- amongst many others. Just open the Zimit directory in the
-in-app library.
-
-![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
 
 ## Browser support
 
@@ -118,7 +85,7 @@ the app, please star this Repostiory (see top)!
 
 ## Technical information
 
-This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
+This branch is for development of the WikiMed app for Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
 Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32bit and 64bit) are available from
 [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
@@ -187,13 +154,11 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-This Privacy Policy applies to the Kiwix JS Progressive Web App and versions of it packaged for the Electron, NWJS and UWP frameworks that
-are published on Kiwix servers, and by official Kiwix accounts on GitHub and other third-party vendor stores ("app stores"). 
-
-When installed, this application is capable of working entirely offline. It does not collect or record any of your personal data, though
-if you installed it from a Store, the Store operator may collect anonymous usage data (see below). The app only remembers your browsing
-history for the duration of a session (for the purpose of returning to previously viewed pages). This history is lost on exiting the
-app with the optional exception of the last-visited page.
+When installed, WikiMed Offline Medical Wikipedia is capable of working entirely offline. This application does not
+collect or record any of your personal data, though if you installed it from a Store, the Store operator may collect
+anonymous usage data (see below). The app only remembers your browsing history for the duration of a session (for the
+purpose of returning to previously viewed pages). This history is lost on exiting the app with the optional exception
+of the last-visited page.
 
 If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
 is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
