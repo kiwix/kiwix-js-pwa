@@ -3194,10 +3194,10 @@ if (storages !== null && storages.length > 0 ||
         var archiveFilePath = params.storedFilePath;
         if (params.storedFile === params.packagedFile) {
             // If the app is packed inside an asar archive, or is Electron running from localhost, we need to alter the archivePath to point outside the asar directory
-            if ((/\/app.asar\//.test(document.location.href) || window.fs && document.location.protocol === 'http:')) {
-                params.archivePath = params.archivePath.replace(/^(?:resources\/)?/, 'resources/');
+            if (electronAPI && electronAPI.__dirname) {
+                archiveFilePath = electronAPI.__dirname.replace(/[/\\]app\.asar/, '');
             }
-            archiveFilePath = params.archivePath + '/' + params.packagedFile;
+            archiveFilePath = archiveFilePath + '/' + params.archivePath + '/' + params.packagedFile;
             if (~params.storedFilePath.indexOf(archiveFilePath)) {
                 params.storedFilePath = archiveFilePath;
             }
@@ -6324,7 +6324,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     loaded = false;
                     articleWindow.location.href = newLocation;
                 } else {
-                    console.error('No Service Worker controller found while waiting for transformed HTML to be loaded!');
+                    console.warn('No Service Worker controller found while waiting for transformed HTML to be loaded! Let\'s wait...');
+                    setTimeout(function () {
+                        document.getElementById('btnHome').click();
+                    }, 1800);
                 }
             }
             return;
