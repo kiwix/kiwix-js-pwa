@@ -11,6 +11,10 @@ const contextMenu = require('electron-context-menu');
 const store = new Store();
 
 // Get the stored port value or 3000 if not set
+// Use these values:
+// 3000: Main App
+// 3001: WikiMed
+// 3002: WikiVoyage
 const port = store.get('expressPort', 3000);
 console.log('Express Port: ' + port);
 
