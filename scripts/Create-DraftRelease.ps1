@@ -655,17 +655,20 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
             $numeric_tag = $matches[1] + ($matches[2] / 1 + 1) + $matches[3]
         }
       }
-      # If the old and new numeric_tags match
+      # If the old and new numeric_tags don't match
       if ($numeric_tag -ne $numeric_tag_origin) {
         "`nBuilding the Electron UWP app with version $base_tag...`n"
         "Setting appVersion in package.json to $base_tag..."
         $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+        "Setting appVersion in init.js and service-worker.js to $numeric_tag-$text_tag..."
         if ($dryrun) {
-          "[DRYRUN] would have written new package.json"
+          "[DRYRUN] would have written new package.json, init.js and service-worker.js"
           # $json_object
         } else {
           # This will get copied to the dist folder by the Build-Electron script
           Set-Content "$PSScriptRoot/../package.json" $json_object
+          (Get-Content ./dist/service-worker.js) -replace '(appVersion\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$text_tag" | Set-Content -encoding "utf8BOM" ./dist/service-worker.js
+          (Get-Content ./dist/www/js/init.js) -replace '(appVersion..\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$text_tag" | Set-Content -encoding "utf8BOM" ./dist/www/js/init.js
         }
       } else {
         Write-Host "`nUnable to auto-build Electron UWP app because the version $numeric_tag is the same as that of the legacy UWP app!`n" -ForegroundColor Red
