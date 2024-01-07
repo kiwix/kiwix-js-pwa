@@ -21,7 +21,7 @@ Please choose the correct version:
 
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)** - _recommended_ (self-updates)
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J
+    + Install from the Microsoft Store: https://apps.microsoft.com/detail/9PHJSNP1CZ8J
     + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - upgrade easily by running `winget upgrade kiwix.wikimed`
   - **Installable (Electron)**
