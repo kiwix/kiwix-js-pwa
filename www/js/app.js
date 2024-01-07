@@ -2299,13 +2299,16 @@ function setExpressServerUI (value) {
     document.getElementById('expressPortInput').value = params.expressPort;
     document.getElementById('expressPortInputDiv').style.display = 'block';
     console.log('Express port was reported as ' + params.expressPort);
-    var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
-    openAppInBrowserSpan.style.display = 'inline';
-    var openAppInBrowserLink = document.getElementById('openAppInBrowserLink');
-    openAppInBrowserLink.innerHTML = 'http://localhost:' + params.expressPort + '/';
-    openAppInBrowserLink.addEventListener('click', function () {
-        electronAPI.openExternal('http://localhost:' + params.expressPort + '/www/index.html');
-    });
+    // Only encourage opening in browser if we are not in a packaged app
+    if (!params.packagedFile) {
+        var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
+        openAppInBrowserSpan.style.display = 'inline';
+        var openAppInBrowserLink = document.getElementById('openAppInBrowserLink');
+        openAppInBrowserLink.innerHTML = 'http://localhost:' + params.expressPort + '/';
+        openAppInBrowserLink.addEventListener('click', function () {
+            electronAPI.openExternal('http://localhost:' + params.expressPort + '/www/index.html');
+        });
+    }
 }
 
 function switchCSSTheme () {
