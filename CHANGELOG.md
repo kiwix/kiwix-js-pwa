@@ -1,11 +1,14 @@
 # Changelog
 
-## In-progress release 2.9.3
+## In-progress release 2.9.4
 
 * FIX: Blank landing page after opening article in new window or tab 
+* FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Opening article in new window or tab for non-Zimit archives
 * FIX: (partial) Zimit articles only open in new tab even if new window was requested
 * FIX: Detection of apps installed from the Microsoft Store
+* DEV: Fix incrementaiton of Microsoft Store apps at build time
+* DEPENDENCIES: Electron-builder updated to v24.9.1
 
 ## Release 2.9.2
 
