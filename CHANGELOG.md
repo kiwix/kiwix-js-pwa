@@ -3,9 +3,10 @@
 ## Release 2.9.4-WikiMed
 
 * UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-01.zim`
-* FEATURE: The Electron app can now act as a local server for other browsers
+* FEATURE: Electron apps are moved to a new client-server architecture
 * ENHANCEMENT: Added ability to set the localhost server port in the UI of the Electron app
 * INFO: Provide info to user about how to change behaviour of opening external links in tab or window
+* FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Blank landing page after opening article in new window or tab 
 * FIX: Opening article in new window or tab for non-Zimit archives
 * FIX: Detection of apps installed from the Microsoft Store
@@ -14,6 +15,7 @@
 * FIX: PDFs from the ZIM now have a workaround for Android
 * FIX: Resolved issue with PDFs in Nautilus ZIMs failing to download
 * FIX: Pinch-to-zoom now works in the Electron app
+* DEV: Fix incrementaiton of Microsoft Store apps at build time
 * DEV: Changed favicon from white to black with white border
 * DEV: Updated standard method for bundling JQuery
 * DEPENDENCIES: RollupJS updated to v3.5.0
