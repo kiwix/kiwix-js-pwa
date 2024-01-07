@@ -898,7 +898,7 @@ function setDynamicIcons (btn) {
 
 // Check if a PWA update is available
 function checkPWAUpdate () {
-    if (!params.upgradeNeeded && /^(?:HTML5|UWP).*PWA/.test(params.appType)) {
+    if (!params.upgradeNeeded && /PWA/.test(params.appType)) {
         caches.keys().then(function (keyList) {
             var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
             document.getElementById('alertBoxPersistent').innerHTML = '';
@@ -1007,7 +1007,7 @@ function checkUpdateServer () {
 
 // Do update checks 10s after startup
 setTimeout(function () {
-    if (/^(?:HTML5|UWP).*PWA/.test(params.appType)) {
+    if (/PWA/.test(params.appType)) {
         console.log('Checking for updates to the PWA...');
         checkPWAUpdate();
     }
@@ -4275,6 +4275,12 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
                     }
                     if (!selectedFileNamesSet.length) {
                         reject(new Error('The requested archive is not in the archive folder ' + folder + '!'));
+                    } else if (!count) {
+                        // It looks like we don't have a matching file, so we should try to load the first one we found
+                        createFakeFileObjectNode(selectedFileNamesSet[0], folder + '/' + selectedFileNamesSet[0], function (file) {
+                            selectedFileSet.push(file[0]);
+                            resolve([selectedFileSet, selectedFileNamesSet]);
+                        });
                     }
                 } else {
                     reject(new Error('The requested archive does not appear to be a ZIM file!'));
