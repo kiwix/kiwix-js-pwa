@@ -1822,6 +1822,8 @@ if (window.electronAPI) {
             }, 250);
         }
     });
+    // Set the Zoom values for the window
+    electronAPI.setZoomLimits(1, 3);
 }
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
     params.disableDragAndDrop = this.checked;

@@ -38,6 +38,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     openExternal: function (url) {
         ipcRenderer.send('open-external', url);
     },
+    setZoomLimits: function (min, max) {
+        console.log('Setting zoom limits to ' + min + ' and ' + max);
+        webFrame.setVisualZoomLevelLimits(min, max);
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     __dirname: __dirname,
     on: function (event, callback) {
@@ -62,9 +66,6 @@ contextBridge.exposeInMainWorld('dialog', {
         });
     }
 });
-
-// Enable pinch-to-zoom
-webFrame.setVisualZoomLevelLimits(1, 3);
 
 // window.Buffer = Buffer;
 
