@@ -21,7 +21,7 @@ Please choose the correct version:
 
 * **Windows**:
   - **Store app for Windows 10/11** - _recommended_ (self-updates)
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ
+    + Install from the Microsoft Store: https://apps.microsoft.com/detail/9N5SB90Q4JBJ
     + Or, on a PC, open a command prompt and run `winget install wikivoyage -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikivoyage` - upgrade easily by running  `winget upgrade wikivoyage`
   - **Installable (Electron)**

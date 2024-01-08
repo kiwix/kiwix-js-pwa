@@ -26,7 +26,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)** - *recommended* [**AUTO**]
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J
+    + Install from the Microsoft Store: https://apps.microsoft.com/detail/9P8SLZ4J979J
     + Or, on a PC, open a Terminal (or command prompt) and run `winget install 'kiwix js' -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade kiwix.kiwixjs`
   - **Installable (Electron)**

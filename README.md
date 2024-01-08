@@ -19,9 +19,9 @@ encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa
 English -- no extra download needed! (You can, however, download other languages in these apps.)
 
 If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store:
-**[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**,
-**[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
-and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
+**[Kiwix JS UWP](https://apps.microsoft.com/detail/9P8SLZ4J979J)**,
+**[WikiMed by Kiwix](https://apps.microsoft.com/detail/9PHJSNP1CZ8J)**,
+and **[Wikivoyage by Kiwix](https://apps.microsoft.com/detail/9N5SB90Q4JBJ)**. They will automatically update when a new package is
 available. If you are using **Linux**, then the
 [Electron AppImage package](http://kiwix.github.io/kiwix-js-pwa/app) of Kiwix JS also (optionally) self-updates,
 as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-pwa/app). Other apps will notify you when an update
@@ -89,7 +89,7 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 * As an application implemented with the following frameworks:
 
   + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
-  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
+  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://apps.microsoft.com/detail/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
 
