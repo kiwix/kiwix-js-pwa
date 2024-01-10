@@ -40,6 +40,18 @@
           "arch": "ia32"
         },
         {
+          "target": "nsis-web",
+          "arch": "ia32"
+        },
+        {
+          "target": "nsis-web",
+          "arch": "x64"
+        },
+        {
+          "target": "nsis-web",
+          "arch": "arm64"
+        },
+        {
           "target": "portable",
           "arch": "ia32"
         },
@@ -96,6 +108,11 @@
       "allowElevation": "true",
       "runAfterFinish": "true"
     },
+    "nsisWeb": {
+      "oneClick": "false",
+      "allowElevation": "true",
+      "runAfterFinish": "true"
+    },
     "appx": {
       "backgroundColor": "transparent",
       "displayName": "Kiwix JS",
@@ -130,6 +147,7 @@
     "del": "del-cli dist",
     "start": "electron .",
     "dist-win": "electron-builder build --win --projectDir dist",
+    "dist-win-arm64": "electron-builder build --win NSIS:arm64 --projectDir dist",
     "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32 --projectDir dist",
     "dist-linux": "electron-builder build --linux --projectDir dist",
     "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
