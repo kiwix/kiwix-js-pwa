@@ -91,9 +91,9 @@ jobs:
         cd dist && npm install && cd ..
         echo "Building 64bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --projectDir dist
         else
-          npx electron-builder --linux AppImage:x64 deb:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
         fi
     - name: Build and pulblish 32bit
       env: 
