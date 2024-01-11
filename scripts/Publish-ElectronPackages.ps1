@@ -35,7 +35,9 @@ if ($CRON_LAUNCHED) {
 if ((Get-Content ./package.json) -match 'nwVersion') {
     $Packages = $(ls dist/bld/NWJS/*.*)
 } else {
-    $packages = $(ls dist/bld/Electron/*.*)
+    $Packages = $(ls dist/bld/Electron/*.*)
+    $Packages += $(ls dist/bld/Electron/nsis-web/*.exe)
+    $Packages += $(ls dist/bld/Electron/nsis-web/*.nsis.7z)
 }
 if ($test) {
     $Packages = @($test)
@@ -72,11 +74,11 @@ if (-not $CRON_LAUNCHED) {
         }
         $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
         "`nUploading assets to: $upload_uri..."
-        $filter = '\.(exe|zip|msix|appx)$'
+        $filter = '\.(exe|zip|msix|appx|7z)$'
         if ($portableonly) {
             $filter = '\.(zip)$'
         }
-        ForEach($asset in $packages) {
+        ForEach($asset in $Packages) {
             if (-Not $asset) { Continue }
             if (-Not ($asset -match $filter)) { Continue }
             # Replace backslash with forward slash
@@ -133,7 +135,7 @@ if (-not $githubonly) {
 
     $Packages | % {
         $file = $_
-        if ($file -match '\.(exe|zip|msix|appx)$') {
+        if ($file -match '\.(exe|zip|msix|appx|7z)$') {
             $directory = $file -replace '^(.+[\\/])[^\\/]+$', '$1'
             $filename = $file -replace '^.+[\\/]([^\\/]+)$', '$1'
             # Convert all spaces and hyphens to underscore
@@ -149,6 +151,8 @@ if (-not $githubonly) {
             $filename = $filename -replace 'electron(?!_setup)(.+\.exe)$', 'electron_win_portable$1'
             # Fix Windows Setup version so that it is clear it is a Windows executable
             $filename = $filename -replace 'electron_setup', 'electron_win_setup'
+            # Fix Windows Web Setup version so that it is clear it is a Windows executable
+            $filename = $filename -replace 'electron_web_setup', 'electron_win_web_setup'
             # Fix Windows appx version so that it is clear it is a Windows 64bit executable
             $filename = $filename -replace 'electron(.+\.appx)$', 'electron_x86-64$1'
             # Change underscore to hyphen in win type and remove redundant E
