@@ -15,7 +15,7 @@ const store = new Store();
 // 3000: Main App
 // 3001: WikiMed
 // 3002: WikiVoyage
-const port = store.get('expressPort', 3000);
+const port = store.get('expressPort', 3002);
 console.log('Express Port: ' + port);
 
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
