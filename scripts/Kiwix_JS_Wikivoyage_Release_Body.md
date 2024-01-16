@@ -4,7 +4,7 @@ Wikiovyage by Kiwix is an offline travel guide featuring more than 31,000 destin
 
 ![Wikiovyage montage trans](https://user-images.githubusercontent.com/4304337/197711210-b17cdff0-dc40-4d25-ada8-25d2863fd4f0.png)
 
-These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html) and download the latest Wikivoyage archive from within the app.
+These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html) and download the latest Wikivoyage archive from within the app.
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
