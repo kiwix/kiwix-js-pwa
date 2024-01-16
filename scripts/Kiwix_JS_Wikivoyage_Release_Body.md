@@ -1,6 +1,6 @@
 ## Portable and installable builds for UWP and Electron
 
-Wikiovyage by Kiwix is an offline travel guide featuring more than 31,000 destinations worldwide. It contains the English-language content, including images, of the [Wikivoyage](https://www.wikivoyage.org/) online wiki, Wikipedia's official sister site. Other languages can be downloaded within the app.
+Wikiovyage by Kiwix is an offline travel guide featuring more than 32,000 destinations worldwide. It contains the English-language content, including images, of the [Wikivoyage](https://www.wikivoyage.org/) online wiki, Wikipedia's official sister site. Other languages can be downloaded within the app.
 
 ![Wikiovyage montage trans](https://user-images.githubusercontent.com/4304337/197711210-b17cdff0-dc40-4d25-ada8-25d2863fd4f0.png)
 
@@ -25,15 +25,16 @@ Please choose the correct version:
     + Or, on a PC, open a command prompt and run `winget install wikivoyage -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikivoyage` - upgrade easily by running  `winget upgrade wikivoyage`
   - **Installable (Electron)**
-    + Windows 10/11 64bit - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.appx) - new, modern install / uninstall
-    + Windows 7/8/10/11 32bit (also runs on 64bit) - [Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe) - traditional executable
+    + Windows 7/8/10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64) - [Wikivoyage-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe)
+    + Windows 10/11 64bit modern MSIX install / uninstall - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.appx)
+    + Windows 7/8/10/11 standalone 32bit installer (also runs on 64bit) - [Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikivoyage.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
 
 ## Installation Instructions - Electron
 
-* For the Windows 64bit or 32bit installable builds, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
+* For the Windows Web installer, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in yourshortcut menu. When you want to update the app, just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, then use the standalone installer.
 * For the Windows Portable build, unzip the contents of the [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Wikivoyage by Kiwix` or `Start Wikivoyage by Kiwix.bat`, or open the `kiwix-js-pwa-win32-ia32` folder and double click on `Wikivoyage by Kiwix.exe`.
 * **For the Linux _portable_ builds,** download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open a terminal and run `chmod a+x Wikivoyage-by-Kiwix*.AppImage` and then `./Wikivoyage-by-Kiwix*.AppImage`.
   + On **_Debian_**, if you have issues running the AppImage on older versions of the OS, you can try adding the `--no-sandbox` switch to the command (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). This is not necessary on recent versions.
