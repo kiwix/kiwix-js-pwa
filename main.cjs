@@ -58,7 +58,7 @@ function createWindow () {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'www/img/icons/wikivoyage-90-white.png'),
         // titleBarStyle: 'hidden',
         // titleBarOverlay: {
         //     color: '#000000',

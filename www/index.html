@@ -2,8 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-
-    <title>Kiwix JS PWA</title>
+    <title>Kiwix JS Wikivoyage</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
@@ -76,86 +75,81 @@
                 <div id="largeModal" class="modal-body">
                     <button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <div id="mymodalVariableContent">
-                        <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
-
+                    <img style="float:left; padding-right:1em;" alt="Wikivoyage icon" src="img/icons/wikivoyage-90-white.png">
                         <h2 style="font-size:32px;margin-top:10px;">
-                            Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
-                        </h2>
-                        <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
-                        <h3>Please read this important information</h3>
-                        <div class="disclaimer">
-                            <p>
-                                <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                                download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
-                                <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
-                            </p>
-                        </div>
+                        Welcome&nbsp;to Wikivoyage by&nbsp;Kiwix
+                    </h2>
+                    <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
+                    <h3>Please read this important information</h3>
+                    <div class="disclaimer">
+                        <p>
+                            <b>DISCLAIMER:</b> The information in Wikivoyage is provided by volunteers and may not be up to date.
+                            <strong>Wikikvoyage and Kiwix give no guarantee as to the accuracy of information contained in this app.
+                            </strong> You should not rely on it as your only source of information regarding opening hours, bus and train
+                            timetables, the existence of specific accommodation, or the safety of countries or regions for tourists.
+                            These things can change rapidly, so you must always check government travel advice, consult local web sites, phone
+                            in advance for accommodation, etc.
+                        </p>
+                        <p>
+                            <em>Use Wikivoyage as a guide only, use common sense, and stay safe!</em>  
+                        </p>
+                    </div>
                         <p id="noPackagedZIM" style="padding-top:10px;">
                             <span><strong>IMPORTANT:</strong> To use this app, you <strong>must download an offline ZIM archive</strong> and store it on your device!</span>
                             You can do this from the <b>Configuration page&nbsp;<span class="glyphicon glyphicon-wrench"></span></b>, or else see the
                             <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                        </p>
-                        <p>
-                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                            improving the app are very welcome: see About section.
-                        </p>
-                        <div id="update" class="update">
-                            <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
-                            <ul style="padding-left: 15px;">
-                                <li>For fixes since v2.9.2, please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG<img alt="external link" src="I/s/Icon_External_Link.png"></a></li>
-                                <li><b>Removed sample archive from app package - please download the archive of your choice in-app</b></li>
-                                <li>High-fidelity support for Zimit-based archives based on the Replay Web Archive reader (PWA only)</li>
-                                <li>Experimental dark-theme support for Zimit-based archives using the Replay system and DarkReader (PWA only)</li>
-                                <li>KNOWN ISSUE: DarkReader may fail to load, or prevent display of some pages on some sites. If affected, reload app or turn feature off.</li>
-                                <li>Legacy methods for reading Zimit ZIMs provided as fallback (see Troubleshooting section of Configuration)</li>
-                                <li>Greatly improved Zimit-archive reading in JQuery mode (static content only)</li>
-                                <li>The Electron app can now act as a local server for other browsers</li>
-                                <li>Printing articles from Zimit-based archives supported in PWA (not available in Firefox)</li>
+                    </p>
+                    <p>
+                        On some pages you will see a map location marker <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />.
+                        Tap to open the <b>Maps app</b> at the location. This will work offline if you have downloaded the map for the
+                        relevant country in the Windows Settings for <b>Offline Maps</b>.
+                    </p>
+                    <p>
+                        Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review.
+                        Constructive feedback and help with improving the app are very welcome: see About section.
+                    </p>
+                    <div id="update" class="update">
+                        <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
+                        <ul style="padding-left: 15px;">
+                                <li>Packaged archive updated to wikivoyage_en_all_maxi_2024-01</li>
+                                <li>Support Windows on ARM and Linux on ARM for the Electron app</li>
                                 <li>Added ability to set the localhost server port in the UI of the Electron app</li>
-                                <li>Option to download viewed assets when searching by URL (e.g. C/.*interesting_asset.js)</li>
-                                <li>Provide info to user about how to change behaviour of opening external links in tab or window</li>
-                                <li>Bugfix: critical bug that prevented scrolling of search results</li>
-                                <li>Critical bug causing a boot loop when the app is in JQuery mode and SW cannot be registered</li>
-                                <li>Fix critical reload loop and video replay in legacy Zimit reading</li>
-                                <li>Fix critical failure to load PDFs in Nautilus ZIMs and Android</li>
                                 <li>Pinch-to-zoom now works in the Electron app</li>
-                                <li>Remove WordPress link tracker code in some Zimit ZIMs preventing access to ZIM contents</li>
-                                <li>Bugfix: incorrect sizing of article area in UWP app</li>
-                                <li>Remove unhandled port in some Zimit redirects, allowing resource to be located in archive</li>
-                                <li>Fix failure to resize Configuration in rare circumstances</li>
-                                <li>Various updates to demos and readme</li>
-                                <li>Fix quote detection in rollup build chain</li>
-                                <li>Changed favicon from white to black with white border</li>
-                                <li>New, more robust, way to wake up and initialize the Service Worker when needed</li>
-                                <li>Developer options now provided to use libzim for reading archive contents</li>
-                                <li>Updated, standard method for bundling JQuery</li>
-                                <li>Various dependencies updated</li>
-                            </ul>
-                            <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
-                        </div>
-                        <div id="features">
-                            <h3>Features in Version 2.x</h3>
-                            <ul style="padding-left:15px;">
-                                <li>Download ZIM archives in-app from Download Library</li>
-                                <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
-                                <li>Light and dark themes available</li>
-                                <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
-                                <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
-                                <li>Title search with wildcards .* or regexes</li>
-                                <li>Show alphabetical index of all articles in archive (type space in search field)</li>
-                                <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
-                                <li>User-selectable font scaling</li>
-                                <li>Printing articles (with optional filtering for Wikipedia articles)</li>
-                                <li>Fast equation typesetting with KaTeX</li>
-                                <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
-                                <li>Disable image display and load one-by-one if your device is slow</li>
-                                <li>Export article to self-contained HTML page to view in browser</li>
-                                <li>Export images, PDFs, EPUBs, videos</li>
-                                <li>PWA mode to support archives with dynamic content on supported systems</li>
-                                <li>Support full-screen mode in most browsers and frameworks</li>
-                            </ul>
-                        </div>
+                                <li>Fix blank landing page after opening article in new window or tab</li>
+                                <li>Fix finding path of packaged archive with new Electron app architecture</li>
+                                <li>Fix opening article in new window or tab for non-Zimit archives</li>
+                                <li>Fix detection of apps installed from the Microsoft Store</li>
+                                <li>Fix accidental disabling of assetsCache with non-Zimit ZIMS</li>
+                                <li>PDFs from the ZIM now have a workaround for Android</li>
+                                <li>Resolved issue with PDFs in Nautilus ZIMs failing to download</li>
+                                <li>Fix incrementation of Microsoft Store apps at build time</li>
+                                <li>Electron-builder updated to v24.9.1</li>
+                        </ul>
+                        <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
+                    <div id="features">
+                        <h3>Features in Version 2.x</h3>
+                        <ul style="padding-left:15px;">
+                            <li>Download ZIM archives in-app from Download Library</li>
+                            <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
+                            <li>Light and dark themes available</li>
+                            <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
+                            <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
+                            <li>Title search with wildcards .* or regexes</li>
+                            <li>Show alphabetical index of all articles in archive (type space in search field)</li>
+                            <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
+                            <li>User-selectable font scaling</li>
+                            <li>Printing articles (with optional filtering for Wikipedia articles)</li>
+                            <li>Fast equation typesetting with KaTeX</li>
+                            <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
+                            <li>Disable image display and load one-by-one if your device is slow</li>
+                            <li>Export article to self-contained HTML page to view in browser</li>
+                            <li>Export images, PDFs, EPUBs, videos</li>
+                            <li>PWA mode to support archives with dynamic content on supported systems</li>
+                            <li>Support full-screen mode in most browsers and frameworks</li>
+                        </ul>
+                    </div>
+                </div>
                 </div>
                 <div class="modal-footer">
                     <div id="extraModalFooterContent"></div>
@@ -236,11 +230,11 @@
             </div>
         </div>
     </div>
-    <!-- Status indicators -->
-    <div id="searchingArticles" style="display: none;" class="status">
-        <div class="loader"></div>
-        <div id="cachingAssets" style="display: none;" class="message"></div>
-    </div>
+        <!-- Status indicators -->
+        <div id="searchingArticles" style="display: none;" class="status">
+            <div class="loader"></div>
+            <div id="cachingAssets" style="display: none;" class="message"></div>
+        </div>
     <section id="search-article" role="region">
         <header id="top">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
@@ -251,7 +245,7 @@
                                 <span class="input-group">
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img alt="Kiwix icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikivoyage-black-32.png" /></a>
                                         <!--button -->
                                         <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                                         <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
@@ -284,11 +278,11 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <div class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <h2>
-                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
-                        Kiwix JS <span class="identity">Windows</span>
+                        <img id="kiwixIconAbout" src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
+                        Wikivoyage by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
+                        Offline Travel Guide <small>(Kiwix JS version <span class="version"></span>)</small>
                     </h3>
                     <p class="packagedInfo" style="display: none">Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
@@ -309,21 +303,31 @@
                     </ul>
                     <div class="disclaimer">
                         <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                            download a new archive periodically. Information in official archives is free, open source and provided by volunteers.<br>
-                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                            DISCLAIMER: The information in Wikivoyage is provided by volunteers and may not be up to date.
+                            <em>Wikikvoyage and Kiwix give no guarantee as to the accuracy of information contained in this app.
+                            </em> You should not rely on it as your only source of information regarding opening hours, bus and train
+                            timetables, the existence of specific accommodation, or the safety of countries or regions for tourists.
+                            These things can change rapidly.
+                        </p>
+                        <p>
+                            <strong>
+                                <em>Always check official government advice before travelling.</em> Consult local web sites for
+                                timetables, book or phone in advance for accommodation, advice on opening hours, etc. Use Wikivoyage as a
+                                guide only, use common sense, and stay safe!
+                            </strong>
                         </p>
                     </div>
                     <br>
                     <p>
-                        Kiwix aspires to make the world's knowledge available to everyone for free. If your Internet access is expensive, slow, unreliable, insecure or censored,
-                        you can still gain access to a huge repository of knowledge and culture in almost every language using Kiwix offline archives.
+                        Wikivoyage Offline Travel Guide by Kiwix is a complete resource for travellers and tourists, or anyone interested in
+                        the locality they are visiting. This app functions completely offline, so you are not limited in your ability to
+                        consult travel information by lack of access to the Internet, or by slow and unreliable access speeds.
                     </p>
                     <p>
-                        To use this app, you will need to obtain/download one or more archives (called ZIM archives). You can download them in this app (see <a href="#addingArchives">Usage</a>
-                        below), or if you know someone with an archive you want, you can also share archives, e.g. on a USB stick. Archives are available in many different languages
-                        for resources such as Wikipedia, WikiMed, Wiktionary, Wikivoyage, Project Gutenberg, TED Talks, Stackexchange, etc. You can access this virtual offline
-                        encyclopaedia even if you are undertaking a long plane journey, hiking, and travelling or living in areas with weak or non-existent Internet access.
+                        As well as Wikivoyage English, you can download (in advance of your trip) one or more Wikivoyage archives (called ZIM archives) in other languages from the Kiwix
+                        website. If you would like to have an offline copy of Wikipedia, Wiki Medicine, Wiktionary and many other sources, we recommend you install our sister app <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app. While on the plane or train, you
+                        can consult in-depth historical information from an offline Wikipedia archive to supplement the practical information
+                        in Wikivoyage.
                     </p>
                     <p>
                         Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
@@ -343,15 +347,13 @@
                         offline if you have downloaded the map for the relevant country or region in the Windows Settings for <b>Offline Maps</b>. If you are not using Windows, then
                         in Configuration, you can change this action so that the pin opens an <b>online</b> OpenStreetMap centred on the map pin instead. 
                     </p>
-                    <h3 id="addingArchives">Usage</h3>
+                    <h3 id="addingArchives">Adding Wikivoyage archives in other languages</h3>
                     <h4>Step 1: Download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page,
-                        and the app will provide instructions according to the type of file you download. Alternatively, visit
-                        <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> or
-                        <a href="https://library.kiwix.org" target="_blank">https://library.kiwix.org</a> using a regular computer. To use all the features of ZIM archives
-                        that have dynamic content (e.g. PhET), the needs to be running in PWA/ServiceWorker mode (see Performance/compatibility settings in
-                        configuration), which is available in modern browsers (on iOS devices it is only available in Safari).
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, click <a href="#otherLangs" onclick="document.getElementById('btnConfigure').click();"><b>Download more archives from the Archive Library</b></a> near the top of the page.
+                        (Instead, you can go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Compatibility settings</b></a> and check the option to <b>Display selectors</b>.) Select <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
+                        Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer.
+                        <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
                     </p>
                     <h4>Step 2: Copy the content onto your device</h4>
                     <p>
@@ -384,7 +386,7 @@
                     <div id="logFeatures"></div>
                     <h3 id="privacy">Privacy policy</h3>
                     <p>
-                        When installed, Kiwix JS <span class="identity">Windows</span> works offline, and does not collect or record any of your personal data. It
+                        When installed, Wikivoyage by Kiwix works offline, and does not collect or record any of your personal data. It
                         only remembers your browsing history for the duration of a session (for the purpose of returning to previously
                         viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
                     </p>
@@ -565,7 +567,7 @@
                     </p>
                     <h3 id="linkHandling">Link handling, dynamic content and image download</h3>
                     <p>
-                        This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
+                        This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content and images, but not everything
                         works smoothly with every option.
                     </p>
                     <p>The app can usually operate in two modes: "JQuery" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
@@ -580,12 +582,6 @@
                         for the UWP app: you can enable the <b>Download or open current article</b> (breakout link) option, export the article to a new browser tab (by clicking the Breakout icon), and then
                         you will be able to manipulate images in the browser tab. Please note that enabling Image manipulation or the Download/ feature can interfere badly with some ZIMs that rely heavily on
                         active content. So turn these options off if you are using such ZIMs.
-                    </p>
-                    <p>
-                        You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in JQuery mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
-                        in ServiceWorker mode, you need to enable the option <b>Open ZIM links in new tab</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
-                        JQuery mode or in the PWA/ Electron/ NWJS apps. In JQuery mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
-                        doesn't support the WebP video format (e.g. the mobile UWP app).
                     </p>
                     <p>
                         <b>PhET ZIMs:</b> These science and maths simulations only work in ServiceWorker mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
@@ -702,7 +698,7 @@
                     <p>Thanks are due to:</p>
                     <ul>
                         <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
-                        <li>Wikipedia teams and contributors for helping to spread knowledge to everybody</li>
+                        <li>Wikivoyage teams and contributors for helping to provide travel information for everybody</li>
                         <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
                     </ul>
                     <h3>Licence information</h3>
