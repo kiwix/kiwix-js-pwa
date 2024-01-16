@@ -14,6 +14,7 @@ Please choose the correct version:
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage)
+    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, opnSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage) 
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb)
