@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.9.5
+## In-progress release 2.9.6
 
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
 * FIX: Blank landing page after opening article in new window or tab 
