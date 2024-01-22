@@ -344,7 +344,9 @@ if ($updatewinget) {
     }
     if (-Not $dryrun) {
       "`nSubmitting to winget-pkg repository..."
-      & wingetcreate.exe update $package_id --version "$winget_version" --urls $UrlsWithOverride -s -t $github_token
+      $arguments = 'update', $package_id, '--version', "$winget_version", '--urls', $UrlsWithOverride, '-s', '-t', $github_token
+      & wingetcreate.exe @arguments
+      # & wingetcreate.exe update $package_id --version "$winget_version" --urls $UrlsWithOverride -s -t $github_token
     } else {
       "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $UrlsWithOverride -s -t $github_token"
     }
