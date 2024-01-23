@@ -4042,7 +4042,7 @@ function archiveReadyCallback (archive) {
       archive.zimType !== 'open') {
         if (params.imageDisplay) params.imageDisplayMode = 'all';
         if (params.zimType !== 'zimit') {
-            // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
+            // For some archive types (zimit2, Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
