@@ -5008,6 +5008,7 @@ var filterClickEvent = function (event) {
     }
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
+        // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
         if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor) {
             return handleClickOnReplayLink(event, clickedAnchor);
         }
