@@ -4039,7 +4039,7 @@ function archiveReadyCallback (archive) {
     if (/gutenberg|phet/i.test(archive.file.name) ||
       // params.isLandingPage ||
       /kolibri/i.test(archive.creator) ||
-      archive.zimType === 'zimit') {
+      archive.zimType !== 'open') {
         if (params.imageDisplay) params.imageDisplayMode = 'all';
         if (params.zimType !== 'zimit') {
             // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
@@ -5008,7 +5008,7 @@ var filterClickEvent = function (event) {
     }
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
-        if (appstate.isReplayWorkerAvailable) {
+        if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor) {
             return handleClickOnReplayLink(event, clickedAnchor);
         }
         var href = clickedAnchor.getAttribute('href');
@@ -5147,8 +5147,8 @@ var articleLoadedSW = function (dirEntry, container) {
 
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
-    var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace;
-    var pseudoDomainPath = anchor.hostname + anchor.pathname;
+    var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace || anchor.origin === articleWindow.location.origin ? '' : anchor.protocol + '//';
+    var pseudoDomainPath = (anchor.origin === articleWindow.location.origin ? '' : anchor.hostname) + anchor.pathname;
     var containingDocDomainPath = anchor.ownerDocument.location.hostname + anchor.ownerDocument.location.pathname;
     // If it's for a different protocol (e.g. javascript:) we should let Replay handle that, or if the paths are identical, then we are dealing
     // with a link to an anchor in the same document, or if the user has pressed the ctrl or command key, the document will open in a new window
