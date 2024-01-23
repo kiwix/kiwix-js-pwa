@@ -978,7 +978,7 @@ ZIMArchive.prototype.setZimitMetadata = function () {
             // Note that in the case of zimit classic, the values below will be overwritten in the conditional clause
             that.zimitPseudoContentNamespace = reEntry.namespace + '/';
             that.zimitStartPage = reEntry.namespace + '/' + reEntry.url;
-            that.zimitPrefix = reEntry.url.replace(/\/[^/]*$/, '') + '/';
+            that.zimitPrefix = reEntry.url.replace(/\/.*$/, '') + '/';
             if (that.zimType === 'zimit') {
                 return reEntry.readData().then(function (data) {
                     var html = that.getUtf8FromData(data);

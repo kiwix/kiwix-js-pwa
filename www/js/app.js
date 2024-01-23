@@ -5147,8 +5147,8 @@ var articleLoadedSW = function (dirEntry, container) {
 
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
-    var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace || anchor.origin === articleWindow.location.origin ? '' : anchor.protocol + '//';
-    var pseudoDomainPath = (anchor.origin === articleWindow.location.origin ? '' : anchor.hostname) + anchor.pathname;
+    var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace;
+    var pseudoDomainPath = (anchor.hostname === window.location.hostname ? appstate.selectedArchive.zimitPrefix.replace(/\/$/, '') : anchor.hostname) + anchor.pathname;
     var containingDocDomainPath = anchor.ownerDocument.location.hostname + anchor.ownerDocument.location.pathname;
     // If it's for a different protocol (e.g. javascript:) we should let Replay handle that, or if the paths are identical, then we are dealing
     // with a link to an anchor in the same document, or if the user has pressed the ctrl or command key, the document will open in a new window
@@ -5233,6 +5233,8 @@ function handleClickOnReplayLink (ev, anchor) {
                         articleWindow = articleContainer.contentWindow;
                         appstate.target = 'iframe';
                         articleContainer.kiwixType = appstate.target;
+                        // Since we know the URL works, Normalize the href (this is needed for zimit2 relative links)
+                        anchor.href = pathToArticleDocumentRoot + zimUrl;
                         anchor.click();
                         // Poll spinner with abbreviated title
                         uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
