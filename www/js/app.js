@@ -2,7 +2,7 @@
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
- * Copyright 2013-2023 Jaifroid, Mossroy and contributors
+ * Copyright 2013-2024 Jaifroid, Mossroy and contributors
  * Licence GPL v3:
  *
  * This file is part of Kiwix.
@@ -4039,10 +4039,10 @@ function archiveReadyCallback (archive) {
     if (/gutenberg|phet/i.test(archive.file.name) ||
       // params.isLandingPage ||
       /kolibri/i.test(archive.creator) ||
-      archive.zimType === 'zimit') {
+      archive.zimType !== 'open') {
         if (params.imageDisplay) params.imageDisplayMode = 'all';
         if (params.zimType !== 'zimit') {
-            // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
+            // For some archive types (zimit2, Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
@@ -4957,31 +4957,33 @@ var previousReplayDocLocation = '';
  * Selects the iframe to which to attach the onload event, and attaches it
  */
 function articleLoader (entry, mimeType) {
+    if (/warc-headers/i.test(mimeType)) return;
     if (appstate.selectedArchive.zimType === 'zimit') {
         var doc = articleContainer.contentDocument || null;
         if (doc) {
             var replayIframe = doc.getElementById('replay_iframe');
-            if (replayIframe) {
-                replayIframe.onload = function () {
-                    // replayIframe.style.display = '';
-                    articleLoadedSW(entry, replayIframe);
-                };
-                var replayDoc = replayIframe.contentDocument || null;
-                if (replayDoc && replayDoc.location.href !== previousReplayDocLocation) {
-                    previousReplayDocLocation = replayDoc.location.href;
-                    switchCSSTheme();
+            if (!replayIframe) return;
+            // Add a failsafe to ensure that the iframe is displayed after 1.5 seconds
+            if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
+            replayIframe.timeout = setTimeout(function () {
+                replayIframe.style.display = '';
+                // Only show the sliding UI elements if the iframe window has not already been scrolled
+                if (replayIframe.contentWindow && !replayIframe.contentWindow.scrollFired) {
+                    uiUtil.showSlidingUIElements();
                 }
-                // Add a failsafe to ensure that the iframe is displayed after 1.5 seconds
-                // if (replayIframe.style.display === 'none') {
-                    if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
-                    replayIframe.timeout = setTimeout(function () {
-                        replayIframe.style.display = '';
-                        // Only show the sliding UI elements if the iframe window has not already been scrolled
-                        if (replayIframe.contentWindow && !replayIframe.contentWindow.scrollFired) {
-                            uiUtil.showSlidingUIElements();
-                        }
-                    }, 1500);
-                // }
+            }, 1500);
+            // Don't set up listeners for the Header type, as it is not a real article
+            if (/warc-headers/i.test(mimeType)) return;
+            var replayDoc = replayIframe && replayIframe.contentDocument || null;
+            if (!replayDoc || !replayDoc.readyState || replayDoc.readyState === 'loading') return;
+            if (replayDoc.location.href !== previousReplayDocLocation) {
+                console.debug('Previous replayDoc location: ' + previousReplayDocLocation);
+                console.debug('New replayDoc location: ' + replayDoc.location.href);
+                previousReplayDocLocation = replayDoc.location.href;
+                setTimeout(function () {
+                    articleLoadedSW(entry, replayIframe);
+                    switchCSSTheme();
+                }, 100);
             }
         }
     } else {
@@ -4992,7 +4994,7 @@ function articleLoader (entry, mimeType) {
 }
 
 // Add event listener to iframe window to check for links to external resources
-var filterClickEvent = function (event) {
+function filterClickEvent (event) {
     // console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
@@ -5008,7 +5010,8 @@ var filterClickEvent = function (event) {
     }
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
-        if (appstate.isReplayWorkerAvailable) {
+        // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
+        if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor) {
             return handleClickOnReplayLink(event, clickedAnchor);
         }
         var href = clickedAnchor.getAttribute('href');
@@ -5148,7 +5151,7 @@ var articleLoadedSW = function (dirEntry, container) {
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
     var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace;
-    var pseudoDomainPath = anchor.hostname + anchor.pathname;
+    var pseudoDomainPath = (anchor.hostname === window.location.hostname ? appstate.selectedArchive.zimitPrefix.replace(/\/$/, '') : anchor.hostname) + anchor.pathname;
     var containingDocDomainPath = anchor.ownerDocument.location.hostname + anchor.ownerDocument.location.pathname;
     // If it's for a different protocol (e.g. javascript:) we should let Replay handle that, or if the paths are identical, then we are dealing
     // with a link to an anchor in the same document, or if the user has pressed the ctrl or command key, the document will open in a new window
@@ -5233,6 +5236,11 @@ function handleClickOnReplayLink (ev, anchor) {
                         articleWindow = articleContainer.contentWindow;
                         appstate.target = 'iframe';
                         articleContainer.kiwixType = appstate.target;
+                        if (appstate.selectedArchive.zimType === 'zimit2') {
+                            // Since we know the URL works, normalize the href (this is needed for zimit2 relative links)
+                            // NB We mustn't do this for zimit classic because it breaks wombat rewriting of absolute links!
+                            anchor.href = pathToArticleDocumentRoot + zimUrl;
+                        }
                         anchor.click();
                         // Poll spinner with abbreviated title
                         uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
