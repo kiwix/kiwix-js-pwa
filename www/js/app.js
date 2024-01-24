@@ -5236,8 +5236,11 @@ function handleClickOnReplayLink (ev, anchor) {
                         articleWindow = articleContainer.contentWindow;
                         appstate.target = 'iframe';
                         articleContainer.kiwixType = appstate.target;
-                        // Since we know the URL works, Normalize the href (this is needed for zimit2 relative links)
-                        anchor.href = pathToArticleDocumentRoot + zimUrl;
+                        if (appstate.selectedArchive.zimType === 'zimit2') {
+                            // Since we know the URL works, normalize the href (this is needed for zimit2 relative links)
+                            // NB We mustn't do this for zimit classic because it breaks wombat rewriting of absolute links!
+                            anchor.href = pathToArticleDocumentRoot + zimUrl;
+                        }
                         anchor.click();
                         // Poll spinner with abbreviated title
                         uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
