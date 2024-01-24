@@ -4957,31 +4957,33 @@ var previousReplayDocLocation = '';
  * Selects the iframe to which to attach the onload event, and attaches it
  */
 function articleLoader (entry, mimeType) {
+    if (/warc-headers/i.test(mimeType)) return;
     if (appstate.selectedArchive.zimType === 'zimit') {
         var doc = articleContainer.contentDocument || null;
         if (doc) {
             var replayIframe = doc.getElementById('replay_iframe');
-            if (replayIframe) {
-                replayIframe.onload = function () {
-                    // replayIframe.style.display = '';
-                    articleLoadedSW(entry, replayIframe);
-                };
-                var replayDoc = replayIframe.contentDocument || null;
-                if (replayDoc && replayDoc.location.href !== previousReplayDocLocation) {
-                    previousReplayDocLocation = replayDoc.location.href;
-                    switchCSSTheme();
+            if (!replayIframe) return;
+            // Add a failsafe to ensure that the iframe is displayed after 1.5 seconds
+            if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
+            replayIframe.timeout = setTimeout(function () {
+                replayIframe.style.display = '';
+                // Only show the sliding UI elements if the iframe window has not already been scrolled
+                if (replayIframe.contentWindow && !replayIframe.contentWindow.scrollFired) {
+                    uiUtil.showSlidingUIElements();
                 }
-                // Add a failsafe to ensure that the iframe is displayed after 1.5 seconds
-                // if (replayIframe.style.display === 'none') {
-                    if (replayIframe.timeout) clearTimeout(replayIframe.timeout);
-                    replayIframe.timeout = setTimeout(function () {
-                        replayIframe.style.display = '';
-                        // Only show the sliding UI elements if the iframe window has not already been scrolled
-                        if (replayIframe.contentWindow && !replayIframe.contentWindow.scrollFired) {
-                            uiUtil.showSlidingUIElements();
-                        }
-                    }, 1500);
-                // }
+            }, 1500);
+            // Don't set up listeners for the Header type, as it is not a real article
+            if (/warc-headers/i.test(mimeType)) return;
+            var replayDoc = replayIframe && replayIframe.contentDocument || null;
+            if (!replayDoc || !replayDoc.readyState || replayDoc.readyState === 'loading') return;
+            if (replayDoc.location.href !== previousReplayDocLocation) {
+                console.debug('Previous replayDoc location: ' + previousReplayDocLocation);
+                console.debug('New replayDoc location: ' + replayDoc.location.href);
+                previousReplayDocLocation = replayDoc.location.href;
+                setTimeout(function () {
+                    articleLoadedSW(entry, replayIframe);
+                    switchCSSTheme();
+                }, 100);
             }
         }
     } else {
@@ -4992,7 +4994,7 @@ function articleLoader (entry, mimeType) {
 }
 
 // Add event listener to iframe window to check for links to external resources
-var filterClickEvent = function (event) {
+function filterClickEvent (event) {
     // console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
