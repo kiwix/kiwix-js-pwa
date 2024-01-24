@@ -1,15 +1,21 @@
 # Changelog
 
-## In-progress release 2.9.6
+## In-progress release 2.9.7
 
+* FEATURE: Preliminary support for Zimit v2.0 archive types
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
 * FIX: Blank landing page after opening article in new window or tab 
 * FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Opening article in new window or tab for non-Zimit archives
 * FIX: (partial) Zimit articles only open in new tab even if new window was requested
 * FIX: Detection of apps installed from the Microsoft Store
+* FIX: Loading of PDFs and external links in zimit2 archives
+* DEV: Add a way to detect zimit2 archive types
 * DEV: Fix incrementation of Microsoft Store apps at build time
+* DEV: Warn instead of throwing if the ZIM `minorVersion` is greater than 2
+* DEV: Laumch wingetcreate correctly from PowerShell
 * DEPENDENCIES: Electron-builder updated to v24.9.1
+* DEPENDENCIES: ViteJS updated to v4.5.2
 
 ## Release 2.9.2
 
