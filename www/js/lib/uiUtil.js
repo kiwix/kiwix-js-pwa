@@ -1193,7 +1193,9 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
         event.stopPropagation();
     }
     if (!clickedAnchor) clickedAnchor = event.target;
-    if (articleContainer.contentWindow && clickedAnchor.origin === articleContainer.contentWindow.location.origin) clickedAnchor.href = clickedAnchor.href.replace(clickedAnchor.origin, appstate.selectedArchive.source.replace(/\/$/, ''));
+    if (articleContainer.contentWindow && clickedAnchor.origin === articleContainer.contentWindow.location.origin) {
+        clickedAnchor.href = clickedAnchor.href.replace(clickedAnchor.origin, appstate.selectedArchive.source.replace(/\/$/, ''));
+    }
     var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
     clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
     message = message || '<p>Click the link to open this external ' + clickedAnchor.type + ' (in a new ' + params.windowOpener + ')';
