@@ -456,7 +456,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                 if (/\.css$/.test(title)) {
                     assetsCache.cssLoading--;
                     if (assetsCache.cssLoading <= 0) {
-                        document.getElementById('articleContent').style.display = 'block';
+                        document.getElementById('articleContent').style.display = '';
                     }
                 }
                 resolve(result);
@@ -509,7 +509,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                         if (/\bcss\b/i.test(mimetype)) {
                             assetsCache.cssLoading--;
                             if (assetsCache.cssLoading <= 0) {
-                                document.getElementById('articleContent').style.display = 'block';
+                                document.getElementById('articleContent').style.display = '';
                             }
                         }
                         setItem(key, content, mimetype, function (result) {

@@ -841,7 +841,7 @@ function setTab (activeBtn) {
             if (appstate.target === 'iframe') {
                 // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
                 if (articleContainer && articleContainer.style && !/zimit/.test(appstate.selectedArchive.zimType)) {
-                    articleContainer.style.display = 'block';
+                    articleContainer.style.display = '';
                 }
                 if (articleWindow) articleWindow.focus();
             }
@@ -2354,8 +2354,10 @@ function switchCSSTheme () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
                     if (zimitIframe) {
+                        articleContainer.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
+                            window.dispatchEvent(new Event('resize')); // Force repaint
                         }, 0);
                     }
                 }
@@ -2381,8 +2383,10 @@ function switchCSSTheme () {
             // If the interval has not succeeded after 3 seconds, give up
             if (zimitIframe) {
                 setTimeout(function () {
+                    articleContainer.style.display = '';
                     zimitIframe.style.display = '';
                     clearInterval(interval);
+                    window.dispatchEvent(new Event('resize')); // Force repaint
                 }, 3000);
             }
         }
@@ -5252,6 +5256,7 @@ function handleClickOnReplayLink (ev, anchor) {
                         var zimitIframe = appstate.selectedArchive.zimType === 'zimit' ? articleContainer.contentDocument.getElementById('replay_iframe')
                             : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
                         if (params.cssTheme === 'darkReader' && zimitIframe) {
+                            // articleContainer.style.display = 'none';
                             zimitIframe.style.display = 'none';
                             uiUtil.hideSlidingUIElements();
                         }
