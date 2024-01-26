@@ -2341,6 +2341,11 @@ function switchCSSTheme () {
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
+        link.onload = function () {
+            articleContainer.style.display = '';
+            if (zimitIframe) zimitIframe.style.display = '';
+            window.dispatchEvent(new Event('resize')); // Force repaint
+        }
         doc.head.appendChild(link);
         if (doc.defaultView.DarkReader) {
             doc.defaultView.DarkReader.disable();

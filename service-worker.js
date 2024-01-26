@@ -351,8 +351,8 @@ self.addEventListener('fetch', function (event) {
     // Filter out requests that do not match the scope of the Service Worker
     if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     // Filter darkReader request transformed by wombat.js
-    if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark\.css)/.test(rqUrl)) {
-        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+(?:[^/]|\/(?![^/]+\.zim\/))+)(?:[^/]|\/(?!dist|www\/))+(\/(?:dist\/)?www\/js\/(?:lib\/)?darkreader\.min\.js)$/, '$1$2');
+    if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark(?:-invert)?\.css)/.test(rqUrl)) {
+        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+(?:[^/]|\/(?![^/]+\.zim\/))+)(?:[^/]|\/(?!dist|www\/))+(\/(?:dist\/)?www\/(?:js|-\/s)\/(?:lib\/)?(?:darkreader\.min\.js|style-dark(?:-invert)?\.css))$/, '$1$2');
     }
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
