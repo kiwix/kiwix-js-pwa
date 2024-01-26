@@ -210,7 +210,7 @@ if (/UWP/.test(params.appType)) {
 // Prevent app boot loop with problematic pages that cause an app crash
 console.debug('lastPageLoad: ' + getSetting('lastPageLoad'));
 if (getSetting('lastPageLoad') === 'failed') {
-    console.error('Removing params.lastPageVisit because lastPageLoad failed!');
+    console.warn('Removing params.lastPageVisit because lastPageLoad failed!');
     params.lastPageVisit = '';
 } else {
     // Cookie will signal failure until article is fully loaded

@@ -5653,7 +5653,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
     // Display Bootstrap warning alert if the landing page contains active content
     if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
-        (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || params.zimType === 'zimit')) {
+        (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || /zimit/.test(appstate.selectedArchive.zimType))) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
