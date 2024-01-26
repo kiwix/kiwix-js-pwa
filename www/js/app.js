@@ -839,7 +839,10 @@ function setTab (activeBtn) {
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
             if (appstate.target === 'iframe') {
-                if (articleContainer && articleContainer.style) articleContainer.style.display = 'block';
+                // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
+                if (articleContainer && articleContainer.style && !/zimit/.test(appstate.selectedArchive.zimType)) {
+                    articleContainer.style.display = '';
+                }
                 if (articleWindow) articleWindow.focus();
             }
         }, 50);
@@ -2317,8 +2320,9 @@ function setExpressServerUI (value) {
 function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
     var doc = articleContainer ? articleContainer.contentDocument : '';
-    var replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
-    doc = replayIframe ? replayIframe.contentDocument : doc;
+    var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+    doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var styleSheets = doc.getElementsByTagName('link');
     // Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
@@ -2337,6 +2341,11 @@ function switchCSSTheme () {
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
+        link.onload = function () {
+            articleContainer.style.display = '';
+            if (zimitIframe) zimitIframe.style.display = '';
+            window.dispatchEvent(new Event('resize')); // Force repaint
+        }
         doc.head.appendChild(link);
         if (doc.defaultView.DarkReader) {
             doc.defaultView.DarkReader.disable();
@@ -2349,9 +2358,11 @@ function switchCSSTheme () {
                 darkReader.onload = function () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
-                    if (replayIframe) {
+                    if (zimitIframe) {
+                        articleContainer.style.display = '';
                         setTimeout(function () {
-                            replayIframe.style.display = '';
+                            zimitIframe.style.display = '';
+                            window.dispatchEvent(new Event('resize')); // Force repaint
                         }, 0);
                     }
                 }
@@ -2369,17 +2380,25 @@ function switchCSSTheme () {
                 } else {
                     // Oops, we no longer have a handle on the iframe document, so get it again
                     doc = articleContainer ? articleContainer.contentDocument : '';
-                    replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
-                    doc = replayIframe ? replayIframe.contentDocument : doc;
+                    zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+                        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                    doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
             // If the interval has not succeeded after 3 seconds, give up
-            if (replayIframe) {
+            if (zimitIframe) {
                 setTimeout(function () {
-                    replayIframe.style.display = '';
+                    articleContainer.style.display = '';
+                    zimitIframe.style.display = '';
                     clearInterval(interval);
+                    window.dispatchEvent(new Event('resize')); // Force repaint
                 }, 3000);
             }
+        } else {
+            // We're dealing with a light style, so we just display it
+            articleContainer.style.display = '';
+            if (zimitIframe) zimitIframe.style.display = '';
+            window.dispatchEvent(new Event('resize')); // Force repaint
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
@@ -5244,9 +5263,11 @@ function handleClickOnReplayLink (ev, anchor) {
                         anchor.click();
                         // Poll spinner with abbreviated title
                         uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
-                        var replayIframe = articleContainer.contentDocument.getElementById('replay_iframe');
-                        if (params.cssTheme === 'darkReader' && replayIframe) {
-                            replayIframe.style.display = 'none';
+                        var zimitIframe = appstate.selectedArchive.zimType === 'zimit' ? articleContainer.contentDocument.getElementById('replay_iframe')
+                            : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                        if (params.cssTheme === 'darkReader' && zimitIframe) {
+                            // articleContainer.style.display = 'none';
+                            zimitIframe.style.display = 'none';
                             uiUtil.hideSlidingUIElements();
                         }
                     }
@@ -5632,7 +5653,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
     // Display Bootstrap warning alert if the landing page contains active content
     if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
-        (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || params.zimType === 'zimit')) {
+        (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || /zimit/.test(appstate.selectedArchive.zimType))) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {

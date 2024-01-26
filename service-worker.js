@@ -351,8 +351,8 @@ self.addEventListener('fetch', function (event) {
     // Filter out requests that do not match the scope of the Service Worker
     if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     // Filter darkReader request transformed by wombat.js
-    if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark\.css)/.test(rqUrl)) {
-        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+)(?:[^/]|\/(?![jc]s_\/))+\/[jc]s_\/[^:]+:\/\/[^/]+(.+)/, '$1$2');
+    if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark(?:-invert)?\.css)/.test(rqUrl)) {
+        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+(?:[^/]|\/(?![^/]+\.zim\/))+)(?:[^/]|\/(?!dist|www\/))+(\/(?:dist\/)?www\/(?:js|-\/s)\/(?:lib\/)?(?:darkreader\.min\.js|style-dark(?:-invert)?\.css))$/, '$1$2');
     }
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
@@ -625,8 +625,12 @@ function zimitResolver (event, rqUrl) {
         // The loaded ZIM archive is not a Zimit archive, or sw-Zimit is unsupported, so we should just return the request
         // If the reqUrl is not the same as event.request.url, we need to modify the request
         // Note that we can't clone requests with streaming bodies, hence we check for bodyUsed (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
-        var rtnRequest = ~event.request.url.indexOf(rqUrl) || event.request.mode === 'navigate' || !event.request.bodyUsed
-            ? event.request : new Request(rqUrl, event.request);
+        var rtnRequest;
+        if (event.request.url.replace(/^[^/]+\/\/[^/]+/, '') === rqUrl || event.request.mode === 'navigate' || event.request.bodyUsed) {
+            rtnRequest = event.request;
+        } else {
+            rtnRequest = new Request(rqUrl, event.request);
+        }
         return Promise.resolve(rtnRequest);
     }
 }
