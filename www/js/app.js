@@ -2394,6 +2394,11 @@ function switchCSSTheme () {
                     window.dispatchEvent(new Event('resize')); // Force repaint
                 }, 3000);
             }
+        } else {
+            // We're dealing with a light style, so we just display it
+            articleContainer.style.display = '';
+            if (zimitIframe) zimitIframe.style.display = '';
+            window.dispatchEvent(new Event('resize')); // Force repaint
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
