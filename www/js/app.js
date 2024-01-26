@@ -839,7 +839,10 @@ function setTab (activeBtn) {
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
             if (appstate.target === 'iframe') {
-                if (articleContainer && articleContainer.style) articleContainer.style.display = 'block';
+                // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
+                if (articleContainer && articleContainer.style && !/zimit/.test(appstate.selectedArchive.zimType)) {
+                    articleContainer.style.display = 'block';
+                }
                 if (articleWindow) articleWindow.focus();
             }
         }, 50);
@@ -2317,8 +2320,9 @@ function setExpressServerUI (value) {
 function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
     var doc = articleContainer ? articleContainer.contentDocument : '';
-    var replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
-    doc = replayIframe ? replayIframe.contentDocument : doc;
+    var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+    doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var styleSheets = doc.getElementsByTagName('link');
     // Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
@@ -2349,9 +2353,9 @@ function switchCSSTheme () {
                 darkReader.onload = function () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
-                    if (replayIframe) {
+                    if (zimitIframe) {
                         setTimeout(function () {
-                            replayIframe.style.display = '';
+                            zimitIframe.style.display = '';
                         }, 0);
                     }
                 }
@@ -2369,14 +2373,15 @@ function switchCSSTheme () {
                 } else {
                     // Oops, we no longer have a handle on the iframe document, so get it again
                     doc = articleContainer ? articleContainer.contentDocument : '';
-                    replayIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe') : null;
-                    doc = replayIframe ? replayIframe.contentDocument : doc;
+                    zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+                        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                    doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
             // If the interval has not succeeded after 3 seconds, give up
-            if (replayIframe) {
+            if (zimitIframe) {
                 setTimeout(function () {
-                    replayIframe.style.display = '';
+                    zimitIframe.style.display = '';
                     clearInterval(interval);
                 }, 3000);
             }
@@ -5244,9 +5249,10 @@ function handleClickOnReplayLink (ev, anchor) {
                         anchor.click();
                         // Poll spinner with abbreviated title
                         uiUtil.pollSpinner('Loading ' + dirEntry.getTitleOrUrl().replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
-                        var replayIframe = articleContainer.contentDocument.getElementById('replay_iframe');
-                        if (params.cssTheme === 'darkReader' && replayIframe) {
-                            replayIframe.style.display = 'none';
+                        var zimitIframe = appstate.selectedArchive.zimType === 'zimit' ? articleContainer.contentDocument.getElementById('replay_iframe')
+                            : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                        if (params.cssTheme === 'darkReader' && zimitIframe) {
+                            zimitIframe.style.display = 'none';
                             uiUtil.hideSlidingUIElements();
                         }
                     }
