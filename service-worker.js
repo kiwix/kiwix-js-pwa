@@ -352,7 +352,7 @@ self.addEventListener('fetch', function (event) {
     if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     // Filter darkReader request transformed by wombat.js
     if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark(?:-invert)?\.css)/.test(rqUrl)) {
-        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+(?:[^/]|\/(?![^/]+\.zim\/))+)(?:[^/]|\/(?!dist|www\/))+(\/(?:dist\/)?www\/(?:js|-\/s)\/(?:lib\/)?(?:darkreader\.min\.js|style-dark(?:-invert)?\.css))$/, '$1$2');
+        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^\/]+(?:[^\/]|\/(?![^\/]+\.zim\/))+)(?:[^\/]|\/(?!www\/))+/, '$1');
     }
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
