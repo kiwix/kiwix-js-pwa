@@ -6600,7 +6600,12 @@ function addListenersToLink (a, href, baseUrl) {
         var zimRoot = indexRoot.replace(/^.+?\/www\//, '/');
         var zimUrl;
         var zimUrlFullEncoding;
-        if (params.zimType === 'zimit') {
+        // Some URLs are incorrectly given with spaces at the beginning and end, so we remove these
+        href = href.replace(/^\s+|\s+$/g, '');
+        // Deal with root-relative URLs in zimit2 ZIMs
+        if (/^\//.test(href) && params.zimType === 'zimit2') {
+            zimUrl = href.replace(/^\//, appstate.selectedArchive.zimitPseudoContentNamespace + appstate.selectedArchive.zimitPrefix);
+        } else if (params.zimType === 'zimit') {
             if (!href.indexOf(indexRoot)) { // If begins with indexRoot
                 zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
             } else if (!href.indexOf(zimRoot)) { // If begins with zimRoot
