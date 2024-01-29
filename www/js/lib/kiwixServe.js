@@ -485,6 +485,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
             var body = document.getElementById('dl-panel-body');
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
+            bodyDoc += '<p><b><i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
             bodyDoc += '<p><b>Browser-managed download of ZIM archive:</b></p>' +
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
@@ -495,6 +496,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-warning');
+            document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
+                domain = domain.replace(/download/, 'library');
+                domain = domain.replace(/master/, 'dev');
+                return domain + file;
+            });
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');
