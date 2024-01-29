@@ -4065,7 +4065,7 @@ function archiveReadyCallback (archive) {
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
-        } else if (archive.zimType === 'zimit') {
+        } else if (/zimit/.test(archive.zimType)) {
             // Tuen off the assetsCache for now in jQuery mode
             // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
             params.assetsCache = params.contentInjectionMode !== 'jquery';
@@ -4763,11 +4763,12 @@ function readArticle (dirEntry) {
             return;
         }
 
+        // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to jQuery mode
+        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !window.nw) {
+            return handleUnsupportedReplayWorker(dirEntry);
+        }
+        // If we are dealing with a classic Zimit ZIM, we need to instruct Replay to add the file as a new collection
         if (appstate.selectedArchive.zimType === 'zimit' && appstate.isReplayWorkerAvailable === null) {
-            if (window.location.protocol === 'chrome-extension:' && !window.nw) {
-                // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to jQuery mode
-                return handleUnsupportedReplayWorker(dirEntry);
-            }
             if (params.useLegacyZimitSupport) {
                 navigator.serviceWorker.controller.postMessage({ action: 'disableZimitSupport' });
                 return handleUnsupportedReplayWorker(dirEntry);
