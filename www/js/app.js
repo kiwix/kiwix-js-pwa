@@ -5579,7 +5579,7 @@ params.regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
 // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] or href=["']
 // (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing negative lookahead (?!...) that excludes
 // absolute URIs with protocols that conform to RFC 3986 (e.g. 'http:', 'data:'). It then captures the whole of the URL up until any
-// querystring (? character) which (if it is exists) is captured with its contents in another gourp. The regex then tests for the end
+// querystring (? character) which (if it is exists) is captured with its contents in another group. The regex then tests for the end
 // of the URL with the opening delimiter (" or ', which is capture group \3) or a hash character (#). When the regex is used below, it
 // will be further processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single quote marks (') in the URL.
 params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(\?.*?)?(?=\3|#)([\s\S]*?>)/ig;
@@ -5697,10 +5697,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (/data:image/i.test(relAssetUrl)) return match;
             // We need to save the query string if any for Zimit-style archives
             querystring = querystring || '';
-            if (params.zimType === 'zimit') {
+            if (/zimit/.test(params.zimType)) {
                 assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
                 assetZIMUrlEnc = assetZIMUrlEnc + querystring;
-            } else {
+            }
+            if (params.zimType !== 'zimit') {
                 // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                 // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                 // of encodeURIComponent.
@@ -6031,7 +6032,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         }
         for (i = 0; i < arr.length; i++) {
             var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
-            zimLink = zimLink ? params.zimType === 'zimit' ? zimLink[1] : decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
+            zimLink = zimLink ? /zimit/.test(params.zimType) ? zimLink[1] : decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
             /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
             var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
             if (filteredLink.rtnFunction == 'injectCSS') {
@@ -6356,7 +6357,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             transDirEntry = dirEntry;
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
-            var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : encodeURI(dirEntry.url);
+            var encodedUrl = /zimit/.test(params.zimType) ? dirEntry.url : encodeURI(dirEntry.url);
             // If the request was not initiated by an existing controlled window, we instantiate the request here
             if (!messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
@@ -6474,7 +6475,7 @@ function loadCSSJQuery () {
     Array.prototype.slice.call(iframe.querySelectorAll('link[data-kiwixurl]')).forEach(function (link) {
         cssCount++;
         var linkUrl = link.getAttribute('data-kiwixurl');
-        var url = decodeURIComponent(appstate.selectedArchive.zimType === 'zimit' ? linkUrl : uiUtil.removeUrlParameters(linkUrl));
+        var url = decodeURIComponent(/zimit/.test(appstate.selectedArchive.zimType) ? linkUrl : uiUtil.removeUrlParameters(linkUrl));
         if (assetsCache.has(url)) {
             var nodeContent = assetsCache.get(url);
             uiUtil.feedNodeWithBlob(link, 'href', nodeContent, link.type || 'image', true);
