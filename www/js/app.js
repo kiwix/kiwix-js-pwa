@@ -4065,9 +4065,10 @@ function archiveReadyCallback (archive) {
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
-        } else if (/zimit/.test(archive.zimType)) {
-            // Tuen off the assetsCache for now in jQuery mode
-            // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
+        }
+        // Turn off the assetsCache for now in jQuery mode
+        // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
+        if (/zimit/.test(archive.zimType)) {
             params.assetsCache = params.contentInjectionMode !== 'jquery';
         }
     }
