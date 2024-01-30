@@ -359,7 +359,7 @@ function prepareImagesJQuery (win, forPrinting) {
     var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
     indexRoot = indexRoot.replace(/^\//, '');
     // Zimit ZIMs work better if all images are extracted
-    if (params.zimType === 'zimit') forPrinting = true;
+    if (/zimit/.test(params.zimType)) forPrinting = true;
     // In case there are no images in the doc, we need to schedule the loadMathJax function here
     setTimeout(function () {
         loadMathJax();
