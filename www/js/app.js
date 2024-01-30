@@ -6598,25 +6598,26 @@ function addListenersToLink (a, href, baseUrl) {
         anchorParameter = anchorParameter ? anchorParameter[1] : '';
         var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
         var zimRoot = indexRoot.replace(/^.+?\/www\//, '/');
-        var zimUrl;
+        var zimUrl = href;
         var zimUrlFullEncoding;
         // Some URLs are incorrectly given with spaces at the beginning and end, so we remove these
-        href = href.replace(/^\s+|\s+$/g, '');
-        // Deal with root-relative URLs in zimit2 ZIMs
-        if (/^\//.test(href) && params.zimType === 'zimit2') {
-            zimUrl = href.replace(/^\//, appstate.selectedArchive.zimitPseudoContentNamespace + appstate.selectedArchive.zimitPrefix);
-        } else if (params.zimType === 'zimit') {
-            if (!href.indexOf(indexRoot)) { // If begins with indexRoot
-                zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
-            } else if (!href.indexOf(zimRoot)) { // If begins with zimRoot
-                zimUrl = href.replace(zimRoot, '').replace('#' + anchorParameter, '');
+        zimUrl = zimUrl.replace(/^\s+|\s+$/g, '');
+        if (/zimit/.test(params.zimType)) {
+            // Deal with root-relative URLs in zimit ZIMs
+            if (!zimUrl.indexOf(indexRoot)) { // If begins with indexRoot
+                zimUrl = zimUrl.replace(indexRoot, '').replace('#' + anchorParameter, '');
+            } else if (!zimUrl.indexOf(zimRoot)) { // If begins with zimRoot
+                zimUrl = zimUrl.replace(zimRoot, '').replace('#' + anchorParameter, '');
+            } else if (/^\//.test(zimUrl)) {
+                zimUrl = zimUrl.replace(/^\//, appstate.selectedArchive.zimitPseudoContentNamespace + appstate.selectedArchive.zimitPrefix.replace(/^A\//, ''));
             } else {
                 // Zimit ZIMs store URLs percent-encoded and with querystring and
                 // deriveZimUrlFromRelativeUrls strips any querystring and decodes
-                zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl)) +
-                    href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, '');
-                zimUrlFullEncoding = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl) +
-                    href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, ''));
+                var zimUrlToTransform = zimUrl;
+                zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(zimUrlToTransform, baseUrl)) +
+                    href.replace(uriComponent, '').replace('#' + anchorParameter, '');
+                zimUrlFullEncoding = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(zimUrlToTransform, baseUrl) +
+                    href.replace(uriComponent, '').replace('#' + anchorParameter, ''));
             }
         } else {
             zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
