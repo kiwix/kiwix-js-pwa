@@ -504,7 +504,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                             // Count CSS so we can attempt to show article before JS/images are fully loaded
                             var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                             assetsCache.cssLoading = cssCount ? cssCount.length : 0;
-                            if (assetsCache.cssLoading) document.getElementById('articleContent').style.display = 'none';
+                            if (assetsCache.cssLoading && appstate.target === 'iframe') document.getElementById('articleContent').style.display = 'none';
                         }
                         if (/\bcss\b/i.test(mimetype)) {
                             assetsCache.cssLoading--;
