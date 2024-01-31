@@ -5176,6 +5176,8 @@ var articleLoadedSW = function (dirEntry, container) {
 
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
+    var basePath = window.location.href.replace(/^(.*?\/)www\/.*$/, '$1');
+    var pathToZim = basePath + appstate.selectedArchive.file.name + '/';
     var pseudoNamespace = appstate.selectedArchive.zimitPseudoContentNamespace;
     var pseudoDomainPath = (anchor.hostname === window.location.hostname ? appstate.selectedArchive.zimitPrefix.replace(/\/$/, '') : anchor.hostname) + anchor.pathname;
     var containingDocDomainPath = anchor.ownerDocument.location.hostname + anchor.ownerDocument.location.pathname;
@@ -5183,8 +5185,14 @@ function handleClickOnReplayLink (ev, anchor) {
     // with a link to an anchor in the same document, or if the user has pressed the ctrl or command key, the document will open in a new window
     // anyway, so we can return. Note that some PDFs are served with a protocol of http: instead of https:, so we need to account for that.
     if (anchor.protocol.replace(/s:/, ':') !== document.location.protocol.replace(/s:/, ':') || pseudoDomainPath === containingDocDomainPath) return;
-    var zimUrl = pseudoNamespace + pseudoDomainPath + anchor.search;
-    // We are dealing with a ZIM link transformed by Wombat, so we need to reconstruct the ZIM link
+    var zimUrl;
+    // If it starts with the path to the ZIM file, then we are dealing with an untransformed absolute local ZIM link
+    if (!anchor.href.indexOf(pathToZim)) {
+        zimUrl = anchor.href.replace(pathToZim, '');
+    } else {
+        zimUrl = pseudoNamespace + pseudoDomainPath + anchor.search;
+    }
+    // We need to test the ZIM link
     if (zimUrl) {
         ev.preventDefault();
         ev.stopPropagation();
