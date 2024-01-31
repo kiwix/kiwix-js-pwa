@@ -5038,7 +5038,7 @@ function filterClickEvent (event) {
         // however, this misses zimit2 archives where the framework doesn't support wombat.js, so monitor if always processing zimit2 links
         // causes any adverse effects @TODO
         if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor || appstate.selectedArchive.zimType === 'zimit2' &&
-          articleWindow.location.href.replace(/[#?].*$/, '') !== clickedAnchor.href.replace(/[#?].*$/, '') && !anchor.hash) {
+          articleWindow.location.href.replace(/[#?].*$/, '') !== clickedAnchor.href.replace(/[#?].*$/, '') && !clickedAnchor.hash) {
             return handleClickOnReplayLink(event, clickedAnchor);
         }
         var href = clickedAnchor.getAttribute('href');
