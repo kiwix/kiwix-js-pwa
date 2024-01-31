@@ -410,6 +410,11 @@ function printCleanup () {
         // We don't need a radical cleanup because there was no printIntercept
         removePageMaxWidth();
         setTab();
+        params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
+        if (document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked) {
+            // It seems darkReader has been auto-turned on, so we need to respect that
+            params.cssTheme = 'darkReader';
+        }
         switchCSSTheme();
         return;
     }
