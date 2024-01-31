@@ -1,15 +1,21 @@
 # Changelog
 
-## In-progress release 2.9.7
+## Release 3.0.0 / 3.0.1
 
 * FEATURE: Preliminary support for Zimit v2.0 archive types
+* FEATURE: Enable use of DarkReader with zimit2 archives
+* ENHANCEMENT: Support of most Zimit (1/2) archives in jQuery mode if they have largely static content
+* ENHANCEMENT: Dark mode tri-state switch turns it on before turning it to auto (should be less confusing)
+* KNOWN ISSUE: DarkReader interferes with CIA World Factbook home page (workaround: switch to light mode)
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
+* FIX: Use of standard dark and invert styles with any archive (but usually DarkReader is works best for Zimit)
 * FIX: Blank landing page after opening article in new window or tab 
 * FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Opening article in new window or tab for non-Zimit archives
 * FIX: (partial) Zimit articles only open in new tab even if new window was requested
 * FIX: Detection of apps installed from the Microsoft Store
 * FIX: Loading of PDFs and external links in zimit2 archives
+* FIX: Add preview link for all archives that can be displayed in library.kiwix.org
 * DEV: Add a way to detect zimit2 archive types
 * DEV: Fix incrementation of Microsoft Store apps at build time
 * DEV: Warn instead of throwing if the ZIM `minorVersion` is greater than 2
