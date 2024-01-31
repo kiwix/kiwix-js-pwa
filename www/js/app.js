@@ -4080,7 +4080,7 @@ function archiveReadyCallback (archive) {
             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
             if (/zimit/.test(params.zimType)) {
                 var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                // Originally we only selected darkReader if auto had been selected, but this is confusing, so 
+                // Originally we only selected darkReader if auto had been selected, but this is confusing, so
                 // we now always select it if the theme is dark and the ZIM type is zimit (1 or 2)
                 // if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
                 if (determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
@@ -5035,7 +5035,9 @@ function filterClickEvent (event) {
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
         // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
-        if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor) {
+        // however, this misses zimit2 archives where the framework doesn't support wombat.js, so monitor if always processing zimit2 links
+        // causes any adverse effects @TODO
+        if (appstate.isReplayWorkerAvailable || '__WB_pmw' in clickedAnchor || appstate.selectedArchive.zimType === 'zimit2') {
             return handleClickOnReplayLink(event, clickedAnchor);
         }
         var href = clickedAnchor.getAttribute('href');
