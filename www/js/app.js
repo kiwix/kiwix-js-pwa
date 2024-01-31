@@ -5292,7 +5292,7 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     readArticle(unhandledDirEntry);
     if (!params.hideActiveContentWarning) {
         uiUtil.displayActiveContentWarning();
-        return uiUtil.systemAlert('<p>You are attempting to open a Zimit-style archive, ' +
+        return uiUtil.systemAlert('<p>You are attempting to open a Zimit (classic) archive, ' +
             'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
             'fallback method to read this archive, but some highly dynamic content may not work.</p>',
             'Legacy support for Zimit archives'
