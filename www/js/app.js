@@ -838,7 +838,7 @@ function setTab (activeBtn) {
         scrollbox.style.height = 0;
         document.getElementById('search-article').style.overflowY = 'hidden';
         setTimeout(function () {
-            if (appstate.target === 'iframe') {
+            if (appstate.target === 'iframe' && appstate.selectedArchive) {
                 // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
                 if (articleContainer && articleContainer.style && !/zimit/.test(appstate.selectedArchive.zimType)) {
                     articleContainer.style.display = '';
@@ -2182,12 +2182,12 @@ if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.displ
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
 document.getElementById('cssUIDarkThemeCheck').addEventListener('change', function () {
     // This code implements a tri-state checkbox
-    // if (this.readOnly) this.checked = this.readOnly = false;
-    // else if (!this.checked) this.readOnly = this.indeterminate = true;
+    if (this.readOnly) this.checked = this.readOnly = false;
+    else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Code below shows how to invert the order
-    if (this.readOnly) {
-        this.checked = true; this.readOnly = false;
-    } else if (this.checked) this.readOnly = this.indeterminate = true;
+    // if (this.readOnly) {
+    //     this.checked = true; this.readOnly = false;
+    // } else if (this.checked) this.readOnly = this.indeterminate = true;
     params.cssUITheme = this.indeterminate ? 'auto' : this.checked ? 'dark' : 'light';
     if (!uiSettings) initializeUISettings();
     settingsStore.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -2198,12 +2198,12 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('change', functi
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', function () {
-    // if (this.readOnly) this.checked = this.readOnly = false;
-    // else if (!this.checked) this.readOnly = this.indeterminate = true;
+    if (this.readOnly) this.checked = this.readOnly = false;
+    else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Invert order:
-    if (this.readOnly) {
-        this.checked = true; this.readOnly = false;
-    } else if (this.checked) this.readOnly = this.indeterminate = true;
+    // if (this.readOnly) {
+    //     this.checked = true; this.readOnly = false;
+    // } else if (this.checked) this.readOnly = this.indeterminate = true;
     params.cssTheme = this.indeterminate ? 'auto' : this.checked ? 'dark' : 'light';
     if (!uiSettings) initializeUISettings();
     var determinedValue = params.cssTheme;
@@ -2214,7 +2214,7 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', func
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit' : false;
+    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
     params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
@@ -2321,7 +2321,7 @@ function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
     var doc = articleContainer ? articleContainer.contentDocument : '';
     var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var styleSheets = doc.getElementsByTagName('link');
@@ -4078,9 +4078,12 @@ function archiveReadyCallback (archive) {
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
-            if (params.zimType === 'zimit') {
+            if (/zimit/.test(params.zimType)) {
                 var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
+                // Originally we only selected darkReader if auto had been selected, but this is confusing, so 
+                // we now always select it if the theme is dark and the ZIM type is zimit (1 or 2)
+                // if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
+                if (determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
                     params.cssTheme = 'darkReader';
                     document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
                 }
@@ -4096,9 +4099,9 @@ function archiveReadyCallback (archive) {
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
             params.noWarning = false;
             params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-            if (params.cssTheme === 'auto') {
+            // if (params.cssTheme === 'auto') {
                 document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-            }
+            // }
         }
     }
     // The archive is set : go back to home page to start searching
@@ -4998,8 +5001,8 @@ function articleLoader (entry, mimeType) {
             var replayDoc = replayIframe && replayIframe.contentDocument || null;
             if (!replayDoc || !replayDoc.readyState || replayDoc.readyState === 'loading') return;
             if (replayDoc.location.href !== previousReplayDocLocation) {
-                console.debug('Previous replayDoc location: ' + previousReplayDocLocation);
-                console.debug('New replayDoc location: ' + replayDoc.location.href);
+                // console.debug('Previous replayDoc location: ' + previousReplayDocLocation);
+                // console.debug('New replayDoc location: ' + replayDoc.location.href);
                 previousReplayDocLocation = replayDoc.location.href;
                 setTimeout(function () {
                     articleLoadedSW(entry, replayIframe);
