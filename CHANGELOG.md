@@ -6,16 +6,20 @@
 * FEATURE: Enable use of DarkReader with zimit2 archives
 * ENHANCEMENT: Support of most Zimit (1/2) archives in jQuery mode if they have largely static content
 * ENHANCEMENT: Dark mode tri-state switch turns it on before turning it to auto (should be less confusing)
+* WORKAROUND: Provide alternative link handling for browsers that do not support wombat.js
 * KNOWN ISSUE: DarkReader interferes with CIA World Factbook home page (workaround: switch to light mode)
+* KNOWN ISSUE: Video is not currently supported in UWP app with zimit2 archives (due to incompaitibility with wombat.js) 
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
 * FIX: Use of standard dark and invert styles with any archive (but usually DarkReader is works best for Zimit)
-* FIX: Blank landing page after opening article in new window or tab 
+* FIX: Blank iframe article after opening article in new window or tab
 * FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Opening article in new window or tab for non-Zimit archives
 * FIX: (partial) Zimit articles only open in new tab even if new window was requested
 * FIX: Detection of apps installed from the Microsoft Store
+* FIX: Failure of UWP app to reload picked folder automatically on app launch
 * FIX: Loading of PDFs and external links in zimit2 archives
 * FIX: Add preview link for all archives that can be displayed in library.kiwix.org
+* FIX: Failure to re-enable DarkReader after printing
 * DEV: Add a way to detect zimit2 archive types
 * DEV: Fix incrementation of Microsoft Store apps at build time
 * DEV: Warn instead of throwing if the ZIM `minorVersion` is greater than 2
