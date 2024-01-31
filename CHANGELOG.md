@@ -4,13 +4,13 @@
 
 * FEATURE: Preliminary support for Zimit v2.0 archive types
 * FEATURE: Enable use of DarkReader with zimit2 archives
-* ENHANCEMENT: Support of most Zimit (1/2) archives in jQuery mode if they have largely static content
-* ENHANCEMENT: Dark mode tri-state switch turns it on before turning it to auto (should be less confusing)
+* ENHANCEMENT: Support most Zimit (1/2) archives in jQuery mode if they have largely static content
+* ENHANCEMENT: Dark mode tri-state switch now turns on before turning turning to auto (should be less confusing)
 * WORKAROUND: Provide alternative link handling for browsers that do not support wombat.js
 * KNOWN ISSUE: DarkReader interferes with CIA World Factbook home page (workaround: switch to light mode)
 * KNOWN ISSUE: Video is not currently supported in UWP app with zimit2 archives (due to incompaitibility with wombat.js) 
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
-* FIX: Use of standard dark and invert styles with any archive (but usually DarkReader is works best for Zimit)
+* FIX: Use of standard dark and invert styles with any archive (but usually DarkReader is best for Zimit)
 * FIX: Blank iframe article after opening article in new window or tab
 * FIX: Finding path of packaged archive with new Electron app architecture
 * FIX: Opening article in new window or tab for non-Zimit archives
