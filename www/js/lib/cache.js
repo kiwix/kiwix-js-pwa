@@ -369,10 +369,15 @@ function setItem (key, contents, mimetype, callback, isAsset) {
         return;
     }
     // Check if we're actually setting an article
-    var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/);
-    if (keyArticle && !isAsset && /\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(key)) { // We're setting an article, so go to setArticle function
-        setArticle(keyArticle[1], keyArticle[2], contents, callback);
-        return;
+    // DEV: This code seems to cause more trouble than it's worth with zimit-based archives
+    // The code remembers the last loaded article for each ZIM, but because zimit archives often load assets which are misclassified as html MIME types,
+    // the code below ends up caching an "article" which cannot in fact be loaded as an article
+    if (!/zimit/.test(params.zimType)) {
+        var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/);
+        if (keyArticle && !isAsset && /\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(key)) { // We're setting an article, so go to setArticle function
+            setArticle(keyArticle[1], keyArticle[2], contents, callback);
+            return;
+        }
     }
     if (/^localStorage/.test(assetsCache.capability)) {
         localStorage.setItem(key, contents);

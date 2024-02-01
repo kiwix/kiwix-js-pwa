@@ -845,7 +845,7 @@ function setTab (activeBtn) {
         setTimeout(function () {
             if (appstate.target === 'iframe' && appstate.selectedArchive) {
                 // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
-                if (articleContainer && articleContainer.style && !/zimit/.test(appstate.selectedArchive.zimType)) {
+                if (articleContainer && articleContainer.style && articleDocument) {
                     articleContainer.style.display = '';
                 }
                 if (articleWindow) articleWindow.focus();
@@ -860,6 +860,10 @@ function setTab (activeBtn) {
     document.getElementById('articleListWithHeader').style.display = 'none';
     prefix.value = '';
     document.getElementById('welcomeText').style.display = 'none';
+    if (params.themeChanged) {
+        params.themeChanged = null;
+        goToMainArticle();
+    }
     if (params.beforeinstallpromptFired) {
         var divInstall1 = document.getElementById('divInstall1');
         if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {
@@ -2186,6 +2190,7 @@ function initializeUISettings () {
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
 document.getElementById('cssUIDarkThemeCheck').addEventListener('change', function () {
+    params.cssThemeOriginal = params.cssTheme;
     // This code implements a tri-state checkbox
     if (this.readOnly) this.checked = this.readOnly = false;
     else if (!this.checked) this.readOnly = this.indeterminate = true;
@@ -2200,6 +2205,11 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('change', functi
     cssUIThemeGetOrSet(params.cssUITheme);
     // Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
     if (params.cssUITheme != params.cssTheme) document.getElementById('cssWikiDarkThemeCheck').click();
+    // If the darkReader theme has been turned off or on (and this is a change), then we need to reload the page
+    if (params.cssTheme !== params.cssThemeOriginal && (params.cssTheme === 'darkReader' || params.cssThemeOriginal === 'darkReader')) {
+        params.themeChanged = true;
+        params.lastPageVisit = '';
+    }
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', function () {
@@ -2240,6 +2250,7 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
+    params.cssThemeOriginal = params.cssTheme;
     if (this.checked) {
         params.cssTheme = 'darkReader';
         document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
@@ -2250,6 +2261,11 @@ document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('cha
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     switchCSSTheme();
+    // If the darkReader theme has been turned off or on (and this is a change), then we need to reload the page
+    if (params.cssTheme !== params.cssThemeOriginal && (params.cssTheme === 'darkReader' || params.cssThemeOriginal === 'darkReader')) {
+        params.themeChanged = true;
+        params.lastPageVisit = '';
+    }
     params.cssThemeOriginal = null;
 });
 
@@ -2347,9 +2363,11 @@ function switchCSSTheme () {
         link.setAttribute('type', 'text/css');
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         link.onload = function () {
-            articleContainer.style.display = '';
-            if (zimitIframe) zimitIframe.style.display = '';
-            window.dispatchEvent(new Event('resize')); // Force repaint
+            if (document.getElementById('configuration').style.display === 'none') {
+                articleContainer.style.display = '';
+                if (zimitIframe) zimitIframe.style.display = '';
+                window.dispatchEvent(new Event('resize')); // Force repaint
+            }
         }
         doc.head.appendChild(link);
         if (doc.defaultView.DarkReader) {
@@ -2363,7 +2381,7 @@ function switchCSSTheme () {
                 darkReader.onload = function () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
-                    if (zimitIframe) {
+                    if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
                         articleContainer.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
@@ -2391,7 +2409,7 @@ function switchCSSTheme () {
                 }
             }, 100);
             // If the interval has not succeeded after 3 seconds, give up
-            if (zimitIframe) {
+            if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
                 setTimeout(function () {
                     articleContainer.style.display = '';
                     zimitIframe.style.display = '';
@@ -2399,7 +2417,7 @@ function switchCSSTheme () {
                     window.dispatchEvent(new Event('resize')); // Force repaint
                 }, 3000);
             }
-        } else {
+        } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
             articleContainer.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
@@ -7035,7 +7053,7 @@ function goToRandomArticle () {
                 // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
                 // DEV: If minorVersion is 1, then we are using a v1 article-only title listing. By definition,
                 // all dirEntries in an article-only listing must be articles.
-                if (appstate.selectedArchive.file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) ||
+                if (appstate.selectedArchive.file.minorVersion >= 1 || /text\/html\b/i.test(dirEntry.getMimetype()) ||
                     params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                     params.isLandingPage = false;
                     uiUtil.hideActiveContentWarning();
@@ -7069,10 +7087,15 @@ function goToMainArticle () {
                     'Main page not found!');
         } else {
             // DEV: see comment above under goToRandomArticle()
-            if (dirEntry.redirect || /text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {
+            var setMainPage = function (dirEntry) {
                 params.isLandingPage = true;
                 appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                 readArticle(dirEntry);
+            }
+            if (dirEntry.redirect) {
+                appstate.selectedArchive.resolveRedirect(dirEntry, setMainPage);
+            } else if (/text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {
+                setMainPage(dirEntry);
             } else {
                 params.isLandingPage = false;
                 console.error('The main page of this archive does not seem to be an article');
