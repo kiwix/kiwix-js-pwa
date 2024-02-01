@@ -645,6 +645,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     $base_tag_origin = $base_tag
     $numeric_tag_origin = $numeric_tag
     $base_tag = $base_tag -replace '^([0-9.]+).*', '$1-E'
+    $projstub = $text_tag
+    if ($text_tag -eq "Windows") { $projstub = "E" }
     # If we are building both the legacy and Electron-based UWP apps, we need to increment the build number for the Electron version
     if ($buildalluwp) {
       if ($base_tag -match '(^.*\.)([0-9]+)(.*$)') {
@@ -662,15 +664,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "`nBuilding the Electron UWP app with version $base_tag...`n"
         "Setting appVersion in package.json to $base_tag..."
         $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
-        "Setting appVersion in init.js and service-worker.js to $numeric_tag-$text_tag..."
+        "Setting appVersion in init.js and service-worker.js to $numeric_tag-$projstub..."
         if ($dryrun) {
           "[DRYRUN] would have written new package.json, init.js and service-worker.js"
           # $json_object
         } else {
           # This will get copied to the dist folder by the Build-Electron script
           Set-Content "$PSScriptRoot/../package.json" $json_object
-          (Get-Content ./dist/service-worker.js) -replace '(appVersion\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$text_tag" | Set-Content -encoding "utf8BOM" ./dist/service-worker.js
-          (Get-Content ./dist/www/js/init.js) -replace '(appVersion..\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$text_tag" | Set-Content -encoding "utf8BOM" ./dist/www/js/init.js
+          (Get-Content ./dist/service-worker.js) -replace '(appVersion\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$projstub" | Set-Content -encoding "utf8BOM" ./dist/service-worker.js
+          (Get-Content ./dist/www/js/init.js) -replace '(appVersion..\s*=\s*["''])[^"'']+', "`${1}$numeric_tag-$projstub" | Set-Content -encoding "utf8BOM" ./dist/www/js/init.js
         }
       } else {
         Write-Host "`nUnable to auto-build Electron UWP app because the version $numeric_tag is the same as that of the legacy UWP app!`n" -ForegroundColor Red
