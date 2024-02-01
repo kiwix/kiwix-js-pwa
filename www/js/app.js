@@ -2512,6 +2512,8 @@ document.getElementById('displayHiddenBlockElementsCheck').addEventListener('cli
  */
 function removePageMaxWidth () {
     if (!appstate.wikimediaZimLoaded) return;
+    // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
+    if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
     var zimType;
     var cssSource;
     var contentElement;
