@@ -50,7 +50,8 @@ function Main {
         $release_found = $false
         $release = $null
         "Tag_name is $tagname"
-        $base_input = $tagname -replace '^(v[0-9.]+).*', '$1'
+        # $base_input = $tagname -replace '^(v[0-9.]+).*', '$1'
+        $base_input = $tagname
         $numeric_tagname = $base_input -replace '^v', ''
         "Base_input should be: $base_input"
         $releases | Where-Object { $release_found -eq $False } | % {
