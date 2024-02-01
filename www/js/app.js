@@ -6180,8 +6180,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             articleContainer.kiwixType = 'iframe';
             articleWindow = articleContainer.contentWindow;
         }
-
-        articleDocument = articleWindow.document.documentElement;
+        // We can't access the DOM of a new Window in the UWP app
+        if (!(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
+            articleDocument = articleWindow.document.documentElement;
+        }
 
         // Inject htmlArticle into iframe
         // uiUtil.pollSpinner(); //Void progress messages
