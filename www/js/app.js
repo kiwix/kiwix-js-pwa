@@ -5285,7 +5285,10 @@ function handleClickOnReplayLink (ev, anchor) {
                         // Conditional, because opening a new window can be blocked by the browser
                         if (articleWindow) {
                             appstate.target = 'window';
-                            articleWindow.kiwixType = appstate.target;
+                            // This throws in the UWP app
+                            if (!/UWP/.test(params.appType)) {
+                                articleWindow.kiwixType = appstate.target;
+                            }
                             articleContainer = articleWindow;
                         }
                         uiUtil.clearSpinner();
