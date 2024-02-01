@@ -5278,15 +5278,15 @@ function handleClickOnReplayLink (ev, anchor) {
                     // Handle middle-clicks and ctrl-clicks
                     if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
                         var encodedTitle = encodeURIComponent(dirEntry.getTitleOrUrl());
-                        articleContainer = window.open(pathToArticleDocumentRoot + zimUrl,
+                        articleWindow = window.open(pathToArticleDocumentRoot + zimUrl,
                             params.windowOpener === 'tab' ? '_blank' : encodedTitle,
                             params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null
                         );
                         // Conditional, because opening a new window can be blocked by the browser
-                        if (articleContainer) {
+                        if (articleWindow) {
                             appstate.target = 'window';
-                            articleContainer.kiwixType = appstate.target;
-                            articleWindow = articleContainer;
+                            articleWindow.kiwixType = appstate.target;
+                            articleContainer = articleWindow;
                         }
                         uiUtil.clearSpinner();
                     } else {
@@ -6364,7 +6364,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         }
 
         // Display any hidden block elements, with a timeout, so as not to interfere with image loading
-        if (params.displayHiddenBlockElements && settingsStore.getItem('appVersion') === params.appVersion) {
+        if (params.displayHiddenBlockElements && settingsStore.getItem('appVersion') === params.appVersion &&
+          !(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
             setTimeout(function () {
                 if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
                     displayHiddenBlockElements(articleWindow, articleDocument);
