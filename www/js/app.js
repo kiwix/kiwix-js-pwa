@@ -850,7 +850,7 @@ function setTab (activeBtn) {
                 }
                 if (articleWindow) articleWindow.focus();
             }
-        }, 50);
+        }, 400);
     }
     setDynamicIcons(activeBtn);
     const articleList = document.getElementById('articleList');
@@ -2386,7 +2386,7 @@ function switchCSSTheme () {
                         setTimeout(function () {
                             zimitIframe.style.display = '';
                             window.dispatchEvent(new Event('resize')); // Force repaint
-                        }, 0);
+                        }, 350);
                     }
                 }
                 darkReader.type = 'text/javascript';
