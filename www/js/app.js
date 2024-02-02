@@ -850,7 +850,7 @@ function setTab (activeBtn) {
                 }
                 if (articleWindow) articleWindow.focus();
             }
-        }, 500);
+        }, 400);
     }
     setDynamicIcons(activeBtn);
     const articleList = document.getElementById('articleList');
