@@ -5701,7 +5701,14 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
-                uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
+                setTimeout(function () {
+                    uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
+                }, 1500);
+            }
+            if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
+                // Pop up a dialogue box to warn the user about the legacy ZIM
+                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to JQuery mode.</p>' +
+                    "<p>Don't forget to switch back afterwards!</p>", 'Legacy ZIM file');
             }
         }
     }
