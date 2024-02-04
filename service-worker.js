@@ -626,11 +626,16 @@ function zimitResolver (event, rqUrl) {
         // If the reqUrl is not the same as event.request.url, we need to modify the request
         // Note that we can't clone requests with streaming bodies, hence we check for bodyUsed (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
         var rtnRequest;
-        if (event.request.url.replace(/^[^/]+\/\/[^/]+/, '') === rqUrl || event.request.mode === 'navigate' || event.request.bodyUsed) {
-            rtnRequest = event.request;
-        } else {
+        try {
             rtnRequest = new Request(rqUrl, event.request);
+        } catch (err) {
+            rtnRequest = event.request;
         }
+        // if (event.request.url === rqUrl || event.request.url.replace(/^[^/]+\/\/[^/]+/, '') === rqUrl || event.request.mode === 'navigate' || event.request.bodyUsed) {
+        //     rtnRequest = event.request;
+        // } else {
+        //     rtnRequest = new Request(rqUrl, event.request);
+        // }
         return Promise.resolve(rtnRequest);
     }
 }

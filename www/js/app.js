@@ -5718,7 +5718,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
     // Calculate the current article's ZIM baseUrl to use when processing relative links
     // (duplicated because we sometimes bypass readArticle above)
-    params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+    params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''));
         // URI-encode anything that is not a '/'
         // .replace(/[^/]+/g, function(m) {
         //     return encodeURIComponent(m);
@@ -6662,7 +6662,7 @@ function addListenersToLink (a, href, baseUrl) {
                 zimUrl = zimUrl.replace(zimRoot, '').replace('#' + anchorParameter, '');
             } else if (/^\//.test(zimUrl)) {
                 zimUrl = zimUrl.replace(/^\//, appstate.selectedArchive.zimitPseudoContentNamespace + appstate.selectedArchive.zimitPrefix.replace(/^A\//, ''));
-            } else {
+            } else if (!~zimUrl.indexOf(appstate.selectedArchive.zimitPseudoContentNamespace)) { // Doesn't begin with pseudoContentNamespace
                 // Zimit ZIMs store URLs percent-encoded and with querystring and
                 // deriveZimUrlFromRelativeUrls strips any querystring and decodes
                 var zimUrlToTransform = zimUrl;
