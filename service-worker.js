@@ -561,6 +561,7 @@ function setReplayCollectionAsRoot (prefix, name) {
  * Handles resolving content for Zimit-style ZIM archives
  *
  * @param {FetchEvent} event The FetchEvent to be processed
+ * @param {String} rqUrl Optional URL string to be processed for extraction from the ZIM archive
  * @returns {Promise<Response>} A Promise for the Response, or rejects with the invalid message port data
  */
 function zimitResolver (event, rqUrl) {
@@ -624,12 +625,12 @@ function zimitResolver (event, rqUrl) {
     } else {
         // The loaded ZIM archive is not a Zimit archive, or sw-Zimit is unsupported, so we should just return the request
         // If the reqUrl is not the same as event.request.url, we need to modify the request
-        // Note that we can't clone requests with streaming bodies, hence we check for bodyUsed (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
+        // Note that we can't clone requests with streaming bodies, hence we check for an error and use another method in that cse (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
         var rtnRequest;
-        if (event.request.url.replace(/^[^/]+\/\/[^/]+/, '') === rqUrl || event.request.mode === 'navigate' || event.request.bodyUsed) {
-            rtnRequest = event.request;
-        } else {
+        try {
             rtnRequest = new Request(rqUrl, event.request);
+        } catch (err) {
+            rtnRequest = event.request;
         }
         return Promise.resolve(rtnRequest);
     }
