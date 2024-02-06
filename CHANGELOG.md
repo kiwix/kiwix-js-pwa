@@ -1,5 +1,12 @@
 # Changelog
 
+## Interim release 3.0.2
+
+* FIX: Broken "unclicking" of config and about buttons and return-to-article link
+* FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReadery
+* FIX: Ensure legacy archive warning and other content warnings remain displayed until dismissed
+* DEV: Updates to buid script
+
 ## Release 3.0.0 / 3.0.1
 
 * FEATURE: Preliminary support for Zimit v2.0 archive types
