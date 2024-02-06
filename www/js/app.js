@@ -127,7 +127,9 @@ uiUtil.setupConfigurationToggles();
 function resizeIFrame (reload) {
     // console.debug('Resizing iframe...');
     // Re-enable top-level scrolling
-    if (iframe.style.display !== 'none' && prefix !== document.activeElement) {
+    var configuration = document.getElementById('configuration');
+    var about = document.getElementById('about');
+    if (configuration.style.display === 'none' && about.style.display === 'none' && prefix !== document.activeElement) {
         scrollbox.style.height = 0;
     } else {
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -1039,7 +1041,7 @@ function setActiveBtn (activeBtn) {
 
 document.getElementById('btnConfigure').addEventListener('click', function () {
     var config = document.getElementById('configuration');
-    // If Configuration is already displayed...
+    // If Configuration is already displayed, we are "unclicking" the button...
     if (config.style.display !== 'none') {
         setTab();
         if (params.themeChanged) {
