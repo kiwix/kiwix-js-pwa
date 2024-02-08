@@ -14,7 +14,7 @@
 * FEATURE: Preliminary support for Zimit v2.0 archive types
 * FEATURE: Enable use of DarkReader with zimit2 archives
 * ENHANCEMENT: Support most Zimit (1/2) archives in jQuery mode if they have largely static content
-* ENHANCEMENT: Dark mode tri-state switch now turns on before turning turning to auto (should be less confusing)
+* ENHANCEMENT: Dark mode tri-state switch now turns on before turning to auto (should be less confusing)
 * WORKAROUND: Provide alternative link handling for browsers that do not support wombat.js
 * KNOWN ISSUE: DarkReader interferes with CIA World Factbook home page (workaround: switch to light mode)
 * KNOWN ISSUE: Video is not currently supported in UWP app with zimit2 archives (due to incompaitibility with wombat.js) 
