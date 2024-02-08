@@ -14,6 +14,7 @@ Please choose the correct version:
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage)
+    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, opnSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage) 
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
@@ -25,33 +26,34 @@ Please choose the correct version:
     + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - upgrade easily by running `winget upgrade kiwix.wikimed`
   - **Installable (Electron)**
-    + Windows 10/11 64bit - [WikiMed-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.appx) - new, modern install / uninstall
-    + Windows 7/8/10/11 32bit (also runs on 64bit) - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe) - traditional executable
+    + Windows 7/8/10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64) - [WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe)
+    + Windows 10/11 64bit modern MSIX install / uninstall - [WikiMed-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.appx)
+    + Windows 7/8/10/11 standalone 32bit installer (also runs on 64bit) - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11 - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
 
 ## Installation Instructions - Electron
 
-* For the Windows 64bit or 32bit installable builds, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
+* For the Windows Web installer, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in yourshortcut menu. When you want to update the app, just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, then use the standalone installer.
 * For the Windows Portable build, unzip the contents of the [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start WikiMed by Kiwix` or `Start WikiMed by Kiwix.bat`, or open the `kiwix-js-pwa-win32-ia32` folder and double click on `WikiMed by Kiwix.exe`.
 * **For the Linux _portable_ builds,** download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open a terminal and run `chmod a+x WikiMed-by-Kiwix*.AppImage` and then `./WikiMed-by-Kiwix*.AppImage`.
-  + On **_Debian_**, if you you have issues running the AppImage on older versions of the OS, you can try adding the `--no-sandbox` switch to the command (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). This is not necessary on recent versions.
-  + On **OpenSUSE** you may need to install Chrome in order to get the dependencies necessary to run the AppImage (because Electron apps run Chrome internally). With **_older_** versions of OpenSUSE, you may additionally need to use these commandline switches: `./WikiMed-by-Kiwix*.AppImage --use-gl=disabled --disable-gpu-compositing`,¹ but this is no longer necessary in recent versions.
+  + On **_Debian_**, if you have issues running the AppImage on older versions of the OS, you can try adding the `--no-sandbox` switch to the command (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). This is not necessary on recent versions.
+  + On **_OpenSUSE_**, you may need to install Chrome in order to get the dependencies necessary to run the AppImage (because Electron apps run Chrome internally). With **_older_** versions of OpenSUSE, you may additionally need to use these commandline switches: `./WikiMed-by-Kiwix*.AppImage --use-gl=disabled --disable-gpu-compositing`,¹ but this is no longer necessary in recent versions.
 * **For the Linux _installable_ builds:**
   + **_Debian/Ubuntu_**: download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt-get update` followed by `chmod a+x ./kiwix-js-wikimed*.deb`, then`sudo apt install ./kiwix-js-wikimed*.deb`. To run the app from the command line, rather than from its installed icon, simply type `kiwix-js-wikimed` in terminal. On **Debian**, if you receive the error `libgbm.so.1: cannot open shared object file`, please run `sudo apt install libgbm-dev`. On older versions of Debian, you may have to add `--no-sandbox` to the command line when running the app, i.e. `kiwix-js-wikimed --no-sandbox`. When you want to update, just install the new version, and it will install over the old version.
-  + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikimed`and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
-* Windows portable version: If you get a Windows Smartscreen notification on first launch of the zipped portable app, follow instructions to "Run anyway" if you trust this site. If you prefer, use the executable version (ending `.exe`) which is digitally signed.
+  + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikimed` and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
+* Windows portable version: If you get a Windows Smartscreen notification on first launch, follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe) which is digitally signed.
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
 ## Release Notes
 
-* This app is packaged with the <<date>> English-language WikiMed archive `<<zim>>`. The packaged archive is located in the `archives` folder (only accessible in the portable Windows version). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
+* This app is packaged with the <<date>> English-language WikiMed archive `<<zim>>`. The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
 * You can download WikiMed in other languages from the Configuration page (see Known Issues below);
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
-* You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (for UWP app, this only works in Service Worker mode);
+* You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration);
 * There is support for Full-Screen mode in most browsers and frameworks, and orientation locking in some mobile browsers (e.g. Android).
 * Electron versions of the app now support Full-Text searching;
 * In title search, you can use wildcards `.*` or `.+` (this works best if you start the search with a normal alphanumeric string). You can include a more complex regular expression by enclosing it within `(?:my_regular_expression)`. See Configuration -> About for more details and limitations;
