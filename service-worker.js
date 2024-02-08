@@ -369,6 +369,7 @@ self.addEventListener('fetch', function (event) {
     if (regexpKiwixDownloadLinks.test(rqUrl)) return;
     // Select cache depending on request format
     var cache = /\.zim\//i.test(strippedUrl) ? ASSETS_CACHE : APP_CACHE;
+    cache = /youtube|vimeo/i.test(strippedUrl) ? ASSETS_CACHE : cache;
     if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
     // For APP_CACHE assets, we should ignore any querystring (whereas it should be conserved for ZIM assets,
     // especially .js assets, where it may be significant). Anchor targets are irreleveant in this context.
@@ -390,8 +391,8 @@ self.addEventListener('fetch', function (event) {
                 rqUrl = modRequestOrResponse.url;
                 urlObject = new URL(rqUrl);
                 strippedUrl = urlObject.pathname;
-                // YouTube links from Zimit archives are dealt with specially (for ZIMs not being read by the ReplayWorker)
-                if (/youtubei.*player/.test(strippedUrl) || cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
+                // Youtube and Vimeo videos are handled with a passthrough, so that the correct URL can be determined by fuzzy search
+                if (cache === ASSETS_CACHE && (regexpZIMUrlWithNamespace.test(strippedUrl) || /youtube|vimeo/i.test(strippedUrl))) {
                     if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
                         // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
                         // A URL without "?kiwix-display" query string acts as a passthrough so that the regex will not match and
