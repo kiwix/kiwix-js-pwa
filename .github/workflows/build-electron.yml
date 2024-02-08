@@ -107,7 +107,7 @@ jobs:
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
         else
-          npx electron-builder --linux AppImage:ia32 deb:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 --projectDir dist
         fi
     - name: Upload packages to Kiwix
       if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
