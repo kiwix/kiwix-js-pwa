@@ -3,7 +3,7 @@
 ## Release 3.0.4-WikiMed
 
 * UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-02.zim`
-* ENHANCEMENT: Dark mode tri-state switch now turns on before turning turning to auto (should be less confusing)
+* ENHANCEMENT: Dark mode tri-state switch now turns on before turning to auto (should be less confusing)
 * BUILD: Support Windows on ARM and Linux on ARM for the Electron app
 * WORKAROUND: Remove erroneously scraped ovid iframes in MDWiki ZIMs
 * FIX: Broken "unclicking" of config and about buttons and return-to-article link
