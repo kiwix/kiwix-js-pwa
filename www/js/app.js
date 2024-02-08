@@ -5901,6 +5901,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
         // Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
         if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
+
+        // Remove erroneous scrape of MDWiki owid iframes @TODO remove this when fixed in mw-offliner
+        htmlArticle = htmlArticle.replace(/<iframe\b[^>]+class=["'][^"']*?owid-frame(?:[^<]|<(?!\/iframe>))+<\/iframe>\s*/ig, '');
     }
 
     if (params.contentInjectionMode == 'jquery') {
