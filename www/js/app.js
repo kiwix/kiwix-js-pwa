@@ -5230,7 +5230,7 @@ function handleClickOnReplayLink (ev, anchor) {
         ev.stopPropagation();
         // Note that true in the fourth argument instructs getDirEntryByPath to follow redirects by looking up the Header
         return appstate.selectedArchive.getDirEntryByPath(zimUrl, null, null, true).then(function (dirEntry) {
-            if (dirEntry) {
+            var processDirEntry = function (dirEntry) {
                 var pathToArticleDocumentRoot = document.location.href.replace(/www\/index\.html.*$/, appstate.selectedArchive.file.name + '/');
                 var mimetype = dirEntry.getMimetype();
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
@@ -5322,13 +5322,29 @@ function handleClickOnReplayLink (ev, anchor) {
                         }
                     }
                 }
+            };
+            if (dirEntry) {
+                processDirEntry(dirEntry);
             } else {
-                // If dirEntry was not-found, it's probably an external link, so warn user before opening a new tab/window
-                uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
+                // If URL has final slash, we need to try it without the slash
+                if (/\/$/.test(zimUrl)) {
+                    zimUrl = zimUrl.replace(/\/$/, '');
+                    return appstate.selectedArchive.getDirEntryByPath(zimUrl).then(function (dirEntry) {
+                        if (dirEntry) {
+                            processDirEntry(dirEntry);
+                        } else {
+                            // If dirEntry was still not-found, it's probably an external link, so warn user before opening a new tab/window
+                            uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
+                        }
+                    });
+                } else {
+                    // It's probably an external link, so warn user before opening a new tab/window
+                    uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
+                }
             }
         }).catch(function (err) {
             console.error('Error getting dirEntry for ' + zimUrl, err);
-            appstate.isReplayWorkerAvailable = true;
+            uiUtil.systemAlert('There was an error looking up ' + zimUrl, 'Error reading direcotry entry!');
         });
     }
 }
