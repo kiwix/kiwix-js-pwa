@@ -5217,6 +5217,10 @@ function handleClickOnReplayLink (ev, anchor) {
     // If it starts with the path to the ZIM file, then we are dealing with an untransformed absolute local ZIM link
     if (!anchor.href.indexOf(pathToZim)) {
         zimUrl = anchor.href.replace(pathToZim, '');
+    // If it is the same as the pseudoDomainPath, then we are dealing with an untransformed pseuodo relative link that looks like an absolute https:// link
+    // (this probably only applies to zimit2 without Wombat)
+    } else if (anchor.href.replace(/^[^:]+:\/\//, '') === pseudoDomainPath && /\.zim\/[CA]\//.test(anchor.href)) {
+        zimUrl = anchor.href.replace(/^(?:[^.]|\.(?!zim\/[CA]\/))+\.zim\//, '');
     } else {
         zimUrl = pseudoNamespace + pseudoDomainPath + anchor.search;
     }
