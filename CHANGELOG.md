@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.0.4
+## Interim release 3.0.6
 
 * FIX: Broken "unclicking" of config and about buttons and return-to-article link
 * FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReadery
