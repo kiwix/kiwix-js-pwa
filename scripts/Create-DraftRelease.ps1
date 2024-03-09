@@ -479,7 +479,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
     } 
     # Let's check if we have the assets
-    $ReleaseBundle = dir "$PSScriptRoot/../dist/AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
+    $directoryPath = "$PSScriptRoot/../dist/AppPackages/*_$base_tag*_Test"
+    if (Test-Path $directoryPath) {
+        $ReleaseBundle = dir "$directoryPath/*_$base_tag*.appx*"
+    }
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
       ($ReleaseBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
