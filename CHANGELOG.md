@@ -5,7 +5,8 @@
 * UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-03.zim`
 * FIX: Untransformed relative Zimit URLs without Wombat
 * CLEANUP: Remove jQuery from app.js
-* INFO: Mention ARM architectur in in-app documentation
+* INFO: Mention ARM architecture in in-app documentation
+* DEV: Error in Create-DraftRelease script
 
 ## Release 3.0.4-WikiMed
 
