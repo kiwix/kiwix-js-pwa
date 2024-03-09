@@ -47,7 +47,7 @@ import updater from './lib/updater.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp, $ */
+/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -2620,8 +2620,6 @@ document.getElementById('displayFileSelectorsCheck').addEventListener('change', 
 document.addEventListener('DOMContentLoaded', function () {
     // Set initial behaviour (see also init.js)
     cssUIThemeGetOrSet(params.cssUITheme);
-    // @TODO - this is initialization code, and should be in init.js (withoug jQuery)
-    $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
     // DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
     if (params.packagedFile && !/wikipedia.en.100|ray.charles/i.test(params.fileVersion)) {
         document.getElementById('packagedAppFileSelectors').style.display = 'block';
@@ -2964,7 +2962,9 @@ function setContentInjectionMode (value) {
                 console.log('Active Service Worker found, no need to register');
                 serviceWorkerRegistration = true;
                 // Remove any jQuery hooks from a previous jQuery session
-                $('#articleContent').contents().remove();
+                while (articleContainer.firstChild) {
+                    articleContainer.removeChild(articleContainer.firstChild);
+                }
                 // Create the MessageChannel and send 'init'
                 // initOrKeepAliveServiceWorker();
                 refreshAPIStatus();
@@ -2979,7 +2979,9 @@ function setContentInjectionMode (value) {
                     serviceWorker.addEventListener('statechange', function (statechangeevent) {
                         if (statechangeevent.target.state === 'activated') {
                             // Remove any jQuery hooks from a previous jQuery session
-                            $('#articleContent').contents().remove();
+                            while (articleContainer.firstChild) {
+                                articleContainer.removeChild(articleContainer.firstChild);
+                            }
                             // Create the MessageChannel and send the 'init' message to the ServiceWorker
                             // initOrKeepAliveServiceWorker();
                             // We need to refresh cache status here on first activation because SW was inaccessible till now
@@ -3027,8 +3029,13 @@ function setContentInjectionMode (value) {
             // initOrKeepAliveServiceWorker();
         }
     }
-    $('input:radio[name=contentInjectionMode]').prop('checked', false);
-    $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
+    var radioButtons = document.querySelectorAll('input[name=contentInjectionMode]');
+    radioButtons.forEach(function (button) {
+        button.checked = false;
+        if (button.value === value) {
+            button.checked = true;
+        }
+    });
     // Save the value in the Settings Store, so that to be able to keep it after a reload/restart
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
@@ -3190,9 +3197,9 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
 }
 
 // @STORAGE AUTOLOAD STARTS HERE
-if ($.isFunction(navigator.getDeviceStorages)) {
+if (navigator.getDeviceStorages && typeof navigator.getDeviceStorages === 'function') {
     // The method getDeviceStorages is available (FxOS>=1.1)
-    storages = $.map(navigator.getDeviceStorages('sdcard'), function (s) {
+    storages = Array.from(navigator.getDeviceStorages('sdcard')).map(function (s) {
         return new abstractFilesystemAccess.StorageFirefoxOS(s);
     });
 }
@@ -3423,7 +3430,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
  */
 function setLocalArchiveFromArchiveList (archive) {
     params.rescan = false;
-    archive = archive || $('#archiveList').val();
+    archive = archive || document.getElementById('archiveList').value;
     if (archive && archive.length > 0) {
         // Now, try to find which DeviceStorage has been selected by the user
         // It is the prefix of the archive directory
@@ -6210,7 +6217,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // then the articleWindow has already been set in the click event of the ZIM link)
         if (appstate.target === 'iframe') {
             // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
-            $('#articleContent').contents().remove();
+            while (articleContainer.firstChild) {
+                articleContainer.removeChild(articleContainer.firstChild);
+            }
             articleContainer = document.getElementById('articleContent');
             articleContainer.kiwixType = 'iframe';
             articleWindow = articleContainer.contentWindow;
@@ -6953,28 +6962,6 @@ params.preloadAllImages = function () {
     uiUtil.extractHTML();
     uiUtil.clearSpinner();
 };
-
-// Load Javascript content
-function loadJavaScriptJQuery () {
-    $('#articleContent').contents().find('script[data-kiwixurl]').each(function () {
-        var script = $(this);
-        var scriptUrl = script.attr('data-kiwixurl');
-        // TODO check that the type of the script is text/javascript or application/javascript
-        var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
-        appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
-            if (dirEntry === null) {
-                console.log('Error: js file not found: ' + title);
-            } else {
-                appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                    // TODO : JavaScript support not yet functional [kiwix-js #152]
-                    uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.manipulateImages || params.allowHTMLExtraction);
-                });
-            }
-        }).catch(function (e) {
-            console.error('could not find DirEntry for javascript : ' + title, e);
-        });
-    });
-}
 
 /**
  * Changes the URL of the browser page, so that the user might go back to it
