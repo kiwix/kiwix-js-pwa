@@ -285,6 +285,13 @@ if (/^http/i.test(window.location.protocol)) {
         ele.innerHTML = 'PWA';
     });
 }
+// Set cssInjectionMode radio buttons
+document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (radio) {
+    radio.checked = false;
+    if (radio.value === params.cssSource) {
+        radio.checked = true;
+    }
+});
 
 // Get app type
 function getAppType () {
