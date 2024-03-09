@@ -1,15 +1,19 @@
 # Changelog
 
-## Interim release 3.0.6
+## Interim release 3.0.8
 
 * FIX: Broken "unclicking" of config and about buttons and return-to-article link
 * FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReadery
 * FIX: Ensure legacy archive warning and other content warnings remain displayed until dismissed
 * FIX: (partial) Untransformed relative Zimit2 URLs for browsers that do not support Wombat
+* FIX: Issue with Creat-DraftRelease script
+* INFO: Mention ARM architecture in in-app user info
 * REGRESSION: Fix YouTube video playback with legacy Zimit reading system (SW mode)
 * WORKAROUND: Remove erroneously scraped ovid iframes in MDWiki ZIMs
 * DEV: Updates to buid script
 * DEV: Deprecate 32bit deb packages for packaged apps
+* DEV: Remove jQuery from app.js
+* DEPENDENCIES: Bumpt Electron Builder to v24.13.3
 
 ## Release 3.0.0 / 3.0.1
 
