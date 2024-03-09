@@ -2324,7 +2324,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
 
 function setExpressServerUI (value) {
     // See main.cjs for default values
-    params.expressPort = value || 3000;
+    params.expressPort = value || 3001;
     document.getElementById('expressPortInput').value = params.expressPort;
     document.getElementById('expressPortInputDiv').style.display = 'block';
     console.log('Express port was reported as ' + params.expressPort);
