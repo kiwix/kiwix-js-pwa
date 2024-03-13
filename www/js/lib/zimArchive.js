@@ -149,8 +149,8 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 if ((that.file.fullTextIndex || params.useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
-                // Note that NWJS currently throws due to problems with Web Worker context, and Android is very slow unless we use OPFS
-                !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that.file._files[0].readMode === 'electron'))) {
+                // Note that NWJS currently throws due to problems with Web Worker context
+                !(window.nw && that.file._files[0].readMode === 'electron'))) {
                     that.libzimReady = 'loading';
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     if (params.useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
