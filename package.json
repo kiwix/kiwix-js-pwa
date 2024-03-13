@@ -177,7 +177,7 @@
     "core-js": "3.30.2",
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
-    "electron-updater": "^6.1.7",
+    "electron-updater": "^6.2.1",
     "express": "^4.18.2",
     "jquery": "^3.7.1"
   }
