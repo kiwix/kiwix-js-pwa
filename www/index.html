@@ -102,25 +102,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li><b>For updates since v3.0.1, please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a></a></b></li>
-                                <li>Preliminary support for next-generation Zimit v2.0 archive types</li>
-                                <li>Enable use of DarkReader with zimit2 archives</li>
-                                <li>Support most Zimit (1/2) archives in jQuery mode if they have largely static content</li>
-                                <li>Dark mode tri-state switch turns on before turning to auto (should be less confusing)</li>
-                                <li>Provide workaround for link handling for browsers that do not support wombat.js</li>
-                                <li>KNOWN ISSUE: DarkReader interferes with CIA World Factbook home page (workaround: switch to light mode)</li>
-                                <li>KNOWN ISSUE: Video is not currently supported in UWP app with zimit2 archives</li>
-                                <li>KNOWN ISSUE: Turning DarkReader on or off may not take effect until the NEXT article is loaded</li>
-                                <li>Support Windows on ARM and Linux on ARM for the Electron app</li>
-                                <li>Enable use of standard dark and invert styles with any archive (but usually DarkReader is best for Zimit)</li>
-                                <li>Fix blank iframe article after opening article in new window or tab</li>
-                                <li>Fix finding path of packaged archive with new Electron app architecture</li>
-                                <li>Fix opening article in new window or tab for non-Zimit archives</li>
-                                <li>Fix detection of apps installed from the Microsoft Store</li>
-                                <li>Fix loading of PDFs and external links in zimit2 archives</li>
-                                <li>Fixed regression preventing opening of new windows in UWP desktop app</li>
-                                <li>Add preview link for all archives that can be displayed in library.kiwix.org</li>
-                                <li>Fix failure to re-enable DarkReader after printing</li>
+                                <li>On Android, full-text search is now on by default (but may be too slow to load without OPFS)</li>
+                                <li>Fix broken "unclicking" of config and about buttons and return-to-article link</li>
+                                <li>Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReader</li>
+                                <li>Ensure legacy archive warning and other content warnings remain displayed until dismissed</li>
+                                <li>Fix untransformed relative Zimit2 URLs for browsers that do not support Wombat</li>
+                                <li>Fix issue with Create-DraftRelease script</li>
+                                <li>Fix issue preventing app from detecting new updates on GitHub in some circumstances</li>
+                                <li>Mention ARM architecture in in-app user info</li>
+                                <li>Fix YouTube video playback with legacy Zimit reading system (SW mode)</li>
+                                <li>Fix incompatibility with IE11 and Edge Mobile that prevented running on WM10</li>
+                                <li>Remove erroneously scraped ovid iframes in MDWiki ZIMs</li>
+                                <li>Updates to buid script</li>
+                                <li>Deprecate 32bit deb packages for packaged apps</li>
+                                <li>Remove jQuery from app.js</li>
+                                <li>Bump Electron Builder to v24.13.3</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

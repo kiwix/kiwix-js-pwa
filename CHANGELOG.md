@@ -1,19 +1,22 @@
 # Changelog
 
-## Interim release 3.0.8
+## Release 3.1.0 / 3.1.1
 
+* UPDATE: On Android, full-text search now on by default (but may be too slow to load without OPFS)
 * FIX: Broken "unclicking" of config and about buttons and return-to-article link
-* FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReadery
+* FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReader
 * FIX: Ensure legacy archive warning and other content warnings remain displayed until dismissed
 * FIX: (partial) Untransformed relative Zimit2 URLs for browsers that do not support Wombat
-* FIX: Issue with Creat-DraftRelease script
+* FIX: Issue with Create-DraftRelease script
+* FIX: Issue preventing app from detecting new updates on GitHub in some circumstances
 * INFO: Mention ARM architecture in in-app user info
 * REGRESSION: Fix YouTube video playback with legacy Zimit reading system (SW mode)
+* REGRESSION: Incompatibility with IE11 and Edge Mobile that prevented running on WM10
 * WORKAROUND: Remove erroneously scraped ovid iframes in MDWiki ZIMs
 * DEV: Updates to buid script
 * DEV: Deprecate 32bit deb packages for packaged apps
 * DEV: Remove jQuery from app.js
-* DEPENDENCIES: Bumpt Electron Builder to v24.13.3
+* DEPENDENCIES: Bump Electron Builder to v24.13.3
 
 ## Release 3.0.0 / 3.0.1
 
