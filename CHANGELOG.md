@@ -17,6 +17,7 @@
 * DEV: Deprecate 32bit deb packages for packaged apps
 * DEV: Remove jQuery from app.js
 * DEPENDENCIES: Bump Electron Builder to v24.13.3
+* DEPENDENCIES: Bump Electron Updater to v6.2.1
 
 ## Release 3.0.0 / 3.0.1
 
