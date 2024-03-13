@@ -286,7 +286,7 @@ if (/^http/i.test(window.location.protocol)) {
     });
 }
 // Set cssInjectionMode radio buttons
-document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (radio) {
+Array.prototype.slice.call(document.querySelectorAll('input[name=cssInjectionMode]')).forEach(function (radio) {
     radio.checked = false;
     if (radio.value === params.cssSource) {
         radio.checked = true;
