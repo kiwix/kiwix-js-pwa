@@ -5231,10 +5231,10 @@ function handleClickOnReplayLink (ev, anchor) {
     } else {
         zimUrl = pseudoNamespace + pseudoDomainPath + anchor.search;
     }
-    // It may be necessary to fully decode zimit2 pending discussions
-    // if (params.zimType === 'zimit2') {
-    //     zimUrl = decodeURIComponent(zimUrl);
-    // }
+    // It is necessary to fully decode zimit2, as these archives follow OpenZIM spec
+    if (params.zimType === 'zimit2') {
+        zimUrl = decodeURIComponent(zimUrl);
+    }
     // We need to test the ZIM link
     if (zimUrl) {
         ev.preventDefault();
@@ -5439,8 +5439,8 @@ function handleMessageChannelMessage (event) {
         // Zimit ZIMs store assets with the querystring, so we need to add it!
         title = title + event.data.search;
     } else {
-        // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-        if (/zimit/.test(params.zimType)) {
+        // Zimit1 (classic) archives store URLs encoded, and also need the URI component (search parameter) if any
+        if (params.zimType === 'zimit') {
             title = encodeURI(event.data.title) + event.data.search;
         }
         // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
