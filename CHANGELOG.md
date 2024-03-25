@@ -1,5 +1,11 @@
 # Changelog
 
+## In-progress release 3.1.4
+
+* FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
+* WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
+
+
 ## Release 3.1.0 / 3.1.1
 
 * UPDATE: On Android, full-text search now on by default (but may be too slow to load without OPFS)
