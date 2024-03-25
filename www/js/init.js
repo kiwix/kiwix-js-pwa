@@ -56,9 +56,9 @@ var appstate = {};
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '3.1.4-Wikivoyage'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
-params['packagedFile'] = getSetting('packagedFile') || 'wikivoyage_en_all_maxi_2024-02.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || 'wikivoyage_en_all_maxi_2024-03.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = getSetting('fileVersion') || 'wikivoyage_en_all_maxi_2024-02 (13 Feb 2024)'; // This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || 'wikivoyage_en_all_maxi_2024-03 (15 Mar 2024)'; // This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
