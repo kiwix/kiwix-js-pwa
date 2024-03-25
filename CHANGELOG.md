@@ -6,6 +6,7 @@
 * FIX: Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReader
 * FIX: Issue with Create-DraftRelease script
 * FIX: Issue preventing app from detecting new updates on GitHub in some circumstances
+* FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * INFO: Mention ARM architecture in in-app user info
 * REGRESSION: Incompatibility with IE11 and Edge Mobile that prevented running on WM10
 * DEV: Remove jQuery from app.js
