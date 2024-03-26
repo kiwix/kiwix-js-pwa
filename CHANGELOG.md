@@ -1,8 +1,10 @@
 # Changelog
 
-## In-progress release 3.1.4
+## In-progress release 3.1.5
 
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
+* FIX: Inability to print HTML books in Gutenberg ZIMs
+* FIX: Bug in JQuery mode which made all images load as manual display areas in some non-Wikimedia ZIMs
 * WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
 
 
