@@ -3,7 +3,8 @@
 
 [CmdletBinding()]
 param (
-    [string]$customversion = ''
+    [string]$customversion = '', # Provide custom version number
+    [switch]$noinstall # If present, do not run npm install at end of script
 )
 
 if ($customversion) {
@@ -70,6 +71,9 @@ if ($VERSION -match '^v?[\d.]') {
         Set-Content -encoding "utf8BOM" ./scripts/Build-NWJS.ps1 $BuildNWJSScript
     }
     . ./scripts/Rewrite-Manifests.ps1
+    if (!$noinstall) {
+        npm install
+    }
 } else {
     "No valid INPUT_VERSION or TAG_VERSION were provided. File version numbers were unchanged.`n"
 }
