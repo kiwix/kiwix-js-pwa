@@ -451,10 +451,20 @@ function printCustomElements (innerDocument) {
         printStyleInnerHTML += '.map-pin { display: none } ';
         printStyleInnerHTML += '.external { padding-right: 0 !important } ';
     }
+    if (/gutenberg/i.test(appstate.selectedArchive.file.name)) {
+        // Remove any blocks with classnames zim_info, zim_epub and zim_up
+        var elementsToRemove = innerDocument.body.querySelectorAll('.zim_info, .zim_epub, .zim_up');
+        if (elementsToRemove) {
+            for (var i = 0; i < elementsToRemove.length; i++) {
+                elementsToRemove[i].parentNode.removeChild(elementsToRemove[i]);
+            }
+            params.printInterception = true;
+        }
+    }
     // Using @media print on images doesn't get rid of them all, so use brute force
     if (!document.getElementById('printImageCheck').checked) {
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
-    } else if (appstate.selectedArchive.zimType === 'open') {
+    } else if (/id="breakoutLink"/.test(innerDocument.body.innerHTML)) {
         // Remove any breakout link
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]+id="breakoutLink"[^>]*>\s*/, '');
     }
