@@ -463,10 +463,12 @@ function printIntercept () {
     if (!innerDoc) {
         return uiUtil.systemAlert('Sorry, we could not find a document to print! Please load one first.', 'Warning');
     }
-    // Re-establishe lastPageVisit because it is not always set, for example with dynamic loads
-    params.lastPageVisit = articleDocument.location.href.replace(/^.+\/([^/]+\.[zZ][iI][mM]\w?\w?)\/([CA]\/.*$)/, function (m0, zimName, zimURL) {
-        return decodeURI(zimURL) + '@kiwixKey@' + decodeURI(zimName);
-    });
+    if (params.contentInjectionMode === 'serviceworker') {
+        // Re-establishe lastPageVisit because it is not always set, for example with dynamic loads, in SW mode
+        params.lastPageVisit = articleDocument.location.href.replace(/^.+\/([^/]+\.[zZ][iI][mM]\w?\w?)\/([CA]\/.*$)/, function (m0, zimName, zimURL) {
+            return decodeURI(zimURL) + '@kiwixKey@' + decodeURI(zimName);
+        });
+    }
     var printDesktopCheck = document.getElementById('printDesktopCheck').checked;
     var printImageCheck = document.getElementById('printImageCheck').checked;
     var styleIsDesktop = !/href\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);

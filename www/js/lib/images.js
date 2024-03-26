@@ -386,7 +386,7 @@ function prepareImagesJQuery (win, forPrinting) {
         }
     }
 
-    if (forPrinting) {
+    if (forPrinting || params.imageDisplayMode === 'all') {
         extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
     } else if (params.imageDisplayMode === 'progressive') {
         // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
