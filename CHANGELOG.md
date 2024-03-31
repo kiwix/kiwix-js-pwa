@@ -5,6 +5,7 @@
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
 * FIX: Bug in JQuery mode which made all images load as manual display areas in some non-Wikimedia ZIMs
+* FIX: Go straight to article view on launch if persistent permissions are granted
 * WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
 
 
