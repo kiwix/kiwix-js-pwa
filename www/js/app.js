@@ -1119,7 +1119,7 @@ function getNativeFSHandle (callback) {
                     if (callback) {
                         callback(handle);
                     } else {
-                        searchForArchivesInPreferencesOrStorage(true);
+                        searchForArchivesInPreferencesOrStorage();
                     }
                 }
             });
