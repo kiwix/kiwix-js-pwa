@@ -1119,7 +1119,7 @@ function getNativeFSHandle (callback) {
                     if (callback) {
                         callback(handle);
                     } else {
-                        searchForArchivesInPreferencesOrStorage(true);
+                        searchForArchivesInPreferencesOrStorage();
                     }
                 }
             });
@@ -3235,6 +3235,8 @@ if (storages !== null && storages.length > 0 ||
         if (params.useOPFS) {
             if (!params.storedFile) btnConfigure.click();
             loadOPFSDirectory();
+        } else if (params.storedFile && navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+            getNativeFSHandle();
         } else {
             // We are in an app that cannot open files auotomatically, so populate archive list and show file pickers
             btnConfigure.click();
