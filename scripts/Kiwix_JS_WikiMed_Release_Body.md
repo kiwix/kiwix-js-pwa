@@ -49,9 +49,9 @@ Please choose the correct version:
 ## Release Notes
 
 * This app is packaged with the <<date>> English-language WikiMed archive `<<zim>>`. The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
-* You can download WikiMed in other languages from the Configuration page (see Known Issues below);
+* You can download WikiMed in other languages from the Configuration page;
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
-* You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
+* You can print by pressing Ctrl-P or using the print icon (but see Known Issues below). If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration);
 * There is support for Full-Screen mode in most browsers and frameworks, and orientation locking in some mobile browsers (e.g. Android).
 * Electron versions of the app now support Full-Text searching;
