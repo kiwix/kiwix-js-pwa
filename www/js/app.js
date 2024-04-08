@@ -5854,7 +5854,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, '$1');
             // @TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
-            if (/^mdwiki/.test(appstate.selectedArchive.file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, '$1320px');
+            // if (/^mdwiki/.test(appstate.selectedArchive.file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, '$1320px');
             // Remove landing page scripts that don't work in SW mode
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
             // Set max-width for infoboxes (now set in -/s/styles.css)
