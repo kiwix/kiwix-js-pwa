@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.1.5
+## In-progress release 3.1.8
 
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
@@ -8,6 +8,7 @@
 * FIX: Go straight to article view on launch if persistent permissions are granted
 * FIX: Removed redundant workaround patching the style of thumbinner image containers in MDWiki ZIMs
 * WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
+* DEPENDENCIES: Bump Vite to v4.5.3
 
 
 ## Release 3.1.0 / 3.1.1
