@@ -519,7 +519,7 @@
                     </p>
                     <p id='zimIndex'>
                         You can see the full alphabetical <b>ZIM Archive Index</b> by typing a <b><i>space</i></b> in the title search box. This is useful for ZIMs that have descriptive titles where
-                        you don't know the exact title you are searching for (e.g. Gutenberg or TED Talks, especially in jQuery mode, or for browsing Stackexchange or PhET). You can change
+                        you don't know the exact title you are searching for (e.g. Gutenberg or TED Talks, especially in Restricted mode, or for browsing Stackexchange or PhET). You can change
                         your alphabet in Configuration for non-Roman alphabets. You can also show the <b>full URL index</b> by typing <b><i>space /</i></b> (a space followed by forward slash).
                     </p>
                     <p>
@@ -560,8 +560,8 @@
                         This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
                         works smoothly with every option.
                     </p>
-                    <p>The app can usually operate in two modes: "JQuery" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
-                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). <b><i>JQuery mode doesn't support active or dynamic content.</i></b> You will usually
+                    <p>The app can usually operate in two modes: "Restricted" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
+                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). <b><i>Restricted mode doesn't support active or dynamic content.</i></b> You will usually
                         get an <b>Active Content Warning</b> popping up at the top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you
                         can often still access content in these archives by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some
                         things, especially any proprietary User Interface, won't work.
@@ -574,9 +574,9 @@
                         active content. So turn these options off if you are using such ZIMs.
                     </p>
                     <p>
-                        You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in JQuery mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
+                        You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in Restricted mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
                         in ServiceWorker mode, you need to enable the option <b>Open ZIM links in new tab</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
-                        JQuery mode or in the PWA/ Electron/ NWJS apps. In JQuery mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
+                        Restricted mode or in the PWA/ Electron/ NWJS apps. In Restricted mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
                         doesn't support the WebP video format (e.g. the mobile UWP app).
                     </p>
                     <p>
@@ -592,7 +592,7 @@
                     </p>
                     <p>
                         <b><i>Help! - when I click on an external link it gets blocked!</i></b> Don't panic, this is the Content Security Policy potecting you. You have probably activated Service Worker mode. To open
-                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in Service Worker mode). In JQuery mode, external links will open in a new tab/window regardliness of this
+                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in Service Worker mode). In Restricted mode, external links will open in a new tab/window regardliness of this
                         setting. Additionally, please note that your browser's <b>popup blocker</b> may be interfering with options that open new tabs or windows. When asked, enable popups always for the app
                         (if you trust Kiwix), and then reload the app. 
                     </p>
@@ -604,7 +604,7 @@
                     <h3 id="browsers">Browser support</h3>
                     <p>
                         We test the app frequently on older browsers and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
-                        in some cases (e.g. Firefox &lt;= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please try switching the app to JQuery mode (see below).
+                        in some cases (e.g. Firefox &lt;= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please try switching the app to Restricted mode (see below).
                     </p>
                     <p>
                         We have a version of this app using the NWJS framework that runs on Windows XP/Vista, and there are Electron apps for 32bit and 64bit Linux and Windows 7/8/10/11, also Linux and Windows on ARM64,
@@ -629,15 +629,15 @@
                     <h4>Deprecated</h4>
                     <p>Although deprecated, we will keep support for as long as is practical:</p>
                     <ul>
-                        <li>Internet Explorer 11 (JQuery mode only, no offline use of PWA)</li>
-                        <li>Edge Legacy &lt;= 17 (JQuery mode only, no offline use of PWA)</li>
-                        <li>Firefox 45-59 (some versions require you to switch manually to JQuery mode)</li>
-                        <li>Chromium 49-58 (some versions only run in JQuery mode)</li>
+                        <li>Internet Explorer 11 (Restricted mode only, no offline use of PWA)</li>
+                        <li>Edge Legacy &lt;= 17 (Restricted mode only, no offline use of PWA)</li>
+                        <li>Firefox 45-59 (some versions require you to switch manually to Restricted mode)</li>
+                        <li>Chromium 49-58 (some versions only run in Restricted mode)</li>
                     </ul>
                     <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
-                        "ServiceWorker Mode" and "JQuery Mode" for short. There is a toggle under Performance/compatibility settings
+                        "ServiceWorker Mode" and "Restricted mode" for short. There is a toggle under Performance/compatibility settings
                         in Configuration. Here is an explanation of what these modes do:
                         <ul>
                             <li>
@@ -646,16 +646,17 @@
                                 and supplying the requested content from the ZIM. This mode requires no DOM traversal, and the content is
                                 read and supplied as-is from the archive. Dynamic content (e.g. JavaScript) and proprietary UIs are fully
                                 supported in this mode. It can feel initially a little slower while commonly used assets are being cached,
-                                but it soon equals JQuery mode in speed, at least in modern browsers. However, older browsers such as IE11 do
+                                but it soon equals Restricted mode in speed, at least in modern browsers. However, older browsers such as IE11 do
                                 not support this mode, and the app must be running in a secure context (https:, localhost, or certain browser
                                 extensions). Note that this mode also cannot run under the file: protocol (but only IE11 and old Edge allow the
                                 app to run this way).
                             </li>
                             <li>
-                                <b>JQuery Mode (deprecated)</b>: This mode, which does not in fact require JQuery, is fine for everyday use with
-                                Wikipedia / WikiMedia archives. It is a way of inserting articles extracted from the
+                                <b>Restricted mode</b>: This mode is more secure, because it blocks scripts from running in the ZIM.
+                                However, it is heavily restricted, and it is not possible to access all content in highly dynamic ZIMs.
+                                It is fine for everyday use with Wikipedia / WikiMedia archives. It is a way of inserting articles extracted from the
                                 ZIM into the DOM (browser document) by injecting the content into an iframe or tab. We then use
-                                native DOM methods, or sometimes JQuery, to parse the article's HTML and insert required assets
+                                native DOM methods to parse the article's HTML and insert required assets
                                 (images, stylesheets, event listeners for hyperlinks, etc.). On old devices DOM traversal can be slow,
                                 but it is compensated for because we do not extract or run JavaScript assets (which would be technically
                                 extremely complicated). As a result, for WikiMedia archives this mode is usually quite fast. On the downside,

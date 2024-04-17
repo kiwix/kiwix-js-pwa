@@ -571,7 +571,7 @@ function displayActiveContentWarning (type) {
         alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
-            'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy JQuery mode</a>. ' +
+            'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     } else if (type === 'zimit') {
