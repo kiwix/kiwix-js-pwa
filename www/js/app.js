@@ -4785,7 +4785,7 @@ function readArticle (dirEntry) {
     // Only update for expectedArticleURLToBeDisplayed.
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
-    // We must remove focus from UI elements in order to deselect whichever one was clicked (in both jQuery and SW modes),
+    // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -6487,7 +6487,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             articleContainer.onload = articleLoaded;
             articleContainer.src = 'article.html';
         } else {
-            // Attempt to establish an independent history record for windows (jQuery / window-tab mode)
+            // Attempt to establish an independent history record for windows (Restricted / window-tab mode)
             articleWindow.onpopstate = historyPop;
             // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
             // (to avoid popup blockers). Firefox loads windows asynchronously, so we need to wait for onclick load to be fully
