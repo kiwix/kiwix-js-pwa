@@ -1689,15 +1689,27 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         // Do the necessary to enable or disable the Service Worker
         setContentInjectionMode(this.value);
-        // If we're in a PWA UWP app, warn the user that this does not disable the PWA
-        if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
-            params.allowInternetAccess === 'true') {
-            uiUtil.systemAlert(
-                '<p>Please note that switching content injection mode does not revert to local code.</p>' +
-                '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
-            );
+
+        /** DEV: PLEASE NOTE THAT "jQuery mode" HAS NOW CHANGED to "Restricted mode", but we still use "jquery" in code */
+
+        // Actions that must be completed after switch to Restricted mode
+        if (this.value === 'jquery') {
+            // Hide the source verification option
+            document.getElementById('enableSourceVerificationCheck').style.display = 'none';
+            // If we're in a PWA UWP app, warn the user that this does not disable the PWA
+            if (/^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
+                params.allowInternetAccess === 'true') {
+                uiUtil.systemAlert(
+                    '<p>Please note that switching content injection mode does not revert to local code.</p>' +
+                    '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
+                );
+            }
         }
         if (this.value === 'serviceworker') {
+            document.getElementById('enableSourceVerificationCheck').style.display = '';
+            if (appstate.selectedArchive.isReady() && !(settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) && params.sourceVerification) {
+                verifyLoadedArchive(appstate.selectedArchive);
+            }
             if (params.manipulateImages || params.allowHTMLExtraction) {
                 if (!appstate.wikimediaZimLoaded) {
                     var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
@@ -1854,6 +1866,12 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
             window.location.reload();
         }
     });
+});
+// Source verification is only makes sense in SW mode as doing the same in jQuery mode is redundant.
+document.getElementById('enableSourceVerificationCheck').style.display = params.contentInjectionMode === ('serviceworker' || 'serviceworkerlocal') ? 'block' : 'none';
+document.getElementById('enableSourceVerificationCheck').addEventListener('change', function () {
+    params.sourceVerification = this.checked;
+    settingsStore.setItem('sourceVerification', this.checked, Infinity);
 });
 document.getElementById('hideActiveContentWarningCheck').addEventListener('change', function () {
     params.hideActiveContentWarning = this.checked;
@@ -4068,6 +4086,31 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
 }
 
 /**
+ * Verifies the given archive and switches contentInjectionMode accourdingly
+ * Code to undertake the verification adapted from kiwix/kiwix-js #1192 kindly authored by @Greeshmanth1909
+ *
+ * @param {Object} archive The archive that needs verification
+ *
+ */
+function verifyLoadedArchive (archive) {
+    return uiUtil.systemAlert('Is this ZIM archive from a trusted source?\n If not, you can still read the ZIM file in Restricted mode. Closing this window also opens the file in Restricted mode. This option can be disabled in Expert Settings',
+    'Security alert!', true, 'Open in Restricted mode', 'Trust source').then(response => {
+        if (response) {
+            params.contentInjectionMode = 'serviceworker';
+            var trustedZimFiles = settingsStore.getItem('trustedZimFiles');
+            var updatedTrustedZimFiles = trustedZimFiles + archive.file.name + '|';
+            settingsStore.setItem('trustedZimFiles', updatedTrustedZimFiles, Infinity);
+            // Change radio buttons accordingly
+            document.getElementById('serviceworkerModeRadio').checked = true;
+        } else {
+            // Switch to Restricted mode
+            params.contentInjectionMode = 'jquery';
+            document.getElementById('jQueryModeRadio').checked = true;
+        }
+    });
+}
+
+/**
  * Functions to be run immediately after the archive is loaded
  *
  * @param {ZIMArchive} archive The ZIM archive
@@ -4185,27 +4228,55 @@ function archiveReadyCallback (archive) {
     }
     // This ensures the correct icon is set for the newly loaded archive
     cssUIThemeGetOrSet(params.cssUITheme);
-    if (params.rescan) {
-        document.getElementById('btnConfigure').click();
-        setTimeout(function () {
+    var displayArchive = function () {
+        if (params.rescan) {
             document.getElementById('btnConfigure').click();
-            params.rescan = false;
-        }, 100);
-    } else {
-        if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
-            document.getElementById('instructions').style.display = 'none';
+            setTimeout(function () {
+                document.getElementById('btnConfigure').click();
+                params.rescan = false;
+            }, 100);
         } else {
-            document.getElementById('openLocalFiles').style.display = 'none';
-            document.getElementById('rescanStorage').style.display = 'block';
-        }
-        document.getElementById('usage').style.display = 'none';
-        if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
-            var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
-            goToArticle(lastPage);
-        } else {
-            document.getElementById('btnHome').click();
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
+                document.getElementById('instructions').style.display = 'none';
+            } else {
+                document.getElementById('openLocalFiles').style.display = 'none';
+                document.getElementById('rescanStorage').style.display = 'block';
+            }
+            document.getElementById('usage').style.display = 'none';
+            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+                var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
+                goToArticle(lastPage);
+            } else {
+                document.getElementById('btnHome').click();
+            }
         }
     }
+    // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
+    if (params.contentInjectionMode === 'jquery') {
+        params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        // Change the radio buttons accordingly
+        switch (settingsStore.getItem('contentInjectionMode')) {
+            case 'serviceworker':
+                document.getElementById('serviceworkerModeRadio').checked = true;
+                break;
+            case 'serviceworkerlocal':
+                document.getElementById('serviceworkerLocalModeRadio').checked = true;
+                break;
+        }
+    }
+    if (settingsStore.getItem('trustedZimFiles') === null) {
+        settingsStore.setItem('trustedZimFiles', '', Infinity);
+    }
+    if (params.sourceVerification && (params.contentInjectionMode === 'serviceworker' || params.contentInjectionMode === 'serviceworkerlocal')) {
+        // Check if source of the zim file can be trusted.
+        if (!(settingsStore.getItem('trustedZimFiles').includes(archive.file.name))) {
+            verifyLoadedArchive(archive).then(function () {
+                displayArchive();
+            });
+            return;
+        }
+    }
+    displayArchive();
 }
 
 function loadPackagedArchive () {

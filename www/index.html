@@ -1252,6 +1252,11 @@
                                         <span class="checkmark"></span>
                                         <b>Disable drag-and-drop</b> (in case it is causing anomalies)
                                     </label>
+                                    <label class="checkbox" data-i18n-tip="configure-expert-enable-source-verification-tip" title="Warning: Some ZIM archives from untrusted sources could run malicious code in your browser. This can be prevented by using Restricted mode, which cannot run active content from the ZIM. Highly dynamic ZIMs will probably fail in Restricted mode, but ZIMs with largely static content should work. If you trust the source of all of your ZIMs, then disabling this option will use ServiceWorker mode by default, if available.">
+                                        <input type="checkbox" name="disableFileVerification" id="enableSourceVerificationCheck" >
+                                        <span data-i18n="configure-expert-enable-source-verification-check-box" class="checkmark"></span>
+                                        <b>Enable source verification of new files</b> (<i>recommended</i>: you will only be prompted the first time you open a ZIM)
+                                    </label>
                                     <div id="expressPortInputDiv" style="display: none;" title="If you allowed network access on startup, you can access this app from any local browser by going to localhost:port in the browser address bar (e.g. http://localhost:3000).">
                                         <b>Customize the localhost port when accessing this app from a browser</b>:<br />
                                         <label>
