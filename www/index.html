@@ -1194,14 +1194,14 @@
                                     title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
                                     <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
                                     <span class="radiobtn"></span>
-                                    <strong>ServiceWorker</strong> (default - supports all archives with dynamic content)
+                                    <strong>ServiceWorker</strong> (<i>recommended</i>, supports dynamic content and inline JavaScript)
                                 </label>
                                 <label class="radio"
                                     title="This mode is deprecated. It works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
                                     <input type="radio" name="contentInjectionMode" value="jquery"
                                         id="jQueryModeRadio" checked>
                                     <span class="radiobtn"></span>
-                                    <strong>JQuery</strong> (deprecated - only for older browsers and frameworks)
+                                    <strong>Restricted</strong> (no dynamic content, compatible with older browsers and frameworks)
                                 </label>
                             </div>
                         </div>
