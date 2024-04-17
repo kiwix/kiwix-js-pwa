@@ -457,7 +457,7 @@ self.addEventListener('message', function (event) {
         } else if (event.data.action === 'disable') {
             // On 'disable' message, we disable the fetchEventListener
             // Note that this code doesn't currently run because the app currently never sends a 'disable' message
-            // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in jQuery mode
+            // This is because the app may be running as a PWA, and still needs to be able to fetch assets even in Restricted mode
             fetchCaptureEnabled = false;
         } else if (/(disable|enable)ReplayWorker/.test(event.data.action)) {
             // On 'disableReplayWorker' or 'enableReplayWorker' message, we disable or enable the ReplayWorker

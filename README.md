@@ -56,10 +56,9 @@ want to download. It's much easier than it sounds!
 ## What about Zimit (Web Archive) format?
 
 Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
-you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS **PWA** has full support for
-Zimit-based archives as of v.2.8.5 using the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html), while the
-Electron and other apps currently only support Zimit archives with largely static content (text, images, dynamic content will be displayed,
-but some content such as embedded video or audio may break). If you want to browse Zimit-based archives, we recommend you use the PWA.
+you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full support for
+Zimit-based archives as of v.2.8.5 using the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html), and already support
+the forthcoming Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
 
 The Kiwix download library (available in-app) publishes a number of fantastically useful refernce sites in the Zimit file format, such as
 the **Ready.Gov disaster preparedness site**, the fascinating **Low-Tech magazine**, the **CIA World Factbook**, the **Harmony Project**
@@ -74,7 +73,7 @@ We pride ourselves in maintaining support for old browsers and platforms, given 
 users in the developing world who may only have access to old devices with outdated software. We test the app frequently on older browsers
 and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
 in some cases (e.g. Firefox <= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please
-try switching the app to JQuery mode (see Content injection mode in Configuration).
+try switching the app to Restricted mode (see Content injection mode in Configuration).
 
 ### Officially supported
 
@@ -100,10 +99,10 @@ attempts to read the entire ZIM archive into memory if opening it from the user-
 
 Although deprecated, we will keep support for as long as is practical:
 
-* Internet Explorer 11 (JQuery mode only, no offline use of PWA)
-* Edge Legacy <= 17 (JQuery mode only, no offline use of PWA)
-* Firefox 45-59 (some versions require the user to switch manually to JQuery mode)
-* Chromium 49-58 (some versions only run in JQuery mode)
+* Internet Explorer 11 (Restricted mode only, no offline use of PWA)
+* Edge Legacy <= 17 (Restricted mode only, no offline use of PWA)
+* Firefox 45-59 (some versions require the user to switch manually to Restricted mode)
+* Chromium 49-58 (some versions only run in Restricted mode)
 
 ## Reporting bugs and technical support
 

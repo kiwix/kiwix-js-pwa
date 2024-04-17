@@ -49,7 +49,7 @@ Please choose the correct version (only the Store version will self update):
 
 ### Known Issues
 
-* INCONSISTENCY: When printing in jQuery mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing;
+* INCONSISTENCY: When printing in Restricted mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing;
 * In the Electron version (not the UWP version): if you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed;
 * Please see https://github.com/kiwix/kiwix-js-pwa/issues for further known issues. If you find a new issue, please open a new issue on that page.
 

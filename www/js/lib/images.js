@@ -400,7 +400,7 @@ function prepareImagesJQuery (win, forPrinting) {
 }
 
 /**
- * Extracts media blobs in jQuery mode and offers to download them
+ * Extracts media blobs in Restricted mode and offers to download them
  * @param {Node} medium A DOM node representing a medium
  */
 function insertMediaBlobsJQuery (medium) {

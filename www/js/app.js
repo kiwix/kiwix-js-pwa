@@ -100,7 +100,7 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 
 // At launch, we set the correct content injection mode
 if (params.contentInjectionMode === 'serviceworker' && window.nw) {
-    // Failsafe for Windows XP version: reset app to jQuery mode because it cannot run in SW mode in Windows XP
+    // Failsafe for Windows XP version: reset app to Restricted mode because it cannot run in SW mode in Windows XP
     if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
 } else {
     setContentInjectionMode(params.contentInjectionMode);
@@ -477,7 +477,7 @@ function printIntercept () {
         // We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
         params.cssSource = printDesktopCheck ? 'desktop' : 'mobile';
         params.rememberLastPage = true; // Re-enable caching to speed up reloading of page
-        // params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode
+        // params.contentInjectionMode = 'jquery'; //Much easier to count images in Restricted mode
         params.allowHTMLExtraction = true;
         params.printIntercept = true;
         params.printInterception = false;
@@ -627,7 +627,7 @@ document.getElementById('findText').addEventListener('click', function () {
 });
 
 document.getElementById('btnRandomArticle').addEventListener('click', function () {
-    // In jQuery mode, only load random content in iframe (not tab or window)
+    // In Restricted mode, only load random content in iframe (not tab or window)
     appstate.target = 'iframe';
     setTab('btnRandomArticle');
     // Re-enable top-level scrolling
@@ -768,7 +768,7 @@ document.getElementById('btnTop').addEventListener('click', function () {
 });
 // Top menu :
 document.getElementById('btnHome').addEventListener('click', function () {
-    // In jQuery mode, only load landing page in iframe (not tab or window)
+    // In Restricted mode, only load landing page in iframe (not tab or window)
     appstate.target = 'iframe';
     setTab('btnHome');
     document.getElementById('search-article').scrollTop = 0;
@@ -1678,7 +1678,7 @@ document.getElementById('downloadTrigger').addEventListener('click', function ()
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {
         if (this.value === 'jquery' && !params.appCache) {
-            uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to JQuery mode!');
+            uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to Restricted mode!');
             this.checked = false;
             document.getElementById('serviceworkerModeRadio').checked = true;
             return;
@@ -1732,7 +1732,7 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
                     'code has changed, and this app cannot override that completely.');
             } else {
                 message = '<p>This will switch to using locally packaged code only. Configuration settings may be lost.</p>' +
-                    '<p><b>WARNING:</b> App will re-load in jQuery mode!</p>';
+                    '<p><b>WARNING:</b> App will re-load in Restricted mode!</p>';
                 var that = this;
                 var launchLocal = function () {
                     settingsStore.setItem('allowInternetAccess', false, Infinity);
@@ -2928,7 +2928,7 @@ function setContentInjectionMode (value) {
         if ('serviceWorker' in navigator) {
             serviceWorkerRegistration = null;
         }
-        // User has switched to jQuery mode, so no longer needs ASSETS_CACHE on SW side (it will still be used app-side)
+        // User has switched to Restricted mode, so no longer needs ASSETS_CACHE on SW side (it will still be used app-side)
         // if ('caches' in window && isMessageChannelAvailable()) {
         //     if (isServiceWorkerAvailable() && navigator.serviceWorker.controller) {
         //         var channel = new MessageChannel();
@@ -2941,25 +2941,25 @@ function setContentInjectionMode (value) {
         refreshAPIStatus();
     } else if (value === 'serviceworker') {
         if (!isServiceWorkerAvailable()) {
-            uiUtil.systemAlert('The ServiceWorker API is not available on your device. Falling back to JQuery mode').then(function () {
+            uiUtil.systemAlert('The ServiceWorker API is not available on your device. Falling back to Restricted mode').then(function () {
                 setContentInjectionMode('jquery');
             });
             return;
         }
         if (!isMessageChannelAvailable()) {
-            uiUtil.systemAlert('The MessageChannel API is not available on your device. Falling back to JQuery mode').then(function () {
+            uiUtil.systemAlert('The MessageChannel API is not available on your device. Falling back to Restricted mode').then(function () {
                 setContentInjectionMode('jquery');
             });
             return;
         }
         if (window.nw && nw.process.versions.nw === '0.14.7') {
-            uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to JQuery mode...')
+            uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to Restricted mode...')
             .then(function () {
                 setContentInjectionMode('jquery');
             });
             return;
         }
-        // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in jQuery mode
+        // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in Restricted mode
         params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
         if (!isServiceWorkerReady()) {
             var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
@@ -3008,7 +3008,7 @@ function setContentInjectionMode (value) {
                 }).catch(function (err) {
                     console.error('Error while registering serviceWorker', err);
                     refreshAPIStatus();
-                    var message = 'The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : ' + err;
+                    var message = 'The ServiceWorker could not be properly registered. Switching back to Restricted mode. Error message : ' + err;
                     var protocol = window.location.protocol;
                     if (protocol === 'ms-appx-web:') {
                         // We can't launch straight away if the app is starting, because the large modal could be showing
@@ -3045,7 +3045,7 @@ function setContentInjectionMode (value) {
     // Save the value in the Settings Store, so that to be able to keep it after a reload/restart
     settingsStore.setItem('contentInjectionMode', value, Infinity);
     setWindowOpenerUI();
-    // Even in JQuery mode, the PWA needs to be able to serve the app in offline mode
+    // Even in Restricted mode, the PWA needs to be able to serve the app in offline mode
     setTimeout(initServiceWorkerMessaging, 3000);
 }
 
@@ -4089,7 +4089,7 @@ function archiveReadyCallback (archive) {
         initServiceWorkerMessaging();
     }
     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
-    // (this only affects jQuery mode)
+    // (this only affects Restricted mode)
     appstate.target = 'iframe';
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.pureMode = false;
@@ -4108,8 +4108,8 @@ function archiveReadyCallback (archive) {
             console.debug('*** Activating pureMode for ZIM: ' + archive.file.name + ' ***');
             appstate.pureMode = true;
         }
-        // Turn off the assetsCache for now in jQuery mode
-        // @TODO: Check why it works better with it off for Zimit archives in jQuery mode!
+        // Turn off the assetsCache for now in Restricted mode
+        // @TODO: Check why it works better with it off for Zimit archives in Restricted mode!
         if (/zimit/.test(archive.zimType)) {
             params.assetsCache = params.contentInjectionMode !== 'jquery';
         }
@@ -4785,7 +4785,7 @@ function readArticle (dirEntry) {
     // Only update for expectedArticleURLToBeDisplayed.
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
-    // We must remove focus from UI elements in order to deselect whichever one was clicked (in both jQuery and SW modes),
+    // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -4809,7 +4809,7 @@ function readArticle (dirEntry) {
             return;
         }
 
-        // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to jQuery mode
+        // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to Restricted mode
         if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !window.nw) {
             return handleUnsupportedReplayWorker(dirEntry);
         }
@@ -4962,7 +4962,7 @@ function readArticle (dirEntry) {
                     }, 0);
                 } else {
                     // if (params.contentInjectionMode === 'jquery') {
-                    // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
+                    // In Restricted mode, we read the article content in the backend and manually insert it in the iframe
                     appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
                         if (fileDirEntry && fileDirEntry.zimitRedirect) {
                             goToArticle(fileDirEntry.zimitRedirect);
@@ -5748,7 +5748,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
                 // Pop up a dialogue box to warn the user about the legacy ZIM
-                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to JQuery mode.</p>' +
+                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to Restricted mode.</p>' +
                     "<p>Don't forget to switch back afterwards!</p>", 'Legacy ZIM file');
             }
         }
@@ -5812,7 +5812,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         });
         // We also need to process data:image/webp if the browser needs the WebPMachine
         if (webpMachine) htmlArticle = htmlArticle.replace(/(<img\b[^>]*?\s)src(\s*=\s*["'])(?=data:image\/webp)([^"']+)/ig, '$1data-kiwixurl$2$3');
-        // Remove any empty media containers on page (they can cause layout issue in jQuery mode)
+        // Remove any empty media containers on page (they can cause layout issue in Restricted mode)
         htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
             return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
         });
@@ -6487,7 +6487,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             articleContainer.onload = articleLoaded;
             articleContainer.src = 'article.html';
         } else {
-            // Attempt to establish an independent history record for windows (jQuery / window-tab mode)
+            // Attempt to establish an independent history record for windows (Restricted / window-tab mode)
             articleWindow.onpopstate = historyPop;
             // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
             // (to avoid popup blockers). Firefox loads windows asynchronously, so we need to wait for onclick load to be fully
