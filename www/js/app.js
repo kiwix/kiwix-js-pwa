@@ -464,7 +464,7 @@ function printIntercept () {
         return uiUtil.systemAlert('Sorry, we could not find a document to print! Please load one first.', 'Warning');
     }
     if (params.contentInjectionMode === 'serviceworker') {
-        // Re-establishe lastPageVisit because it is not always set, for example with dynamic loads, in SW mode
+        // Re-establish lastPageVisit because it is not always set, for example with dynamic loads, in SW mode
         params.lastPageVisit = articleDocument.location.href.replace(/^.+\/([^/]+\.[zZ][iI][mM]\w?\w?)\/([CA]\/.*$)/, function (m0, zimName, zimURL) {
             return decodeURI(zimURL) + '@kiwixKey@' + decodeURI(zimName);
         });
@@ -2436,12 +2436,12 @@ function switchCSSTheme () {
             }, 100);
             // If the interval has not succeeded after 3 seconds, give up
             if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
-                setTimeout(function () {
-                    articleContainer.style.display = '';
-                    zimitIframe.style.display = '';
+                setTimeout(function (zimitf, articleC) {
+                    articleC.style.display = '';
+                    zimitf.style.display = '';
                     clearInterval(interval);
                     window.dispatchEvent(new Event('resize')); // Force repaint
-                }, 3000);
+                }, 3000, zimitIframe, articleContainer);
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
@@ -4258,6 +4258,8 @@ function archiveReadyCallback (archive) {
         switch (settingsStore.getItem('contentInjectionMode')) {
             case 'serviceworker':
                 document.getElementById('serviceworkerModeRadio').checked = true;
+                // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
+                params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
                 break;
             case 'serviceworkerlocal':
                 document.getElementById('serviceworkerLocalModeRadio').checked = true;
@@ -5190,6 +5192,21 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
+    var mimeType = dirEntry.getMimetype();
+    // If we've successfully loaded an HTML document...
+    if (doc && /\bx?html/i.test(mimeType)) {
+        if (params.rememberLastPage) {
+            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
+        } else {
+            params.lastPageVisit = '';
+        }
+        // Turn off failsafe for SW mode
+        settingsStore.setItem('lastPageLoad', 'OK', Infinity);
+        settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+        // Set or clear the ZIM store of last page
+        var lastPage = params.rememberLastPage ? dirEntry.namespace + '/' + dirEntry.url : '';
+        settingsStore.setItem(appstate.selectedArchive.file.name, lastPage, Infinity);
+    }
     var docBody = doc ? doc.body : null;
     if (docBody) {
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
@@ -5204,7 +5221,6 @@ var articleLoadedSW = function (dirEntry, container) {
             listenForSearchKeys();
         }
         // Note that switchCSSTheme() requires access to params.lastPageVisit
-        params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
         if (appstate.selectedArchive.zimType === 'open') {
             // Set relative font size + Stackexchange-family multiplier
@@ -5254,12 +5270,6 @@ var articleLoadedSW = function (dirEntry, container) {
                 resizeIFrame();
             }, 200);
         }
-        // Turn off failsafe for SW mode
-        settingsStore.setItem('lastPageLoad', 'OK', Infinity);
-        if (!appstate.isReplayWorkerAvailable) {
-            // Because this is loading within docBody, it should only get set for HTML documents
-            if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-        }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
         if (params.printIntercept) printIntercept();
@@ -5276,7 +5286,10 @@ var articleLoadedSW = function (dirEntry, container) {
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         params.isLandingPage = false;
     } else {
-        loaded = false;
+        // If we havent' loaded a text-type document, we probably haven't finished loading
+        if (!/^text\//i.test(mimeType)) {
+            loaded = false;
+        }
     }
 
     // Show spinner when the article unloads
@@ -6324,7 +6337,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (downloadAlert) downloadAlert.style.display = 'none';
 
         // Code below will run after we have written the new article to the articleContainer
-        var articleLoaded = params.contentInjectionMode === 'serviceworker' ? function () {} : function () {
+        var articleLoaded = function () {
+            if (params.contentInjectionMode === 'serviceworker') return;
             // Set a global error handler for articleWindow
             articleWindow.onerror = function (msg, url, line, col, error) {
                 console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
@@ -6450,17 +6464,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Make sure the article area is displayed
             setTab();
             checkToolbar();
-            var showArticle = function () {
-                articleDocument.bgcolor = '';
-                docBody.style.display = 'block';
-            };
-            if ('MSBlobBuilder' in window) {
-                // For legacy MS browsers, including UWP, delay causes blank screen on slow systems
-                showArticle();
-            } else {
-                // For Chromium browsers a small delay greatly improves composition
-                setTimeout(showArticle, 80);
-            }
+            // Show the article
+            articleDocument.bgcolor = '';
+            docBody.style.display = 'block';
             // Jump to any anchor parameter
             if (anchorParameter) {
                 var target = articleWindow.document.getElementById(anchorParameter);
