@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 3.1.8
+## In-progress release 3.2.2
 
+* UPDATE: Rename JQuery mode to Restricted mode
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
 * FIX: Bug in JQuery mode which made all images load as manual display areas in some non-Wikimedia ZIMs
