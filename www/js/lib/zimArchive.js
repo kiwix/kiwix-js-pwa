@@ -80,7 +80,8 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
         // Further metadata are added in the background below, and can be accessed later
         return Promise.all([
             that.addMetadataToZIMFile('Creator'),
-            that.addMetadataToZIMFile('Language')
+            that.addMetadataToZIMFile('Language'),
+            that.addMetadataToZIMFile('Publisher')
         ]).then(function () {
             console.debug('ZIMArchive ready, metadata will be added in the background');
             // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
@@ -92,7 +93,6 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                     that.addMetadataToZIMFile('Date'),
                     that.addMetadataToZIMFile('Description'),
                     that.addMetadataToZIMFile('Name'),
-                    that.addMetadataToZIMFile('Publisher'),
                     that.addMetadataToZIMFile('Source'),
                     that.addMetadataToZIMFile('Title')
                 ]).then(function () {

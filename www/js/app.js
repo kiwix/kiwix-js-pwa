@@ -4093,7 +4093,14 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  *
  */
 function verifyLoadedArchive (archive) {
-    return uiUtil.systemAlert('Is this ZIM archive from a trusted source?\n If not, you can still read the ZIM file in Restricted mode. Closing this window also opens the file in Restricted mode. This option can be disabled in Expert Settings',
+    return uiUtil.systemAlert('<p>Is this ZIM archive from a trusted source?</p><p>' +
+      'Name:&nbsp;<b>' + archive.file.name + '</b><br />' +
+      'Creator:&nbsp;<b>' + archive.creator + '</b><br />' +
+      'Publisher:&nbsp;<b>' + archive.publisher + '</b><br />' +
+      'Scraper:&nbsp;<b>' + archive.scraper + '</b><br />' +
+      '</p><p><b><i>Warning: above data can easily be spoofed!</i></b></p>' +
+      '</p><p>If you do not trust the source, you can still read the ZIM file in Restricted mode. Closing this window also opens the file in Restricted mode.</p>' +
+      '<p><i>If you mark the file as trusted, this alert will not show again.</i> Security checks can be disabled in Expert Settings.</p>',
     'Security alert!', true, 'Open in Restricted mode', 'Trust source').then(response => {
         if (response) {
             params.contentInjectionMode = 'serviceworker';
