@@ -110,6 +110,7 @@ params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
 params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
+params['sourceVerification'] = params.contentInjectionMode === 'serviceworker' ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false; // Sets a boolean indicating weather a user trusts the source of zim files
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
@@ -251,6 +252,7 @@ document.getElementById('rememberLastPageCheck').checked = params.rememberLastPa
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
+document.getElementById('enableSourceVerificationCheck').checked = getSetting('sourceVerification') === null ? true : getSetting('sourceVerification');
 document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;

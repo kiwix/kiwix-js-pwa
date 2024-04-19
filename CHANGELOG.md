@@ -2,7 +2,9 @@
 
 ## In-progress release 3.2.2
 
+* FEATURE: Add security dialogue on opening a ZIM for the first time in ServiceWorker mode
 * UPDATE: Rename JQuery mode to Restricted mode
+* FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
 * FIX: Bug in JQuery mode which made all images load as manual display areas in some non-Wikimedia ZIMs
