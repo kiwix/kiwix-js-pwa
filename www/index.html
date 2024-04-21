@@ -286,6 +286,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#security">Security</a></li>
                         <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
@@ -426,20 +427,32 @@
                             <li><a href="https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html" target="_blank">NWJS version</a> - this version is completely standalone and will never self-update.</li>
                         </ul>
                     </p>
+                    <h3 id="security">Security of your ZIM archives and your browser</h3>
+                    <p>
+                        Most ZIM archives nowadays contain active content (scripts). Although we sandbox content in the ZIM as much as possible and use a strict Content Security Policy,
+                        we have to interact with the loaded content, and so we cannot fully lock it down. When the app is running in its default mode (in modern browsers), it is possible
+                        that a deliberately malicious ZIM from an untrusted source could break out of the sandbox and do nasty things like redirecting your browser to third-party or
+                        phishing sites. To mitigate against this, the app asks you to indicate that you trust the source of a ZIM when you first open it, and offers to open the ZIM in
+                        <a href="#modes">Restricted mode</a> first, so you can check the validity of the content. Restricted mode prevents most dynamic content from running. When you
+                        next open a trusted file, the app will automatically switch back to ServiceWorker mode. If you make a mistake, and accidentally trust a malicious ZIM, then you
+                        should reset the app using the button in Configuration (and, of course, delete the ZIM).
+                    </p>
                     <h3 id="filehandling">File handling and File System access</h3>
                     <p>
                         This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
                         can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
                         archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
-                        Electron apps or if you are using the Origin Private File System (see below), you will be asked to grant permission to access previously picked files or
-                        folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
+                        Electron apps, recent Chromium desktop browsers, or if you are using the Origin Private File System (see below), you will be asked to grant permission to access
+                        previously picked files or folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
                     </p>
                     <p>
-                        Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
-                        This allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer, it will open in the app. The first time
-                        you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can change your choice in the browser settings.
-                        Each time you launch a ZIM, it will open in a separate instance of the app, allowing you to browse multiple ZIMs at the same time. Note that multiple instances are not
-                        currently supported in the Electron/UWP apps.
+                        Chromium desktop browsers support <a href="https://developer.chrome.com/blog/persistent-permissions-for-the-file-system-access-api" target="_blank">Persistent Permissions</a>
+                        and the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA. Persistent Permissions are
+                        available in Chrome, Edge, and other Chromium browsers as of version 122: the secon or third time you open a file or folder, you will be asked if you wish to grant
+                        persistent permission. The File Handling API allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer,
+                        it will open in the app. The first time you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can
+                        change your choice in the browser settings. Each time you launch a ZIM, it will open in a separate instance of the app, allowing you to browse multiple ZIMs at the
+                        same time. Note that multiple instances are not currently supported in the Electron/UWP apps.
                     </p>
                     <h4 id="OPFS">Origin Private File System</h4>
                     <p>
@@ -648,10 +661,8 @@
                                 supported in this mode. It can feel initially a little slower while commonly used assets are being cached,
                                 but it soon equals Restricted mode in speed, at least in modern browsers. However, older browsers such as IE11 do
                                 not support this mode, and the app must be running in a secure context (https:, localhost, or certain browser
-                                extensions). Although we sandbox content in the ZIM as much as possible, it is possible that a deliberately malicious
-                                ZIM from an untrusted source could break out of the sandbox and do nasty things like redirecting your browser to
-                                third-party or phishing sites. To mitigate against this, we suggest you open ZIMs from untrusted sources in
-                                Restricted mode first, to assure yourself of the validity of their content. 
+                                extensions). Please be sure only to open ZIMs from sources you trust in this mode: see <a href="#security">Security</a>
+                                for more information. 
                             </li>
                             <li>
                                 <b>Restricted mode</b>:  This mode prevents attached scripts from running in the iframe, so it is useful for checking
