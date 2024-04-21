@@ -256,8 +256,6 @@ if (typeof chrome !== 'undefined' && chrome.action) {
 // Process install event
 self.addEventListener('install', function (event) {
     console.debug('[SW] Install Event processing');
-    // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
-    // self.skipWaiting();
     // We try to circumvent the browser's cache by adding a header to the Request, and it ensures all files are explicitly versioned
     var requests = precacheFiles.map(function (urlPath) {
         return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
@@ -275,6 +273,11 @@ self.addEventListener('install', function (event) {
                     });
                 })
             );
+            // .then(function () {
+            //     // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
+            //     // console.warn('Attempting to skip waiting...');
+            //     // self.skipWaiting();
+            // });
         }));
     }
 });
@@ -352,7 +355,7 @@ self.addEventListener('fetch', function (event) {
     if (/\/dist\/(www|[^/]+?\.zim)\//.test(rqUrl) && !/\/dist\//.test(self.registration.scope)) return;
     // Filter darkReader request transformed by wombat.js
     if (/\.zim.*\/www\/(?:js\/(?:lib\/)?darkreader\.min\.js|.*-\/s\/style-dark(?:-invert)?\.css)/.test(rqUrl)) {
-        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^\/]+(?:[^\/]|\/(?![^\/]+\.zim\/))+)(?:[^\/]|\/(?!www\/))+/, '$1');
+        rqUrl = rqUrl.replace(/^([^:]+:\/\/[^/]+(?:[^/]|\/(?![^/]+\.zim\/))+)(?:[^/]|\/(?!www\/))+/, '$1');
     }
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
