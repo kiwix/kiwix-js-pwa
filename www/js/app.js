@@ -4095,7 +4095,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  *
  */
 function verifyLoadedArchive (archive) {
-    return uiUtil.systemAlert('<p><b>Is this ZIM archive from a trusted source? If in doubt, we strongly recommend you open it in Restricted mode.</b></p><p style="border: 1px solid;padding:5px;">' +
+    return uiUtil.systemAlert('<p><b>Is this ZIM archive from a trusted source?</b> If in doubt, we strongly recommend you open it in Restricted mode.</p><p style="border: 1px solid;padding:5px;">' +
       'Name:&nbsp;<b>' + archive.file.name + '</b><br />' +
       'Creator:&nbsp;<b>' + archive.creator + '</b><br />' +
       'Publisher:&nbsp;<b>' + archive.publisher + '</b><br />' +
