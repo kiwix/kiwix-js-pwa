@@ -100,27 +100,19 @@
                             improving the app are very welcome: see About section.
                         </p>
                         <div id="update" class="update">
-                            <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
+                            <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For updates since v3.1.1, please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank">CHANGELOG</a></li>
-                                <li>On Android, full-text search is now on by default (but may be too slow to load without OPFS)</li>
-                                <li>Fix broken "unclicking" of config and about buttons and return-to-article link</li>
-                                <li>Reduce flash of incorrect style with Zimit-style ZIMs displayed with darkReader</li>
-                                <li>Ensure legacy archive warning and other content warnings remain displayed until dismissed</li>
-                                <li>Fix untransformed relative Zimit2 URLs for browsers that do not support Wombat</li>
-                                <li>Fix issue with Create-DraftRelease script</li>
-                                <li>Fix issue preventing app from detecting new updates on GitHub in some circumstances</li>
+                                <li>New feature: security dialogue on opening a ZIM for the first time in ServiceWorker mode</li>
+                                <li>Rename "JQuery mode" to "Restricted mode"</li>
+                                <li>Add information about ZIM security and Persistent Permissions to info in About</li>
+                                <li>Fix bug preventing display of landing page when switching from Restricted mode</li>
                                 <li>Fix display of open/close marker with h5 and h6 headings in Wikimedia ZIMs</li>
-                                <li>Mention ARM architecture in in-app user info</li>
-                                <li>Fix YouTube video playback with legacy Zimit reading system (SW mode)</li>
-                                <li>Fix incompatibility with IE11 and Edge Mobile that prevented running on WM10</li>
-                                <li>Workaround for HTML URLs with percent-encoded querystring separators in zimit2</li>
-                                <li>Remove erroneously scraped ovid iframes in MDWiki ZIMs</li>
-                                <li>Updates to buid script</li>
-                                <li>Deprecate 32bit deb packages for packaged apps</li>
-                                <li>Remove jQuery from app.js</li>
-                                <li>Bump Electron Builder to v24.13.3</li>
-                                <li>Bump Electron Updater to v6.2.1</li>
+                                <li>Fix inability to print HTML books in Gutenberg ZIMs</li>
+                                <li>Fix bug which forced all images to manual diaply in some non-Wikimedia ZIMs in Restricted mode</li>
+                                <li>Fix inability to read stylesheets correctly when accessing some Zimit archives in Restricted mode</li>
+                                <li>Go straight to article view on launch if persistent permissions are granted</li>
+                                <li>Catch uncaught file verification exception</li>
+                                <li>Fix for HTML URLs with percent-encoded querystring separators in zimit2</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

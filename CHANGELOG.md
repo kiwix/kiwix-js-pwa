@@ -1,15 +1,20 @@
 # Changelog
 
-## In-progress release 3.2.2
+## Release 3.2.3 / 3.2.4
 
 * FEATURE: Add security dialogue on opening a ZIM for the first time in ServiceWorker mode
 * UPDATE: Rename JQuery mode to Restricted mode
+* DOCUMENTATION: Add information about ZIM security to About
+* DOCUMENTATION: Add information about Persistent Permissions to About
 * FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
-* FIX: Bug in JQuery mode which made all images load as manual display areas in some non-Wikimedia ZIMs
+* FIX: Bug which forced all images to manual diaply in some non-Wikimedia ZIMs in Restricted mode
+* FIX: Inability to read stylesheets correctly when accessing some Zimit archives in Restricted mode
 * FIX: Go straight to article view on launch if persistent permissions are granted
 * FIX: Removed redundant workaround patching the style of thumbinner image containers in MDWiki ZIMs
+* FIX: Catch uncaught file verification exception
+* REGRESSIOM: Fix inability to reload packaged archive in WikiMed and Wikivoyage apps
 * WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
 * DEPENDENCIES: Bump Vite to v4.5.3
 
