@@ -14,10 +14,10 @@
 * FIX: Go straight to article view on launch if persistent permissions are granted
 * FIX: Removed redundant workaround patching the style of thumbinner image containers in MDWiki ZIMs
 * FIX: Catch uncaught file verification exception
+* FIX: Remove legacy "Scanning for archives" block
 * REGRESSIOM: Fix inability to reload packaged archive in WikiMed and Wikivoyage apps
 * WORKAROUND: Fix for HTML URLs with percent-encoded querystring separators in zimit2
 * DEPENDENCIES: Bump Vite to v4.5.3
-
 
 ## Release 3.1.0 / 3.1.1
 
