@@ -1122,6 +1122,9 @@ function getNativeFSHandle (callback) {
                         searchForArchivesInPreferencesOrStorage();
                     }
                 }
+            }).catch(function (err) {
+                uiUtil.systemAlert('We could not verify permission for the requested file handle. Please try picking your archive again.', 'Verification failure!');
+                console.error(err);
             });
         } else {
             console.warn('No file or folder handle was previously stored in indexedDB');
