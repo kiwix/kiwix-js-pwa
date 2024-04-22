@@ -6671,9 +6671,10 @@ function loadCSSJQuery () {
         cssCount++;
         var linkUrl = link.getAttribute('data-kiwixurl');
         var url = decodeURIComponent(/zimit/.test(appstate.selectedArchive.zimType) ? linkUrl : uiUtil.removeUrlParameters(linkUrl));
-        if (assetsCache.has(url)) {
+        // See if we can get asset from cache. However, if we don't have the link type, the assets cache can fail, so we had better extract the asset instead of getting it from the cache
+        if (assetsCache.has(url) && link.type) {
             var nodeContent = assetsCache.get(url);
-            uiUtil.feedNodeWithBlob(link, 'href', nodeContent, link.type || 'image', true);
+            uiUtil.feedNodeWithBlob(link, 'href', nodeContent, link.type, true);
             cssFulfilled++;
         } else {
             if (params.assetsCache) document.getElementById('cachingAssets').style.display = '';
