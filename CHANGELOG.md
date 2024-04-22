@@ -9,7 +9,7 @@
 * FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
 * FIX: Display of open/close marker with h5 and h6 headings in Wikimedia ZIMs
 * FIX: Inability to print HTML books in Gutenberg ZIMs
-* FIX: Bug which forced all images to manual diaply in some non-Wikimedia ZIMs in Restricted mode
+* FIX: Bug which forced all images to manual display in some non-Wikimedia ZIMs in Restricted mode
 * FIX: Inability to read stylesheets correctly when accessing some Zimit archives in Restricted mode
 * FIX: Go straight to article view on launch if persistent permissions are granted
 * FIX: Removed redundant workaround patching the style of thumbinner image containers in MDWiki ZIMs
