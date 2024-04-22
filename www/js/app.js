@@ -1708,9 +1708,10 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
                 );
             }
         }
-        if (this.value === 'serviceworker') {
+        if (this.value === 'serviceworker' && window.location.protocol !== 'ms-appx-web:') {
             document.getElementById('enableSourceVerificationCheck').style.display = '';
-            if (appstate.selectedArchive.isReady() && !(settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) && params.sourceVerification) {
+            if (params.sourceVerification && appstate.selectedArchive.isReady() &&
+              !(settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name))) {
                 verifyLoadedArchive(appstate.selectedArchive);
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
@@ -3192,7 +3193,6 @@ function searchForArchivesInPreferencesOrStorage (displayOnly) {
 function searchForArchivesInStorage () {
     // If DeviceStorage is available, we look for archives in it
     document.getElementById('btnConfigure').click();
-    document.getElementById('scanningForArchives').style.display = '';
     if (params.localStorage && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         scanUWPFolderforArchives(params.localStorage);
     } else {
@@ -3382,7 +3382,6 @@ window.onpopstate = historyPop;
  * @param {Array.<String>} archiveDirectories
  */
 function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
-    document.getElementById('scanningForArchives').style.display = 'none';
     document.getElementById('chooseArchiveFromLocalStorage').style.display = '';
     document.getElementById('rescanStorage').style.display = params.rescan ? 'none' : 'block';
     document.getElementById('openLocalFiles').style.display = params.rescan ? 'block' : 'none';
@@ -4096,14 +4095,13 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  *
  */
 function verifyLoadedArchive (archive) {
-    return uiUtil.systemAlert('<p><b>Is this ZIM archive from a trusted source?</b></p><p style="border: 1px solid;padding:5px;">' +
+    return uiUtil.systemAlert('<p><b>Is this ZIM archive from a trusted source? If in doubt, we strongly recommend you open it in Restricted mode.</b></p><p style="border: 1px solid;padding:5px;">' +
       'Name:&nbsp;<b>' + archive.file.name + '</b><br />' +
       'Creator:&nbsp;<b>' + archive.creator + '</b><br />' +
       'Publisher:&nbsp;<b>' + archive.publisher + '</b><br />' +
       'Scraper:&nbsp;<b>' + archive.scraper + '</b><br />' +
       '</p><p><b><i>Warning: above data can easily be spoofed!</i></b></p>' +
-      '</p><p>If you do not trust the source, you can still read the ZIM file in Restricted mode. Closing this window also opens the file in Restricted mode.</p>' +
-      '<p><i>If you mark the file as trusted, this alert will not show again.</i> (Security checks can be disabled in Expert Settings.)</p>',
+      '</p><p><i>If you mark the file as trusted, this alert will not show again.</i> (Security checks can be disabled in Expert Settings.)</p>',
     'Security alert!', true, 'Open in Restricted mode', 'Trust source').then(response => {
         if (response) {
             params.contentInjectionMode = 'serviceworker';
@@ -4279,7 +4277,7 @@ function archiveReadyCallback (archive) {
     if (settingsStore.getItem('trustedZimFiles') === null) {
         settingsStore.setItem('trustedZimFiles', '', Infinity);
     }
-    if (params.sourceVerification && (params.contentInjectionMode === 'serviceworker' || params.contentInjectionMode === 'serviceworkerlocal')) {
+    if (params.sourceVerification && window.location.protocol !== 'ms-appx-web:' && (params.contentInjectionMode === 'serviceworker' || params.contentInjectionMode === 'serviceworkerlocal')) {
         // Check if source of the zim file can be trusted.
         if (!(settingsStore.getItem('trustedZimFiles').includes(archive.file.name))) {
             verifyLoadedArchive(archive).then(function () {
