@@ -155,6 +155,12 @@ function registerListeners () {
             mainWindow.webContents.send('dl-received', state);
         });
     });
+    // Set default File System Access permissions
+    mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback, details) => {
+        console.log('Setting permission for: ' + permission); // 'fileSystem'
+        console.log('File System Access details:', details); 
+        callback(true);
+    });
 }
 
 // Get the launch file path
