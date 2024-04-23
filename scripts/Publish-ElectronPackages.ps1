@@ -17,7 +17,7 @@ if ($overridetarget) {
     $INPUT_TARGET = $overridetarget
 }
 $target = "/data/download/release/kiwix-js-electron"
-$win_target = "/data/download/release/kiwix-js-pwa"
+$win_target = "/data/download/release/kiwix-js-windows" # In future, consider changing to kiwix-js-pwa
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
 
@@ -132,6 +132,7 @@ if (-not $CRON_LAUNCHED) {
 if (-not $githubonly) {
     "`nUploading packages to https://download.kiwix.org$target/ ...`n"
     echo "mkdir $target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
+    # echo "mkdir $win_target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
 
     $Packages | % {
         $file = $_
@@ -183,12 +184,13 @@ if (-not $githubonly) {
                 $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', './dist$1' -replace '[\\/]', '/'
                 "Copying $renamed_file to $target..."
                 & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
-                if (!$CRON_LAUNCHED -and $renamed_file -match '\.appx$') {
-                    "Also copying $renamed_file to $win_target..."
-                    $renamed_win_file = $renamed_file -replace 'electron_x86-64', 'windows'
-                    mv $renamed_file $renamed_win_file
-                    & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_win_file", "ci@master.download.kiwix.org:$win_target")
-                }
+                # DEV: Note that the package is currently uploaded in Push-KiwixRelease, so we don't need to upload it here at this point in time
+                # if (!$CRON_LAUNCHED -and $renamed_file -match '\.appx$') {
+                #     "Also copying $renamed_file to $win_target..."
+                #     $renamed_win_file = $renamed_file -replace 'electron_x86-64', 'windows'
+                #     mv $renamed_file $renamed_win_file
+                #     & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_win_file", "ci@master.download.kiwix.org:$win_target")
+                # }
             }
         }
     }

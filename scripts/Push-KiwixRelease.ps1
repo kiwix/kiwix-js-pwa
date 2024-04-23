@@ -124,7 +124,7 @@ function Main {
             $newfilename = $filename -ireplace '^.*?([\d.]+)[^.]*(\.appx(?:bundle|upload)?)$', 'kiwix-js-windows_$1$2'
             $filename = $filename -ireplace '[\\/]', '/'
             $file = $filename -ireplace '^.*/([^/]+$)', '$1'
-            $target = '/data/download/release/kiwix-js-windows'
+            $target = '/data/download/release/kiwix-js-windows' # In future, consider changing to kiwix-js-pwa
             "$filename is ready to upload to $target ..."
             if ($dryrun) { "DRY RUN: no upload will be made" }
             if (! $yes) {
