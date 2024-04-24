@@ -34,6 +34,8 @@ if ($CRON_LAUNCHED) {
 
 if ((Get-Content ./package.json) -match 'nwVersion') {
     $Packages = $(ls dist/bld/NWJS/*.*)
+} elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version
+    $Packages = $(ls dist/bld/Electron/*Win7*.*)
 } else {
     $Packages = $(ls dist/bld/Electron/*.*)
     $Packages += $(ls dist/bld/Electron/nsis-web/*.exe)
