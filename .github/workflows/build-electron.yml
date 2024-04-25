@@ -189,7 +189,7 @@ jobs:
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
-        echo "Setting the Electron build to the latest supporting Windows 7/8/8.1 (=22.3.25)""
+        echo "Setting the Electron build to the latest supporting Windows 7/8/8.1 (=22.3.25)"
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
         npm install && cd dist && npm install && cd ..
