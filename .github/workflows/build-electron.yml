@@ -36,8 +36,8 @@ jobs:
   Release_Linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -118,7 +118,7 @@ jobs:
         ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-electron_linux
         path: |
@@ -131,8 +131,8 @@ jobs:
     env: 
       SIGNTOOL_PATH: "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x64\\signtool.exe"
     steps:
-    - uses: actions/checkout@v3      
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4   
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -176,17 +176,53 @@ jobs:
           Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
           exit 1
         }
-    - name: Run electron builder
+    - name: Run electron builder for Win 7/8/8.1
+      shell: pwsh
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
+          $INPUT_VERSION_E = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1-E'
+        } else {
+          $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
+        }
+        ./scripts/Rewrite-DraftReleaseTag.ps1
+        $ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
+        echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
+        echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
+        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
+        echo "Installing dependencies in root and dist"
+        npm install && cd dist && npm install && cd ..
+        echo "Installed Electron version:$(npx electron --version)"
+        echo "Building Windows 7+ 32bit NSIS package..."
+        npm run dist-win-nsis
+        echo "Renaming Windows 7+ executable"
+        mv "dist/bld/Electron/Kiwix JS Electron Setup*.exe" "dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe"
+        mv "dist/bld/Electron/Kiwix JS Electron Setup*.exe.blockmap" "dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe.blockmap"
+        ls ./dist/bld/Electron/
+        # DEV: We did not use electron-builder to publish because we needed to change the filenames, so we need to publish to GitHub here
+        if ($INPUT_TARGET -ne 'artefacts') {
+          & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+        }
+        ./scripts/Rewrite-DraftReleaseTag.ps1
+    - name: Run electron builder for Win 10/11
+      shell: pwsh
+      run: | 
+        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
+        echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
+        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
         ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
-        echo "Installing dependencies in dist"
-        cd dist && npm install && cd ..
+        echo "Installing dependencies in root and dist"
+        npm install && cd dist && npm install && cd ..
+        echo "Installed Electron version:$(npx electron --version)"
         echo "Building Windows packages..."
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
@@ -218,7 +254,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-electron_windows
         path: |
@@ -232,8 +268,8 @@ jobs:
     if: github.ref_name == 'main'
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3       
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4      
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Build production code
@@ -294,7 +330,7 @@ jobs:
         ./scripts/Publish-ElectronPackages.ps1
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-nwjs_windows
         path: dist/bld/nwjs/*.zip  

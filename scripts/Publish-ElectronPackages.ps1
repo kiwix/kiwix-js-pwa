@@ -32,8 +32,10 @@ if ($CRON_LAUNCHED) {
     $target = "/data/download/nightly/$current_date"
 }
 
-if ((Get-Content ./package.json) -match 'nwVersion') {
+if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
     $Packages = $(ls dist/bld/NWJS/*.*)
+} elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version (Electron)
+    $Packages = $(ls dist/bld/Electron/*Win7*.*)
 } else {
     $Packages = $(ls dist/bld/Electron/*.*)
     $Packages += $(ls dist/bld/Electron/nsis-web/*.exe)
@@ -130,10 +132,11 @@ if (-not $CRON_LAUNCHED) {
 }  
 
 if (-not $githubonly) {
-    "`nUploading packages to https://download.kiwix.org$target/ ...`n"
-    echo "mkdir $target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
-    # echo "mkdir $win_target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
-
+    "`nUploading packages to https://master.download.kiwix.org$target/ ...`n"
+    if (-Not $dryrun) {
+        echo "mkdir $target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
+        # echo "mkdir $win_target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
+    }
     $Packages | % {
         $file = $_
         if ($file -match '\.(exe|zip|msix|appx|7z)$') {
@@ -149,7 +152,7 @@ if (-not $githubonly) {
             # Convert back appname to hyphens
             $filename = $filename -replace 'kiwix_js_(electron|windows)', 'kiwix-js-$1'
             # Fix Windows Portable version so that it is clear it is portable for Windows
-            $filename = $filename -replace 'electron(?!_setup)(.+\.exe)$', 'electron_win_portable$1'
+            $filename = $filename -replace 'electron(?!_(setup|win7))(.+\.exe)$', 'electron_win_portable$1'
             # Fix Windows Setup version so that it is clear it is a Windows executable
             $filename = $filename -replace 'electron_setup', 'electron_win_setup'
             # Fix Windows Web Setup version so that it is clear it is a Windows executable
