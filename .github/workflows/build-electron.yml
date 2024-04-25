@@ -36,8 +36,8 @@ jobs:
   Release_Linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -118,7 +118,7 @@ jobs:
         ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-electron_linux
         path: |
@@ -131,8 +131,8 @@ jobs:
     env: 
       SIGNTOOL_PATH: "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x64\\signtool.exe"
     steps:
-    - uses: actions/checkout@v3      
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4   
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -254,7 +254,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-electron_windows
         path: |
@@ -268,8 +268,8 @@ jobs:
     if: github.ref_name == 'main'
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3       
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4      
+    - uses: actions/setup-node@v4
     - name: Install dependencies
       run: npm install
     - name: Build production code
@@ -330,7 +330,7 @@ jobs:
         ./scripts/Publish-ElectronPackages.ps1
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-nwjs_windows
         path: dist/bld/nwjs/*.zip  
