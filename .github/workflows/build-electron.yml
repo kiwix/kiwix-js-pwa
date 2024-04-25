@@ -189,10 +189,12 @@ jobs:
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
-        echo "Setting the Electron build to the latest supporting Windows 7/8/8.1 (=22.3.25)"
+        $Env:ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
+        echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
         npm install && cd dist && npm install && cd ..
+        echo "`nInstalled Electron version: " + $(npx electron --version)
         echo "Building Windows 7+ 32bit NSIS package..."
         npm run dist-win-nsis
         echo "Renaming Windows 7+ executable"
@@ -211,11 +213,14 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        echo "Restoring original Electron version"
+        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"' + $Env:ORIGINAL_ELECTRON_VERSION + "' | Set-Content ./package.json
         ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
         npm install && cd dist && npm install && cd ..
+        echo "`nInstalled Electron version: " + $(npx electron --version)
         echo "Building Windows packages..."
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
