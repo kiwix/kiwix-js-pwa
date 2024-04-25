@@ -169,7 +169,7 @@ if (-not $githubonly) {
                 # Remove the version number
                 $filename = $filename -replace '_[0-9.]+([-_.])', '$1'
                 # Remove any REV ID
-                $filename = $filename -replace '_[0-9a-f]{7}(\.[^.]+)$', '$1'
+                $filename = $filename -replace '_[0-9a-f]{7}([_.][^.]+)$', '$1'
                 # Add the date
                 $filename = $filename -replace '(\.[^.]+)$', ('_' + $current_date + '$1')
             }
