@@ -36,8 +36,8 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build-x64": {
-    "nwVersion": "0.72.0",
+  "build": {
+    "nwVersion": "0.87.0",
     "output": "bld/nwjs/win-x64",
     "files": [
       "replayWorker.js",
@@ -55,8 +55,8 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build": {
-    "nwVersion": "0.72.0",
+  "build-win32": {
+    "nwVersion": "0.87.0",
     "output": "bld/nwjs/win-x86",
     "files": [
       "replayWorker.js",
