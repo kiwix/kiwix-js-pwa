@@ -190,20 +190,20 @@ jobs:
         echo "Building Windows packages..."
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
-    - name: Run electron builder for Win 7
+    - name: Run electron builder for Win 7/8/8.1
       run: | 
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
           $INPUT_VERSION = $Env:INPUT_VERSION
           $INPUT_TARGET = $Env:INPUT_TARGET
           $CRON_LAUNCHED = $Env:CRON_LAUNCHED
           ./scripts/Rewrite-DraftReleaseTag.ps1
-          # Set the Electron build to the latest supporting Windows 7 (22.3.25)
-          # (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
+          echo "Setting the Electron build to the latest supporting Windows 7/8/8.1 (=22.3.25)""
+          (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
           echo "Installing dependencies in dist"
           cd dist && npm install && cd ..
-          echo "Building Windows 7 32bit NSIS package..."
+          echo "Building Windows 7+ 32bit NSIS package..."
           npm run dist-win-nsis
-          echo "Renaming Windows 7 executable"
+          echo "Renaming Windows 7+ executable"
           mv "./dist/bld/Electron/Kiwix JS Electron Setup*.exe" "./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION.exe"
           mv "./dist/bld/Electron/Kiwix JS Electron Setup*.exe.blockmap" "./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION.exe.blockmap"
           ls -l ./dist/bld/Electron/
