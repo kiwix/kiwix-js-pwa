@@ -207,7 +207,9 @@ jobs:
           mv "./dist/bld/Electron/Kiwix JS Electron Setup*.exe" "./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION.exe"
           mv "./dist/bld/Electron/Kiwix JS Electron Setup*.exe.blockmap" "./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION.exe.blockmap"
           ls -l ./dist/bld/Electron/
-          & Publish-ElectronPackages
+          if ($Env:INPUT_TARGET -ne 'artefacts') {
+            & ./scripts/Publish-ElectronPackages.ps1
+          }
           ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
       run: |
