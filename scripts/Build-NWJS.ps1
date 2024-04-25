@@ -3,16 +3,16 @@ param (
     [switch]$only32bit = $false,
     [switch]$usesdk = $false
 )
-$builds = @("win-ia32", "win-xp")
+$builds = @("win-x64", "win-xp")
 if (-Not $only32bit) {
     $builds += "win-x64"
     "Caller requested 32bit and 64bit build"
 } else {
     "Caller requested only32bit build"
 }
-$version10 = "0.72.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version10 = "0.87.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "3.2.4-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
+$appBuild = "3.2.42-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
 # Check that the dev has included the correct archive in this branch
 $init_params = Get-Content -Raw "$PSScriptRoot\..\dist\www\js\init.js"
 $PackagedArchive = $init_params -imatch 'params\[.packagedFile.][^;]+?[''"]([^\s]+?\.zim)[''"];'
