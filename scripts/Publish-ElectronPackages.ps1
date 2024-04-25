@@ -32,9 +32,9 @@ if ($CRON_LAUNCHED) {
     $target = "/data/download/nightly/$current_date"
 }
 
-if ((Get-Content ./package.json) -match 'nwVersion') {
+if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
     $Packages = $(ls dist/bld/NWJS/*.*)
-} elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version
+} elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version (Electron)
     $Packages = $(ls dist/bld/Electron/*Win7*.*)
 } else {
     $Packages = $(ls dist/bld/Electron/*.*)
