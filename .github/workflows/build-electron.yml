@@ -189,7 +189,8 @@ jobs:
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
-        $Env:ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
+        $ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
+        echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" >> $GITHUB_ENV
         echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
@@ -213,8 +214,9 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        echo "Restoring original Electron version"
-        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $Env:ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
+        $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
+        echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
+        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
         ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
