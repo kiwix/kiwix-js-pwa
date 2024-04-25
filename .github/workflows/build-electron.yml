@@ -195,8 +195,8 @@ jobs:
         echo "Building Windows 7+ 32bit NSIS package..."
         npm run dist-win-nsis
         echo "Renaming Windows 7+ executable"
-        Get-ChildItem "./dist/bld/Electron/Kiwix JS Electron Setup*.exe" | Rename-Item -NewName {"./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe"}
-        Get-ChildItem "./dist/bld/Electron/Kiwix JS Electron Setup*.exe.blockmap" | Rename-Item -NewName {"./dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe.blockmap"}
+        mv "dist/bld/Electron/Kiwix JS Electron Setup*.exe" "dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe"
+        mv "dist/bld/Electron/Kiwix JS Electron Setup*.exe.blockmap" "dist/bld/Electron/Kiwix JS Electron Win7 Setup $INPUT_VERSION_E.exe.blockmap"
         ls ./dist/bld/Electron/
         # DEV: We did not use electron-builder to publish because we needed to change the filenames, so we need to publish to GitHub here
         if ($INPUT_TARGET -ne 'artefacts') {
