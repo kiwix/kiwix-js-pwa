@@ -146,7 +146,7 @@ if (-not $githubonly) {
             $filename = $filename -replace '[\s-]', '_'
             $filename = $filename -creplace '_N([_.])', '_NWJS$1'
             # Swap architecture and release number, and remove redundant -win
-            $filename = $filename -replace '(windows(?:_XP)?)(.+)_win(_ia32[^.]*)', '$1$3$2'
+            $filename = $filename -replace '(windows(?:_XP)?)(.+)_win(_(?:ia32|x64)[^.]*)', '$1$3$2'
             # Convert filename to lowercase
             $filename = $filename.ToLower()
             # Convert back appname to hyphens
