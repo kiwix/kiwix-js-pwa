@@ -30,7 +30,7 @@ for file in ./dist/bld/Electron/* ; do
         # Remove spurious dot
         filename=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
-        filename=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
+        filename=$(sed -E 's/(electron)(.+)(_(i[36]86|x86|arm64)[^.]*)/\1\3\2/' <<<"$filename")
         if [[ $filename =~ \.appimage && (! $filename =~ i386 ) && (! $filename =~ arm64) ]]; then
             filename=$(sed -E 's/(electron)(.)/\1_x86-64\2/' <<<"$filename")
         fi
