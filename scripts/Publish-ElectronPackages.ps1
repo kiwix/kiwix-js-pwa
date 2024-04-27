@@ -152,7 +152,7 @@ if (-not $githubonly) {
             # Convert back appname to hyphens
             $filename = $filename -replace 'kiwix_js_(electron|windows)', 'kiwix-js-$1'
             # Fix Windows Portable version so that it is clear it is portable for Windows
-            $filename = $filename -replace 'electron(?!_(setup|win7|web))(.+\.exe)$', 'electron_win_portable$1'
+            $filename = $filename -replace 'electron(?!_(?:setup|win7|web))(.+\.exe)$', 'electron_win_portable$1'
             # Fix Windows Setup version so that it is clear it is a Windows executable
             $filename = $filename -replace 'electron_setup', 'electron_win_setup'
             # Fix Windows Web Setup version so that it is clear it is a Windows executable

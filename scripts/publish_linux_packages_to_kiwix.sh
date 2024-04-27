@@ -31,7 +31,7 @@ for file in ./dist/bld/Electron/* ; do
         filename=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
         filename=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
-        if [[ $filename =~ \.appimage && (! $filename =~ i386) ]]; then
+        if [[ $filename =~ \.appimage && (! $filename =~ i386 )(! $filename =~ arm64) ]]; then
             filename=$(sed -E 's/(electron)(.)/\1_x86-64\2/' <<<"$filename")
         fi
         if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then 
@@ -40,6 +40,7 @@ for file in ./dist/bld/Electron/* ; do
             # Add date to filename
             filename=$(sed -E "s/[^_]+(\.[^.]+)$/$CURRENT_DATE\1/" <<<"$filename")
         fi
+        echo "Renaming $file to $filename"
         # Put it all together
         renamed_file="$directory$filename"
         if [[ "$file" != "$renamed_file" ]]; then
