@@ -2459,6 +2459,27 @@ function switchCSSTheme () {
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
 }
 
+/**
+ * A function to attach tooltip CSS for popovers
+ * @param {Document} doc The document to which to attach the blloon.css styelesheet
+ */
+function attachTooltipCss (doc) {
+    uiUtil.insertLinkElement(doc, `.kiwixtooltip {
+        /* position relative to container div.tooltip */
+        position: absolute;
+        bottom: 1em;
+        /* prettify */
+        padding: 0.5em;
+        color: #000000;
+        background: #ebf4fb;
+        border: 0.1em solid #b7ddf2;
+        /* round the corners */
+        border-radius: 0.5em;
+        width: 40em;
+        height: auto;
+    }`);
+}
+
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
     params.resetDisplayOnResize = this.checked;
     settingsStore.setItem('resetDisplayOnResize', this.checked, Infinity);
@@ -5300,6 +5321,7 @@ var articleLoadedSW = function (dirEntry, container) {
             anchorParameter = '';
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
+        attachTooltipCss(doc);
         params.isLandingPage = false;
     } else {
         // If we havent' loaded a text-type document, we probably haven't finished loading
@@ -6821,6 +6843,53 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(reset, 1400);
     };
 
+    var getArticleLede = function () {
+        var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+        console.debug(zimURL);
+        return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
+            return new Promise((resolve, reject) => {
+                appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEngry, htmlArticle) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlArticle, 'text/html');
+                    const articleBody = doc.getElementById('mw-content-text');
+                    if (articleBody) {
+                        let balloonString = '';
+                        // const articleHeader = articleBody.querySelector('h1');
+                        // if (articleHeader) {
+                        //     balloonString += '<h3>' + articleHeader.textContent + '</h3>';
+                        // }
+                        const section0 = articleBody.querySelector('section[data-mw-section-id="0"]');
+                        if (section0) {
+                            const para1 = section0.querySelector('p');
+                            if (para1) {
+                                balloonString += '<p>' + para1.textContent + '</p>';
+                            }
+                        }
+                        const images = articleBody.querySelectorAll('img');
+                        let firstImage = null;
+                        if (images) {
+                            const imageArray = Array.prototype.slice.call(images);
+                            for (let i = 0; imageArray.length; i++) {
+                                if (imageArray[i].dataset.fileWidth) {
+                                    firstImage = imageArray[i];
+                                    break;
+                                }
+                            }
+                        }
+                        if (firstImage) {
+                            firstImage.style = 'float: right';
+                            balloonString = firstImage.outerHTML + balloonString;
+                        }
+                        console.debug(balloonString);
+                        resolve(balloonString);
+                    } else {
+                        reject(new Error('No article body found'));
+                    }
+                });
+            });
+        });
+    }
+
     a.addEventListener('touchstart', function (e) {
         if (!params.windowOpener || a.touched) return;
         e.stopPropagation();
@@ -6882,6 +6951,32 @@ function addListenersToLink (a, href, baseUrl) {
         if (!params.windowOpener) return;
         e.preventDefault();
         e.stopPropagation();
+    });
+    a.addEventListener('mouseover', function (e) {
+        setTimeout(function () {
+            var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
+            if (link) {
+                link.style = 'position: relative;'
+                var span = document.createElement('span');
+                span.className = 'kiwixtooltip';
+                getArticleLede().then(function (html) {
+                    span.innerHTML = html;
+                    link.appendChild(span);
+                }).catch(function (err) {
+                    console.warn(err);
+                    // link.removeChild(span);
+                });
+            }
+        }, 500);
+    });
+    a.addEventListener('mouseout', function (e) {
+        var doc = e.target.ownerDocument;
+        var spans = doc.getElementsByClassName('kiwixtooltip');
+        setTimeout(function () {
+            Array.prototype.slice.call(spans).forEach(function (span) {
+                span.parentElement.removeChild(span);
+            });
+        }, 500);
     });
     // The main click routine (called by other events above as well)
     a.addEventListener('click', function (e) {

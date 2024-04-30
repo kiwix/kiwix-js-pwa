@@ -539,6 +539,23 @@ function deriveZimUrlFromRelativeUrl (url, base) {
 }
 
 /**
+ * Inserts a new link element into the document header
+ * @param {Element} doc The document to which to attach the new element
+ * @param {String} cssContent The content to insert as an inline stylesheet
+ */
+function insertLinkElement (doc, cssContent) {
+    var cssElement = document.createElement('style');
+    cssElement.type = 'text/css';
+    if (cssElement.styleSheet) {
+        cssElement.styleSheet.cssText = cssContent;
+    } else {
+        cssElement.appendChild(document.createTextNode(cssContent));
+    }
+    doc.head.appendChild(cssElement);
+}
+
+
+/**
  * Walk up the DOM tree to find the closest element where the tagname matches the supplied regular expression
  *
  * @param {Element} el The starting DOM element
@@ -1436,6 +1453,7 @@ export default {
     feedNodeWithBlob: feedNodeWithBlob,
     getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
+    insertLinkElement: insertLinkElement,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,
     ToC: TableOfContents,
