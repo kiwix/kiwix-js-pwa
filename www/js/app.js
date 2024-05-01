@@ -6847,46 +6847,61 @@ function addListenersToLink (a, href, baseUrl) {
         var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
         console.debug(zimURL);
         return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
-            return new Promise((resolve, reject) => {
-                appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEngry, htmlArticle) {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlArticle, 'text/html');
-                    const articleBody = doc.getElementById('mw-content-text');
-                    if (articleBody) {
-                        let balloonString = '';
-                        // const articleHeader = articleBody.querySelector('h1');
-                        // if (articleHeader) {
-                        //     balloonString += '<h3>' + articleHeader.textContent + '</h3>';
-                        // }
-                        const section0 = articleBody.querySelector('section[data-mw-section-id="0"]');
-                        if (section0) {
-                            const para1 = section0.querySelector('p');
-                            if (para1) {
-                                balloonString += '<p>' + para1.textContent + '</p>';
-                            }
-                        }
-                        const images = articleBody.querySelectorAll('img');
-                        let firstImage = null;
-                        if (images) {
-                            const imageArray = Array.prototype.slice.call(images);
-                            for (let i = 0; imageArray.length; i++) {
-                                if (imageArray[i].dataset.fileWidth) {
-                                    firstImage = imageArray[i];
-                                    break;
+            var readArticle = function (dirEntry) {
+                return new Promise((resolve, reject) => {
+                    appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEngry, htmlArticle) {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(htmlArticle, 'text/html');
+                        const articleBody = doc.getElementById('mw-content-text');
+                        if (articleBody) {
+                            let balloonString = '';
+                            // const articleHeader = articleBody.querySelector('h1');
+                            // if (articleHeader) {
+                            //     balloonString += '<h3>' + articleHeader.textContent + '</h3>';
+                            // }
+                            const section0 = articleBody.querySelector('section[data-mw-section-id="0"]');
+                            if (section0) {
+                                const paragraphs = Array.from(section0.querySelectorAll('p:not(:first-child:is(style))'));
+                                const nonEmptyParagraphs = paragraphs.filter(para => para.textContent.trim() !== '');
+                                if (nonEmptyParagraphs.length > 0) {
+                                    const para1 = nonEmptyParagraphs[0];
+                                    balloonString += '<p>' + para1.textContent + '</p>';
                                 }
                             }
+                            const images = articleBody.querySelectorAll('img');
+                            let firstImage = null;
+                            if (images) {
+                                const imageArray = Array.prototype.slice.call(images);
+                                for (let i = 0; imageArray.length; i++) {
+                                    if (imageArray[i].dataset.fileWidth) {
+                                        firstImage = imageArray[i];
+                                        break;
+                                    }
+                                }
+                            }
+                            if (firstImage) {
+                                firstImage.style = 'float: right';
+                                balloonString = firstImage.outerHTML + balloonString;
+                            }
+                            console.debug(balloonString);
+                            resolve(balloonString);
+                        } else {
+                            reject(new Error('No article body found'));
                         }
-                        if (firstImage) {
-                            firstImage.style = 'float: right';
-                            balloonString = firstImage.outerHTML + balloonString;
-                        }
-                        console.debug(balloonString);
-                        resolve(balloonString);
-                    } else {
-                        reject(new Error('No article body found'));
-                    }
+                    });
                 });
-            });
+            }
+            if (dirEntry.redirect) {
+                return new Promise((resolve, reject) => {
+                    appstate.selectedArchive.resolveRedirect(dirEntry, function (reDirEntry) {
+                        resolve(readArticle(reDirEntry));
+                    });
+                }).catch(error => {
+                    console.error(error);
+                });
+            } else {
+                return Promise.resolve(readArticle(dirEntry));
+            }
         });
     }
 
