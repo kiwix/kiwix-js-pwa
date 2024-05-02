@@ -2465,7 +2465,6 @@ function switchCSSTheme () {
  */
 function attachTooltipCss (doc) {
     uiUtil.insertLinkElement(doc, `.kiwixtooltip {
-        /* position relative to container div.tooltip */
         position: absolute;
         bottom: 1em;
         /* prettify */
@@ -2475,8 +2474,12 @@ function attachTooltipCss (doc) {
         border: 0.1em solid #b7ddf2;
         /* round the corners */
         border-radius: 0.5em;
-        width: 40em;
-        height: auto;
+        /* handle overflow */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* handle text wrap */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }`);
 }
 
@@ -6968,15 +6971,39 @@ function addListenersToLink (a, href, baseUrl) {
         e.stopPropagation();
     });
     a.addEventListener('mouseover', function (e) {
+        removeKiwixPopovers(e.target.ownerDocument);
         setTimeout(function () {
             var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
             if (link) {
-                link.style = 'position: relative;'
+                // link.style = 'position: relative;'
                 var span = document.createElement('span');
+                var spanWidth = 512;
+                var spanHeight = 256;
+                span.style.width = spanWidth + 'px';
+                span.style.height = spanHeight + 'px';
                 span.className = 'kiwixtooltip';
                 getArticleLede().then(function (html) {
                     span.innerHTML = html;
-                    link.appendChild(span);
+                    articleDocument.body.appendChild(span);
+                    // Calculate the position of the link and the span
+                    var linkRect = link.getBoundingClientRect();
+                    console.debug('linkRect', linkRect);
+                    var spanRect = span.getBoundingClientRect();
+                    console.debug('spanRect', spanRect);
+                    // var windowWidth = window.innerWidth;
+                    // var windowHeight = window.innerHeight;
+                    var spanRectY = (linkRect.top - span.offsetHeight - 20);
+                    if (spanRectY < 40) spanRectY = linkRect.bottom + 20;
+                    var spanRectX = linkRect.left + linkRect.width / 2 - spanWidth / 2;
+                    if (spanRectX < 40) {
+                        spanRectX = 40;
+                    } else {
+                        if (spanRectX + spanWidth > articleWindow.innerWidth - 40) spanRectX = articleWindow.innerWidth - spanWidth - 40;
+                    }
+                    span.style.top = spanRectY + articleWindow.scrollY + 'px';
+                    // span.style.bottom = spanRectY + 'px';
+                    span.style.left = spanRectX + 'px';
+                    // span.style.right = spanRectX + spanWidth + 'px';
                 }).catch(function (err) {
                     console.warn(err);
                     // link.removeChild(span);
@@ -6985,13 +7012,7 @@ function addListenersToLink (a, href, baseUrl) {
         }, 500);
     });
     a.addEventListener('mouseout', function (e) {
-        var doc = e.target.ownerDocument;
-        var spans = doc.getElementsByClassName('kiwixtooltip');
-        setTimeout(function () {
-            Array.prototype.slice.call(spans).forEach(function (span) {
-                span.parentElement.removeChild(span);
-            });
-        }, 500);
+        removeKiwixPopovers(e.target.ownerDocument);
     });
     // The main click routine (called by other events above as well)
     a.addEventListener('click', function (e) {
@@ -7004,6 +7025,16 @@ function addListenersToLink (a, href, baseUrl) {
             onDetectedClick(e);
         }
     });
+}
+
+// Remove any popovers added
+function removeKiwixPopovers (doc) {
+    var spans = doc.getElementsByClassName('kiwixtooltip');
+    setTimeout(function () {
+        Array.prototype.slice.call(spans).forEach(function (span) {
+            span.parentElement.removeChild(span);
+        });
+    }, 500);
 }
 
 /**
