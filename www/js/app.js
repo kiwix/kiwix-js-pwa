@@ -7004,6 +7004,8 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(function () {
             var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
             if (link) {
+                // Check if the link is still being hovered over, and abort display of popover if not
+                if (!link.matches(':hover')) return;
                 getArticleLede().then(function (html) {
                     var span = document.createElement('span');
                     var spanWidth = 512;
@@ -7043,7 +7045,7 @@ function addListenersToLink (a, href, baseUrl) {
                     // link.removeChild(span);
                 });
             }
-        }, 750);
+        }, 500);
     });
     a.addEventListener('mouseout', function (e) {
         removeKiwixPopovers(e.target.ownerDocument);
