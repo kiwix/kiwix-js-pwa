@@ -2486,14 +2486,15 @@ function attachTooltipCss (doc) {
         .arrow-top::before {
             content: '';
             position: absolute;
-            bottom: 100%;  // This positions the arrow above the div
-            left: 50%;  // This centers the arrow
-            transform: translateX(-50%);  // This ensures the arrow is centered
             width: 0;
             height: 0;
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
-            border-bottom: 10px solid blue;  // The arrow now points upwards
+            border-bottom: 10px solid blue;
+        }
+        
+        .kiwixtooltip img {
+            max-width: 40%;
         }`
     );
 }
@@ -6870,28 +6871,37 @@ function addListenersToLink (a, href, baseUrl) {
                     appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEngry, htmlArticle) {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(htmlArticle, 'text/html');
-                        const articleBody = doc.getElementById('mw-content-text');
+                        // const articleBody = doc.getElementById('mw-content-text');
+                        const articleBody = doc.body;
                         if (articleBody) {
                             let balloonString = '';
                             // const articleHeader = articleBody.querySelector('h1');
                             // if (articleHeader) {
-                            //     balloonString += '<h3>' + articleHeader.textContent + '</h3>';
+                            //     balloonString += '<h3>' + articleHeader.innerText + '</h3>';
                             // }
-                            const section0 = articleBody.querySelector('section[data-mw-section-id="0"]');
-                            if (section0) {
-                                const paragraphs = Array.from(section0.querySelectorAll('p:not(:first-child:is(style))'));
-                                const nonEmptyParagraphs = paragraphs.filter(para => para.textContent.trim() !== '');
-                                if (nonEmptyParagraphs.length > 0) {
-                                    const para1 = nonEmptyParagraphs[0];
-                                    balloonString += '<p>' + para1.textContent + '</p>';
-                                }
+                            // Remove all standalone style elements, because their content is shown by both innerText and textContent
+                            const styleElements = Array.from(articleBody.querySelectorAll('style'));
+                            styleElements.forEach(style => {
+                                style.parentNode.removeChild(style);
+                            });
+                            const paragraphs = Array.from(articleBody.querySelectorAll('p'));
+                            // Filter out empty paragraphs or those with less than 50 characters
+                            const nonEmptyParagraphs = paragraphs.filter(para => {
+                                const text = para.innerText.trim();
+                                return text !== '' && text.length >= 50;
+                            });
+                            if (nonEmptyParagraphs.length > 0) {
+                                const para1 = nonEmptyParagraphs[0];
+                                balloonString += '<p>' + para1.innerHTML + '</p>';
                             }
                             const images = articleBody.querySelectorAll('img');
                             let firstImage = null;
                             if (images) {
-                                const imageArray = Array.prototype.slice.call(images);
-                                for (let i = 0; imageArray.length; i++) {
-                                    if (imageArray[i].dataset.fileWidth) {
+                                // Iterate over images until we find one with a width greater than 50 pixels
+                                // (this filters out small icons)
+                                const imageArray = Array.from(images);
+                                for (let i = 0; i < imageArray.length; i++) {
+                                    if (imageArray[i] && imageArray[i].width > 50) {
                                         firstImage = imageArray[i];
                                         break;
                                     }
