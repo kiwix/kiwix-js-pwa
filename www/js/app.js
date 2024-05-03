@@ -7008,42 +7008,42 @@ function addListenersToLink (a, href, baseUrl) {
                     // Check if the link is still being hovered over, and abort display of popover if not
                     if (!link.matches(':hover')) return;
                     getArticleLede().then(function (html) {
-                        var span = document.createElement('span');
-                        var spanWidth = 512;
-                        var spanHeight = 256;
-                        span.style.width = spanWidth + 'px';
-                        span.style.height = spanHeight + 'px';
-                        span.className = 'kiwixtooltip';
-                        span.innerHTML = html;
-                        articleDocument.body.appendChild(span);
+                        var div = document.createElement('div');
+                        var divWidth = 512;
+                        var divHeight = 256;
+                        div.style.width = divWidth + 'px';
+                        div.style.height = divHeight + 'px';
+                        div.className = 'kiwixtooltip';
+                        div.innerHTML = html;
+                        articleDocument.body.appendChild(div);
                         // Calculate the position of the link that is being hovered
                         var linkRect = link.getBoundingClientRect();
                         // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
-                        // var spanRectY = e.clientY - span.offsetHeight - 20;
-                        // Initially position the span 20px above the link
-                        var spanRectY = (linkRect.top - span.offsetHeight - 20);
-                        // If we're less than 40px from the top, move the span below the link
-                        if (spanRectY < 40) {
-                            spanRectY = linkRect.bottom + 20;
-                            // span.classList.add('arrow-top');
+                        // var divRectY = e.clientY - div.offsetHeight - 20;
+                        // Initially position the div 20px above the link
+                        var divRectY = (linkRect.top - div.offsetHeight - 20);
+                        // If we're less than 40px from the top, move the div below the link
+                        if (divRectY < 40) {
+                            divRectY = linkRect.bottom + 20;
+                            // div.classList.add('arrow-top');
                         }
                         // Position it horizontally in relation to the pointer position
-                        var spanRectX = e.clientX - spanWidth / 2;
+                        var divRectX = e.clientX - divWidth / 2;
                         // Here's how to do it in relation to the link instead
-                        // var spanRectX = linkRect.left + linkRect.width / 2 - spanWidth / 2;
+                        // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
                         // If we're less than 40px to the left, shift it to 40px from left
-                        if (spanRectX < 40) {
-                            spanRectX = 40;
+                        if (divRectX < 40) {
+                            divRectX = 40;
                         } else {
-                            // If right edge of span is greater than 40px from the right side of window, shift it to 40px
-                            if (spanRectX + spanWidth > articleWindow.innerWidth - 40) spanRectX = articleWindow.innerWidth - spanWidth - 40;
+                            // If right edge of div is greater than 40px from the right side of window, shift it to 40px
+                            if (divRectX + divWidth > articleWindow.innerWidth - 40) divRectX = articleWindow.innerWidth - divWidth - 40;
                         }
                         // Now set the calculated x and y positions
-                        span.style.top = spanRectY + articleWindow.scrollY + 'px';
-                        span.style.left = spanRectX + 'px';
+                        div.style.top = divRectY + articleWindow.scrollY + 'px';
+                        div.style.left = divRectX + 'px';
                     }).catch(function (err) {
                         console.warn(err);
-                        // link.removeChild(span);
+                        // link.removeChild(div);
                     });
                 }
             }, 500);
@@ -7067,10 +7067,10 @@ function addListenersToLink (a, href, baseUrl) {
 
 // Remove any popovers added
 function removeKiwixPopovers (doc) {
-    var spans = doc.getElementsByClassName('kiwixtooltip');
+    var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
-        Array.prototype.slice.call(spans).forEach(function (span) {
-            span.parentElement.removeChild(span);
+        Array.prototype.slice.call(divs).forEach(function (div) {
+            div.parentElement.removeChild(div);
         });
     }, 500);
 }
