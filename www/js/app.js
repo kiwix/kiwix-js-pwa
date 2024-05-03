@@ -2460,27 +2460,42 @@ function switchCSSTheme () {
 }
 
 /**
- * A function to attach tooltip CSS for popovers
+ * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
  * @param {Document} doc The document to which to attach the blloon.css styelesheet
  */
 function attachTooltipCss (doc) {
-    uiUtil.insertLinkElement(doc, `.kiwixtooltip {
-        position: absolute;
-        bottom: 1em;
-        /* prettify */
-        padding: 0.5em;
-        color: #000000;
-        background: #ebf4fb;
-        border: 0.1em solid #b7ddf2;
-        /* round the corners */
-        border-radius: 0.5em;
-        /* handle overflow */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        /* handle text wrap */
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-    }`);
+    uiUtil.insertLinkElement(doc, `
+        .kiwixtooltip {
+            position: absolute;
+            bottom: 1em;
+            /* prettify */
+            padding: 0.5em;
+            color: #000000;
+            background: #ebf4fb;
+            border: 0.1em solid #b7ddf2;
+            /* round the corners */
+            border-radius: 0.5em;
+            /* handle overflow */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* handle text wrap */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+        
+        .arrow-top::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;  // This positions the arrow above the div
+            left: 50%;  // This centers the arrow
+            transform: translateX(-50%);  // This ensures the arrow is centered
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid blue;  // The arrow now points upwards
+        }`
+    );
 }
 
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
@@ -6975,7 +6990,6 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(function () {
             var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
             if (link) {
-                // link.style = 'position: relative;'
                 var span = document.createElement('span');
                 var spanWidth = 512;
                 var spanHeight = 256;
@@ -6985,21 +6999,25 @@ function addListenersToLink (a, href, baseUrl) {
                 getArticleLede().then(function (html) {
                     span.innerHTML = html;
                     articleDocument.body.appendChild(span);
-                    // Calculate the position of the link and the span
+                    // Calculate the position of the link that is being hovered
                     var linkRect = link.getBoundingClientRect();
-                    console.debug('linkRect', linkRect);
-                    var spanRect = span.getBoundingClientRect();
-                    console.debug('spanRect', spanRect);
-                    // var windowWidth = window.innerWidth;
-                    // var windowHeight = window.innerHeight;
+                    // Initially position it above the link with 20px gap
                     var spanRectY = (linkRect.top - span.offsetHeight - 20);
-                    if (spanRectY < 40) spanRectY = linkRect.bottom + 20;
+                    // If we're less than 40px from the top, move the span below the link
+                    if (spanRectY < 40) {
+                        spanRectY = linkRect.bottom + 20;
+                        // span.classList.add('arrow-top');
+                    }
+                    // Initially position it horizontally centred in relation to the link
                     var spanRectX = linkRect.left + linkRect.width / 2 - spanWidth / 2;
+                    // If we're less than 40px to the left, shift it to 40px from left
                     if (spanRectX < 40) {
                         spanRectX = 40;
                     } else {
+                        // If right edge of span is greater than 40px from the right side of window, shift it to 40px
                         if (spanRectX + spanWidth > articleWindow.innerWidth - 40) spanRectX = articleWindow.innerWidth - spanWidth - 40;
                     }
+                    // Now set the calculated x and y positions
                     span.style.top = spanRectY + articleWindow.scrollY + 'px';
                     // span.style.bottom = spanRectY + 'px';
                     span.style.left = spanRectX + 'px';
