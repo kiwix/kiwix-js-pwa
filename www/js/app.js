@@ -6999,57 +6999,59 @@ function addListenersToLink (a, href, baseUrl) {
         e.preventDefault();
         e.stopPropagation();
     });
-    a.addEventListener('mouseover', function (e) {
-        removeKiwixPopovers(e.target.ownerDocument);
-        setTimeout(function () {
-            var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
-            if (link) {
-                // Check if the link is still being hovered over, and abort display of popover if not
-                if (!link.matches(':hover')) return;
-                getArticleLede().then(function (html) {
-                    var span = document.createElement('span');
-                    var spanWidth = 512;
-                    var spanHeight = 256;
-                    span.style.width = spanWidth + 'px';
-                    span.style.height = spanHeight + 'px';
-                    span.className = 'kiwixtooltip';
-                    span.innerHTML = html;
-                    articleDocument.body.appendChild(span);
-                    // Calculate the position of the link that is being hovered
-                    var linkRect = link.getBoundingClientRect();
-                    // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
-                    // var spanRectY = e.clientY - span.offsetHeight - 20;
-                    // Initially position the span 20px above the link
-                    var spanRectY = (linkRect.top - span.offsetHeight - 20);
-                    // If we're less than 40px from the top, move the span below the link
-                    if (spanRectY < 40) {
-                        spanRectY = linkRect.bottom + 20;
-                        // span.classList.add('arrow-top');
-                    }
-                    // Position it horizontally in relation to the pointer position
-                    var spanRectX = e.clientX - spanWidth / 2;
-                    // Here's how to do it in relation to the link instead
-                    // var spanRectX = linkRect.left + linkRect.width / 2 - spanWidth / 2;
-                    // If we're less than 40px to the left, shift it to 40px from left
-                    if (spanRectX < 40) {
-                        spanRectX = 40;
-                    } else {
-                        // If right edge of span is greater than 40px from the right side of window, shift it to 40px
-                        if (spanRectX + spanWidth > articleWindow.innerWidth - 40) spanRectX = articleWindow.innerWidth - spanWidth - 40;
-                    }
-                    // Now set the calculated x and y positions
-                    span.style.top = spanRectY + articleWindow.scrollY + 'px';
-                    span.style.left = spanRectX + 'px';
-                }).catch(function (err) {
-                    console.warn(err);
-                    // link.removeChild(span);
-                });
-            }
-        }, 500);
-    });
-    a.addEventListener('mouseout', function (e) {
-        removeKiwixPopovers(e.target.ownerDocument);
-    });
+    if (appstate.wikimediaZimLoaded) {
+        a.addEventListener('mouseover', function (e) {
+            removeKiwixPopovers(e.target.ownerDocument);
+            setTimeout(function () {
+                var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
+                if (link) {
+                    // Check if the link is still being hovered over, and abort display of popover if not
+                    if (!link.matches(':hover')) return;
+                    getArticleLede().then(function (html) {
+                        var span = document.createElement('span');
+                        var spanWidth = 512;
+                        var spanHeight = 256;
+                        span.style.width = spanWidth + 'px';
+                        span.style.height = spanHeight + 'px';
+                        span.className = 'kiwixtooltip';
+                        span.innerHTML = html;
+                        articleDocument.body.appendChild(span);
+                        // Calculate the position of the link that is being hovered
+                        var linkRect = link.getBoundingClientRect();
+                        // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
+                        // var spanRectY = e.clientY - span.offsetHeight - 20;
+                        // Initially position the span 20px above the link
+                        var spanRectY = (linkRect.top - span.offsetHeight - 20);
+                        // If we're less than 40px from the top, move the span below the link
+                        if (spanRectY < 40) {
+                            spanRectY = linkRect.bottom + 20;
+                            // span.classList.add('arrow-top');
+                        }
+                        // Position it horizontally in relation to the pointer position
+                        var spanRectX = e.clientX - spanWidth / 2;
+                        // Here's how to do it in relation to the link instead
+                        // var spanRectX = linkRect.left + linkRect.width / 2 - spanWidth / 2;
+                        // If we're less than 40px to the left, shift it to 40px from left
+                        if (spanRectX < 40) {
+                            spanRectX = 40;
+                        } else {
+                            // If right edge of span is greater than 40px from the right side of window, shift it to 40px
+                            if (spanRectX + spanWidth > articleWindow.innerWidth - 40) spanRectX = articleWindow.innerWidth - spanWidth - 40;
+                        }
+                        // Now set the calculated x and y positions
+                        span.style.top = spanRectY + articleWindow.scrollY + 'px';
+                        span.style.left = spanRectX + 'px';
+                    }).catch(function (err) {
+                        console.warn(err);
+                        // link.removeChild(span);
+                    });
+                }
+            }, 500);
+        });
+        a.addEventListener('mouseout', function (e) {
+            removeKiwixPopovers(e.target.ownerDocument);
+        });
+    }
     // The main click routine (called by other events above as well)
     a.addEventListener('click', function (e) {
         console.log('Click event', e);
