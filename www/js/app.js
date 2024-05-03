@@ -2494,6 +2494,8 @@ function attachTooltipCss (doc) {
         }
         
         .kiwixtooltip img {
+            float: right;
+            margin-left: 5px;
             max-width: 40%;
         }`
     );
@@ -6891,8 +6893,10 @@ function addListenersToLink (a, href, baseUrl) {
                                 return text !== '' && text.length >= 50;
                             });
                             if (nonEmptyParagraphs.length > 0) {
-                                const para1 = nonEmptyParagraphs[0];
-                                balloonString += '<p>' + para1.innerHTML + '</p>';
+                                // Add two paras (becuase one sometimes isn't enough to fill the box)
+                                for (let i = 0; i < 2; i++) {
+                                    balloonString += '<p>' + nonEmptyParagraphs[i].innerHTML + '</p>';
+                                }
                             }
                             const images = articleBody.querySelectorAll('img');
                             let firstImage = null;
@@ -6900,15 +6904,14 @@ function addListenersToLink (a, href, baseUrl) {
                                 // Iterate over images until we find one with a width greater than 50 pixels
                                 // (this filters out small icons)
                                 const imageArray = Array.from(images);
-                                for (let i = 0; i < imageArray.length; i++) {
-                                    if (imageArray[i] && imageArray[i].width > 50) {
-                                        firstImage = imageArray[i];
+                                for (let j = 0; j < imageArray.length; j++) {
+                                    if (imageArray[j] && imageArray[j].width > 50) {
+                                        firstImage = imageArray[j];
                                         break;
                                     }
                                 }
                             }
                             if (firstImage) {
-                                firstImage.style = 'float: right';
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
                             console.debug(balloonString);
