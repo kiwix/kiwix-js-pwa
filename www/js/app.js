@@ -6867,7 +6867,7 @@ function addListenersToLink (a, href, baseUrl) {
 
     var getArticleLede = function () {
         var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-        console.debug(zimURL);
+        console.debug('Previewing ' + zimURL);
         return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
             var readArticle = function (dirEntry) {
                 return new Promise((resolve, reject) => {
@@ -6915,7 +6915,7 @@ function addListenersToLink (a, href, baseUrl) {
                             if (firstImage) {
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
-                            console.debug(balloonString);
+                            // console.debug(balloonString);
                             resolve(balloonString);
                         } else {
                             reject(new Error('No article body found'));
@@ -7004,13 +7004,13 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(function () {
             var link = uiUtil.getClosestMatchForTagname(e.target, /^A$/);
             if (link) {
-                var span = document.createElement('span');
-                var spanWidth = 512;
-                var spanHeight = 256;
-                span.style.width = spanWidth + 'px';
-                span.style.height = spanHeight + 'px';
-                span.className = 'kiwixtooltip';
                 getArticleLede().then(function (html) {
+                    var span = document.createElement('span');
+                    var spanWidth = 512;
+                    var spanHeight = 256;
+                    span.style.width = spanWidth + 'px';
+                    span.style.height = spanHeight + 'px';
+                    span.className = 'kiwixtooltip';
                     span.innerHTML = html;
                     articleDocument.body.appendChild(span);
                     // Calculate the position of the link that is being hovered
@@ -7043,7 +7043,7 @@ function addListenersToLink (a, href, baseUrl) {
                     // link.removeChild(span);
                 });
             }
-        }, 500);
+        }, 750);
     });
     a.addEventListener('mouseout', function (e) {
         removeKiwixPopovers(e.target.ownerDocument);
