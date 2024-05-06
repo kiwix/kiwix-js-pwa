@@ -7070,6 +7070,7 @@ function removeKiwixPopovers (doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
+            if (div.matches(':hover')) return;
             div.parentElement.removeChild(div);
         });
     }, 500);
