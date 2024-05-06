@@ -3696,19 +3696,6 @@ function processDirectoryOfFiles (fileHandles, archive) {
     }
 }
 
-if (!params.disableDragAndDrop) {
-    // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
-    var globalDropZone = document.getElementById('search-article');
-    var configDropZone = document.getElementById('configuration');
-
-    // Set the main drop zone
-    globalDropZone.addEventListener('dragover', handleGlobalDragover);
-    globalDropZone.addEventListener('drop', handleFileDrop);
-    configDropZone.addEventListener('dragleave', function (e) {
-        configDropZone.style.border = '';
-    });
-}
-
 /**
  * Displays the zone to select files from the archive
  */
@@ -3717,29 +3704,94 @@ function displayFileSelect () {
     document.getElementById('rescanStorage').style.display = 'none';
 }
 
+/** Drag and Drop handling for ZIM files (see kiwix-js#1245 by @D3V-D) **/
+
+// Set a global drop zone, so that whole page is enabled for drag and drop
+const globalDropZone = document.getElementById('search-article');
+// Keep track of entrance event so we only fire the correct leave event
+let enteredElement;
+
+// Add drag-and-drop event listeners
+if (!params.disableDragAndDrop) {
+    globalDropZone.addEventListener('dragover', handleGlobalDragover);
+    globalDropZone.addEventListener('dragleave', handleGlobalDragleave);
+    globalDropZone.addEventListener('drop', handleFileDrop);
+    globalDropZone.addEventListener('dragenter', handleGlobalDragenter);
+}
+
+function handleGlobalDragenter (e) {
+    e.preventDefault();
+    // Disable pointer-events on children so they don't interfere with dragleave events
+    globalDropZone.classList.add('dragging-over');
+    enteredElement = e.target;
+}
+
 function handleGlobalDragover (e) {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'link';
-    if (configDropZone.style.display === 'none') document.getElementById('btnConfigure').click();
-    configDropZone.style.border = '3px dotted red';
+    if (hasType(e.dataTransfer.types, 'Files') && !hasInvalidType(e.dataTransfer.types)) {
+        e.dataTransfer.dropEffect = 'link';
+        globalDropZone.classList.add('dragging-over');
+        globalDropZone.style.border = '3px dashed red';
+        if (document.getElementById('configuration').style.display === 'none') {
+            btnConfigure.click();
+        }
+    }
+}
+
+function handleGlobalDragleave (e) {
+    e.preventDefault();
+    globalDropZone.style.border = '';
+    if (enteredElement === e.target) {
+        globalDropZone.classList.remove('dragging-over');
+        // Only return to page if a ZIM is actually loaded
+        if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+            setTab();
+        }
+    }
 }
 
 function handleIframeDragover (e) {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'link';
-    document.getElementById('btnConfigure').click();
+    if (hasType(e.dataTransfer.types, 'Files') && !hasInvalidType(e.dataTransfer.types)) {
+        globalDropZone.classList.add('dragging-over');
+        e.dataTransfer.dropEffect = 'link';
+        document.getElementById('btnConfigure').click();
+    }
 }
 
 function handleIframeDrop (e) {
-    e.stopPropagation();
     e.preventDefault();
+    e.stopPropagation();
+}
+
+// Add type check for chromium browsers, since they count images on the same page as files
+function hasInvalidType (typesList) {
+    for (var i = 0; i < typesList.length; i++) {
+        // Use indexOf() instead of startsWith() for IE11 support. Also, IE11 uses Text instead of text (and so does Opera).
+        // This is not comprehensive, but should cover most cases.
+        if (typesList[i].indexOf('image') === 0 || typesList[i].indexOf('text') === 0 || typesList[i].indexOf('Text') === 0 || typesList[i].indexOf('video') === 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// IE11 doesn't support .includes(), so custom function to check for presence of types
+function hasType (typesList, type) {
+    for (var i = 0; i < typesList.length; i++) {
+        if (typesList[i] === type) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function handleFileDrop (packet) {
     appstate.filesDropped = true;
     packet.stopPropagation();
     packet.preventDefault();
-    configDropZone.style.border = '';
+    globalDropZone.style.border = '';
+    globalDropZone.classList.remove('dragging-over');
     var items = packet.dataTransfer.items;
     // Turn off OPFS if it is on
     if (params.useOPFS) {
@@ -3779,6 +3831,8 @@ function handleFileDrop (packet) {
         params.storedFile = null;
         params.rescan = false;
         setLocalArchiveFromFileList(files);
+        // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
+        cache.idxDB('delete', 'pickedFSHandle', function () {});
     }
 }
 

@@ -110,6 +110,10 @@ div:not(.panel-success, .alert-message) {
     padding-left: 1px !important;
 }
 
+.dragging-over * {
+    pointer-events: none;
+}
+
 #articleList {
     margin-bottom: 12px !important;
     overflow-wrap: break-word;
