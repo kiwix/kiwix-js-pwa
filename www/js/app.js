@@ -3744,7 +3744,7 @@ function handleGlobalDragleave (e) {
     if (enteredElement === e.target) {
         globalDropZone.classList.remove('dragging-over');
         // Only return to page if a ZIM is actually loaded
-        if (appstate.selectedArchive.isReady()) {
+        if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
             setTab();
         }
     }
@@ -3831,6 +3831,8 @@ function handleFileDrop (packet) {
         params.storedFile = null;
         params.rescan = false;
         setLocalArchiveFromFileList(files);
+        // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
+        cache.idxDB('delete', 'pickedFSHandle', function () {});
     }
 }
 
