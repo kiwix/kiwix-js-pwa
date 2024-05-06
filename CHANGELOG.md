@@ -1,5 +1,14 @@
 # Changelog
 
+## In-progress release 3.2.6
+
+* ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
+* ENHANCEMENT: Standard NWJS packages (not XP) are now 64bit
+* FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
+* DEV: Avoid incorrect and redundant uploads to Kiwix download server
+* DEV: Fix build scripts
+* DEPENDENCIES: Bump ejs to 3.1.10
+
 ## Release 3.2.3 / 3.2.4
 
 * FEATURE: Add security dialogue on opening a ZIM for the first time in ServiceWorker mode
