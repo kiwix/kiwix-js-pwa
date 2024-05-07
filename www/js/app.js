@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
@@ -2462,16 +2462,19 @@ function switchCSSTheme () {
 /**
  * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
  * @param {Document} doc The document to which to attach the blloon.css styelesheet
+ * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
  */
-function attachTooltipCss (doc) {
+function attachTooltipCss (doc, dark) {
+    const colour = dark ? '#darkgray' : '#black';
+    const backgroundColour = dark ? '#111' : '#ebf4fb';
     uiUtil.insertLinkElement(doc, `
         .kiwixtooltip {
             position: absolute;
             bottom: 1em;
             /* prettify */
             padding: 0.5em;
-            color: #000000;
-            background: #ebf4fb;
+            color: ${colour};
+            background: ${backgroundColour};
             border: 0.1em solid #b7ddf2;
             /* round the corners */
             border-radius: 0.5em;
@@ -5343,7 +5346,7 @@ var articleLoadedSW = function (dirEntry, container) {
             anchorParameter = '';
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
-        attachTooltipCss(doc);
+        attachTooltipCss(doc, params.cssTheme === 'darkReader');
         params.isLandingPage = false;
     } else {
         // If we havent' loaded a text-type document, we probably haven't finished loading

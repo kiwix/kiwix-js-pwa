@@ -554,7 +554,6 @@ function insertLinkElement (doc, cssContent) {
     doc.head.appendChild(cssElement);
 }
 
-
 /**
  * Walk up the DOM tree to find the closest element where the tagname matches the supplied regular expression
  *
