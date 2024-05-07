@@ -6921,7 +6921,11 @@ function addListenersToLink (a, href, baseUrl) {
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
                             // console.debug(balloonString);
-                            resolve(balloonString);
+                            if (!balloonString) {
+                                reject(new Error('No article lede or image'));
+                            } else {
+                                resolve(balloonString);
+                            }
                         } else {
                             reject(new Error('No article body found'));
                         }
