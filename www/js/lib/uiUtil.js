@@ -542,10 +542,13 @@ function deriveZimUrlFromRelativeUrl (url, base) {
  * Inserts a new link element into the document header
  * @param {Element} doc The document to which to attach the new element
  * @param {String} cssContent The content to insert as an inline stylesheet
+ * @param {String} id An optional id to add to the style element
  */
-function insertLinkElement (doc, cssContent) {
+function insertLinkElement (doc, cssContent, id) {
     var cssElement = document.createElement('style');
-    cssElement.type = 'text/css';
+    if (id) {
+        cssElement.id = id;
+    }
     if (cssElement.styleSheet) {
         cssElement.styleSheet.cssText = cssContent;
     } else {

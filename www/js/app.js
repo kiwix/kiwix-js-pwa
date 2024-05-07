@@ -2486,22 +2486,14 @@ function attachTooltipCss (doc, dark) {
             word-wrap: break-word;
         }
         
-        .arrow-top::before {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid blue;
-        }
-        
         .kiwixtooltip img {
             float: right;
             margin-left: 5px;
             max-width: 40%;
             height: auto;
-        }`
+        }`,
+        // The id of the style element for easy manipulation
+        'kiwixtooltipstylesheet'
     );
 }
 
@@ -7029,26 +7021,52 @@ function addListenersToLink (a, href, baseUrl) {
                         // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
                         // var divRectY = e.clientY - div.offsetHeight - 20;
                         // Initially position the div 20px above the link
+                        var triangleDirection = 'top';
                         var divRectY = (linkRect.top - div.offsetHeight - 20);
+                        var triangleY = divRectY + divHeight;
                         // If we're less than 40px from the top, move the div below the link
                         if (divRectY < 40) {
+                            triangleDirection = 'bottom';
                             divRectY = linkRect.bottom + 20;
-                            // div.classList.add('arrow-top');
+                            triangleY = divRectY;
                         }
                         // Position it horizontally in relation to the pointer position
                         var divRectX = e.clientX - divWidth / 2;
+                        var triangleX = divRectX;
                         // Here's how to do it in relation to the link instead
                         // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
                         // If we're less than 40px to the left, shift it to 40px from left
                         if (divRectX < 40) {
                             divRectX = 40;
+                            triangleX = divRectX + 20;
                         } else {
                             // If right edge of div is greater than 40px from the right side of window, shift it to 40px
                             if (divRectX + divWidth > articleWindow.innerWidth - 40) divRectX = articleWindow.innerWidth - divWidth - 40;
+                            triangleX = divRectX - 20;
                         }
                         // Now set the calculated x and y positions
                         div.style.top = divRectY + articleWindow.scrollY + 'px';
                         div.style.left = divRectX + 'px';
+                        // Now insert the arrow
+                        var tooltipStyle = articleDocument.getElementById('kiwixtooltipstylesheet');
+                        var colour = params.cssTheme === 'darkReader' ? '#111' : '#b7ddf2';
+                        if (tooltipStyle) {
+                            var span = document.createElement('span');
+                            span.style.cssText = `
+                                width: 0;
+                                height: 0;
+                                border-${triangleDirection}: 16px solid ${colour};
+                                border-left: 8px solid transparent;
+                                border-right: 8px solid transparent;
+                                position: fixed;
+                                top: ${triangleY}px;
+                                left: ${triangleX}px;
+                            `;
+                            div.appendChild(span);
+                            // Force recalculation
+                            // var divStyles = getComputedStyle(div, trianglePos);
+                            // console.debug('Pseudo element styles', divStyles);
+                        }
                     }).catch(function (err) {
                         console.warn(err);
                         // link.removeChild(div);
