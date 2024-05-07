@@ -2096,6 +2096,11 @@ function setWindowOpenerUI () {
         newWin.style.display = 'none';
     }
 }
+document.getElementById('showPopoverPreviewsCheck').addEventListener('change', function (e) {
+    params.showPopoverPreviews = e.target.checked;
+    settingsStore.setItem('showPopoverPreviews', params.showPopoverPreviews, Infinity);
+    params.themeChanged = true;
+});
 document.getElementById('allowHTMLExtractionCheck').addEventListener('click', function (e) {
     params.allowHTMLExtraction = e.target.checked;
     var alertMessage = '';
@@ -6999,7 +7004,7 @@ function addListenersToLink (a, href, baseUrl) {
         e.preventDefault();
         e.stopPropagation();
     });
-    if (appstate.wikimediaZimLoaded) {
+    if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
         a.addEventListener('mouseover', function (e) {
             removeKiwixPopovers(e.target.ownerDocument);
             setTimeout(function () {
