@@ -7023,41 +7023,43 @@ function addListenersToLink (a, href, baseUrl) {
                         // Initially position the div 20px above the link
                         var triangleDirection = 'top';
                         var divRectY = (linkRect.top - div.offsetHeight - 20);
-                        var triangleY = divRectY + divHeight;
+                        var triangleY = divRectY + divHeight + 19; // 16px + 3px border
                         // If we're less than 40px from the top, move the div below the link
                         if (divRectY < 40) {
                             triangleDirection = 'bottom';
                             divRectY = linkRect.bottom + 20;
-                            triangleY = divRectY;
+                            triangleY = divRectY - 16;
                         }
                         // Position it horizontally in relation to the pointer position
                         var divRectX = e.clientX - divWidth / 2;
-                        var triangleX = divRectX;
+                        var triangleX = e.clientX;
                         // Here's how to do it in relation to the link instead
                         // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
                         // If we're less than 40px to the left, shift it to 40px from left
                         if (divRectX < 40) {
                             divRectX = 40;
-                            triangleX = divRectX + 20;
+                            if (triangleX < divRectX) triangleX = divRectX + 10;
                         } else {
                             // If right edge of div is greater than 40px from the right side of window, shift it to 40px
-                            if (divRectX + divWidth > articleWindow.innerWidth - 40) divRectX = articleWindow.innerWidth - divWidth - 40;
-                            triangleX = divRectX - 20;
+                            if (divRectX + divWidth > articleWindow.innerWidth - 40) {
+                                divRectX = articleWindow.innerWidth - divWidth - 40;
+                                if (triangleX > articleWindow.innerWith - 40) triangleX = articleWindow.innerWidth - 50;
+                            }
                         }
                         // Now set the calculated x and y positions
                         div.style.top = divRectY + articleWindow.scrollY + 'px';
                         div.style.left = divRectX + 'px';
                         // Now insert the arrow
                         var tooltipStyle = articleDocument.getElementById('kiwixtooltipstylesheet');
-                        var colour = params.cssTheme === 'darkReader' ? '#111' : '#b7ddf2';
+                        var triangleColour = '#b7ddf2'; // Same as border colour of div
                         if (tooltipStyle) {
                             var span = document.createElement('span');
                             span.style.cssText = `
                                 width: 0;
                                 height: 0;
-                                border-${triangleDirection}: 16px solid ${colour};
-                                border-left: 8px solid transparent;
-                                border-right: 8px solid transparent;
+                                border-${triangleDirection}: 16px solid ${triangleColour};
+                                border-left: 8px solid transparent !important;
+                                border-right: 8px solid transparent !important;
                                 position: fixed;
                                 top: ${triangleY}px;
                                 left: ${triangleX}px;
