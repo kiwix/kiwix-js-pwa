@@ -6874,7 +6874,7 @@ function addListenersToLink (a, href, baseUrl) {
         return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
             var readArticle = function (dirEntry) {
                 return new Promise((resolve, reject) => {
-                    appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEngry, htmlArticle) {
+                    appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, htmlArticle) {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(htmlArticle, 'text/html');
                         // const articleBody = doc.getElementById('mw-content-text');
@@ -6916,6 +6916,11 @@ function addListenersToLink (a, href, baseUrl) {
                                 }
                             }
                             if (firstImage) {
+                                // Calculate absolute URL of image
+                                var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
+                                var imageZimURL = uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL);
+                                var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
+                                firstImage.src = absolutePath + imageZimURL;
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
                             // console.debug(balloonString);
