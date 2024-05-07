@@ -6905,7 +6905,7 @@ function addListenersToLink (a, href, baseUrl) {
                             }
                             const images = articleBody.querySelectorAll('img');
                             let firstImage = null;
-                            if (images) {
+                            if (images && params.contentInjectionMode === 'serviceworker') {
                                 // Iterate over images until we find one with a width greater than 50 pixels
                                 // (this filters out small icons)
                                 const imageArray = Array.from(images);
@@ -6920,13 +6920,8 @@ function addListenersToLink (a, href, baseUrl) {
                                 // Calculate absolute URL of image
                                 var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
                                 var imageZimURL = uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL);
-                                if (params.contentInjectionMode === 'jquery') {
-                                    firstImage.src = '';
-                                    firstImage.dataset.kiwixurl = imageZimURL;
-                                } else {
-                                    var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
-                                    firstImage.src = absolutePath + imageZimURL;
-                                }
+                                var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
+                                firstImage.src = absolutePath + imageZimURL;
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
                             // console.debug(balloonString);
