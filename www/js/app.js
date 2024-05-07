@@ -2469,7 +2469,7 @@ function switchCSSTheme () {
  * @param {Document} doc The document to which to attach the blloon.css styelesheet
  * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
  */
-function attachTooltipCss (doc, dark) {
+function attachPopoverCss (doc, dark) {
     const colour = dark ? '#darkgray' : '#black';
     const backgroundColour = dark ? '#111' : '#ebf4fb';
     uiUtil.insertLinkElement(doc, `
@@ -5343,7 +5343,9 @@ var articleLoadedSW = function (dirEntry, container) {
             anchorParameter = '';
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
-        attachTooltipCss(doc, params.cssTheme === 'darkReader');
+        if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
+            attachPopoverCss(doc, params.cssTheme === 'darkReader');
+        }
         params.isLandingPage = false;
     } else {
         // If we havent' loaded a text-type document, we probably haven't finished loading
@@ -6508,7 +6510,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             parseAnchorsJQuery(dirEntry);
             loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
-            // loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+            if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
+                attachPopoverCss(articleWindow.document);
+            }
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
             if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                 uiUtil.insertBreakoutLink(determinedTheme);
@@ -6916,8 +6920,13 @@ function addListenersToLink (a, href, baseUrl) {
                                 // Calculate absolute URL of image
                                 var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
                                 var imageZimURL = uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL);
-                                var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
-                                firstImage.src = absolutePath + imageZimURL;
+                                if (params.contentInjectionMode === 'jquery') {
+                                    firstImage.src = '';
+                                    firstImage.dataset.kiwixurl = imageZimURL;
+                                } else {
+                                    var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
+                                    firstImage.src = absolutePath + imageZimURL;
+                                }
                                 balloonString = firstImage.outerHTML + balloonString;
                             }
                             // console.debug(balloonString);
@@ -7008,7 +7017,9 @@ function addListenersToLink (a, href, baseUrl) {
         e.preventDefault();
         e.stopPropagation();
     });
-    if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
+    // The popover feature requires as a minimum that the browser supports the css matches function
+    // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
+    if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
             removeKiwixPopovers(e.target.ownerDocument);
             setTimeout(function () {
@@ -7024,7 +7035,7 @@ function addListenersToLink (a, href, baseUrl) {
                         div.style.height = divHeight + 'px';
                         div.className = 'kiwixtooltip';
                         div.innerHTML = html;
-                        articleDocument.body.appendChild(div);
+                        articleWindow.document.body.appendChild(div);
                         // Calculate the position of the link that is being hovered
                         var linkRect = link.getBoundingClientRect();
                         // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
@@ -7059,7 +7070,7 @@ function addListenersToLink (a, href, baseUrl) {
                         div.style.top = divRectY + articleWindow.scrollY + 'px';
                         div.style.left = divRectX + 'px';
                         // Now insert the arrow
-                        var tooltipStyle = articleDocument.getElementById('kiwixtooltipstylesheet');
+                        var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
                         var triangleColour = '#b7ddf2'; // Same as border colour of div
                         if (tooltipStyle) {
                             var span = document.createElement('span');
