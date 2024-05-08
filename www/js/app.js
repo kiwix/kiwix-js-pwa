@@ -6841,6 +6841,7 @@ function addListenersToLink (a, href, baseUrl) {
         }
         a.touched = true;
         var event = e;
+        var doc = e.target.ownerDocument;
         // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
         setTimeout(function () {
             // DEV: appstate.startVector indicates that the app is processing a touch zoom event, so we cancel any new windows
@@ -6924,6 +6925,10 @@ function addListenersToLink (a, href, baseUrl) {
             if (a.touched) return;
             a.focused = true;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
+            var doc = e.target.ownerDocument;
+            setTimeout(function () {
+                uiUtil.removeKiwixPopoverDivs(a, doc);
+            }, 5000);
         });
     }
     // The main click routine (called by other events above as well)
