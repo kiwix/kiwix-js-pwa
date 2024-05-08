@@ -6848,7 +6848,7 @@ function addListenersToLink (a, href, baseUrl) {
             // see uiUtil.pointermove_handler
             if (!a.touched || a.newcontainer || appstate.startVector) return;
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-                a.touchevoked = true;
+                a.dataset.touchevoked = true;
                 uiUtil.attachKiwixPopoverDiv(event, a, baseUrl);
             } else {
                 a.newcontainer = true;
@@ -6918,7 +6918,7 @@ function addListenersToLink (a, href, baseUrl) {
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
         });
         a.addEventListener('mouseout', function (e) {
-            if (a.touchevoked) return;
+            if (a.dataset.touchevoked) return;
             uiUtil.removeKiwixPopoverDivs(a, e.target.ownerDocument);
         });
     }
