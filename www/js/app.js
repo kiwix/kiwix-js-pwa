@@ -2489,6 +2489,9 @@ function attachPopoverCss (doc, dark) {
             /* handle text wrap */
             overflow-wrap: break-word;
             word-wrap: break-word;
+            /* add fade-in transition */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
         }
         
         .kiwixtooltip img {
@@ -7064,6 +7067,7 @@ function addListenersToLink (a, href, baseUrl) {
                         // Now set the calculated x and y positions
                         div.style.top = divRectY + articleWindow.scrollY + 'px';
                         div.style.left = divRectX + 'px';
+                        div.style.opacity = '1';
                         // Now insert the arrow
                         var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
                         var triangleColour = '#b7ddf2'; // Same as border colour of div
@@ -7114,7 +7118,10 @@ function removeKiwixPopovers (doc) {
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
             if (div.matches(':hover')) return;
-            div.parentElement.removeChild(div);
+            div.style.opacity = '0';
+            setTimeout(function () {
+                div.parentElement.removeChild(div);
+            }, 200);
         });
     }, 500);
 }
