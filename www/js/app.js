@@ -6835,8 +6835,11 @@ function addListenersToLink (a, href, baseUrl) {
         e.stopPropagation();
         // e.preventDefault();
         a.touched = true;
+        var timeout = 500;
         if (!appstate.wikimediaZimLoaded || !params.showPopoverPreviews) {
             loadingContainer = true;
+        } else {
+            timeout = 100;
         }
         var event = e;
         // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
@@ -6844,14 +6847,15 @@ function addListenersToLink (a, href, baseUrl) {
             // DEV: appstate.startVector indicates that the app is processing a touch zoom event, so we cancel any new windows
             // see uiUtil.pointermove_handler
             if (!a.touched || a.newcontainer || appstate.startVector) return;
-            event.preventDefault();
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
+                a.touchevoked = true;
                 uiUtil.attachKiwixPopoverDiv(event, a, baseUrl);
             } else {
                 a.newcontainer = true;
                 onDetectedClick(event);
             }
-        }, 300);
+            event.preventDefault();
+        }, timeout);
     }, { passive: false });
     a.addEventListener('touchend', function () {
         a.touched = false;
@@ -6914,7 +6918,8 @@ function addListenersToLink (a, href, baseUrl) {
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
         });
         a.addEventListener('mouseout', function (e) {
-            uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
+            if (a.touchevoked) return;
+            uiUtil.removeKiwixPopoverDivs(a, e.target.ownerDocument);
         });
     }
     // The main click routine (called by other events above as well)

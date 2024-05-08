@@ -1499,7 +1499,7 @@ function getArticleLede (href, baseUrl, articleDocument) {
                     resolve(readArticle(reDirEntry));
                 });
             }).catch(error => {
-                console.error(error);
+                return Promise.reject(error);
             });
         } else {
             return Promise.resolve(readArticle(dirEntry));
@@ -1555,13 +1555,17 @@ function attachKiwixPopoverCss (doc, dark) {
  * @param {String} articleBaseUrl The base URL of the currently loaded document
  */
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
+    // Do not disply a popover if one is already showing for the current link
+    var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
+    var linkHref = link.getAttribute('href');
+    if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
     var currentDocument = ev.target.ownerDocument;
     var articleWindow = currentDocument.defaultView;
-    removeKiwixPopoverDivs(currentDocument);
+    removeKiwixPopoverDivs(link, currentDocument);
     setTimeout(function () {
         // Check if the link is still being hovered over, and abort display of popover if not
         if (!link.matches(':hover')) return;
-        getArticleLede(link.getAttribute('href'), articleBaseUrl, currentDocument).then(function (html) {
+        getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
             var div = document.createElement('div');
             var divWidth = 512;
             var divHeight = 256;
@@ -1569,6 +1573,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             div.style.height = divHeight + 'px';
             div.className = 'kiwixtooltip';
             div.innerHTML = html;
+            div.dataset.href = linkHref;
             currentDocument.body.appendChild(div);
             // Calculate the position of the link that is being hovered
             var linkRect = link.getBoundingClientRect();
@@ -1585,8 +1590,14 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
                 triangleY = divRectY - 16;
             }
             // Position it horizontally in relation to the pointer position
-            var divRectX = ev.clientX - divWidth / 2;
-            var triangleX = ev.clientX;
+            var divRectX, triangleX;
+            if (ev.type === 'touchstart') {
+                divRectX = ev.touches[0].clientX - divWidth / 2;
+                triangleX = ev.touches[0].clientX;
+            } else {
+                divRectX = ev.clientX - divWidth / 2;
+                triangleX = ev.clientX;
+            }
             // Here's how to do it in relation to the link instead
             // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
             // If we're less than 40px to the left, shift it to 40px from left
@@ -1620,9 +1631,6 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
                     left: ${triangleX}px;
                 `;
                 div.appendChild(span);
-                // Force recalculation
-                // var divStyles = getComputedStyle(div, trianglePos);
-                // console.debug('Pseudo element styles', divStyles);
             }
         }).catch(function (err) {
             console.warn(err);
@@ -1633,9 +1641,11 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
 
 /**
  * Remove any preview popover DIVs
+ *
+ * @param {Element} link The link element which was actioned
  * @param {Document} doc The document from which to remove any popovers
  */
-function removeKiwixPopoverDivs (doc) {
+function removeKiwixPopoverDivs (link, doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
