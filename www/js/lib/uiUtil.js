@@ -1564,7 +1564,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
     removeKiwixPopoverDivs(link, currentDocument);
     setTimeout(function () {
         // Check if the link is still being hovered over, and abort display of popover if not
-        if (!link.matches(':hover')) return;
+        if (!link.matches(':hover') && currentDocument.activeElement !== link) return;
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
             var div = document.createElement('div');
             var divWidth = 512;
@@ -1594,6 +1594,9 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             if (ev.type === 'touchstart') {
                 divRectX = ev.touches[0].clientX - divWidth / 2;
                 triangleX = ev.touches[0].clientX;
+            } else if (ev.type === 'focus') {
+                triangleX = linkRect.left + linkRect.width / 2;
+                divRectX = triangleX - divWidth / 2;
             } else {
                 divRectX = ev.clientX - divWidth / 2;
                 triangleX = ev.clientX;

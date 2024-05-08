@@ -6831,16 +6831,15 @@ function addListenersToLink (a, href, baseUrl) {
     };
 
     a.addEventListener('touchstart', function (e) {
-        if (!params.windowOpener || a.touched) return;
-        e.stopPropagation();
-        // e.preventDefault();
-        a.touched = true;
+        console.debug('a.touchstart');
         var timeout = 500;
         if (!appstate.wikimediaZimLoaded || !params.showPopoverPreviews) {
+            if (!params.windowOpener || a.touched) return;
             loadingContainer = true;
         } else {
             timeout = 100;
         }
+        a.touched = true;
         var event = e;
         // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
         setTimeout(function () {
@@ -6920,6 +6919,11 @@ function addListenersToLink (a, href, baseUrl) {
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked) return;
             uiUtil.removeKiwixPopoverDivs(a, e.target.ownerDocument);
+        });
+        a.addEventListener('focus', function (e) {
+            if (a.touched) return;
+            a.focused = true;
+            uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
         });
     }
     // The main click routine (called by other events above as well)
