@@ -2491,7 +2491,7 @@ function attachPopoverCss (doc, dark) {
             word-wrap: break-word;
             /* add fade-in transition */
             opacity: 0;
-            transition: opacity 0.2s ease-in-out;
+            transition: opacity 0.2s;
         }
         
         .kiwixtooltip img {
