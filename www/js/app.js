@@ -2464,47 +2464,6 @@ function switchCSSTheme () {
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
 }
 
-/**
- * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
- * @param {Document} doc The document to which to attach the blloon.css styelesheet
- * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
- */
-function attachPopoverCss (doc, dark) {
-    const colour = dark ? '#darkgray' : '#black';
-    const backgroundColour = dark ? '#111' : '#ebf4fb';
-    uiUtil.insertLinkElement(doc, `
-        .kiwixtooltip {
-            position: absolute;
-            bottom: 1em;
-            /* prettify */
-            padding: 0.5em;
-            color: ${colour};
-            background: ${backgroundColour};
-            border: 0.1em solid #b7ddf2;
-            /* round the corners */
-            border-radius: 0.5em;
-            /* handle overflow */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            /* handle text wrap */
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            /* add fade-in transition */
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .kiwixtooltip img {
-            float: right;
-            margin-left: 5px;
-            max-width: 40%;
-            height: auto;
-        }`,
-        // The id of the style element for easy manipulation
-        'kiwixtooltipstylesheet'
-    );
-}
-
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
     params.resetDisplayOnResize = this.checked;
     settingsStore.setItem('resetDisplayOnResize', this.checked, Infinity);
@@ -5347,7 +5306,7 @@ var articleLoadedSW = function (dirEntry, container) {
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-            attachPopoverCss(doc, params.cssTheme === 'darkReader');
+            uiUtil.attachPopoverCss(doc, params.cssTheme === 'darkReader');
         }
         params.isLandingPage = false;
     } else {
@@ -6514,7 +6473,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-                attachPopoverCss(articleWindow.document);
+                uiUtil.attachPopoverCss(articleWindow.document);
             }
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
             if (params.allowHTMLExtraction && appstate.target === 'iframe') {
@@ -6872,87 +6831,6 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(reset, 1400);
     };
 
-    var getArticleLede = function () {
-        var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-        console.debug('Previewing ' + zimURL);
-        return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
-            var readArticle = function (dirEntry) {
-                return new Promise((resolve, reject) => {
-                    appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, htmlArticle) {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(htmlArticle, 'text/html');
-                        // const articleBody = doc.getElementById('mw-content-text');
-                        const articleBody = doc.body;
-                        if (articleBody) {
-                            let balloonString = '';
-                            // const articleHeader = articleBody.querySelector('h1');
-                            // if (articleHeader) {
-                            //     balloonString += '<h3>' + articleHeader.innerText + '</h3>';
-                            // }
-                            // Remove all standalone style elements, because their content is shown by both innerText and textContent
-                            const styleElements = Array.from(articleBody.querySelectorAll('style'));
-                            styleElements.forEach(style => {
-                                style.parentNode.removeChild(style);
-                            });
-                            const paragraphs = Array.from(articleBody.querySelectorAll('p'));
-                            // Filter out empty paragraphs or those with less than 50 characters
-                            const nonEmptyParagraphs = paragraphs.filter(para => {
-                                const text = para.innerText.trim();
-                                return text !== '' && text.length >= 50;
-                            });
-                            if (nonEmptyParagraphs.length > 0) {
-                                // Add two paras (becuase one sometimes isn't enough to fill the box)
-                                for (let i = 0; i < 2; i++) {
-                                    balloonString += '<p>' + nonEmptyParagraphs[i].innerHTML + '</p>';
-                                }
-                            }
-                            const images = articleBody.querySelectorAll('img');
-                            let firstImage = null;
-                            if (images && params.contentInjectionMode === 'serviceworker') {
-                                // Iterate over images until we find one with a width greater than 50 pixels
-                                // (this filters out small icons)
-                                const imageArray = Array.from(images);
-                                for (let j = 0; j < imageArray.length; j++) {
-                                    if (imageArray[j] && imageArray[j].width > 50) {
-                                        firstImage = imageArray[j];
-                                        break;
-                                    }
-                                }
-                            }
-                            if (firstImage) {
-                                // Calculate absolute URL of image
-                                var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
-                                var imageZimURL = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL));
-                                var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
-                                firstImage.src = absolutePath + imageZimURL;
-                                balloonString = firstImage.outerHTML + balloonString;
-                            }
-                            // console.debug(balloonString);
-                            if (!balloonString) {
-                                reject(new Error('No article lede or image'));
-                            } else {
-                                resolve(balloonString);
-                            }
-                        } else {
-                            reject(new Error('No article body found'));
-                        }
-                    });
-                });
-            }
-            if (dirEntry.redirect) {
-                return new Promise((resolve, reject) => {
-                    appstate.selectedArchive.resolveRedirect(dirEntry, function (reDirEntry) {
-                        resolve(readArticle(reDirEntry));
-                    });
-                }).catch(error => {
-                    console.error(error);
-                });
-            } else {
-                return Promise.resolve(readArticle(dirEntry));
-            }
-        });
-    }
-
     a.addEventListener('touchstart', function (e) {
         if (!params.windowOpener || a.touched) return;
         e.stopPropagation();
@@ -7025,7 +6903,7 @@ function addListenersToLink (a, href, baseUrl) {
                 if (link) {
                     // Check if the link is still being hovered over, and abort display of popover if not
                     if (!link.matches(':hover')) return;
-                    getArticleLede().then(function (html) {
+                    uiUtil.getArticleLede(href, baseUrl, e.target.ownerDocument).then(function (html) {
                         var div = document.createElement('div');
                         var divWidth = 512;
                         var divHeight = 256;
@@ -7120,7 +6998,9 @@ function removeKiwixPopovers (doc) {
             if (div.matches(':hover')) return;
             div.style.opacity = '0';
             setTimeout(function () {
-                div.parentElement.removeChild(div);
+                if (div.parentElement) {
+                    div.parentElement.removeChild(div);
+                }
             }, 200);
         });
     }, 500);

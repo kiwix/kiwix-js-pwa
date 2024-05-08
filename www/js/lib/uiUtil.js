@@ -539,6 +539,47 @@ function deriveZimUrlFromRelativeUrl (url, base) {
 }
 
 /**
+ * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
+ * @param {Document} doc The document to which to attach the blloon.css styelesheet
+ * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
+ */
+function attachPopoverCss (doc, dark) {
+    const colour = dark ? '#darkgray' : '#black';
+    const backgroundColour = dark ? '#111' : '#ebf4fb';
+    insertLinkElement(doc, `
+        .kiwixtooltip {
+            position: absolute;
+            bottom: 1em;
+            /* prettify */
+            padding: 0.5em;
+            color: ${colour};
+            background: ${backgroundColour};
+            border: 0.1em solid #b7ddf2;
+            /* round the corners */
+            border-radius: 0.5em;
+            /* handle overflow */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* handle text wrap */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            /* add fade-in transition */
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .kiwixtooltip img {
+            float: right;
+            margin-left: 5px;
+            max-width: 40%;
+            height: auto;
+        }`,
+        // The id of the style element for easy manipulation
+        'kiwixtooltipstylesheet'
+    );
+}
+
+/**
  * Inserts a new link element into the document header
  * @param {Element} doc The document to which to attach the new element
  * @param {String} cssContent The content to insert as an inline stylesheet
@@ -1416,6 +1457,98 @@ function lockDisplayOrientation (val) {
 }
 
 /**
+ * Parses a linked article in a loaded document in order to extract the first main paragraph (the 'lede') and first
+ * main image (if any). This function currently only parses Wikimedia articles. It returns an HTML string, formatted
+ * for display in a popover
+ *
+ * @param {String} href The href of the article link from which to extract the lede
+ * @param {String} baseUrl The base URL of the currently loaded article
+ * @param {Document} articleDocument The DOM of the currently loaded article
+ * @returns {Promise<String>} A Promise for the linked article's lede HTML including first main image URL if any
+ */
+function getArticleLede (href, baseUrl, articleDocument) {
+    var uriComponent = removeUrlParameters(href);
+    var zimURL = deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+    console.debug('Previewing ' + zimURL);
+    return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
+        var readArticle = function (dirEntry) {
+            return new Promise((resolve, reject) => {
+                appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, htmlArticle) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlArticle, 'text/html');
+                    // const articleBody = doc.getElementById('mw-content-text');
+                    const articleBody = doc.body;
+                    if (articleBody) {
+                        let balloonString = '';
+                        // const articleHeader = articleBody.querySelector('h1');
+                        // if (articleHeader) {
+                        //     balloonString += '<h3>' + articleHeader.innerText + '</h3>';
+                        // }
+                        // Remove all standalone style elements, because their content is shown by both innerText and textContent
+                        const styleElements = Array.from(articleBody.querySelectorAll('style'));
+                        styleElements.forEach(style => {
+                            style.parentNode.removeChild(style);
+                        });
+                        const paragraphs = Array.from(articleBody.querySelectorAll('p'));
+                        // Filter out empty paragraphs or those with less than 50 characters
+                        const nonEmptyParagraphs = paragraphs.filter(para => {
+                            const text = para.innerText.trim();
+                            return text !== '' && text.length >= 50;
+                        });
+                        if (nonEmptyParagraphs.length > 0) {
+                            // Add two paras (becuase one sometimes isn't enough to fill the box)
+                            for (let i = 0; i < 2; i++) {
+                                balloonString += '<p>' + nonEmptyParagraphs[i].innerHTML + '</p>';
+                            }
+                        }
+                        const images = articleBody.querySelectorAll('img');
+                        let firstImage = null;
+                        if (images && params.contentInjectionMode === 'serviceworker') {
+                            // Iterate over images until we find one with a width greater than 50 pixels
+                            // (this filters out small icons)
+                            const imageArray = Array.from(images);
+                            for (let j = 0; j < imageArray.length; j++) {
+                                if (imageArray[j] && imageArray[j].width > 50) {
+                                    firstImage = imageArray[j];
+                                    break;
+                                }
+                            }
+                        }
+                        if (firstImage) {
+                            // Calculate absolute URL of image
+                            var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
+                            var imageZimURL = encodeURI(deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL));
+                            var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
+                            firstImage.src = absolutePath + imageZimURL;
+                            balloonString = firstImage.outerHTML + balloonString;
+                        }
+                        // console.debug(balloonString);
+                        if (!balloonString) {
+                            reject(new Error('No article lede or image'));
+                        } else {
+                            resolve(balloonString);
+                        }
+                    } else {
+                        reject(new Error('No article body found'));
+                    }
+                });
+            });
+        }
+        if (dirEntry.redirect) {
+            return new Promise((resolve, reject) => {
+                appstate.selectedArchive.resolveRedirect(dirEntry, function (reDirEntry) {
+                    resolve(readArticle(reDirEntry));
+                });
+            }).catch(error => {
+                console.error(error);
+            });
+        } else {
+            return Promise.resolve(readArticle(dirEntry));
+        }
+    });
+}
+
+/**
  * Finds the closest <a> or <area> enclosing tag of an element.
  * Returns undefined if there isn't any.
  *
@@ -1455,6 +1588,7 @@ export default {
     feedNodeWithBlob: feedNodeWithBlob,
     getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
+    attachPopoverCss: attachPopoverCss,
     insertLinkElement: insertLinkElement,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,
@@ -1476,6 +1610,7 @@ export default {
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
     lockDisplayOrientation: lockDisplayOrientation,
+    getArticleLede: getArticleLede,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
     warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
