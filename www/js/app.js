@@ -6919,7 +6919,7 @@ function addListenersToLink (a, href, baseUrl) {
                             if (firstImage) {
                                 // Calculate absolute URL of image
                                 var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
-                                var imageZimURL = uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL);
+                                var imageZimURL = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL));
                                 var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
                                 firstImage.src = absolutePath + imageZimURL;
                                 balloonString = firstImage.outerHTML + balloonString;
