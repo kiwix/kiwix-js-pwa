@@ -539,47 +539,6 @@ function deriveZimUrlFromRelativeUrl (url, base) {
 }
 
 /**
- * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
- * @param {Document} doc The document to which to attach the blloon.css styelesheet
- * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
- */
-function attachPopoverCss (doc, dark) {
-    const colour = dark ? '#darkgray' : '#black';
-    const backgroundColour = dark ? '#111' : '#ebf4fb';
-    insertLinkElement(doc, `
-        .kiwixtooltip {
-            position: absolute;
-            bottom: 1em;
-            /* prettify */
-            padding: 0.5em;
-            color: ${colour};
-            background: ${backgroundColour};
-            border: 0.1em solid #b7ddf2;
-            /* round the corners */
-            border-radius: 0.5em;
-            /* handle overflow */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            /* handle text wrap */
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            /* add fade-in transition */
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .kiwixtooltip img {
-            float: right;
-            margin-left: 5px;
-            max-width: 40%;
-            height: auto;
-        }`,
-        // The id of the style element for easy manipulation
-        'kiwixtooltipstylesheet'
-    );
-}
-
-/**
  * Inserts a new link element into the document header
  * @param {Element} doc The document to which to attach the new element
  * @param {String} cssContent The content to insert as an inline stylesheet
@@ -1549,6 +1508,149 @@ function getArticleLede (href, baseUrl, articleDocument) {
 }
 
 /**
+ * A function to attach the tooltip CSS for popovers (NB this does not attach the box itself, only the CSS)
+ * @param {Document} doc The document to which to attach the blloon.css styelesheet
+ * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes
+ */
+function attachKiwixPopoverCss (doc, dark) {
+    const colour = dark ? '#darkgray' : '#black';
+    const backgroundColour = dark ? '#111' : '#ebf4fb';
+    insertLinkElement(doc, `
+        .kiwixtooltip {
+            position: absolute;
+            bottom: 1em;
+            /* prettify */
+            padding: 0.5em;
+            color: ${colour};
+            background: ${backgroundColour};
+            border: 0.1em solid #b7ddf2;
+            /* round the corners */
+            border-radius: 0.5em;
+            /* handle overflow */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* handle text wrap */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            /* add fade-in transition */
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .kiwixtooltip img {
+            float: right;
+            margin-left: 5px;
+            max-width: 40%;
+            height: auto;
+        }`,
+        // The id of the style element for easy manipulation
+        'kiwixtooltipstylesheet'
+    );
+}
+
+/**
+ * Attaches a popover div for the given link to the given document's DOM
+ * @param {Event} ev The event which has fired this popover action
+ * @param {Element} link The link element that is being actioned
+ * @param {String} articleBaseUrl The base URL of the currently loaded document
+ */
+function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
+    var currentDocument = ev.target.ownerDocument;
+    var articleWindow = currentDocument.defaultView;
+    removeKiwixPopoverDivs(currentDocument);
+    setTimeout(function () {
+        // Check if the link is still being hovered over, and abort display of popover if not
+        if (!link.matches(':hover')) return;
+        getArticleLede(link.getAttribute('href'), articleBaseUrl, currentDocument).then(function (html) {
+            var div = document.createElement('div');
+            var divWidth = 512;
+            var divHeight = 256;
+            div.style.width = divWidth + 'px';
+            div.style.height = divHeight + 'px';
+            div.className = 'kiwixtooltip';
+            div.innerHTML = html;
+            currentDocument.body.appendChild(div);
+            // Calculate the position of the link that is being hovered
+            var linkRect = link.getBoundingClientRect();
+            // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
+            // var divRectY = e.clientY - div.offsetHeight - 20;
+            // Initially position the div 20px above the link
+            var triangleDirection = 'top';
+            var divRectY = (linkRect.top - div.offsetHeight - 20);
+            var triangleY = divRectY + divHeight + 19; // 16px + 3px border
+            // If we're less than 40px from the top, move the div below the link
+            if (divRectY < 40) {
+                triangleDirection = 'bottom';
+                divRectY = linkRect.bottom + 20;
+                triangleY = divRectY - 16;
+            }
+            // Position it horizontally in relation to the pointer position
+            var divRectX = ev.clientX - divWidth / 2;
+            var triangleX = ev.clientX;
+            // Here's how to do it in relation to the link instead
+            // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
+            // If we're less than 40px to the left, shift it to 40px from left
+            if (divRectX < 40) {
+                divRectX = 40;
+                if (triangleX < divRectX) triangleX = divRectX + 10;
+            } else {
+                // If right edge of div is greater than 40px from the right side of window, shift it to 40px
+                if (divRectX + divWidth > articleWindow.innerWidth - 40) {
+                    divRectX = articleWindow.innerWidth - divWidth - 40;
+                    if (triangleX > articleWindow.innerWith - 40) triangleX = articleWindow.innerWidth - 50;
+                }
+            }
+            // Now set the calculated x and y positions
+            div.style.top = divRectY + articleWindow.scrollY + 'px';
+            div.style.left = divRectX + 'px';
+            div.style.opacity = '1';
+            // Now insert the arrow
+            var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
+            var triangleColour = '#b7ddf2'; // Same as border colour of div
+            if (tooltipStyle) {
+                var span = document.createElement('span');
+                span.style.cssText = `
+                    width: 0;
+                    height: 0;
+                    border-${triangleDirection}: 16px solid ${triangleColour};
+                    border-left: 8px solid transparent !important;
+                    border-right: 8px solid transparent !important;
+                    position: fixed;
+                    top: ${triangleY}px;
+                    left: ${triangleX}px;
+                `;
+                div.appendChild(span);
+                // Force recalculation
+                // var divStyles = getComputedStyle(div, trianglePos);
+                // console.debug('Pseudo element styles', divStyles);
+            }
+        }).catch(function (err) {
+            console.warn(err);
+            // link.removeChild(div);
+        });
+    }, 500);
+}
+
+/**
+ * Remove any preview popover DIVs
+ * @param {Document} doc The document from which to remove any popovers
+ */
+function removeKiwixPopoverDivs (doc) {
+    var divs = doc.getElementsByClassName('kiwixtooltip');
+    setTimeout(function () {
+        Array.prototype.slice.call(divs).forEach(function (div) {
+            if (div.matches(':hover')) return;
+            div.style.opacity = '0';
+            setTimeout(function () {
+                if (div.parentElement) {
+                    div.parentElement.removeChild(div);
+                }
+            }, 200);
+        });
+    }, 500);
+}
+
+/**
  * Finds the closest <a> or <area> enclosing tag of an element.
  * Returns undefined if there isn't any.
  *
@@ -1588,7 +1690,6 @@ export default {
     feedNodeWithBlob: feedNodeWithBlob,
     getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
-    attachPopoverCss: attachPopoverCss,
     insertLinkElement: insertLinkElement,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,
@@ -1610,7 +1711,9 @@ export default {
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
     lockDisplayOrientation: lockDisplayOrientation,
-    getArticleLede: getArticleLede,
+    attachKiwixPopoverCss: attachKiwixPopoverCss,
+    attachKiwixPopoverDiv: attachKiwixPopoverDiv,
+    removeKiwixPopoverDivs: removeKiwixPopoverDivs,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
     warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
