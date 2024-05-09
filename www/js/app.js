@@ -6830,6 +6830,7 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(reset, 1400);
     };
 
+    /* Event processing */
     a.addEventListener('touchstart', function (e) {
         console.debug('a.touchstart');
         var timeout = 500;
@@ -6866,27 +6867,31 @@ function addListenersToLink (a, href, baseUrl) {
     a.addEventListener('contextmenu', function (e) {
         console.debug('contextmenu');
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-            var kiwixPopover = e.target.ownerDocument.querySelector('.kiwixtooltip');
-            if (kiwixPopover) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.debug('suppressed contextmenu because showing popover');
-                return;
-            }
-        }
-        if (!params.windowOpener) return;
-        if (params.rightClickType === 'double' && !a.touched) {
-            a.touched = true;
-            setTimeout(function () {
-                a.touched = false;
-            }, 700);
-        } else {
-            if (a.newcontainer) return; // Prevent accidental double activation
             e.preventDefault();
             e.stopPropagation();
-            a.newcontainer = true;
-            a.touched = false;
-            onDetectedClick(e);
+            console.debug('suppressed contextmenu because processing popovers');
+            var kiwixPopover = e.target.ownerDocument.querySelector('.kiwixtooltip');
+            if (kiwixPopover) {
+                return;
+            } else if (!a.touched) {
+                a.touched = true;
+                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
+            }
+        } else {
+            if (!params.windowOpener) return;
+            if (params.rightClickType === 'double' && !a.touched) {
+                a.touched = true;
+                setTimeout(function () {
+                    a.touched = false;
+                }, 700);
+            } else {
+                if (a.newcontainer) return; // Prevent accidental double activation
+                e.preventDefault();
+                e.stopPropagation();
+                a.newcontainer = true;
+                a.touched = false;
+                onDetectedClick(e);
+            }
         }
     });
     // This traps the middle-click event before tha auxclick event fires
@@ -6922,13 +6927,21 @@ function addListenersToLink (a, href, baseUrl) {
             uiUtil.removeKiwixPopoverDivs(a, e.target.ownerDocument);
         });
         a.addEventListener('focus', function (e) {
+            console.debug('a.focus');
             if (a.touched) return;
             a.focused = true;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
-            var doc = e.target.ownerDocument;
-            setTimeout(function () {
-                uiUtil.removeKiwixPopoverDivs(a, doc);
-            }, 5000);
+            // Keep checking to see if a is focused
+            let doc = e.target.ownerDocument;
+            let intervalId = setInterval(function () {
+                if (!a.focused) {
+                    clearInterval(intervalId); // clear the interval
+                    uiUtil.removeKiwixPopoverDivs(a, doc);
+                }
+            }, 250);
+        });
+        a.addEventListener('blur', function (e) {
+            a.focused = false;
         });
     }
     // The main click routine (called by other events above as well)
@@ -6963,15 +6976,6 @@ function displayHiddenBlockElements (win, doc) {
                     'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                     'setting to <b>never</b>.</p>';
                 }
-                // else if (params.displayHiddenBlockElements === 'auto') {
-                //     message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden elements (navigation boxes, series tables) ' +
-                //     "in Wikimedia ZIMs. This is now on by default. If you don't want to see these elements, change the 'Display hidden block elements' " +
-                //     "setting to <b>never</b> (under 'Display style').</p>";
-                //     if (params.cssSource !== 'desktop') {
-                //         message += '<p>Please note that hidden elements are <i>always</i> displayed in Desktop style (regardless of the setting)' +
-                //         (params.cssSource !== 'desktop' ? '. You can switch the display style to Desktop in Configuration' : '') + '.</p>';
-                //     }
-                // }
                 if (message) {
                     message += '<p><i>This message will not be displayed again, unless you reset the app.</i></p>';
                     params.noHiddenElementsWarning = true;

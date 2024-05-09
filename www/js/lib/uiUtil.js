@@ -1652,13 +1652,17 @@ function removeKiwixPopoverDivs (link, doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
-            if (div.matches(':hover')) return;
-            div.style.opacity = '0';
-            setTimeout(function () {
-                if (div.parentElement) {
-                    div.parentElement.removeChild(div);
+            let intervalId = setInterval(function () {
+                if (!div.matches(':hover')) {
+                    clearInterval(intervalId);
+                    div.style.opacity = '0';
+                    setTimeout(function () {
+                        if (div.parentElement) {
+                            div.parentElement.removeChild(div);
+                        }
+                    }, 200);
                 }
-            }, 200);
+            }, 250);
         });
     }, 500);
 }
