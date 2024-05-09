@@ -1567,8 +1567,16 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
         if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
             var div = document.createElement('div');
+            var screenWidth = articleWindow.innerWidth - 40;
+            var screenHeight = document.documentElement.clientHeight;
+            var margin = 40;
             var divWidth = 512;
-            var divHeight = 256;
+            if (screenWidth <= divWidth) {
+                divWidth = screenWidth;
+                margin = 10;
+            }
+            // Check if we have restricted screen height
+            var divHeight = screenHeight < 512 ? 160 : 256;
             div.style.width = divWidth + 'px';
             div.style.height = divHeight + 'px';
             div.className = 'kiwixtooltip';
@@ -1583,8 +1591,8 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             var triangleDirection = 'top';
             var divRectY = (linkRect.top - div.offsetHeight - 20);
             var triangleY = divRectY + divHeight + 19; // 16px + 3px border
-            // If we're less than 40px from the top, move the div below the link
-            if (divRectY < 40) {
+            // If we're less than half margin from the top, move the div below the link
+            if (divRectY < margin / 2) {
                 triangleDirection = 'bottom';
                 divRectY = linkRect.bottom + 20;
                 triangleY = divRectY - 16;
@@ -1603,16 +1611,15 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             }
             // Here's how to do it in relation to the link instead
             // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
-            // If we're less than 40px to the left, shift it to 40px from left
-            if (divRectX < 40) {
-                divRectX = 40;
+            // If right edge of div is greater than half margin from the right side of window, shift it to margin
+            if (divRectX + divWidth > screenWidth - margin / 2) {
+                divRectX = screenWidth - divWidth - margin / 2;
+                if (triangleX > screenWidth - margin / 2) triangleX = screenWidth - margin / 2 - 10;
+            }
+            // If we're less than margin to the left, shift it to margin px from left
+            if (divRectX < margin) {
+                divRectX = margin;
                 if (triangleX < divRectX) triangleX = divRectX + 10;
-            } else {
-                // If right edge of div is greater than 40px from the right side of window, shift it to 40px
-                if (divRectX + divWidth > articleWindow.innerWidth - 40) {
-                    divRectX = articleWindow.innerWidth - divWidth - 40;
-                    if (triangleX > articleWindow.innerWith - 40) triangleX = articleWindow.innerWidth - 50;
-                }
             }
             // Now set the calculated x and y positions
             div.style.top = divRectY + articleWindow.scrollY + 'px';
