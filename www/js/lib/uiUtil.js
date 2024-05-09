@@ -1564,7 +1564,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
     removeKiwixPopoverDivs(link, currentDocument);
     setTimeout(function () {
         // Check if the link is still being hovered over, and abort display of popover if not
-        if (!link.matches(':hover') && currentDocument.activeElement !== link) return;
+        if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
             var div = document.createElement('div');
             var divWidth = 512;
