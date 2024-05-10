@@ -1520,7 +1520,7 @@ function attachKiwixPopoverCss (doc, dark) {
             position: absolute;
             bottom: 1em;
             /* prettify */
-            padding: 0.5em;
+            padding: 0 0.5em 0.5em;
             color: ${colour};
             background: ${backgroundColour};
             border: 0.1em solid #b7ddf2;
@@ -1592,7 +1592,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
         // Initially position the div 20px above the link
         var triangleDirection = 'top';
         var divRectY = (linkRect.top - div.offsetHeight - 20);
-        var triangleY = divHeight + 16; // 16px + 3px border
+        var triangleY = divHeight + 9;
         // If we're less than half margin from the top, move the div below the link
         if (divRectY < margin / 2) {
             triangleDirection = 'bottom';
@@ -1636,7 +1636,15 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
-            div.innerHTML = `<div style="overflow: auto; height: ${divHeight}px;">${html}</div>`;
+            var breakoutIcon = window.location.pathname.replace(/\/[^/]*$/, '') + '/img/icons/new_window.svg';
+            div.innerHTML = `
+            <div style="display: flex; justify-content: flex-end; align-items: center; height: 12px; padding-top: 3px; padding-bottom: 5px; width: 100%;">
+                <div style="width: 50px; margin-right: 5px;">
+                    <img style="height: 12px;" src="${breakoutIcon}" />
+                </div>
+                <span style="color: blue; opacity: 0.5; padding-top: 1px;">X</span>
+            </div>
+            <div style="overflow: auto; height: ${divHeight - 17}px;">${html}</div>`;
             // Now insert the arrow
             var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
             var triangleColour = '#b7ddf2'; // Same as border colour of div
