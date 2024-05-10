@@ -5156,11 +5156,8 @@ function articleLoader (entry, mimeType) {
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
     console.debug('filterClickEvent fired');
-    if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
-    // Trap clicks in the iframe to restore Fullscreen mode
-    if (params.lockDisplayOrientation) refreshFullScreen(event);
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
     // If the anchor has a passthrough property, then we have already checked it is safe, so we can return
@@ -5170,6 +5167,9 @@ function filterClickEvent (event) {
     }
     // Remove any Kiwix Popovers that may be hanging around
     uiUtil.removeKiwixPopoverDivs(event.target.ownerDocument);
+    if (params.contentInjectionMode === 'jquery') return;
+    // Trap clicks in the iframe to restore Fullscreen mode
+    if (params.lockDisplayOrientation) refreshFullScreen(event);
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
         // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
@@ -6505,6 +6505,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
                 anchorParameter = '';
             }
+            // Trap clicks in the iframe (currently only used for removing popovers in Restricted mode)
+            articleWindow.onclick = filterClickEvent;
             params.isLandingPage = false;
         };
 
@@ -6899,6 +6901,7 @@ function addListenersToLink (a, href, baseUrl) {
     // This traps the middle-click event before tha auxclick event fires
     a.addEventListener('mousedown', function (e) {
         console.debug('mosuedown');
+        a.dataset.touchevoked = true; // This is needed to simulate touch events in UWP app
         if (!params.windowOpener) return;
         e.preventDefault();
         e.stopPropagation();
