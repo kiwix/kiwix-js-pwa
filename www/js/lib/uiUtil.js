@@ -1,4 +1,4 @@
-﻿/**
+/**
  * uiUtil.js : Utility functions for the User Interface
  *
  * Copyright 2013-2024 Mossroy, Jaifroid and contributors
@@ -1527,14 +1527,14 @@ function attachKiwixPopoverCss (doc, dark) {
             /* round the corners */
             border-radius: 0.5em;
             /* handle overflow */
-            overflow: hidden;
+            overflow: visible;
             text-overflow: ellipsis;
             /* handle text wrap */
             overflow-wrap: break-word;
             word-wrap: break-word;
             /* add fade-in transition */
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s;
         }
         
         .kiwixtooltip img {
@@ -1565,66 +1565,78 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
     setTimeout(function () {
         // Check if the link is still being hovered over, and abort display of popover if not
         if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
+        var div = document.createElement('div');
+        var screenWidth = articleWindow.innerWidth - 40;
+        var screenHeight = document.documentElement.clientHeight;
+        var margin = 40;
+        var divWidth = 512;
+        if (screenWidth <= divWidth) {
+            divWidth = screenWidth;
+            margin = 10;
+        }
+        // Check if we have restricted screen height
+        var divHeight = screenHeight < 512 ? 160 : 256;
+        div.style.width = divWidth + 'px';
+        div.style.height = divHeight + 'px';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'center';
+        div.style.alignItems = 'center';
+        div.className = 'kiwixtooltip';
+        div.innerHTML = '<p>Loading ...</p>';
+        div.dataset.href = linkHref;
+        currentDocument.body.appendChild(div);
+        // Calculate the position of the link that is being hovered
+        var linkRect = link.getBoundingClientRect();
+        // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
+        // var divRectY = e.clientY - div.offsetHeight - 20;
+        // Initially position the div 20px above the link
+        var triangleDirection = 'top';
+        var divRectY = (linkRect.top - div.offsetHeight - 20);
+        var triangleY = divHeight + 16; // 16px + 3px border
+        // If we're less than half margin from the top, move the div below the link
+        if (divRectY < margin / 2) {
+            triangleDirection = 'bottom';
+            divRectY = linkRect.bottom + 20;
+            triangleY = -16;
+        }
+        // Position it horizontally in relation to the pointer position
+        var divRectX, triangleX;
+        if (ev.type === 'touchstart') {
+            divRectX = ev.touches[0].clientX - divWidth / 2;
+            triangleX = ev.touches[0].clientX - divRectX - 8;
+        } else if (ev.type === 'focus') {
+            divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
+            triangleX = linkRect.left + linkRect.width / 2 - divRectX - 8;
+        } else {
+            divRectX = ev.clientX - divWidth / 2;
+            triangleX = ev.clientX - divRectX - 8;
+        }
+        // Here's how to do it in relation to the link instead
+        // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
+        // If right edge of div is greater than half margin from the right side of window, shift it to margin
+        if (divRectX + divWidth > screenWidth - margin / 2) {
+            triangleX += divRectX;
+            divRectX = screenWidth - divWidth - margin / 2;
+            triangleX -= divRectX;
+        }
+        // If we're less than margin to the left, shift it to margin px from left
+        if (divRectX < margin) {
+            triangleX += divRectX;
+            divRectX = margin;
+            triangleX -= divRectX;
+        }
+        // Adjust triangleX if necessary
+        if (triangleX < 10) triangleX = 10;
+        if (triangleX > divWidth - 10) triangleX = divWidth - 10;
+        // Now set the calculated x and y positions
+        div.style.top = divRectY + articleWindow.scrollY + 'px';
+        div.style.left = divRectX + 'px';
+        div.style.opacity = '1';
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
-            var div = document.createElement('div');
-            var screenWidth = articleWindow.innerWidth - 40;
-            var screenHeight = document.documentElement.clientHeight;
-            var margin = 40;
-            var divWidth = 512;
-            if (screenWidth <= divWidth) {
-                divWidth = screenWidth;
-                margin = 10;
-            }
-            // Check if we have restricted screen height
-            var divHeight = screenHeight < 512 ? 160 : 256;
-            div.style.width = divWidth + 'px';
-            div.style.height = divHeight + 'px';
-            div.className = 'kiwixtooltip';
-            div.innerHTML = html;
-            div.dataset.href = linkHref;
-            currentDocument.body.appendChild(div);
-            // Calculate the position of the link that is being hovered
-            var linkRect = link.getBoundingClientRect();
-            // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
-            // var divRectY = e.clientY - div.offsetHeight - 20;
-            // Initially position the div 20px above the link
-            var triangleDirection = 'top';
-            var divRectY = (linkRect.top - div.offsetHeight - 20);
-            var triangleY = divRectY + divHeight + 19; // 16px + 3px border
-            // If we're less than half margin from the top, move the div below the link
-            if (divRectY < margin / 2) {
-                triangleDirection = 'bottom';
-                divRectY = linkRect.bottom + 20;
-                triangleY = divRectY - 16;
-            }
-            // Position it horizontally in relation to the pointer position
-            var divRectX, triangleX;
-            if (ev.type === 'touchstart') {
-                divRectX = ev.touches[0].clientX - divWidth / 2;
-                triangleX = ev.touches[0].clientX;
-            } else if (ev.type === 'focus') {
-                triangleX = linkRect.left + linkRect.width / 2;
-                divRectX = triangleX - divWidth / 2;
-            } else {
-                divRectX = ev.clientX - divWidth / 2;
-                triangleX = ev.clientX;
-            }
-            // Here's how to do it in relation to the link instead
-            // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
-            // If right edge of div is greater than half margin from the right side of window, shift it to margin
-            if (divRectX + divWidth > screenWidth - margin / 2) {
-                divRectX = screenWidth - divWidth - margin / 2;
-                if (triangleX > screenWidth - margin / 2) triangleX = screenWidth - margin / 2 - 10;
-            }
-            // If we're less than margin to the left, shift it to margin px from left
-            if (divRectX < margin) {
-                divRectX = margin;
-                if (triangleX < divRectX) triangleX = divRectX + 10;
-            }
-            // Now set the calculated x and y positions
-            div.style.top = divRectY + articleWindow.scrollY + 'px';
-            div.style.left = divRectX + 'px';
-            div.style.opacity = '1';
+            div.style.justifyContent = '';
+            div.style.alignItems = '';
+            div.style.display = 'block';
+            div.innerHTML = `<div style="overflow: auto; height: ${divHeight}px;">${html}</div>`;
             // Now insert the arrow
             var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
             var triangleColour = '#b7ddf2'; // Same as border colour of div
@@ -1636,7 +1648,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
                     border-${triangleDirection}: 16px solid ${triangleColour};
                     border-left: 8px solid transparent !important;
                     border-right: 8px solid transparent !important;
-                    position: fixed;
+                    position: absolute;
                     top: ${triangleY}px;
                     left: ${triangleX}px;
                 `;
@@ -1644,7 +1656,9 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             }
         }).catch(function (err) {
             console.warn(err);
-            // link.removeChild(div);
+            // Remove the div
+            div.style.opacity = '0';
+            div.parentElement.removeChild(div);
         });
     }, 500);
 }
@@ -1659,7 +1673,7 @@ function removeKiwixPopoverDivs (link, doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
-            let intervalId = setInterval(function () {
+            var intervalId = setInterval(function () {
                 if (!div.matches(':hover')) {
                     clearInterval(intervalId);
                     div.style.opacity = '0';
@@ -1671,7 +1685,7 @@ function removeKiwixPopoverDivs (link, doc) {
                 }
             }, 250);
         });
-    }, 500);
+    }, 300);
 }
 
 /**
