@@ -1,4 +1,4 @@
-/**
+﻿/**
  * uiUtil.js : Utility functions for the User Interface
  *
  * Copyright 2013-2024 Mossroy, Jaifroid and contributors
@@ -1561,7 +1561,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
     if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
     var currentDocument = ev.target.ownerDocument;
     var articleWindow = currentDocument.defaultView;
-    removeKiwixPopoverDivs(link, currentDocument);
+    removeKiwixPopoverDivs(currentDocument);
     setTimeout(function () {
         // Check if the link is still being hovered over, and abort display of popover if not
         if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
@@ -1666,10 +1666,9 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
 /**
  * Remove any preview popover DIVs
  *
- * @param {Element} link The link element which was actioned
  * @param {Document} doc The document from which to remove any popovers
  */
-function removeKiwixPopoverDivs (link, doc) {
+function removeKiwixPopoverDivs (doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {

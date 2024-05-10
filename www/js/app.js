@@ -5155,7 +5155,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    // console.debug('filterClickEvent fired');
+    console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
@@ -5168,6 +5168,8 @@ function filterClickEvent (event) {
         clickedAnchor.passthrough = false;
         return;
     }
+    // Remove any Kiwix Popovers that may be hanging around
+    uiUtil.removeKiwixPopoverDivs(event.target.ownerDocument);
     if (clickedAnchor) {
         // Check for Zimit links that would normally be handled by the Replay Worker
         // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
@@ -6872,7 +6874,7 @@ function addListenersToLink (a, href, baseUrl) {
             console.debug('suppressed contextmenu because processing popovers');
             var kiwixPopover = e.target.ownerDocument.querySelector('.kiwixtooltip');
             if (kiwixPopover) {
-                return;
+                // return;
             } else if (!a.touched) {
                 a.touched = true;
                 uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
@@ -6924,7 +6926,7 @@ function addListenersToLink (a, href, baseUrl) {
         });
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked) return;
-            uiUtil.removeKiwixPopoverDivs(a, e.target.ownerDocument);
+            uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
         });
         a.addEventListener('focus', function (e) {
             console.debug('a.focus');
@@ -6932,15 +6934,16 @@ function addListenersToLink (a, href, baseUrl) {
             a.focused = true;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
             // Keep checking to see if a is focused
-            let doc = e.target.ownerDocument;
-            let intervalId = setInterval(function () {
+            var doc = e.target.ownerDocument;
+            var intervalId = setInterval(function () {
                 if (!a.focused) {
                     clearInterval(intervalId); // clear the interval
-                    uiUtil.removeKiwixPopoverDivs(a, doc);
+                    uiUtil.removeKiwixPopoverDivs(doc);
                 }
             }, 250);
         });
         a.addEventListener('blur', function (e) {
+            console.debug('a.blur');
             a.focused = false;
         });
     }
