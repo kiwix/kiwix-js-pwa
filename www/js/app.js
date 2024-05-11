@@ -6763,6 +6763,7 @@ function addListenersToLink (a, href, baseUrl) {
             a.newcontainer = false;
         }
         loadingContainer = false;
+        a.articleloading = false;
     };
     var onDetectedClick = function (e) {
         // Restore original values for this window/tab
@@ -6844,12 +6845,11 @@ function addListenersToLink (a, href, baseUrl) {
             if (!params.windowOpener || a.touched) return;
             loadingContainer = true;
         } else {
-            timeout = 100;
+            timeout = 200;
         }
         a.touched = true;
         var event = e;
-        var doc = e.target.ownerDocument;
-        // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
+        // The link will be clicked if the user long-presses for more than 500ms (if the option is enabled), or 200ms for popover
         setTimeout(function () {
             // DEV: appstate.startVector indicates that the app is processing a touch zoom event, so we cancel any new windows
             // see uiUtil.pointermove_handler
@@ -6865,9 +6865,13 @@ function addListenersToLink (a, href, baseUrl) {
         }, timeout);
     }, { passive: false });
     a.addEventListener('touchend', function () {
+        console.debug('a.touchend');
         a.touched = false;
         a.newcontainer = false;
         loadingContainer = false;
+        // Cancel any popovers because user has clicked
+        a.articleloading = true;
+        setTimeout(reset, 1000);
     });
     // This detects right-click in all browsers (only if the option is enabled)
     a.addEventListener('contextmenu', function (e) {
@@ -6902,7 +6906,7 @@ function addListenersToLink (a, href, baseUrl) {
     });
     // This traps the middle-click event before tha auxclick event fires
     a.addEventListener('mousedown', function (e) {
-        console.debug('mosuedown');
+        console.debug('a.mousedown');
         a.dataset.touchevoked = true; // This is needed to simulate touch events in UWP app
         if (!params.windowOpener) return;
         e.preventDefault();
@@ -6918,7 +6922,7 @@ function addListenersToLink (a, href, baseUrl) {
     // This detects the middle-click event that opens a new tab in recent Firefox and Chrome
     // See https://developer.mozilla.org/en-US/docs/Web/API/Element/auxclick_event
     a.addEventListener('auxclick', function (e) {
-        console.debug('auxclick');
+        console.debug('a.auxclick');
         if (!params.windowOpener) return;
         e.preventDefault();
         e.stopPropagation();
@@ -6927,6 +6931,7 @@ function addListenersToLink (a, href, baseUrl) {
     // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
+            console.debug('a.mouseover');
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
         });
         a.addEventListener('mouseout', function (e) {
@@ -6939,14 +6944,6 @@ function addListenersToLink (a, href, baseUrl) {
                 if (a.touched) return;
                 a.focused = true;
                 uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
-                // Keep checking to see if a is focused
-                var doc = e.target.ownerDocument;
-                var intervalId = setInterval(function () {
-                    if (!a.focused) {
-                        clearInterval(intervalId); // clear the interval
-                        uiUtil.removeKiwixPopoverDivs(doc);
-                    }
-                }, 250);
             }, 200);
         });
         a.addEventListener('blur', function (e) {
@@ -6956,7 +6953,9 @@ function addListenersToLink (a, href, baseUrl) {
     }
     // The main click routine (called by other events above as well)
     a.addEventListener('click', function (e) {
-        console.log('Click event', e);
+        console.log('a.click', e);
+        // Cancel any popovers because user has clicked
+        a.articleloading = true;
         // Prevent opening multiple windows
         if (loadingContainer || a.touched) {
             e.preventDefault();

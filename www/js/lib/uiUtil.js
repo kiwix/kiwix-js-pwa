@@ -1560,10 +1560,16 @@ function attachKiwixPopoverCss (doc, dark) {
  * @param {Boolean} dark An optional value to switch colour theme to dark if true
  */
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
+    // Do not show popover if the user has initiated an article load
+    if (link.articleloading) {
+        console.debug('Cancelled display of popover because user is loading the underlying article');
+        return;
+    }
     // Do not disply a popover if one is already showing for the current link
     var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
     var linkHref = link.getAttribute('href');
     if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
+    console.debug('Attaching popover...');
     var currentDocument = ev.target.ownerDocument;
     var articleWindow = currentDocument.defaultView;
     removeKiwixPopoverDivs(currentDocument);
@@ -1636,6 +1642,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         div.style.left = divRectX + 'px';
         div.style.opacity = '1';
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
+            link.articleloading = false;
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
@@ -1682,6 +1689,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             // Remove the div
             div.style.opacity = '0';
             div.parentElement.removeChild(div);
+            link.articleloading = false;
         });
     }, 500);
 }
