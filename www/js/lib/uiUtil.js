@@ -1520,7 +1520,7 @@ function attachKiwixPopoverCss (doc, dark) {
             position: absolute;
             bottom: 1em;
             /* prettify */
-            padding: 0 0.5em 0.5em;
+            padding: 0 5px 5px;
             color: ${colour};
             background: ${backgroundColour};
             border: 0.1em solid #b7ddf2;
@@ -1553,8 +1553,9 @@ function attachKiwixPopoverCss (doc, dark) {
  * @param {Event} ev The event which has fired this popover action
  * @param {Element} link The link element that is being actioned
  * @param {String} articleBaseUrl The base URL of the currently loaded document
+ * @param {Boolean} dark An optional value to switch colour theme to dark if true
  */
-function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
+function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     // Do not disply a popover if one is already showing for the current link
     var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
     var linkHref = link.getAttribute('href');
@@ -1592,7 +1593,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
         // Initially position the div 20px above the link
         var triangleDirection = 'top';
         var divRectY = (linkRect.top - div.offsetHeight - 20);
-        var triangleY = divHeight + 9;
+        var triangleY = divHeight + 6;
         // If we're less than half margin from the top, move the div below the link
         if (divRectY < margin / 2) {
             triangleDirection = 'bottom';
@@ -1603,20 +1604,18 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
         var divRectX, triangleX;
         if (ev.type === 'touchstart') {
             divRectX = ev.touches[0].clientX - divWidth / 2;
-            triangleX = ev.touches[0].clientX - divRectX - 8;
+            triangleX = ev.touches[0].clientX - divRectX - 20;
         } else if (ev.type === 'focus') {
             divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
-            triangleX = linkRect.left + linkRect.width / 2 - divRectX - 8;
+            triangleX = linkRect.left + linkRect.width / 2 - divRectX - 20;
         } else {
             divRectX = ev.clientX - divWidth / 2;
-            triangleX = ev.clientX - divRectX - 8;
+            triangleX = ev.clientX - divRectX - 20;
         }
-        // Here's how to do it in relation to the link instead
-        // var divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
-        // If right edge of div is greater than half margin from the right side of window, shift it to margin
-        if (divRectX + divWidth > screenWidth - margin / 2) {
+        // If right edge of div is greater than margin from the right side of window, shift it to margin
+        if (divRectX + divWidth > screenWidth - margin) {
             triangleX += divRectX;
-            divRectX = screenWidth - divWidth - margin / 2;
+            divRectX = screenWidth - divWidth - margin;
             triangleX -= divRectX;
         }
         // If we're less than margin to the left, shift it to margin px from left
@@ -1636,15 +1635,16 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl) {
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
-            var breakoutIcon = window.location.pathname.replace(/\/[^/]*$/, '') + '/img/icons/new_window.svg';
+            var breakoutIcon = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
+            var backgroundColour = dark ? '#222' : '#ebf4fb';
             div.innerHTML = `
-            <div style="display: flex; justify-content: flex-end; align-items: center; height: 12px; padding-top: 3px; padding-bottom: 5px; width: 100%;">
-                <div style="width: 50px; margin-right: 5px;">
-                    <img style="height: 12px;" src="${breakoutIcon}" />
+            <div style="position: relative; overflow: clip; height: ${divHeight}px;">
+                <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center;">
+                    <img id="popbreakouticon" style="height: 12px; margin-right: 10px;" src="${breakoutIcon}" />
+                    <span id="popcloseicon" style="padding-top: 1px; padding-right: 2px; font-size: 14px; font-family: sans-serif;">X</span>
                 </div>
-                <span style="color: blue; opacity: 0.5; padding-top: 1px;">X</span>
-            </div>
-            <div style="overflow: auto; height: ${divHeight - 17}px;">${html}</div>`;
+                <div style="padding-top: 3px">${html}</div>
+            </div>`;
             // Now insert the arrow
             var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
             var triangleColour = '#b7ddf2'; // Same as border colour of div

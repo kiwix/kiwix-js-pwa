@@ -6834,6 +6834,8 @@ function addListenersToLink (a, href, baseUrl) {
         setTimeout(reset, 1400);
     };
 
+    var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+
     /* Event processing */
     a.addEventListener('touchstart', function (e) {
         console.debug('a.touchstart');
@@ -6854,7 +6856,7 @@ function addListenersToLink (a, href, baseUrl) {
             if (!a.touched || a.newcontainer || appstate.startVector) return;
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
                 a.dataset.touchevoked = true;
-                uiUtil.attachKiwixPopoverDiv(event, a, baseUrl);
+                uiUtil.attachKiwixPopoverDiv(event, a, baseUrl, darkTheme);
             } else {
                 a.newcontainer = true;
                 onDetectedClick(event);
@@ -6879,7 +6881,7 @@ function addListenersToLink (a, href, baseUrl) {
                 // return;
             } else if (!a.touched) {
                 a.touched = true;
-                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
+                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
             }
         } else {
             if (!params.windowOpener) return;
@@ -6925,25 +6927,27 @@ function addListenersToLink (a, href, baseUrl) {
     // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
-            uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
+            uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
         });
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked) return;
             uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
         });
         a.addEventListener('focus', function (e) {
-            console.debug('a.focus');
-            if (a.touched) return;
-            a.focused = true;
-            uiUtil.attachKiwixPopoverDiv(e, a, baseUrl);
-            // Keep checking to see if a is focused
-            var doc = e.target.ownerDocument;
-            var intervalId = setInterval(function () {
-                if (!a.focused) {
-                    clearInterval(intervalId); // clear the interval
-                    uiUtil.removeKiwixPopoverDivs(doc);
-                }
-            }, 250);
+            setTimeout(function () { // Delay focus event so touchstart can fire first
+                console.debug('a.focus');
+                if (a.touched) return;
+                a.focused = true;
+                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
+                // Keep checking to see if a is focused
+                var doc = e.target.ownerDocument;
+                var intervalId = setInterval(function () {
+                    if (!a.focused) {
+                        clearInterval(intervalId); // clear the interval
+                        uiUtil.removeKiwixPopoverDivs(doc);
+                    }
+                }, 250);
+            }, 200);
         });
         a.addEventListener('blur', function (e) {
             console.debug('a.blur');
