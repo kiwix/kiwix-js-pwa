@@ -1643,9 +1643,9 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             var backgroundColour = dark ? '#222' : '#ebf4fb';
             div.innerHTML = `
             <div style="position: relative; overflow: clip; height: ${divHeight}px;">
-                <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center;">
-                    <img id="popbreakouticon" style="height: 12px; margin-right: 10px;" src="${breakoutIcon}" />
-                    <span id="popcloseicon" style="padding-top: 1px; padding-right: 2px; font-size: 14px; font-family: sans-serif;">X</span>
+                <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center; padding: 0;">
+                    <img id="popbreakouticon" style="height: 18px; margin-right: 18px;" src="${breakoutIcon}" />
+                    <span id="popcloseicon" style="padding-top: 1px; padding-right: 2px; font-size: 20px; font-family: sans-serif;">X</span>
                 </div>
                 <div style="padding-top: 3px">${html}</div>
             </div>`;
