@@ -6958,7 +6958,7 @@ function addListenersToLink (a, href, baseUrl) {
     a.addEventListener('click', function (e) {
         console.log('Click event', e);
         // Prevent opening multiple windows
-        if (loadingContainer || a.touched || a.newcontainer) {
+        if (loadingContainer || a.touched) {
             e.preventDefault();
             e.stopPropagation();
         } else {

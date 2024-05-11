@@ -1542,6 +1542,10 @@ function attachKiwixPopoverCss (doc, dark) {
             margin-left: 5px;
             max-width: 40%;
             height: auto;
+        }
+        
+        #popcloseicon:hover {
+            cursor: default;
         }`,
         // The id of the style element for easy manipulation
         'kiwixtooltipstylesheet'
@@ -1662,6 +1666,17 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
                 `;
                 div.appendChild(span);
             }
+            // Programme the icons
+            currentDocument.getElementById('popcloseicon').addEventListener('click', function () {
+                div.style.opacity = '0';
+                setTimeout(function () {
+                    div.parentElement.removeChild(div);
+                }, 200);
+            });
+            currentDocument.getElementById('popbreakouticon').addEventListener('click', function () {
+                link.newcontainer = true;
+                link.click();
+            });
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
