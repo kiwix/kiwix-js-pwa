@@ -1457,7 +1457,10 @@ function getArticleLede (href, baseUrl, articleDocument) {
                         if (nonEmptyParagraphs.length > 0) {
                             // Add two paras (becuase one sometimes isn't enough to fill the box)
                             for (let i = 0; i < 2; i++) {
-                                balloonString += '<p>' + nonEmptyParagraphs[i].innerHTML + '</p>';
+                                // In Restricted mode, we risk breaking the UI if user clicks on an embedded link, so only use textContent
+                                var content = params.contentInjectionMode === 'jquery' ? nonEmptyParagraphs[i].textContent :
+                                    nonEmptyParagraphs[i].innerHTML;
+                                balloonString += '<p>' + content + '</p>';
                             }
                         }
                         const images = articleBody.querySelectorAll('img');
