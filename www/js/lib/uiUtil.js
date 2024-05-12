@@ -1658,6 +1658,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         div.style.opacity = '1';
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
             link.articleloading = false;
+            link.dataset.touchevoked = false;
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
@@ -1716,6 +1717,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             div.style.opacity = '0';
             div.parentElement.removeChild(div);
             link.articleloading = false;
+            link.dataset.touchevoked = false;
         });
     }, 500);
 }
