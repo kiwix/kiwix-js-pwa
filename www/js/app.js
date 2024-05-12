@@ -5155,7 +5155,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    console.debug('filterClickEvent fired');
+    // console.debug('filterClickEvent fired');
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Find the closest enclosing A tag (if any)
@@ -6839,7 +6839,7 @@ function addListenersToLink (a, href, baseUrl) {
 
     /* Event processing */
     a.addEventListener('touchstart', function (e) {
-        console.debug('a.touchstart');
+        // console.debug('a.touchstart');
         var timeout = 500;
         if (!appstate.wikimediaZimLoaded || !params.showPopoverPreviews) {
             if (!params.windowOpener || a.touched) return;
@@ -6865,7 +6865,7 @@ function addListenersToLink (a, href, baseUrl) {
         }, timeout);
     }, { passive: false });
     a.addEventListener('touchend', function () {
-        console.debug('a.touchend');
+        // console.debug('a.touchend');
         a.touched = false;
         a.newcontainer = false;
         loadingContainer = false;
@@ -6875,11 +6875,11 @@ function addListenersToLink (a, href, baseUrl) {
     });
     // This detects right-click in all browsers (only if the option is enabled)
     a.addEventListener('contextmenu', function (e) {
-        console.debug('contextmenu');
+        // console.debug('contextmenu');
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             e.preventDefault();
             e.stopPropagation();
-            console.debug('suppressed contextmenu because processing popovers');
+            // console.debug('suppressed contextmenu because processing popovers');
             var kiwixPopover = e.target.ownerDocument.querySelector('.kiwixtooltip');
             if (kiwixPopover) {
                 // return;
@@ -6906,7 +6906,7 @@ function addListenersToLink (a, href, baseUrl) {
     });
     // This traps the middle-click event before tha auxclick event fires
     a.addEventListener('mousedown', function (e) {
-        console.debug('a.mousedown');
+        // console.debug('a.mousedown');
         a.dataset.touchevoked = true; // This is needed to simulate touch events in UWP app
         if (!params.windowOpener) return;
         e.preventDefault();
@@ -6916,13 +6916,13 @@ function addListenersToLink (a, href, baseUrl) {
             a.newcontainer = true;
             onDetectedClick(e);
         } else {
-            console.debug('suppressed mousedown');
+            // console.debug('suppressed mousedown');
         }
     });
     // This detects the middle-click event that opens a new tab in recent Firefox and Chrome
     // See https://developer.mozilla.org/en-US/docs/Web/API/Element/auxclick_event
     a.addEventListener('auxclick', function (e) {
-        console.debug('a.auxclick');
+        // console.debug('a.auxclick');
         if (!params.windowOpener) return;
         e.preventDefault();
         e.stopPropagation();
@@ -6931,7 +6931,7 @@ function addListenersToLink (a, href, baseUrl) {
     // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
-            console.debug('a.mouseover');
+            // console.debug('a.mouseover');
             if (a.dataset.touchevoked) return;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
         });
@@ -6941,14 +6941,14 @@ function addListenersToLink (a, href, baseUrl) {
         });
         a.addEventListener('focus', function (e) {
             setTimeout(function () { // Delay focus event so touchstart can fire first
-                console.debug('a.focus');
+                // console.debug('a.focus');
                 if (a.touched) return;
                 a.focused = true;
                 uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
             }, 200);
         });
         a.addEventListener('blur', function (e) {
-            console.debug('a.blur');
+            // console.debug('a.blur');
             a.focused = false;
         });
     }

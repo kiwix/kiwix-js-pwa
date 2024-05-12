@@ -1577,14 +1577,14 @@ function attachKiwixPopoverCss (doc, dark) {
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     // Do not show popover if the user has initiated an article load
     if (link.articleloading) {
-        console.debug('Cancelled display of popover because user is loading the underlying article');
+        // console.debug('Cancelled display of popover because user is loading the underlying article');
         return;
     }
     // Do not disply a popover if one is already showing for the current link
     var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
     var linkHref = link.getAttribute('href');
     if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
-    console.debug('Attaching popover...');
+    // console.debug('Attaching popover...');
     var currentDocument = ev.target.ownerDocument;
     var articleWindow = currentDocument.defaultView;
     removeKiwixPopoverDivs(currentDocument);
