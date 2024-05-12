@@ -91,6 +91,7 @@ params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting
 params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
+params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
 params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
@@ -263,6 +264,7 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === 'top' ? 'top' : params.hideToolbars ? 'both' : 'never');
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
+document.getElementById('showPopoverPreviewsCheck').checked = params.showPopoverPreviews;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.debugLibzimASM === 'disable') document.getElementById('debugLibzimASMDrop').style.color = 'red';
