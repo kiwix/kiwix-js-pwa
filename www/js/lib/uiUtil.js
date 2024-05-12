@@ -1439,10 +1439,6 @@ function getArticleLede (href, baseUrl, articleDocument) {
                     const articleBody = doc.body;
                     if (articleBody) {
                         let balloonString = '';
-                        // const articleHeader = articleBody.querySelector('h1');
-                        // if (articleHeader) {
-                        //     balloonString += '<h3>' + articleHeader.innerText + '</h3>';
-                        // }
                         // Remove all standalone style elements, because their content is shown by both innerText and textContent
                         const styleElements = Array.from(articleBody.querySelectorAll('style'));
                         styleElements.forEach(style => {
@@ -1452,14 +1448,14 @@ function getArticleLede (href, baseUrl, articleDocument) {
                         // Filter out empty paragraphs or those with less than 50 characters
                         const nonEmptyParagraphs = paragraphs.filter(para => {
                             const text = para.innerText.trim();
-                            return text !== '' && text.length >= 50;
+                            return !/^\s*$/.test(text) && text.length >= 50;
                         });
                         if (nonEmptyParagraphs.length > 0) {
                             // Add two paras (becuase one sometimes isn't enough to fill the box)
                             for (let i = 0; i < 2; i++) {
-                                // In Restricted mode, we risk breaking the UI if user clicks on an embedded link, so only use textContent
-                                var content = params.contentInjectionMode === 'jquery' ? nonEmptyParagraphs[i].textContent :
-                                    nonEmptyParagraphs[i].innerHTML;
+                                // In Restricted mode, we risk breaking the UI if user clicks on an embedded link, so only use innerText
+                                var content = params.contentInjectionMode === 'jquery' ? nonEmptyParagraphs[i].innerText
+                                    : nonEmptyParagraphs[i].innerHTML;
                                 balloonString += '<p>' + content + '</p>';
                             }
                         }
@@ -1679,12 +1675,15 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             var closePopup = function () {
                 div.style.opacity = '0';
                 setTimeout(function () {
-                    div.parentElement.removeChild(div);
+                    if (div && div.parentElement) {
+                        div.parentElement.removeChild(div);
+                    }
                 }, 200);
             };
             var breakout = function () {
                 link.newcontainer = true;
                 link.click();
+                closePopup();
             }
             var closeIcon = currentDocument.getElementById('popcloseicon');
             closeIcon.addEventListener('click', closePopup);
