@@ -1542,9 +1542,25 @@ function attachKiwixPopoverCss (doc, dark) {
             max-width: 40%;
             height: auto;
         }
+
+        #popcloseicon {
+            padding-top: 1px;
+            padding-right: 2px;
+            font-size: 20px;
+            font-family: sans-serif;
+        }
         
-        #popcloseicon:hover {
-            cursor: default;
+        #popcloseicon:hover { 
+            cursor: pointer;
+        }
+        
+        #popbreakouticon {
+            height: 18px;
+            margin-right: 18px;
+        }
+        
+        #popbreakouticon:hover {
+            cursor: pointer;
         }`,
         // The id of the style element for easy manipulation
         'kiwixtooltipstylesheet'
@@ -1649,8 +1665,8 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             var backgroundColour = dark ? '#222' : '#ebf4fb';
             div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${divHeight}px;">
                 <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center; padding: 0;">
-                    <img id="popbreakouticon" style="height: 18px; margin-right: 18px;" src="${breakoutIconFile}" />
-                    <span id="popcloseicon" style="padding-top: 1px; padding-right: 2px; font-size: 20px; font-family: sans-serif;">X</span>
+                    <img id="popbreakouticon" src="${breakoutIconFile}" />
+                    <span id="popcloseicon">X</span>
                 </div>
                 <div style="padding-top: 3px">${html}</div>
             </div>`;
