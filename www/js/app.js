@@ -5168,6 +5168,7 @@ function filterClickEvent (event) {
     // Deal with Kiwix Popovers
     if (/pop(breakout|close)icon/.test(event.target.id)) {
         // Needed for Firefox for Android, as this event appears to block the other element events
+        event.preventDefault();
         event.target.click();
         return;
     } else {

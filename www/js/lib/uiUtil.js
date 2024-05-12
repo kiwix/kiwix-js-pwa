@@ -1672,32 +1672,28 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
                 div.appendChild(span);
             }
             // Programme the icons
-            var closePopup = function () {
-                div.style.opacity = '0';
-                setTimeout(function () {
-                    if (div && div.parentElement) {
-                        div.parentElement.removeChild(div);
-                    }
-                }, 200);
-            };
-            var breakout = function () {
+            var breakout = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
                 link.newcontainer = true;
                 link.click();
-                closePopup();
+                closePopover(div);
             }
             var closeIcon = currentDocument.getElementById('popcloseicon');
             var breakoutIcon = currentDocument.getElementById('popbreakouticon');
             // Register click event for full support
-            closeIcon.addEventListener('click', closePopup);
-            breakoutIcon.addEventListener('click', breakout);
+            closeIcon.addEventListener('mousedown', function () {
+                closePopover(div);
+            }, true);
+            breakoutIcon.addEventListener('mousedown', breakout, true);
             // Register either pointerdown or touchstart if supported
-            if (window.PointerEvent) {
-                closeIcon.addEventListener('pointerdown', closePopup);
-                breakoutIcon.addEventListener('pointerdown', breakout);
-            } else if ('ontouchstart' in window) {
-                closeIcon.addEventListener('touchstart', closePopup);
-                breakoutIcon.addEventListener('touchstart', breakout);
-            }
+            var eventName = window.PointerEvent ? 'pointerdown' : 'touchstart';
+            closeIcon.addEventListener(eventName, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closePopover(div);
+            }, true);
+            breakoutIcon.addEventListener(eventName, breakout, true);
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
@@ -1721,12 +1717,7 @@ function removeKiwixPopoverDivs (doc) {
             var fadeOutDiv = function () {
                 clearTimeout(timeoutID);
                 if (!div.matches(':hover')) {
-                    div.style.opacity = '0';
-                    setTimeout(function () {
-                        if (div.parentElement) {
-                            div.parentElement.removeChild(div);
-                        }
-                    }, 200);
+                    closePopover(div);
                 } else {
                     timeoutID = setTimeout(fadeOutDiv, 250);
                 }
@@ -1735,6 +1726,16 @@ function removeKiwixPopoverDivs (doc) {
         });
     }, 300);
 }
+
+// Directly close any popovers
+function closePopover (div) {
+    div.style.opacity = '0';
+    setTimeout(function () {
+        if (div && div.parentElement) {
+            div.parentElement.removeChild(div);
+        }
+    }, 200);
+};
 
 /**
  * Finds the closest <a> or <area> enclosing tag of an element.
