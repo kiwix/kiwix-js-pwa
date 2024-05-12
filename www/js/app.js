@@ -6939,6 +6939,7 @@ function addListenersToLink (a, href, baseUrl) {
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
             console.debug('a.mouseover');
+            if (a.dataset.touchevoked) return;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
         });
         a.addEventListener('mouseout', function (e) {
