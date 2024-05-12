@@ -7005,6 +7005,7 @@ function addListenersToLink (a, href, baseUrl) {
         a.addEventListener('blur', function (e) {
             // console.debug('a.blur');
             a.focused = false;
+            setTimeout(reset, 1400);
         });
     }
     // The main click routine (called by other events above as well)
