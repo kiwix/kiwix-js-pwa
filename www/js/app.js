@@ -5165,8 +5165,15 @@ function filterClickEvent (event) {
         clickedAnchor.passthrough = false;
         return;
     }
-    // Remove any Kiwix Popovers that may be hanging around
-    uiUtil.removeKiwixPopoverDivs(event.target.ownerDocument);
+    // Deal with Kiwix Popovers
+    if (/pop(breakout|close)icon/.test(event.target.id)) {
+        // Needed for Firefox for Android, as this event appears to block the other element events
+        event.target.id.click();
+        return;
+    } else {
+        // Remove any Kiwix Popovers that may be hanging around
+        uiUtil.removeKiwixPopoverDivs(event.target.ownerDocument);
+    }
     if (params.contentInjectionMode === 'jquery') return;
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
