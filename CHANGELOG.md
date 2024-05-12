@@ -2,11 +2,13 @@
 
 ## In-progress release 3.2.6
 
+* FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
 * ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
 * ENHANCEMENT: Standard NWJS packages (not XP) are now 64bit
 * FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
 * DEV: Avoid incorrect and redundant uploads to Kiwix download server
 * DEV: Fix build scripts
+* DEPENDENCIES: Bump Electron to 29.3.1 for 64bit builds
 * DEPENDENCIES: Bump ejs to 3.1.10
 
 ## Release 3.2.3 / 3.2.4
