@@ -1710,8 +1710,8 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         if (this.value === 'serviceworker' && window.location.protocol !== 'ms-appx-web:') {
             document.getElementById('enableSourceVerificationCheck').style.display = '';
-            if (params.sourceVerification && appstate.selectedArchive.isReady() &&
-              !(settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name))) {
+            if (params.sourceVerification && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
+              !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
                 verifyLoadedArchive(appstate.selectedArchive);
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
@@ -4336,9 +4336,9 @@ function archiveReadyCallback (archive) {
     if (settingsStore.getItem('trustedZimFiles') === null) {
         settingsStore.setItem('trustedZimFiles', '', Infinity);
     }
-    if (params.sourceVerification && window.location.protocol !== 'ms-appx-web:' && (params.contentInjectionMode === 'serviceworker' || params.contentInjectionMode === 'serviceworkerlocal')) {
-        // Check if source of the zim file can be trusted.
-        if (!(settingsStore.getItem('trustedZimFiles').includes(archive.file.name))) {
+    if (params.sourceVerification && window.location.protocol !== 'ms-appx-web:' && /^serviceworker/.test(params.contentInjectionMode)) {
+        // Check if source of the zim file can be trusted and that it is not a packaged archive
+        if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile) {
             verifyLoadedArchive(archive).then(function () {
                 displayArchive();
             });
@@ -6818,6 +6818,7 @@ function addListenersToLink (a, href, baseUrl) {
         }
         loadingContainer = false;
         a.articleloading = false;
+        a.dataset.touchevoked = false;
     };
     var onDetectedClick = function (e) {
         // Restore original values for this window/tab
@@ -6986,11 +6987,11 @@ function addListenersToLink (a, href, baseUrl) {
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
         a.addEventListener('mouseover', function (e) {
             // console.debug('a.mouseover');
-            if (a.dataset.touchevoked) return;
+            if (a.dataset.touchevoked === 'true') return;
             uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
         });
         a.addEventListener('mouseout', function (e) {
-            if (a.dataset.touchevoked) return;
+            if (a.dataset.touchevoked === 'true') return;
             uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
         });
         a.addEventListener('focus', function (e) {
