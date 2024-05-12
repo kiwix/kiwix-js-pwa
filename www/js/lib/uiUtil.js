@@ -1686,11 +1686,18 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
                 closePopup();
             }
             var closeIcon = currentDocument.getElementById('popcloseicon');
-            closeIcon.addEventListener('click', closePopup);
-            closeIcon.addEventListener('touchstart', closePopup, { passive: true });
             var breakoutIcon = currentDocument.getElementById('popbreakouticon');
+            // Register click event for full support
+            closeIcon.addEventListener('click', closePopup);
             breakoutIcon.addEventListener('click', breakout);
-            breakoutIcon.addEventListener('touchstart', breakout, { passive: true });
+            // Register either pointerdown or touchstart if supported
+            if (window.PointerEvent) {
+                closeIcon.addEventListener('pointerdown', closePopup);
+                breakoutIcon.addEventListener('pointerdown', breakout);
+            } else if ('ontouchstart' in window) {
+                closeIcon.addEventListener('touchstart', closePopup);
+                breakoutIcon.addEventListener('touchstart', breakout);
+            }
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
