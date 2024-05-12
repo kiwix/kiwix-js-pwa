@@ -6974,6 +6974,10 @@ function addListenersToLink (a, href, baseUrl) {
             // console.debug('suppressed mousedown');
         }
     });
+    a.addEventListener('mouseup', function (e) {
+        setTimeout(reset, 1400); // Needed for UWP app which doesn't have touch events, so touchevoked simulates them
+    });
+
     // This detects the middle-click event that opens a new tab in recent Firefox and Chrome
     // See https://developer.mozilla.org/en-US/docs/Web/API/Element/auxclick_event
     a.addEventListener('auxclick', function (e) {
