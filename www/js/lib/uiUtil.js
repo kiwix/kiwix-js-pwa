@@ -1649,12 +1649,11 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
-            var breakoutIcon = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
+            var breakoutIconFile = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
             var backgroundColour = dark ? '#222' : '#ebf4fb';
-            div.innerHTML = `
-            <div style="position: relative; overflow: hidden; height: ${divHeight}px;">
+            div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${divHeight}px;">
                 <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center; padding: 0;">
-                    <img id="popbreakouticon" style="height: 18px; margin-right: 18px;" src="${breakoutIcon}" />
+                    <img id="popbreakouticon" style="height: 18px; margin-right: 18px;" src="${breakoutIconFile}" />
                     <span id="popcloseicon" style="padding-top: 1px; padding-right: 2px; font-size: 20px; font-family: sans-serif;">X</span>
                 </div>
                 <div style="padding-top: 3px">${html}</div>
@@ -1677,16 +1676,22 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
                 div.appendChild(span);
             }
             // Programme the icons
-            currentDocument.getElementById('popcloseicon').addEventListener('click', function () {
+            var closePopup = function () {
                 div.style.opacity = '0';
                 setTimeout(function () {
                     div.parentElement.removeChild(div);
                 }, 200);
-            });
-            currentDocument.getElementById('popbreakouticon').addEventListener('click', function () {
+            };
+            var breakout = function () {
                 link.newcontainer = true;
                 link.click();
-            });
+            }
+            var closeIcon = currentDocument.getElementById('popcloseicon');
+            closeIcon.addEventListener('click', closePopup);
+            closeIcon.addEventListener('touchstart', closePopup, { passive: true });
+            var breakoutIcon = currentDocument.getElementById('popbreakouticon');
+            breakoutIcon.addEventListener('click', breakout);
+            breakoutIcon.addEventListener('touchstart', breakout, { passive: true });
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
