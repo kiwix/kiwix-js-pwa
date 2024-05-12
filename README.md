@@ -81,7 +81,7 @@ try switching the app to Restricted mode (see Content injection mode in Configur
 
   + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
   + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
-  + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (but see note about Android`*`)
+  + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 68 (but see note about Android`*`)
   + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 for iOS and macOS (full-text search only works on iOS 15+)
   + <img src="images/edgelegacy-color.svg" width="22" /> Microsoft Edge Legacy 18 (Windows only)
 
@@ -101,7 +101,7 @@ Although deprecated, we will keep support for as long as is practical:
 
 * Internet Explorer 11 (Restricted mode only, no offline use of PWA)
 * Edge Legacy <= 17 (Restricted mode only, no offline use of PWA)
-* Firefox 45-59 (some versions require the user to switch manually to Restricted mode)
+* Firefox 45-67 (some versions require the user to switch manually to Restricted mode, and some are unable to display WebP images)
 * Chromium 49-58 (some versions only run in Restricted mode)
 
 ## Reporting bugs and technical support
