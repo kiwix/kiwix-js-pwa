@@ -1582,10 +1582,11 @@ function attachKiwixPopoverCss (doc, dark) {
  */
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     // Do not show popover if the user has initiated an article load
-    if (link.articleloading) {
+    if (link.articleloading || link.popoverisloading) {
         // console.debug('Cancelled display of popover because user is loading the underlying article');
         return;
     }
+    link.popoverisloading = true;
     // Do not disply a popover if one is already showing for the current link
     var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
     var linkHref = link.getAttribute('href');
@@ -1598,6 +1599,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         // Check if the link is still being hovered over, and abort display of popover if not
         if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
         var div = document.createElement('div');
+        div.popoverisloading = true; // console.debug('div.popoverisloading', div.popoverisloading);
         var screenWidth = articleWindow.innerWidth - 40;
         var screenHeight = document.documentElement.clientHeight;
         var margin = 40;
@@ -1695,6 +1697,9 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             }
             // Programme the icons
             addEventListenersToPopoverIcons(link, div, currentDocument);
+            setTimeout(function () {
+                div.popoverisloading = false; // console.debug('div.popoverisloading', div.popoverisloading);
+            }, 1000);
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
@@ -1702,6 +1707,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             div.parentElement.removeChild(div);
             link.articleloading = false;
             link.dataset.touchevoked = false;
+            link.popoverisloading = false;
         });
     }, 500);
 }
@@ -1747,6 +1753,7 @@ function removeKiwixPopoverDivs (doc) {
     var divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
         Array.prototype.slice.call(divs).forEach(function (div) {
+            if (div.popoverisloading) return;
             var timeoutID;
             var fadeOutDiv = function () {
                 clearTimeout(timeoutID);

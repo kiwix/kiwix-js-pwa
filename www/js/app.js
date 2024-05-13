@@ -6819,6 +6819,7 @@ function addListenersToLink (a, href, baseUrl) {
         loadingContainer = false;
         a.articleloading = false;
         a.dataset.touchevoked = false;
+        a.popoverisloading = false;
     };
     var onDetectedClick = function (e) {
         // Restore original values for this window/tab
@@ -6997,6 +6998,7 @@ function addListenersToLink (a, href, baseUrl) {
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked === 'true') return;
             uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
+            setTimeout(reset, 1400);
         });
         a.addEventListener('focus', function (e) {
             setTimeout(function () { // Delay focus event so touchstart can fire first
