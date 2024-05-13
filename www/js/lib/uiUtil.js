@@ -1688,28 +1688,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
                 div.appendChild(span);
             }
             // Programme the icons
-            var breakout = function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                link.newcontainer = true;
-                link.click();
-                closePopover(div);
-            }
-            var closeIcon = currentDocument.getElementById('popcloseicon');
-            var breakoutIcon = currentDocument.getElementById('popbreakouticon');
-            // Register click event for full support
-            closeIcon.addEventListener('mousedown', function () {
-                closePopover(div);
-            }, true);
-            breakoutIcon.addEventListener('mousedown', breakout, true);
-            // Register either pointerdown or touchstart if supported
-            var eventName = window.PointerEvent ? 'pointerdown' : 'touchstart';
-            closeIcon.addEventListener(eventName, function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                closePopover(div);
-            }, true);
-            breakoutIcon.addEventListener(eventName, breakout, true);
+            addEventListenersToPopoverIcons(link, div, currentDocument);
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
@@ -1719,6 +1698,38 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             link.dataset.touchevoked = false;
         });
     }, 500);
+}
+
+/**
+ * Adds event listeners to the popover's control icons
+ *
+ * @param {Element} anchor The anchor which launched the popover
+ * @param {Element} popover The containing element of the popover (div)
+ * @param {Document} doc The doucment on which to operate
+ */
+function addEventListenersToPopoverIcons (anchor, popover, doc) {
+    var breakout = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        anchor.newcontainer = true;
+        anchor.click();
+        closePopover(popover);
+    }
+    var closeIcon = doc.getElementById('popcloseicon');
+    var breakoutIcon = doc.getElementById('popbreakouticon');
+    // Register click event for full support
+    closeIcon.addEventListener('mousedown', function () {
+        closePopover(popover);
+    }, true);
+    breakoutIcon.addEventListener('mousedown', breakout, true);
+    // Register either pointerdown or touchstart if supported
+    var eventName = window.PointerEvent ? 'pointerdown' : 'touchstart';
+    closeIcon.addEventListener(eventName, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePopover(popover);
+    }, true);
+    breakoutIcon.addEventListener(eventName, breakout, true);
 }
 
 /**
