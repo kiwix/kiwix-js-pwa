@@ -34,7 +34,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + Windows 10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64): [Kiwix-JS-Electron-Web-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Web-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
     + Windows 10/11 64bit modern MSIX install / uninstall - [Kiwix-JS-Electron-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.appx) - *recommended*
     + Windows 7/8/8.1+ standalone 32bit: [Kiwix-JS-Electron-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Win7-Setup-<<numeric_tag>>-E.exe)    
-    + Windows 10/11 standalone 32bit (alos runs on 64bit): [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
+    + Windows 10/11 standalone 32bit (also runs on 64bit): [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
     + Alternatively, run `winget install kiwix.kiwixjs.electron` in a Windows 10/11 Terminal [**AUTO**]
   - **Portable - no install needed**
     + **_WARNING:_** Windows **XP** or **Vista** **only** (legacy version): [kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip) - **do not use this with modern Windows!**
@@ -46,7 +46,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ## Installation Instructions - Electron/NWJS
 
-* For the Windows Web installer for Windows 10/11, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in your shortcut menu. It auto-updates, but if you want to update it manually, then just install a new version over it (it will uninstall the old one for you).
+* For the Windows Web installer for Windows 10/11, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in your shortcut menu. It auto-updates, but if you want to update it manually, then just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, then use the standalone installer.
 * For the Windows 10/11 Portable builds (64bit only), the executable version (ending `.exe`) can just be run, but it may be a bit slow to start up. For a faster experience, use one of the zipped versions: unzip the contents of the package to any folder, or to a thumb drive, and double click on `Start Kiwix JS [Electron/Windows]` or `Start Kiwix JS [Electron/Windows].bat`.
 * For Windows 7/8/8.1, due to the deprecation of Chromium on these platforms, we now only provide one option: a standalone installer built with the last version of Electron that supported Chrome on Windows 7+. This is also a 32bit package (but will run on 64bit).
 * **For the Linux _portable_ builds,** download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open a terminal and run `chmod a+x Kiwix-JS-Electron*.AppImage` and then `./Kiwix-JS-Electron*.AppImage`. This version will auto-update.
@@ -67,7 +67,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 * There is full support for reading Zimit classic (and preliminary support for Zimit 2) archives in the PWA and Electron apps (also modern NWJS app, but see **Known Issues** below), and legacy support in the older UWP app. If your browser cannot use the full support, it will fall back to legacy support and/or very limited support in Restricted mode.
 * The app natively supports dark mode for Wikimedia, Gutenberg and Stack Exchange ZIMs (see Configuration). For Zimit archives in particular, we recommend you try the new DarkReader plugin (you can enable this from Configuration in ServiceWorker mode only).
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print. Printing works best with Wikimedia ZIMs.
-* You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration).
+* You can open a new browsable window by middle-clicking, ctrl-clicking or long-pressing an article link (not available in every mode, see option in Configuration).
 * There is support for Full-Screen mode in most browsers and frameworks, and orientation locking in some mobile browsers (e.g. Android).
 * Electron versions of the app (and the PWA) now support Full-Text searching.
 * You can open the ZIM's article index by typing a space in the search box. Sometimes you may need to search the URL index instead: to open this, type **_space /_** (a space followed by a forward slash) in the search box. In older ZIMs, you will find articles under the `A/` namespace and images under the `I/` namespace, but in newer ZIMs almost all content is under the `C/` namesapce.
@@ -76,6 +76,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ### Known Issues
 
+* The Electron app may need to be restarted TWICE to update fully to the latest code.
 * **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them). It is not possible to print Zimit-based articles in Firefox.
 * **There are various issues with the NWJS app** - we recommend you use the Electron app instead (except on Windowx XP):
   - PDFs in Zimit-based archives are blocked from viewing in the NWJS app.
