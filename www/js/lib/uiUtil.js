@@ -1451,12 +1451,18 @@ function getArticleLede (href, baseUrl, articleDocument) {
                             return !/^\s*$/.test(text) && text.length >= 50;
                         });
                         if (nonEmptyParagraphs.length > 0) {
-                            // Add two paras (becuase one sometimes isn't enough to fill the box)
-                            for (let i = 0; i < 2; i++) {
+                            var cumulativeCharCount = 0;
+                            // Add enough paras to complete the word count
+                            for (let i = 0; i < nonEmptyParagraphs.length; i++) {
+                                // Get the character count: to fill the larger box we need ~850 characters (815 plus leeway)
+                                var plainText = nonEmptyParagraphs[i].innerText;
+                                cumulativeCharCount += plainText.length;
                                 // In Restricted mode, we risk breaking the UI if user clicks on an embedded link, so only use innerText
-                                var content = params.contentInjectionMode === 'jquery' ? nonEmptyParagraphs[i].innerText
+                                var content = params.contentInjectionMode === 'jquery' ? plainText
                                     : nonEmptyParagraphs[i].innerHTML;
                                 balloonString += '<p>' + content + '</p>';
+                                // console.debug('Cumulatve character count: ' + cumulativeCharCount);
+                                if (cumulativeCharCount >= 850) break;
                             }
                         }
                         const images = articleBody.querySelectorAll('img');
