@@ -4338,7 +4338,9 @@ function archiveReadyCallback (archive) {
     }
     if (params.sourceVerification && window.location.protocol !== 'ms-appx-web:' && /^serviceworker/.test(params.contentInjectionMode)) {
         // Check if source of the zim file can be trusted and that it is not a packaged archive
-        if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile) {
+        if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile &&
+          // And it's not an Electron-accessed file inside the app's package
+          !(electronAPI && archive.file._files[0].path.indexOf(electronAPI.__dirname + '/' + params.archivePath) === 0)) {
             verifyLoadedArchive(archive).then(function () {
                 displayArchive();
             });
