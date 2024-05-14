@@ -979,7 +979,7 @@ if (window.electronAPI) {
 // Check for GitHub and Electron updates
 var updateCheck = document.getElementById('updateCheck');
 params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || window.electronAPI && electronAPI.isMicrosoftStoreApp;
+    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || window.electronAPI && window.electronAPI.isMicrosoftStoreApp;
 // If Internet access is allowed, or it's a UWP Store app, or it's HTML5 (i.e., not Electron/NWJS or UWP) ...
 if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.appType)) {
     updateCheck.style.display = 'none'; // ... hide the update check link
@@ -3290,7 +3290,7 @@ if (storages !== null && storages.length > 0 ||
         var archiveFilePath = params.storedFilePath;
         if (params.storedFile === params.packagedFile) {
             // If the app is packed inside an asar archive, or is Electron running from localhost, we need to alter the archivePath to point outside the asar directory
-            if (electronAPI && electronAPI.__dirname) {
+            if (window.electronAPI && window.electronAPI.__dirname) {
                 archiveFilePath = electronAPI.__dirname.replace(/[/\\]app\.asar/, '');
             }
             archiveFilePath = archiveFilePath + '/' + params.archivePath + '/' + params.packagedFile;
@@ -4343,7 +4343,7 @@ function archiveReadyCallback (archive) {
         // Check if source of the zim file can be trusted and that it is not a packaged archive
         if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile &&
           // And it's not an Electron-accessed file inside the app's package
-          !(electronAPI && archive.file._files[0].path.indexOf(electronAPI.__dirname.replace(/[\\/]+(?:app\.asar)?$/, '') + '/' + params.archivePath) === 0)) {
+          !(window.electronAPI && archive.file._files[0].path.indexOf(electronAPI.__dirname.replace(/[\\/]+(?:app\.asar)?$/, '') + '/' + params.archivePath) === 0)) {
             verifyLoadedArchive(archive).then(function () {
                 displayArchive();
             });
@@ -4374,7 +4374,7 @@ function loadPackagedArchive () {
             // because a new path is established each time the image's filesystem is mounted. So we reset to default.
             var archiveFilePrefix = params.storedFilePath;
             // If the app is packed inside an asar archive, or is Electron running from localhost, we need to alter the archivePath to point outside the asar directory
-            if (electronAPI && electronAPI.__dirname) {
+            if (window.electronAPI && window.electronAPI.__dirname) {
                 archiveFilePrefix = electronAPI.__dirname.replace(/[/\\]app\.asar/, '');
             }
             var archiveDirectory = archiveFilePrefix + '/' + params.archivePath + '/' + params.packagedFile;
