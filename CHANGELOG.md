@@ -3,13 +3,10 @@
 ## In-progress release 3.2.6
 
 * FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
-* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-05.zim`
-* UPDATE: Rename JQuery mode to Restricted mode
 * ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
 * ENHANCEMENT: Standard NWJS packages (not XP) are now 64bit
 * FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
 * FIX: No source verification for archives included in package
-* REGRESSION: Fix inability to reload packaged archive in WikiMed and Wikivoyage apps
 * DEV: Avoid incorrect and redundant uploads to Kiwix download server
 * DEV: Fix build scripts
 * DEV: Update publishing templates
