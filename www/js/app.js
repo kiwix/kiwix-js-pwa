@@ -1013,14 +1013,17 @@ function checkUpdateServer () {
     });
     // Electron updates
     if (window.electronAPI) {
+        var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
+        var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
         var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
             : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
                 : 'electron';
-        if (baseApp === 'electron') {
+        if (baseApp === 'electron' && isUpdateableElectronVersion) {
             console.log('Launching Electron auto-updater...');
             electronAPI.checkForUpdates();
         } else {
-            console.log('Auto-update: Packaged apps with large ZIM archives are not currently auto-updated.');
+            console.log('Auto-update: ' + (isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
+              : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
         }
     }
 }
