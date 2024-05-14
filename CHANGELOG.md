@@ -4,17 +4,20 @@
 
 * FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
 * FEATURE: Add security dialogue on opening a ZIM for the first time in ServiceWorker mode
-* ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-05.zim`
 * UPDATE: Rename JQuery mode to Restricted mode
+* ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
 * DOCUMENTATION: Add information about ZIM security to About
 * DOCUMENTATION: Add information about Persistent Permissions to About
 * FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
 * FIX: Catch uncaught file verification exception
 * FIX: Remove legacy "Scanning for archives" block
 * FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
+* FIX: No source verification for archives included in package
 * REGRESSION: Fix inability to reload packaged archive in WikiMed and Wikivoyage apps
 * DEV: Avoid incorrect and redundant uploads to Kiwix download server
 * DEV: Fix build scripts
+* DEV: Update publishing templates
 * DEPENDENCIES: Bump Electron to 29.3.1 for 64bit builds
 * DEPENDENCIES: Bump ejs to 3.1.10
 
