@@ -1,12 +1,13 @@
 # Changelog
 
-## In-progress release 3.2.6
+## In-progress release 3.2.62
 
 * FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
 * ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
 * ENHANCEMENT: Standard NWJS packages (not XP) are now 64bit
 * FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
 * FIX: No source verification for archives included in package
+* FIX: Bug with placement of popovers which didn't take into account the font zoom factor
 * DEV: Avoid incorrect and redundant uploads to Kiwix download server
 * DEV: Fix build scripts
 * DEV: Update publishing templates
