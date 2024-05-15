@@ -1621,8 +1621,6 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         currentDocument.body.appendChild(div);
         // Calculate the position of the link that is being hovered
         var linkRect = link.getBoundingClientRect();
-        // Here's how to position it 40px above the pointer position (DEV: this doesn't work well due to lag)
-        // var divRectY = e.clientY - div.offsetHeight - 20;
         // Initially position the div 20px above the link
         var triangleDirection = 'top';
         var divRectY = (linkRect.top - div.offsetHeight - 20);
@@ -1646,13 +1644,13 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             triangleX = ev.clientX - divRectX - 20;
         }
         // If right edge of div is greater than margin from the right side of window, shift it to margin
-        if (divRectX + divWidth > screenWidth - margin) {
+        if (divRectX + divWidth * params.relativeFontSize / 100 > screenWidth - margin) {
             triangleX += divRectX;
-            divRectX = screenWidth - divWidth - margin;
+            divRectX = screenWidth - divWidth * params.relativeFontSize / 100 - margin;
             triangleX -= divRectX;
         }
         // If we're less than margin to the left, shift it to margin px from left
-        if (divRectX < margin) {
+        if (divRectX * params.relativeFontSize / 100 < margin) {
             triangleX += divRectX;
             divRectX = margin;
             triangleX -= divRectX;
@@ -1660,8 +1658,12 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         // Adjust triangleX if necessary
         if (triangleX < 10) triangleX = 10;
         if (triangleX > divWidth - 10) triangleX = divWidth - 10;
-        // Now set the calculated x and y positions
-        div.style.top = divRectY + articleWindow.scrollY + 'px';
+        // Adjust positions to take into account the font zoom factor
+        divRectX = divRectX * 100 / params.relativeFontSize;
+        triangleX = triangleX * 100 / params.relativeFontSize;
+        var adjustedScrollY = articleWindow.scrollY * 100 / params.relativeFontSize;
+        // Now set the calculated x and y positions, taking into account the zoom factor
+        div.style.top = divRectY + adjustedScrollY + 'px';
         div.style.left = divRectX + 'px';
         div.style.opacity = '1';
         getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
