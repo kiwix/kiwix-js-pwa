@@ -942,9 +942,13 @@ function checkPWAUpdate () {
 // Electron callback listener if an update is found by main.js
 if (window.electronAPI) {
     electronAPI.on('update-available', function (data) {
-        console.log('Upgrade is available:' + data);
+        console.log('Upgrade is available or in progress:' + data);
         params.upgradeNeeded = true;
-        uiUtil.showUpgradeReady(data.version, 'install');
+        if (data.percent) {
+            uiUtil.showUpgradeReady(data.percent, 'progress');
+        } else {
+            uiUtil.showUpgradeReady(data.version, 'install');
+        }
     });
     electronAPI.on('get-store-value', function (key, value) {
         if (key === 'expressPort') {
