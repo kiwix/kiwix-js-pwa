@@ -227,6 +227,9 @@ app.whenReady().then(() => {
     autoUpdater.on('update-downloaded', function (info) {
         mainWindow.webContents.send('update-available', info);
     });
+    autoUpdater.on('download-progress', function (info) {
+        mainWindow.webContents.send('update-available', info);
+    });
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

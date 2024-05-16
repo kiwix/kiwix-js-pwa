@@ -1034,7 +1034,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
 /**
  * Shows that an upgrade is ready to install
  * @param {String} ver The version of the upgrade
- * @param {String} type Either 'load', 'install' or 'download' according to the type of upgrade
+ * @param {String} type Either 'load', 'install', 'download' or 'progress' according to the type of upgrade
  * @param {String} url An optional download URL
  */
 function showUpgradeReady (ver, type, url) {
@@ -1044,12 +1044,17 @@ function showUpgradeReady (ver, type, url) {
         '    <a href="#" id="closeUpgradeAlert" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
         '    <span id="persistentMessage"></span>\n' +
         '</div>\n';
-    document.getElementById('persistentMessage').innerHTML = 'Version ' + ver +
-        (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>'
-            : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
-    document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
-        alertBoxPersistent.style.display = 'none';
-    });
+    var persistentMessage = document.getElementById('persistentMessage');
+    if (type === 'progress') {
+        persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
+    } else {
+        persistentMessage.innerHTML = 'Version ' + ver +
+            (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>'
+                : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
+        document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
+            alertBoxPersistent.style.display = 'none';
+        });
+    }
 }
 
 /**

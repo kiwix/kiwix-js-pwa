@@ -128,6 +128,7 @@
     "dist-win": "electron-builder build --win --projectDir dist",
     "dist-win-arm64": "electron-builder build --win NSIS:arm64 --projectDir dist",
     "dist-win-nsis": "electron-builder build --win NSIS:ia32 --publish never --projectDir dist",
+    "dist-win-nisis-x64": "electron-builder build --win NSIS:x64 --publish never --projectDir dist",
     "dist-linux": "electron-builder build --linux --projectDir dist",
     "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
     "publish": "electron-builder --projectDir dist",
