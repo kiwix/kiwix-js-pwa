@@ -228,7 +228,7 @@ app.whenReady().then(() => {
         mainWindow.webContents.send('update-available', info);
     });
     autoUpdater.on('download-progress', function (info) {
-        mainWindow.webContents.sent('update-available', info);
+        mainWindow.webContents.send('update-available', info);
     });
 
     app.on('activate', function () {

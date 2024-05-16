@@ -945,7 +945,8 @@ if (window.electronAPI) {
         console.log('Upgrade is available or in progress:' + data);
         params.upgradeNeeded = true;
         if (data.percent) {
-            uiUtil.showUpgradeReady(data.percent, 'progress');
+            var percent = data.percent.toFixed(1);
+            uiUtil.showUpgradeReady(percent, 'progress');
         } else {
             uiUtil.showUpgradeReady(data.version, 'install');
         }
@@ -998,6 +999,21 @@ function checkUpdateServer () {
     // If it's plain HTML5 (not Electron/NWJS or UWP), don't check for updates
     if (/HTML5/.test(params.appType)) return;
     if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
+    // Electron updates
+    if (window.electronAPI) {
+        var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
+        var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
+        var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
+            : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
+                : 'electron';
+        if (baseApp === 'electron' && isUpdateableElectronVersion) {
+            console.log('Launching Electron auto-updater...');
+            electronAPI.checkForUpdates();
+        } else {
+            console.log('Auto-update: ' + (isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
+              : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
+        }
+    }
     // GitHub updates
     console.log('Checking for updates from Releases...');
     updater.getLatestUpdates(function (tag, url, releases) {
@@ -1015,21 +1031,6 @@ function checkUpdateServer () {
         params.upgradeNeeded = true;
         uiUtil.showUpgradeReady(tag.replace(/^v/, ''), 'download', url);
     });
-    // Electron updates
-    if (window.electronAPI) {
-        var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
-        var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
-        var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
-            : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
-                : 'electron';
-        if (baseApp === 'electron' && isUpdateableElectronVersion) {
-            console.log('Launching Electron auto-updater...');
-            electronAPI.checkForUpdates();
-        } else {
-            console.log('Auto-update: ' + (isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
-              : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
-        }
-    }
 }
 
 // Do update checks 10s after startup
@@ -1038,8 +1039,9 @@ setTimeout(function () {
         console.log('Checking for updates to the PWA...');
         checkPWAUpdate();
     }
-    checkUpdateServer();
-}, 10000);
+    // Delay GitHub checks so that any needed PWA update can be notified first
+    setTimeout(checkUpdateServer, 2000);
+}, 8000);
 
 function setActiveBtn (activeBtn) {
     document.getElementById('btnHome').classList.remove('active');
