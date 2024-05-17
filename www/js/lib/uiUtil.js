@@ -1636,7 +1636,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         var linkRect = link.getBoundingClientRect();
         // Initially position the div 20px above the link
         var triangleDirection = 'top';
-        var divOffsetHeight = /UWP/.test(params.appType) ? div.offsetHeight * params.relativeFontSize / 100 + 20 : div.offsetHeight - 20;
+        var divOffsetHeight = /UWP/.test(params.appType) ? div.offsetHeight * params.relativeFontSize / 100 + 20 : div.offsetHeight + 20;
         var divRectY = linkRect.top - divOffsetHeight;
         if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
         var triangleY = divHeight + 6;
