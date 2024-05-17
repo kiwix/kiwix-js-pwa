@@ -5,6 +5,8 @@
 * FEATURE: Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
 * FEATURE: Security dialogue on opening non-packaged ZIM for first time in ServiceWorker mode 
 * ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2024-05`
+* UPDATE: Reworked Wikivoyage custom landing page
 * DOCUMENTATION: Add information about ZIM security to About
 * DOCUMENTATION: Add information about Persistent Permissions to About
 * FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
