@@ -1587,8 +1587,10 @@ function attachKiwixPopoverCss (doc, dark) {
  */
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     // Do not show popover if the user has initiated an article load
-    if (link.articleloading || link.popoverisloading) {
-        // console.debug('Cancelled display of popover because user is loading the underlying article');
+    if (link.articleloading || link.popoverisloading) return;
+    // Do not show popover if we are on Wikivoyage landing page
+    if (/^wikivoyage/i.test(appstate.selectedArchive.file.name) && (appstate.expectedArticleURLToBeDisplayed === appstate.selectedArchive.landingPageUrl ||
+      appstate.expectedArticleURLToBeDisplayed === 'A/Wikivoyage:Offline_reader_Expedition/Home_page')) {
         return;
     }
     link.popoverisloading = true;
@@ -1601,6 +1603,8 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     var articleWindow = currentDocument.defaultView;
     removeKiwixPopoverDivs(currentDocument);
     setTimeout(function () {
+        // Do not show popover if the user has initiated an article load
+        if (link.articleloading) return;
         // Check if the link is still being hovered over, and abort display of popover if not
         if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
         var div = document.createElement('div');
