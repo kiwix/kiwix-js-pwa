@@ -165,11 +165,6 @@
     <Content Include="www\img\icons\favicon-192x192.png" />
     <Content Include="www\img\icons\favicon-32x32.png" />
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
-    <Content Include="www\I\ArequipaBanner3.jpg" />
-    <Content Include="www\I\AviationHistoryBanner3.jpg" />
-    <Content Include="www\I\COVID-19_lifecycle.jpg" />
-    <Content Include="www\I\Hand_sanitizer_banner.jpg" />
-    <Content Include="www\I\IriomoteBanner1.jpg" />
     <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\cache.js" />
     <Content Include="www\js\lib\settingsStore.js" />
