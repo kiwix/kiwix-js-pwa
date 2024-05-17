@@ -1588,15 +1588,16 @@ function attachKiwixPopoverCss (doc, dark) {
 function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
     // Do not show popover if the user has initiated an article load
     if (link.articleloading || link.popoverisloading) return;
-    // Do not show popover if we are on Wikivoyage landing page
-    if (/^wikivoyage/i.test(appstate.selectedArchive.file.name) && (appstate.expectedArticleURLToBeDisplayed === appstate.selectedArchive.landingPageUrl ||
+    var linkHref = link.getAttribute('href');
+    // Do not show popover if there is no href or with certain landing pages
+    if (!linkHref || /^wikivoyage/i.test(appstate.selectedArchive.file.name) &&
+      (appstate.expectedArticleURLToBeDisplayed === appstate.selectedArchive.landingPageUrl ||
       appstate.expectedArticleURLToBeDisplayed === 'A/Wikivoyage:Offline_reader_Expedition/Home_page')) {
         return;
     }
     link.popoverisloading = true;
     // Do not disply a popover if one is already showing for the current link
     var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
-    var linkHref = link.getAttribute('href');
     if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
     // console.debug('Attaching popover...');
     var currentDocument = ev.target.ownerDocument;
@@ -1606,7 +1607,10 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         // Do not show popover if the user has initiated an article load
         if (link.articleloading) return;
         // Check if the link is still being hovered over, and abort display of popover if not
-        if (!linkHref || !link.matches(':hover') && currentDocument.activeElement !== link) return;
+        if (!link.matches(':hover') && currentDocument.activeElement !== link) {
+            link.popoverisloading = false;
+            return;
+        }
         var div = document.createElement('div');
         div.popoverisloading = true; // console.debug('div.popoverisloading', div.popoverisloading);
         var screenWidth = articleWindow.innerWidth - 40;
@@ -1710,7 +1714,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             addEventListenersToPopoverIcons(link, div, currentDocument);
             setTimeout(function () {
                 div.popoverisloading = false; // console.debug('div.popoverisloading', div.popoverisloading);
-            }, 1000);
+            }, 900);
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
@@ -1720,7 +1724,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
             link.dataset.touchevoked = false;
             link.popoverisloading = false;
         });
-    }, 500);
+    }, 600);
 }
 
 /**
@@ -1774,9 +1778,9 @@ function removeKiwixPopoverDivs (doc) {
                     timeoutID = setTimeout(fadeOutDiv, 250);
                 }
             };
-            timeoutID = setTimeout(fadeOutDiv, 250);
+            timeoutID = setTimeout(fadeOutDiv, 0);
         });
-    }, 300);
+    }, 400);
 }
 
 // Directly close any popovers
