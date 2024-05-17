@@ -20,15 +20,15 @@ Please choose the correct version:
     + Deb package 64bit (Ubuntu, Debian): [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
 
 * **Windows**:
-  - **Store app for Windows 10/11 (UWP)** - _recommended_ (self-updates)
+  - **Store app for Windows 10/11** - _recommended_ (self-updates)
     + Install from the Microsoft Store: https://apps.microsoft.com/detail/9PHJSNP1CZ8J
     + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - upgrade easily by running `winget upgrade kiwix.wikimed`
   - **Installable (Electron)**
     + Windows 10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64): [WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe)
     + Windows 10/11 64bit modern MSIX install / uninstall: [WikiMed-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.appx)
-    + Windows 7/8/8.1+ standalone 32bit: [WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe)
-    + Windows 10/11 standalone 32bit (also runs on 64bit): [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
+    + Windows 10/11 standalone 32bit installer (also runs on 64bit): [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
+    + Windows 7/8/8.1+ standalone 32bit installer: [WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 10/11 64bit: [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
