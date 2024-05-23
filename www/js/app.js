@@ -5236,6 +5236,8 @@ function filterClickEvent (event) {
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
     if (clickedAnchor) {
+        // This prevents any popover from being displayed when the user clicks on a link
+        clickedAnchor.articleisloading = true;
         // Check for Zimit links that would normally be handled by the Replay Worker
         // DEV: '__WB_pmw' is a function inserted by wombat.js, so this detects links that have been rewritten in zimit2 archives
         // however, this misses zimit2 archives where the framework doesn't support wombat.js, so monitor if always processing zimit2 links
