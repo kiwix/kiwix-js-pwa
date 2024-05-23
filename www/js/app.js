@@ -6923,7 +6923,7 @@ function addListenersToLink (a, href, baseUrl) {
             if (!a.touched || a.newcontainer || appstate.startVector) return;
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
                 a.dataset.touchevoked = true;
-                uiUtil.attachKiwixPopoverDiv(event, a, baseUrl, darkTheme);
+                uiUtil.populateKiwixPopoverDiv(event, a, baseUrl, darkTheme, appstate.selectedArchive);
             } else {
                 a.newcontainer = true;
                 onDetectedClick(event);
@@ -6952,7 +6952,7 @@ function addListenersToLink (a, href, baseUrl) {
                 // return;
             } else if (!a.touched) {
                 a.touched = true;
-                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
+                uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
             }
         } else {
             if (!params.windowOpener) return;
@@ -7004,7 +7004,7 @@ function addListenersToLink (a, href, baseUrl) {
         a.addEventListener('mouseover', function (e) {
             // console.debug('a.mouseover');
             if (a.dataset.touchevoked === 'true') return;
-            uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
+            uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
         });
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked === 'true') return;
@@ -7016,7 +7016,7 @@ function addListenersToLink (a, href, baseUrl) {
                 // console.debug('a.focus');
                 if (a.touched) return;
                 a.focused = true;
-                uiUtil.attachKiwixPopoverDiv(e, a, baseUrl, darkTheme);
+                uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
             }, 200);
         });
         a.addEventListener('blur', function (e) {

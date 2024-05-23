@@ -1679,7 +1679,7 @@ function populateKiwixPopoverDiv (ev, link, articleBaseUrl, dark, archive) {
             link.popoverisloading = false;
         });
     }, 600);
-        }
+}
 
 /**
  * Create a new empty Kiwix popover container and attach it to the current document appropriately sized and positioned
