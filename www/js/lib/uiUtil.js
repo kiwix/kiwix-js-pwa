@@ -1612,176 +1612,200 @@ function attachKiwixPopoverCss (doc, dark) {
  * @param {Element} link The link element that is being actioned
  * @param {String} articleBaseUrl The base URL of the currently loaded document
  * @param {Boolean} dark An optional value to switch colour theme to dark if true
+ * @param {ZIMArchive} archive The archive from which the popover information is extracted
+ * @returns {Promise<div>} A Promise for the attached popover div or undefined if the popover is not attached
  */
-function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
-    // Do not show popover if the user has initiated an article load
-    if (link.articleloading || link.popoverisloading) return;
-    var linkHref = link.getAttribute('href');
+function populateKiwixPopoverDiv (ev, link, articleBaseUrl, dark, archive) {
+    // Do not show popover if the user has initiated an article load (set in filterClickEvent)
+    if (link.articleisloading || link.popoverisloading) return Promise.resolve();
+    const linkHref = link.getAttribute('href');
     // Do not show popover if there is no href or with certain landing pages
-    if (!linkHref || /^wikivoyage/i.test(appstate.selectedArchive.file.name) &&
-      (appstate.expectedArticleURLToBeDisplayed === appstate.selectedArchive.landingPageUrl ||
+    if (!linkHref || /^wikivoyage/i.test(archive.file.name) &&
+      (appstate.expectedArticleURLToBeDisplayed === archive.landingPageUrl ||
       appstate.expectedArticleURLToBeDisplayed === 'A/Wikivoyage:Offline_reader_Expedition/Home_page')) {
-        return;
+        return Promise.resolve();
     }
     link.popoverisloading = true;
-    // Do not disply a popover if one is already showing for the current link
-    var kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
-    if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return;
+    // Do not display a popover if one is already showing for the current link
+    const kiwixPopover = ev.target.ownerDocument.querySelector('.kiwixtooltip');
+    if (kiwixPopover && kiwixPopover.dataset.href === linkHref) return Promise.resolve();
     // console.debug('Attaching popover...');
-    var currentDocument = ev.target.ownerDocument;
-    var articleWindow = currentDocument.defaultView;
+    const currentDocument = ev.target.ownerDocument;
+    const articleWindow = currentDocument.defaultView;
+    // Remove any existing popover(s) that the user may not have closed before creating a new one
     removeKiwixPopoverDivs(currentDocument);
     setTimeout(function () {
-        // Do not show popover if the user has initiated an article load
-        if (link.articleloading) return;
-        // Check if the link is still being hovered over, and abort display of popover if not
-        if (!link.matches(':hover') && currentDocument.activeElement !== link) {
+        // Check if the user has moved away from the link or has clicked it, and abort display of popover if so
+        if (link.articleisloading || !link.matches(':hover') && !link.touched && currentDocument.activeElement !== link) {
+            // console.debug('Aborting popover display for ' + linkHref + ' because user has moved away from link or clicked it');
             link.popoverisloading = false;
-            return;
+            return Promise.resolve();
         }
-        var div = document.createElement('div');
-        div.popoverisloading = true; // console.debug('div.popoverisloading', div.popoverisloading);
-        var screenWidth = articleWindow.innerWidth - 40;
-        var screenHeight = document.documentElement.clientHeight;
-        var margin = 40;
-        var divWidth = 512;
-        if (screenWidth <= divWidth) {
-            divWidth = screenWidth;
-            margin = 10;
-        }
-        // Check if we have restricted screen height
-        var divHeight = screenHeight < 512 ? 160 : 256;
-        div.style.width = divWidth + 'px';
-        div.style.height = divHeight + 'px';
-        div.style.display = 'flex';
-        div.style.justifyContent = 'center';
-        div.style.alignItems = 'center';
-        div.className = 'kiwixtooltip';
-        div.innerHTML = '<p>Loading ...</p>';
-        div.dataset.href = linkHref;
-        currentDocument.body.appendChild(div);
-        // Calculate the position of the link that is being hovered
-        var linkRect = link.getBoundingClientRect();
-        // Initially position the div 20px above the link
-        var triangleDirection = 'top';
-        var divOffsetHeight = /UWP/.test(params.appType) ? div.offsetHeight * params.relativeFontSize / 100 + 20 : div.offsetHeight + 20;
-        var divRectY = linkRect.top - divOffsetHeight;
-        if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
-        var triangleY = divHeight + 6;
-        // If we're less than half margin from the top, move the div below the link
-        if (divRectY < margin / 2) {
-            triangleDirection = 'bottom';
-            divRectY = linkRect.bottom + 20;
-            triangleY = -16;
-            if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
-        }
-        // Position it horizontally in relation to the pointer position
-        var divRectX, triangleX;
-        if (ev.type === 'touchstart') {
-            divRectX = ev.touches[0].clientX - divWidth / 2;
-            triangleX = ev.touches[0].clientX - divRectX - 20;
-        } else if (ev.type === 'focus') {
-            divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
-            triangleX = linkRect.left + linkRect.width / 2 - divRectX - 20;
-        } else {
-            divRectX = ev.clientX - divWidth / 2;
-            triangleX = ev.clientX - divRectX - 20;
-        }
-        // If right edge of div is greater than margin from the right side of window, shift it to margin
-        if (divRectX + divWidth * params.relativeFontSize / 100 > screenWidth - margin) {
-            triangleX += divRectX;
-            divRectX = screenWidth - divWidth * params.relativeFontSize / 100 - margin;
-            triangleX -= divRectX;
-        }
-        // If we're less than margin to the left, shift it to margin px from left
-        if (divRectX * params.relativeFontSize / 100 < margin) {
-            triangleX += divRectX;
-            divRectX = margin;
-            triangleX -= divRectX;
-        }
-        // Adjust triangleX if necessary
-        if (triangleX < 10) triangleX = 10;
-        if (triangleX > divWidth - 10) triangleX = divWidth - 10;
-        // Adjust positions to take into account the font zoom factor
-        divRectX = divRectX * 100 / params.relativeFontSize;
-        triangleX = triangleX * 100 / params.relativeFontSize;
-        var adjustedScrollY = articleWindow.scrollY * 100 / params.relativeFontSize;
-        // Now set the calculated x and y positions, taking into account the zoom factor
-        div.style.top = divRectY + adjustedScrollY + 'px';
-        div.style.left = divRectX + 'px';
-        div.style.opacity = '1';
-        getArticleLede(linkHref, articleBaseUrl, currentDocument, appstate.selectedArchive).then(function (html) {
-            link.articleloading = false;
+        // Create a new Kiwix popover container
+        const divWithArrow = createNewKiwixPopoverCointainer(articleWindow, link, ev);
+        const div = divWithArrow.div;
+        const span = divWithArrow.span;
+        // Get the article's 'lede' (first main paragraph or two) and the first main image (if any)
+        return getArticleLede(linkHref, articleBaseUrl, currentDocument, archive).then(function (html) {
             div.style.justifyContent = '';
             div.style.alignItems = '';
             div.style.display = 'block';
-            var breakoutIconFile = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
-            var backgroundColour = dark ? '#222' : '#ebf4fb';
-            div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${divHeight}px;">
-                <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center; padding: 0;">
+            const breakoutIconFile = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
+            const backgroundColour = '#ebf4fb';
+            // DEV: Most style declarations in this div only work properly inline. If added in stylesheet, even with !important, the positioning goes awry
+            // (appears to be a timing issue related to the reservation of space given that the div is inserted dynamically).
+            div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${div.style.height};">
+                <div style="background: ${backgroundColour} !important; opacity: 70%; position: absolute; top: 0; right: 0; display: flex; align-items: center; padding: 0; z-index: 1;">
                     <img id="popbreakouticon" src="${breakoutIconFile}" />
                     <span id="popcloseicon">X</span>
                 </div>
                 <div style="padding-top: 3px">${html}</div>
             </div>`;
-            // Now insert the arrow
-            var tooltipStyle = articleWindow.document.getElementById('kiwixtooltipstylesheet');
-            var triangleColour = '#b7ddf2'; // Same as border colour of div
-            if (tooltipStyle) {
-                var span = document.createElement('span');
-                span.style.cssText = `
-                    width: 0;
-                    height: 0;
-                    border-${triangleDirection}: 16px solid ${triangleColour};
-                    border-left: 8px solid transparent !important;
-                    border-right: 8px solid transparent !important;
-                    position: absolute;
-                    top: ${triangleY}px;
-                    left: ${triangleX}px;
-                `;
-                div.appendChild(span);
-            }
+            // Now it is populated, we can attach the arrow to the div
+            div.appendChild(span);
             // Programme the icons
             addEventListenersToPopoverIcons(link, div, currentDocument);
             setTimeout(function () {
-                div.popoverisloading = false; // console.debug('div.popoverisloading', div.popoverisloading);
+                div.popoverisloading = false;
             }, 900);
+            // Finally, return the div DOM element
+            return div;
         }).catch(function (err) {
             console.warn(err);
             // Remove the div
             div.style.opacity = '0';
             div.parentElement.removeChild(div);
-            link.articleloading = false;
             link.dataset.touchevoked = false;
             link.popoverisloading = false;
         });
     }, 600);
+        }
+
+/**
+ * Create a new empty Kiwix popover container and attach it to the current document appropriately sized and positioned
+ * in relation to the given anchor and available screen width and height. Also returns the arrow span element which can be
+ * attached to the div after the div is populated with content.
+ * @param {Window} win The window of the article DOM
+ * @param {Element} anchor The anchor element that is being actioned
+ * @param {Event} event The event which has fired this popover action
+ * @returns {Object} An object containing the popover div and the arrow span elements
+ */
+function createNewKiwixPopoverCointainer (win, anchor, event) {
+    const div = document.createElement('div');
+    const linkHref = anchor.getAttribute('href');
+    const currentDocument = win.document;
+    div.popoverisloading = true;
+    const screenWidth = win.innerWidth - 40;
+    const screenHeight = document.documentElement.clientHeight;
+    let margin = 40;
+    let divWidth = 512;
+    if (screenWidth <= divWidth) {
+        divWidth = screenWidth;
+        margin = 10;
+    }
+    // Check if we have restricted screen height
+    const divHeight = screenHeight < 512 ? 160 : 256;
+    div.style.width = divWidth + 'px';
+    div.style.height = divHeight + 'px';
+    div.style.display = 'flex';
+    div.style.justifyContent = 'center';
+    div.style.alignItems = 'center';
+    div.className = 'kiwixtooltip';
+    div.innerHTML = '<p>Loading ...</p>';
+    div.dataset.href = linkHref;
+    // DEV: We need to insert the div into the target document before we can obtain its computed dimensions accurately
+    currentDocument.body.appendChild(div);
+    // Calculate the position of the link that is being hovered
+    const linkRect = anchor.getBoundingClientRect();
+    // Initially position the div 20px above the link
+    let triangleDirection = 'top';
+    const divOffsetHeight = /UWP/.test(params.appType) ? div.offsetHeight * params.relativeFontSize / 100 + 20 : div.offsetHeight + 20;
+    let divRectY = linkRect.top - divOffsetHeight;
+    if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
+    let triangleY = divHeight + 6;
+    // If we're less than half margin from the top, move the div below the link
+    if (divRectY < margin / 2) {
+        triangleDirection = 'bottom';
+        divRectY = linkRect.bottom + 20;
+        triangleY = -16;
+        if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
+    }
+    // Position it horizontally in relation to the pointer position
+    let divRectX, triangleX;
+    if (event.type === 'touchstart') {
+        divRectX = event.touches[0].clientX - divWidth / 2;
+        triangleX = event.touches[0].clientX - divRectX - 20;
+    } else if (event.type === 'focus') {
+            divRectX = linkRect.left + linkRect.width / 2 - divWidth / 2;
+            triangleX = linkRect.left + linkRect.width / 2 - divRectX - 20;
+    } else {
+        divRectX = event.clientX - divWidth / 2;
+        triangleX = event.clientX - divRectX - 20;
+    }
+    // If right edge of div is greater than margin from the right side of window, shift it to margin
+    if (divRectX + divWidth * params.relativeFontSize / 100 > screenWidth - margin) {
+        triangleX += divRectX;
+        divRectX = screenWidth - divWidth * params.relativeFontSize / 100 - margin;
+        triangleX -= divRectX;
+    }
+    // If we're less than margin to the left, shift it to margin px from left
+    if (divRectX * params.relativeFontSize / 100 < margin) {
+        triangleX += divRectX;
+        divRectX = margin;
+        triangleX -= divRectX;
+    }
+    // Adjust triangleX if necessary
+    if (triangleX < 10) triangleX = 10;
+    if (triangleX > divWidth - 10) triangleX = divWidth - 10;
+    // Adjust positions to take into account the font zoom factor
+    divRectX = divRectX * 100 / params.relativeFontSize;
+    triangleX = triangleX * 100 / params.relativeFontSize;
+    var adjustedScrollY = win.scrollY * 100 / params.relativeFontSize;
+    // Now set the calculated x and y positions, taking into account the zoom factor
+    div.style.top = divRectY + adjustedScrollY + 'px';
+    div.style.left = divRectX + 'px';
+    div.style.opacity = '1';
+    // Now create the arrow span element. Note that we cannot attach it yet as we need to populate the div first
+    // and doing so will overwrite the innerHTML of the div
+    const triangleColour = '#b7ddf2'; // Same as border colour of div
+    const span = document.createElement('span');
+    span.style.cssText = `
+        width: 0;
+        height: 0;
+        border-${triangleDirection}: 16px solid ${triangleColour};
+        border-left: 8px solid transparent !important;
+        border-right: 8px solid transparent !important;
+        position: absolute;
+        top: ${triangleY}px;
+        left: ${triangleX}px;
+    `;
+    return { div: div, span: span };
 }
 
 /**
  * Adds event listeners to the popover's control icons
- *
  * @param {Element} anchor The anchor which launched the popover
  * @param {Element} popover The containing element of the popover (div)
  * @param {Document} doc The doucment on which to operate
  */
 function addEventListenersToPopoverIcons (anchor, popover, doc) {
-    var breakout = function (e) {
+    const breakout = function (e) {
         e.preventDefault();
         e.stopPropagation();
+        // Adding the newcontainer property to the anchor will be cauught by the filterClickEvent function and will open in new tab
         anchor.newcontainer = true;
         anchor.click();
         closePopover(popover);
     }
-    var closeIcon = doc.getElementById('popcloseicon');
-    var breakoutIcon = doc.getElementById('popbreakouticon');
-    // Register click event for full support
+    const closeIcon = doc.getElementById('popcloseicon');
+    const breakoutIcon = doc.getElementById('popbreakouticon');
+    // Register mousedown event (should work in all contexts)
     closeIcon.addEventListener('mousedown', function () {
         closePopover(popover);
     }, true);
     breakoutIcon.addEventListener('mousedown', breakout, true);
-    // Register either pointerdown or touchstart if supported
-    var eventName = window.PointerEvent ? 'pointerdown' : 'touchstart';
+    // Additionally register either pointerdown or touchstart if supported for faster response
+    const eventName = window.PointerEvent ? 'pointerdown' : 'touchstart';
     closeIcon.addEventListener(eventName, function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1791,18 +1815,20 @@ function addEventListenersToPopoverIcons (anchor, popover, doc) {
 }
 
 /**
- * Remove any preview popover DIVs
- *
+ * Remove any preview popover DIVs found in the given document
  * @param {Document} doc The document from which to remove any popovers
  */
 function removeKiwixPopoverDivs (doc) {
-    var divs = doc.getElementsByClassName('kiwixtooltip');
+    const divs = doc.getElementsByClassName('kiwixtooltip');
     setTimeout(function () {
+        // Gather any popover divs (on rare occasions, more than one may be displayed)
         Array.prototype.slice.call(divs).forEach(function (div) {
+            // Do not remove any popover in process of loading
             if (div.popoverisloading) return;
-            var timeoutID;
-            var fadeOutDiv = function () {
+            let timeoutID;
+            const fadeOutDiv = function () {
                 clearTimeout(timeoutID);
+                // Do not close any div which is being hovered
                 if (!div.matches(':hover')) {
                     closePopover(div);
                 } else {
@@ -1814,7 +1840,10 @@ function removeKiwixPopoverDivs (doc) {
     }, 400);
 }
 
-// Directly close any popovers
+/**
+ * Closes the specified popover div, with fadeout effect, and removes it from the DOM
+ * @param {Element} div The div to close
+ */
 function closePopover (div) {
     div.style.opacity = '0';
     setTimeout(function () {
@@ -1886,7 +1915,7 @@ export default {
     appIsFullScreen: appIsFullScreen,
     lockDisplayOrientation: lockDisplayOrientation,
     attachKiwixPopoverCss: attachKiwixPopoverCss,
-    attachKiwixPopoverDiv: attachKiwixPopoverDiv,
+    populateKiwixPopoverDiv: populateKiwixPopoverDiv,
     removeKiwixPopoverDivs: removeKiwixPopoverDivs,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
