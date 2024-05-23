@@ -1424,25 +1424,31 @@ function lockDisplayOrientation (val) {
  * Parses a linked article in a loaded document in order to extract the first main paragraph (the 'lede') and first
  * main image (if any). This function currently only parses Wikimedia articles. It returns an HTML string, formatted
  * for display in a popover
- *
  * @param {String} href The href of the article link from which to extract the lede
  * @param {String} baseUrl The base URL of the currently loaded article
  * @param {Document} articleDocument The DOM of the currently loaded article
+ * @param {ZIMArchive} archive The archive from which to extract the lede
  * @returns {Promise<String>} A Promise for the linked article's lede HTML including first main image URL if any
  */
-function getArticleLede (href, baseUrl, articleDocument) {
-    var uriComponent = removeUrlParameters(href);
-    var zimURL = deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+function getArticleLede (href, baseUrl, articleDocument, archive) {
+    const uriComponent = removeUrlParameters(href);
+    const zimURL = deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
     console.debug('Previewing ' + zimURL);
-    return appstate.selectedArchive.getDirEntryByPath(zimURL).then(function (dirEntry) {
-        var readArticle = function (dirEntry) {
+    // Do a binary search in the URL index to get the directory entry for the requested article
+    return archive.getDirEntryByPath(zimURL).then(function (dirEntry) {
+        const readArticle = function (dirEntry) {
+            // Wrap legacy callback-based code in a Promise
             return new Promise((resolve, reject) => {
-                appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, htmlArticle) {
+                // As we're reading Wikipedia articles, we can assume that they are UTF-8 encoded HTML data
+                archive.readUtf8File(dirEntry, function (fileDirEntry, htmlArticle) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlArticle, 'text/html');
-                    // const articleBody = doc.getElementById('mw-content-text');
                     const articleBody = doc.body;
                     if (articleBody) {
+                        // Establish the popup balloon's base URL and the absolute path for calculating the ZIM URL of links and images
+                        const balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
+                        const docUrl = new URL(articleDocument.location.href);
+                        const rootRelativePathPrefix = docUrl.pathname.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
                         let balloonString = '';
                         // Remove all standalone style elements, because their content is shown by both innerText and textContent
                         const styleElements = Array.from(articleBody.querySelectorAll('style'));
@@ -1456,20 +1462,33 @@ function getArticleLede (href, baseUrl, articleDocument) {
                             return !/^\s*$/.test(text) && text.length >= 50;
                         });
                         if (nonEmptyParagraphs.length > 0) {
-                            var cumulativeCharCount = 0;
+                            let cumulativeCharCount = 0;
                             // Add enough paras to complete the word count
                             for (let i = 0; i < nonEmptyParagraphs.length; i++) {
                                 // Get the character count: to fill the larger box we need ~850 characters (815 plus leeway)
-                                var plainText = nonEmptyParagraphs[i].innerText;
+                                const plainText = nonEmptyParagraphs[i].innerText;
                                 cumulativeCharCount += plainText.length;
-                                // In Restricted mode, we risk breaking the UI if user clicks on an embedded link, so only use innerText
-                                var content = params.contentInjectionMode === 'jquery' ? plainText
+                                // In ServiceWorker mode, we need to transform the URLs of any links in the paragraph
+                                if (params.contentInjectionMode === 'serviceworker') {
+                                    const links = Array.from(nonEmptyParagraphs[i].querySelectorAll('a'));
+                                    links.forEach(link => {
+                                        const href = link.getAttribute('href');
+                                        if (href && !/^#/.test(href)) {
+                                            const zimURL = deriveZimUrlFromRelativeUrl(href, balloonBaseURL);
+                                            link.href = rootRelativePathPrefix + encodeURI(zimURL);
+                                        }
+                                    });
+                                }
+                                // Get the transformed HTML. Note that in Safe mode, we risk breaking the UI if user clicks on an
+                                // embedded link, so only use innerText in that case
+                                const content = params.contentInjectionMode === 'jquery' ? plainText
                                     : nonEmptyParagraphs[i].innerHTML;
                                 balloonString += '<p>' + content + '</p>';
-                                // console.debug('Cumulatve character count: ' + cumulativeCharCount);
+                                // If we have enough characters to fill the box, break
                                 if (cumulativeCharCount >= 850) break;
                             }
                         }
+                        // If we have a lede, we can now add an image to the balloon
                         const images = articleBody.querySelectorAll('img');
                         let firstImage = null;
                         if (images && params.contentInjectionMode === 'serviceworker') {
@@ -1484,14 +1503,11 @@ function getArticleLede (href, baseUrl, articleDocument) {
                             }
                         }
                         if (firstImage) {
-                            // Calculate absolute URL of image
-                            var balloonBaseURL = encodeURI(fileDirEntry.namespace + '/' + fileDirEntry.url.replace(/[^/]+$/, ''));
-                            var imageZimURL = encodeURI(deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL));
-                            var absolutePath = articleDocument.location.href.replace(/([^.]\.zim\w?\w?\/).+$/i, '$1');
-                            firstImage.src = absolutePath + imageZimURL;
+                            // Calculate root relative URL of image
+                            const imageZimURL = encodeURI(deriveZimUrlFromRelativeUrl(firstImage.getAttribute('src'), balloonBaseURL));
+                            firstImage.src = rootRelativePathPrefix + imageZimURL;
                             balloonString = firstImage.outerHTML + balloonString;
                         }
-                        // console.debug(balloonString);
                         if (!balloonString) {
                             reject(new Error('No article lede or image'));
                         } else {
@@ -1503,17 +1519,23 @@ function getArticleLede (href, baseUrl, articleDocument) {
                 });
             });
         }
-        if (dirEntry.redirect) {
+        if (!dirEntry) {
+            return Promise.reject(new Error('No directory entry found'));
+        } else if (dirEntry.redirect) {
+            // If the dirEntry is a redirect, we need to resolve it before reading the article
             return new Promise((resolve, reject) => {
-                appstate.selectedArchive.resolveRedirect(dirEntry, function (reDirEntry) {
+                archive.resolveRedirect(dirEntry, function (reDirEntry) {
                     resolve(readArticle(reDirEntry));
                 });
             }).catch(error => {
                 return Promise.reject(error);
             });
         } else {
+            // Directory entry was found, so now read the article data
             return Promise.resolve(readArticle(dirEntry));
         }
+    }).catch(function (err) {
+        throw new Error('Could not get Directory Entry for ' + zimURL, err);
     });
 }
 
@@ -1572,7 +1594,14 @@ function attachKiwixPopoverCss (doc, dark) {
         
         #popbreakouticon:hover {
             cursor: pointer;
-        }`,
+        }
+        
+        /* Prevent native iOS popover on Safari if option is enabled */
+        
+        body { 
+            -webkit-touch-callout: none !important;
+        }
+        `,
         // The id of the style element for easy manipulation
         'kiwixtooltipstylesheet'
     );
@@ -1682,7 +1711,7 @@ function attachKiwixPopoverDiv (ev, link, articleBaseUrl, dark) {
         div.style.top = divRectY + adjustedScrollY + 'px';
         div.style.left = divRectX + 'px';
         div.style.opacity = '1';
-        getArticleLede(linkHref, articleBaseUrl, currentDocument).then(function (html) {
+        getArticleLede(linkHref, articleBaseUrl, currentDocument, appstate.selectedArchive).then(function (html) {
             link.articleloading = false;
             div.style.justifyContent = '';
             div.style.alignItems = '';
