@@ -29,6 +29,7 @@
 // import bootstrap from '../css/bootstrap.min.css' assert { type: "css" };
 import zimArchiveLoader from './lib/zimArchiveLoader.js';
 import uiUtil from './lib/uiUtil.js';
+import popovers from './lib/popovers.js';
 import util from './lib/util.js';
 import utf8 from './lib/utf8.js';
 import cache from './lib/cache.js';
@@ -5231,7 +5232,7 @@ function filterClickEvent (event) {
         return;
     }
     // Remove any Kiwix Popovers that may be hanging around
-    uiUtil.removeKiwixPopoverDivs(event.target.ownerDocument);
+    popovers.removeKiwixPopoverDivs(event.target.ownerDocument);
     if (params.contentInjectionMode === 'jquery') return;
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
@@ -5375,7 +5376,7 @@ var articleLoadedSW = function (dirEntry, container) {
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-            uiUtil.attachKiwixPopoverCss(doc, params.cssTheme === 'darkReader');
+            popovers.attachKiwixPopoverCss(doc, params.cssTheme === 'darkReader');
         }
         params.isLandingPage = false;
     } else {
@@ -6542,7 +6543,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-                uiUtil.attachKiwixPopoverCss(articleWindow.document);
+                popovers.attachKiwixPopoverCss(articleWindow.document);
             }
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
             if (params.allowHTMLExtraction && appstate.target === 'iframe') {
@@ -6799,6 +6800,7 @@ function loadCSSJQuery () {
  * @param {String} baseUrl The baseUrl against which relative links will be calculated
  */
 function addListenersToLink (a, href, baseUrl) {
+    appstate.baseUrl = baseUrl;
     var uriComponent = uiUtil.removeUrlParameters(href);
     // var namespace = baseUrl.replace(/^([-ABCIJMUVWX])\/.+/, '$1');
     var loadingContainer = false;
@@ -6925,7 +6927,7 @@ function addListenersToLink (a, href, baseUrl) {
             if (!a.touched || a.newcontainer || appstate.startVector) return;
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
                 a.dataset.touchevoked = true;
-                uiUtil.populateKiwixPopoverDiv(event, a, baseUrl, darkTheme, appstate.selectedArchive);
+                popovers.populateKiwixPopoverDiv(event, a, appstate, darkTheme, appstate.selectedArchive);
             } else {
                 a.newcontainer = true;
                 onDetectedClick(event);
@@ -6954,7 +6956,7 @@ function addListenersToLink (a, href, baseUrl) {
                 // return;
             } else if (!a.touched) {
                 a.touched = true;
-                uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
+                popovers.populateKiwixPopoverDiv(e, a, appstate, darkTheme, appstate.selectedArchive);
             }
         } else {
             if (!params.windowOpener) return;
@@ -7006,11 +7008,11 @@ function addListenersToLink (a, href, baseUrl) {
         a.addEventListener('mouseover', function (e) {
             // console.debug('a.mouseover');
             if (a.dataset.touchevoked === 'true') return;
-            uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
+            popovers.populateKiwixPopoverDiv(e, a, appstate, darkTheme, appstate.selectedArchive);
         });
         a.addEventListener('mouseout', function (e) {
             if (a.dataset.touchevoked === 'true') return;
-            uiUtil.removeKiwixPopoverDivs(e.target.ownerDocument);
+            popovers.removeKiwixPopoverDivs(e.target.ownerDocument);
             setTimeout(reset, 1000);
         });
         a.addEventListener('focus', function (e) {
@@ -7018,7 +7020,7 @@ function addListenersToLink (a, href, baseUrl) {
                 // console.debug('a.focus');
                 if (a.touched) return;
                 a.focused = true;
-                uiUtil.populateKiwixPopoverDiv(e, a, baseUrl, darkTheme, appstate.selectedArchive);
+                popovers.populateKiwixPopoverDiv(e, a, appstate, darkTheme, appstate.selectedArchive);
             }, 200);
         });
         a.addEventListener('blur', function (e) {
