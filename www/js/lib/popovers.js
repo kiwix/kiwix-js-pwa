@@ -173,8 +173,8 @@ function getImageHTMLFromNode (node, baseURL, pathPrefix) {
  * @param {Boolean} dark An optional parameter to adjust the background colour for dark themes (generally not needed for inversion-based themes)
  */
 function attachKiwixPopoverCss (doc, dark) {
-    const colour = dark ? 'darkgray' : 'black';
-    const backgroundColour = dark ? '#111' : '#ebf4fb';
+    const colour = dark && !/invert/i.test(params.cssTheme) ? 'darkgray' : 'black';
+    const backgroundColour = dark && !/invert/i.test(params.cssTheme) ? '#111' : '#ebf4fb';
     const borderColour = dark ? 'darkslategray' : 'skyblue';
     // DEV: Firefox OS blocks loading stylesheet files into iframe DOM content even if it is same origin, so we are forced to insert a style element instead
     uiUtil.insertLinkElement(doc, `
@@ -274,7 +274,7 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
             return;
         }
         // Create a new Kiwix popover container
-        const divWithArrow = createNewKiwixPopoverCointainer(articleWindow, link, ev, dark);
+        const divWithArrow = createNewKiwixPopoverCointainer(articleWindow, link, ev);
         const div = divWithArrow.div;
         const span = divWithArrow.span;
         // Get the article's 'lede' (first main paragraph or two) and the first main image (if any)
@@ -283,7 +283,7 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
             div.style.alignItems = '';
             div.style.display = 'block';
             const breakoutIconFile = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
-            const backgroundColour = dark && !/invert/.test(params.cssTheme) ? 'black' : '#ebf4fb';
+            const backgroundColour = dark && !/invert/i.test(params.cssTheme) ? 'black' : '#ebf4fb';
             // DEV: Most style declarations in this div only work properly inline. If added in stylesheet, even with !important, the positioning goes awry
             // (appears to be a timing issue related to the reservation of space given that the div is inserted dynamically).
             div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${div.style.height};">
@@ -318,10 +318,9 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
  * @param {Window} win The window of the article DOM
  * @param {Element} anchor The anchor element that is being actioned
  * @param {Event} event The event which has fired this popover action
- * @param {Boolean} dark An optional value to switch colour theme to dark if true
  * @returns {Object} An object containing the popover div and the arrow span elements
  */
-function createNewKiwixPopoverCointainer (win, anchor, event, dark) {
+function createNewKiwixPopoverCointainer (win, anchor, event) {
     const div = document.createElement('div');
     const linkHref = anchor.getAttribute('href');
     const currentDocument = win.document;
@@ -398,12 +397,12 @@ function createNewKiwixPopoverCointainer (win, anchor, event, dark) {
     div.style.opacity = '1';
     // Now create the arrow span element. Note that we cannot attach it yet as we need to populate the div first
     // and doing so will overwrite the innerHTML of the div
-    const triangleColour = dark && !/invert/i.test(params.cssTheme) ? 'darkslategray' : 'skyblue'; // Same as border colour of div
+    const triangleColour = getComputedStyle(div).borderColor; // Same as border colour of div
     const span = document.createElement('span');
     span.style.cssText = `
         width: 0;
         height: 0;
-        border-${triangleDirection}: 16px solid ${triangleColour};
+        border-${triangleDirection}: 16px solid ${triangleColour} !important;
         border-left: 8px solid transparent !important;
         border-right: 8px solid transparent !important;
         position: absolute;

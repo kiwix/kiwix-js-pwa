@@ -5376,7 +5376,8 @@ var articleLoadedSW = function (dirEntry, container) {
         }
         if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-            popovers.attachKiwixPopoverCss(doc, params.cssTheme === 'darkReader');
+            var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+            popovers.attachKiwixPopoverCss(doc, darkTheme);
         }
         params.isLandingPage = false;
     } else {
@@ -6543,7 +6544,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
-                popovers.attachKiwixPopoverCss(articleWindow.document);
+                var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+                popovers.attachKiwixPopoverCss(articleWindow.document, darkTheme);
             }
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
             if (params.allowHTMLExtraction && appstate.target === 'iframe') {
