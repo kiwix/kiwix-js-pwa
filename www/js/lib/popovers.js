@@ -282,7 +282,7 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
             div.style.alignItems = '';
             div.style.display = 'block';
             const breakoutIconFile = window.location.pathname.replace(/\/[^/]*$/, '') + (dark ? '/img/icons/new_window_white.svg' : '/img/icons/new_window_black.svg');
-            const backgroundColour = '#ebf4fb';
+            const backgroundColour = dark && !/invert/.test(params.cssTheme) ? 'black' : '#ebf4fb';
             // DEV: Most style declarations in this div only work properly inline. If added in stylesheet, even with !important, the positioning goes awry
             // (appears to be a timing issue related to the reservation of space given that the div is inserted dynamically).
             div.innerHTML = `<div style="position: relative; overflow: hidden; height: ${div.style.height};">
