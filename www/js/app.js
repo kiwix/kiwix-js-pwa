@@ -6834,7 +6834,7 @@ function addListenersToLink (a, href, baseUrl) {
             a.newcontainer = false;
         }
         loadingContainer = false;
-        a.articleloading = false;
+        a.articleisloading = false;
         a.dataset.touchevoked = false;
         a.popoverisloading = false;
     };
@@ -6943,7 +6943,7 @@ function addListenersToLink (a, href, baseUrl) {
         a.newcontainer = false;
         loadingContainer = false;
         // Cancel any popovers because user has clicked
-        a.articleloading = true;
+        a.articleisloading = true;
         setTimeout(reset, 1000);
     });
     // This detects right-click in all browsers (only if the option is enabled)
@@ -7041,7 +7041,7 @@ function addListenersToLink (a, href, baseUrl) {
     a.addEventListener('click', function (e) {
         console.log('a.click', e);
         // Cancel any popovers because user has clicked
-        a.articleloading = true;
+        a.articleisloading = true;
         // Prevent opening multiple windows
         if (loadingContainer || a.touched) {
             e.preventDefault();
