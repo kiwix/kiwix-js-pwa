@@ -381,7 +381,8 @@ self.addEventListener('fetch', function (event) {
     if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
     // For APP_CACHE assets, we should ignore any querystring (whereas it should be conserved for ZIM assets,
     // especially .js assets, where it may be significant). Anchor targets are irreleveant in this context.
-    if (cache === APP_CACHE) rqUrl = strippedUrl;
+    // Note that on github.io, we sometimes get a double slash at the beginning of the path, which we need to remove.
+    if (cache === APP_CACHE) rqUrl = strippedUrl.replace(/^\/\//, '/');
     return event.respondWith(
         // First see if the content is in the cache
         fromCache(cache, rqUrl).then(function (response) {
