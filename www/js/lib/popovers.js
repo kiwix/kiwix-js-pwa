@@ -397,7 +397,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     div.style.opacity = '1';
     // Now create the arrow span element. Note that we cannot attach it yet as we need to populate the div first
     // and doing so will overwrite the innerHTML of the div
-    const triangleColour = getComputedStyle(div).borderColor; // Same as border colour of div
+    const triangleColour = getComputedStyle(div).borderBottomColor; // Same as border colour of div (UWP needs specific border colour)
     const span = document.createElement('span');
     span.style.cssText = `
         width: 0;
