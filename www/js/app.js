@@ -6833,6 +6833,10 @@ function addListenersToLink (a, href, baseUrl) {
             a.touched = false;
             a.newcontainer = false;
         }
+        if ('MSBlobBuilder' in window) {
+            a.style.webkitUserSelect = 'auto';
+            a.style.msUserSelect = 'auto';
+        }
         loadingContainer = false;
         a.articleisloading = false;
         a.dataset.touchevoked = false;
@@ -6921,6 +6925,10 @@ function addListenersToLink (a, href, baseUrl) {
             timeout = 200;
         }
         a.touched = true;
+        if (a.style.userSelect === undefined && appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
+            // This prevents selection of the text in a touched link in iOS Safari
+            a.style.webkitUserSelect = 'none';
+        }
         var event = e;
         // The link will be clicked if the user long-presses for more than 500ms (if the option is enabled), or 200ms for popover
         setTimeout(function () {
@@ -7007,9 +7015,9 @@ function addListenersToLink (a, href, baseUrl) {
     // The popover feature requires as a minimum that the browser supports the css matches function
     // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
-        // Prevent accidental selection of the anchor text
-        if (a.style.userSelect === undefined) {
-            // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
+        // Prevent accidental selection of the anchor text in some contexts
+        if ('MSBlobBuilder' in window) {
+            // This prevents selection of the text in a touched link in the Edge Legacy / UWP or IE11
             a.style.webkitUserSelect = 'none';
             a.style.msUserSelect = 'none';
         }
