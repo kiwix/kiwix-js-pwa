@@ -7010,8 +7010,8 @@ function addListenersToLink (a, href, baseUrl) {
         // Prevent accidental selection of the anchor text
         if (a.style.userSelect === undefined) {
             // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
-            anchor.style.webkitUserSelect = 'none';
-            anchor.style.msUserSelect = 'none';
+            a.style.webkitUserSelect = 'none';
+            a.style.msUserSelect = 'none';
         }
         a.addEventListener('mouseover', function (e) {
             // console.debug('a.mouseover');
