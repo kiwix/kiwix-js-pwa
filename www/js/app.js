@@ -7007,6 +7007,12 @@ function addListenersToLink (a, href, baseUrl) {
     // The popover feature requires as a minimum that the browser supports the css matches function
     // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled)
     if (appstate.wikimediaZimLoaded && params.showPopoverPreviews && 'matches' in Element.prototype) {
+        // Prevent accidental selection of the anchor text
+        if (a.style.userSelect === undefined) {
+            // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
+            anchor.style.webkitUserSelect = 'none';
+            anchor.style.msUserSelect = 'none';
+        }
         a.addEventListener('mouseover', function (e) {
             // console.debug('a.mouseover');
             if (a.dataset.touchevoked === 'true') return;
