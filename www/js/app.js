@@ -5332,7 +5332,7 @@ var articleLoadedSW = function (dirEntry, container) {
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
             // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-            if (params.windowOpener && !appstate.pureMode && !params.useLibzim && dirEntry) {
+            if ((params.windowOpener || appstate.wikimediaZimLoaded) && !appstate.pureMode && !params.useLibzim && dirEntry) {
                 setTimeout(function () {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
