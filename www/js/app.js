@@ -2234,7 +2234,7 @@ function initializeUISettings () {
 // similar code also runs in switchCSSTheme(), but that is not evoked on startup
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
-document.getElementById('cssUIDarkThemeCheck').addEventListener('change', function () {
+document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
     params.cssThemeOriginal = params.cssTheme;
     // This code implements a tri-state checkbox
     if (this.readOnly) this.checked = this.readOnly = false;
@@ -2257,7 +2257,7 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('change', functi
     }
     params.cssThemeOriginal = null;
 });
-document.getElementById('cssWikiDarkThemeCheck').addEventListener('change', function () {
+document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
     if (this.readOnly) this.checked = this.readOnly = false;
     else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Invert order:
