@@ -103,18 +103,19 @@
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
                                 <li>New feature: Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link</li>
+                                <li>Support building separate Windows 7 32bit Electron packages</li>
+                                <li>Standard NWJS packages (not XP) are now 64bit</li>
+                                <li>Windows 7/8/8.1 Electron apps no longer autoupdate, because they will update to a version not supported on Win 7+</li>
+                                <li>Reworked Wikivoyage custom landing page</li>
+                                <li>Popovers now support all dark themes</li>
+                                <li>Bug which would reload the current ZIM archive if user accidentally initiated drag-drop</li>
+                                <li>No source verification for archives included in package</li>
                                 <li>Fix bug with placement of popovers which didn't take into account the font zoom factor</li>
-                                <li>New feature: Security dialogue on opening a ZIM for the first time in ServiceWorker mode</li>
-                                <li>Rename "JQuery mode" to "Restricted mode"</li>
-                                <li>Add information about ZIM security and Persistent Permissions to info in About</li>
-                                <li>Fix bug preventing display of landing page when switching from Restricted mode</li>
-                                <li>Fix display of open/close marker with h5 and h6 headings in Wikimedia ZIMs</li>
-                                <li>Fix inability to print HTML books in Gutenberg ZIMs</li>
-                                <li>Fix bug which forced all images to manual display in some non-Wikimedia ZIMs in Restricted mode</li>
-                                <li>Fix inability to read stylesheets correctly when accessing some Zimit archives in Restricted mode</li>
-                                <li>Go straight to article view on launch if persistent permissions are granted</li>
-                                <li>Catch uncaught file verification exception</li>
-                                <li>Fix for HTML URLs with percent-encoded querystring separators in zimit2</li>
+                                <li>Critical error detecting window.electronAPI on some platforms</li>
+                                <li>In the Electron app, do not show GitHub updates if PWA update is needed</li>
+                                <li>Fix bug with synchronization of tri-state checkboxes when unselecting dark themes</li>
+                                <li>DEV: Avoid incorrect and redundant uploads to Kiwix download server</li>
+                                <li>Bump Electron to 29.3.1 for 64bit builds</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

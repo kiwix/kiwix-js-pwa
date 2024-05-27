@@ -1,13 +1,19 @@
 # Changelog
 
-## In-progress release 3.2.62
+## Release 3.3.1 / 3.3.2
 
 * FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
 * ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
 * ENHANCEMENT: Standard NWJS packages (not XP) are now 64bit
+* INFO: Windows 7/8/8.1 Electron apps no longer autoupdate, because they will update to a version not supported on Win 7+
+* UPDATE: Reworked Wikivoyage custom landing page
+* FIX: Popovers now support all dark themes
 * FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
 * FIX: No source verification for archives included in package
 * FIX: Bug with placement of popovers which didn't take into account the font zoom factor
+* FIX: Critical error detecting window.electronAPI on some platforms
+* FIX: In the Electron app, do not show GitHub updates if PWA update is needed
+* FIX: Bug with synchronization of tri-state checkboxes when unselecting dark themes
 * DEV: Avoid incorrect and redundant uploads to Kiwix download server
 * DEV: Fix build scripts
 * DEV: Update publishing templates
