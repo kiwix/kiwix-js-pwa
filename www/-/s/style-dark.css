@@ -299,7 +299,7 @@ div[style*="background-color: #cee0f2"], div[style*="background-color: #cedff2"]
     border-color: lightgray  !important;
   }
 
-  div:not([style*="-color"]), div[style*="background-color"], span:not([class*="color"]),
+  div:not([style*="-color"]):not(.kiwixtooltip), div[style*="background-color"]:not(.kiwixtooltip), span:not([class*="color"]),
   summary:not([style*="-color"]), table, tr:not([style*="border-bottom"]), th, td:not([style*="border-bottom"]),
   h1, h2, h3, h4, h5, h6, ul, li, input, select, #bodyContent code {
     border-color: #555 !important;

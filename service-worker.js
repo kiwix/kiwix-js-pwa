@@ -196,6 +196,7 @@ const precacheFiles = [
     'www/js/lib/filecache.js',
     'www/js/lib/images.js',
     'www/js/lib/kiwixServe.js',
+    'www/js/lib/popovers.js',
     'www/js/lib/settingsStore.js',
     'www/js/lib/transformStyles.js',
     'www/js/lib/transformZimit.js',
@@ -260,6 +261,8 @@ if (typeof chrome !== 'undefined' && chrome.action) {
 // Process install event
 self.addEventListener('install', function (event) {
     console.debug('[SW] Install Event processing');
+    // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
+    // self.skipWaiting();
     // We try to circumvent the browser's cache by adding a header to the Request, and it ensures all files are explicitly versioned
     var requests = precacheFiles.map(function (urlPath) {
         return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
@@ -277,11 +280,6 @@ self.addEventListener('install', function (event) {
                     });
                 })
             );
-            // .then(function () {
-            //     // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
-            //     // console.warn('Attempting to skip waiting...');
-            //     // self.skipWaiting();
-            // });
         }));
     }
 });
@@ -419,12 +417,6 @@ self.addEventListener('fetch', function (event) {
                     }
                     const range = modRequestOrResponse.headers.get('range');
                     return fetchUrlFromZIM(urlObject, range).then(function (response) {
-                    //     // DEV: For normal reads, this is now done in app.js, but for libzim, we have to do it here
-                    //     // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
-                    //     if (data && data.origin === 'libzim' && regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
-                    //         !regexpExcludedURLSchema.test(event.request.url)) {
-                    //         event.waitUntil(updateCache(ASSETS_CACHE, rqUrl, response.clone()));
-                    //     }
                         return cacheAndReturnResponseForAsset(event, response);
                     }).catch(function (msgPortData) {
                         console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
@@ -633,7 +625,7 @@ function zimitResolver (event, rqUrl) {
     } else {
         // The loaded ZIM archive is not a Zimit archive, or sw-Zimit is unsupported, so we should just return the request
         // If the reqUrl is not the same as event.request.url, we need to modify the request
-        // Note that we can't clone requests with streaming bodies, hence we check for an error and use another method in that cse (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
+        // Note that we can't clone requests with streaming bodies, hence we check for an error and use another method in that case (see https://developer.mozilla.org/en-US/docs/Web/API/Request/clone)
         var rtnRequest;
         try {
             rtnRequest = new Request(rqUrl, event.request);
@@ -767,11 +759,9 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
                 var httpResponse = new Response(slicedData, responseInit);
 
                 // Let's send the content back from the ServiceWorker
-                // resolve({ response: httpResponse, data: msgPortEvent.data });
                 resolve(httpResponse);
             } else if (msgPortEvent.data.action === 'sendRedirect') {
                 console.debug('[SW] Redirecting to ' + msgPortEvent.data.redirectUrl);
-                // resolve({ response: Response.redirect(prefix + msgPortEvent.data.redirectUrl) });
                 resolve(Response.redirect(prefix + msgPortEvent.data.redirectUrl));
             } else {
                 reject(msgPortEvent.data, titleWithNameSpace);
