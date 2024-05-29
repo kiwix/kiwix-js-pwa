@@ -43,7 +43,6 @@ function DirEntry (zimfile, dirEntryData) {
  * @returns {String}
  */
 DirEntry.prototype.toStringId = function () {
-    // @todo also store isRedirect and redirectTarget
     return this.offset + '|' + this.mimetypeInteger + '|' + this.namespace + '|' + this.cluster + '|' +
             this.blob + '|' + this.url + '|' + this.title + '|' + this.redirect + '|' + this.redirectTarget;
 };

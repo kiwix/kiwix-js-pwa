@@ -4860,8 +4860,12 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         // inside double quotes (in the final HTML string), given that dirEntryStringId may contain bare apostrophes
         // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( )
         var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
+        // DEV: Some titles may contain malformed HTML characters like '&lt;i>' for '<i>', so we transform only bold and italics for display
+        // @TODO: Remove when [openzim/mwoffliner #1797] is fixed
+        var dirEntryTitle = dirEntry.getTitleOrUrl();
+        dirEntryTitle = dirEntryTitle.replace(/&lt;([ib])>([^&]+)&lt;\/\1>/g, '<$1>$2</$1>');
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-            '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
+            '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
     articleListDiv.innerHTML = articleListDivHtml;
     // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
