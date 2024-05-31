@@ -5976,7 +5976,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
                 assetZIMUrlEnc = assetZIMUrlEnc + querystring;
             }
-            if (params.zimType !== 'zimit') {
+            if (params.zimType !== 'zimit') { // Includes zimit2
                 // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                 // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                 // of encodeURIComponent.
