@@ -23,24 +23,24 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
     background-color: transparent !important;
 }
 
-  /*** Overall ***/
-  p, li, td:not([style*="background"]), th:not([style*="background"]), caption, div {
+/*** Overall ***/
+p, li, td:not([style*="background"]), th:not([style*="background"]), caption, div {
+  color: lightgray !important;
+  background-image: none !important;
+}
+
+th.infobox-above, th.infobox-header {
+  background-color: darkslategray !important;
+}
+
+td.infobox-subheader {
+  background-color: dimgray !important;
+}
+
+p code, label code, dl code {
+    background-color: #111;
     color: lightgray !important;
-    background-image: none !important;
-  }
-
-  th.infobox-above, th.infobox-header {
-    background-color: darkslategray !important;
-  }
-
-  td.infobox-subheader {
-    background-color: dimgray !important;
-  }
-
-  p code, label code, dl code {
-      background-color: #111;
-      color: lightgray !important;
-  }
+}
 
 blockquote {
     background-color: transparent !important;
@@ -172,6 +172,11 @@ table.navbox.collapsible tr:nth-child(2) > td, div.menu, div.NavHead, .oo-ui-pop
 .oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
 .ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr, .dataTable tr, div.kiwixtooltip {
     background-color: #222 !important;
+}
+
+#popcloseicon {
+  color: white !important;
+  opacity: 0.7 !important;
 }
 
 table.dataTable.display tbody tr:hover,
