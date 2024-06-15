@@ -14,9 +14,10 @@
 * FIX: Stutter effect when invoking popover
 * FIX: UWP positioning of popovers
 * FIX: Restore erroneously deleted WikiMed file
-* FIX: Erroneous divOffsetHeight calculation in Electrop apps
+* FIX: Erroneous divOffsetHeight calculation in Electron apps
 * FIX: Horizontal line cutting into infoboxes with locally cached Wikipedia styles
 * FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
+* FIX: Ensure popover is always at top of z-index
 
 ## Release 3.1.7 / 3.1.8-WikiMed
 
