@@ -65,19 +65,14 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>AC88CB5C77BD1D6D2ECC0849F5C200C427E0ECCA</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>48A0D39733571F380E677B6F36F3DED5C65D2C4F</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <PackageCertificateKeyFile>KiwixWebAppWikiMed_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\README.md" />
-    <Content Include="images\BadgeLogo.scale-100.png" />
-    <Content Include="images\BadgeLogo.scale-125.png" />
-    <Content Include="images\BadgeLogo.scale-150.png" />
-    <Content Include="images\BadgeLogo.scale-200.png" />
-    <Content Include="images\BadgeLogo.scale-400.png" />
-    <Content Include="images\Kiwix_icon_transparent.svg" />
+    <Content Include="archives\mdwiki_en_all-app_maxi_2024-06.zim" />
     <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
     <Content Include="images\LargeTile.scale-100.png" />
     <Content Include="images\LargeTile.scale-125.png" />
@@ -124,7 +119,6 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <None Include="KiwixWebApp_StoreKey.pfx" />
     <Content Include="www\-\mw\content.parsoid.css" />
     <Content Include="www\-\mw\ext.cite.a11y.css" />
     <Content Include="www\-\mw\ext.cite.styles.css" />
@@ -233,16 +227,14 @@
     <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="www\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="www\img\icons\kiwix-32.png" />
-    <Content Include="www\img\icons\kiwix-60.png" />
-    <Content Include="www\img\icons\kiwix-90.png" />
     <Content Include="www\img\icons\kiwix-blue-32.png" />
-    <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\img\icons\map_marker-30px.png" />
     <Content Include="www\img\icons\map_marker-18px.png" />
     <Content Include="www\img\icons\new_window.svg" />
     <Content Include="www\img\icons\new_window_black.svg" />
     <Content Include="www\img\icons\new_window_lb.svg" />
     <Content Include="www\img\icons\new_window_white.svg" />
+    <Content Include="www\img\icons\wikimed-90.png" />
     <Content Include="www\img\icons\wikimed-blue-32.png" />
     <Content Include="www\img\icons\wikimed-lightblue-32.png" />
     <Content Include="www\img\icons\wikivoyage-black-32.png" />
@@ -324,7 +316,6 @@
     <Content Include="www\js\katex\fonts\KaTeX_Typewriter-Regular.woff2" />
     <Content Include="www\js\katex\katex.min.css" />
     <Content Include="www\js\katex\katex.min.js" />
-    <Content Include="www\js\katex\README.md" />
     <Content Include="node_modules/jquery/dist/jquery.slim.min.js" />
     <Content Include="node_modules/jquery/dist/jquery.slim.min.map" />
   </ItemGroup>
@@ -337,6 +328,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\Release\Upload\" />
     <Folder Include="www\-\static\bootstrap\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />

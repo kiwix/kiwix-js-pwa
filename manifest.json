@@ -48,20 +48,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "file_handlers": [
-    {
-      "action": "www/index.html",
-      "accept": {
-        "application/octet-stream": [ ".zim" ]
-      },
-      "icons": [
-        {
-          "src": "www/img/icons/kiwix-256.png",
-          "sizes": "256x256",
-          "type": "image/png"
-        }
-      ],"launch_type": "single-client"
-    }
   ]
 }

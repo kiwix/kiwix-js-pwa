@@ -15,7 +15,7 @@ const store = new Store();
 // 3000: Main App
 // 3001: WikiMed
 // 3002: WikiVoyage
-const port = store.get('expressPort', 3000);
+const port = store.get('expressPort', 3001);
 console.log('Express Port: ' + port);
 
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
@@ -58,7 +58,7 @@ function createWindow () {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'build/64x64.png'),
         // titleBarStyle: 'hidden',
         // titleBarOverlay: {
         //     color: '#000000',
