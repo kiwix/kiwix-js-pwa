@@ -1,32 +1,22 @@
 # Changelog
 
-## In-progress release 3.2.5 / 3.2.6-WikiMed
+## Release 3.3.3 / 3.3.4-WikiMed
 
-* FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link
-* FEATURE: Add security dialogue on opening a ZIM for the first time in ServiceWorker mode
-* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-05.zim`
-* UPDATE: Rename JQuery mode to Restricted mode
-* ENHANCEMENT: Support building separate Windows 7 32bit Electron packages
-* DOCUMENTATION: Add information about ZIM security to About
-* DOCUMENTATION: Add information about Persistent Permissions to About
-* INFO: Windows 7/8/8.1 Electron apps no longer autoupdate, because they will update to a version not supported on Win 7+
-* UPDATE: Reworked Wikivoyage custom landing page
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2024-06.zim`
+* UPDATE: Title tip info about Origin Private File System
+* WORKAROUND: Patch rogue HTML entities appearing in dirEntry titles
 * FIX: Popovers now support all dark themes
-* FIX: Bug which would reload the current ZIM archive if user accidentally initiated drag-drop
-* FIX: Catch uncaught file verification exception
-* FIX: Remove legacy "Scanning for archives" block
-* FIX: Cached last page sometimes overwrites new ZIM landing page when switching from Restricted mode
-* FIX: No source verification for archives included in package
+* FIX: Incorrect close popover icon colour
 * FIX: Bug with placement of popovers which didn't take into account the font zoom factor
 * FIX: Critical error detecting window.electronAPI on some platforms
 * FIX: In the Electron app, do not show GitHub updates if PWA update is needed
 * FIX: Bug with synchronization of tri-state checkboxes when unselecting dark themes
-* REGRESSION: Fix inability to reload packaged archive in WikiMed and Wikivoyage apps
-* DEV: Avoid incorrect and redundant uploads to Kiwix download server
-* DEV: Fix build scripts
-* DEV: Update publishing templates
-* DEPENDENCIES: Bump Electron to 29.3.1 for 64bit builds
-* DEPENDENCIES: Bump ejs to 3.1.10
+* FIX: Stutter effect when invoking popover
+* FIX: UWP positioning of popovers
+* FIX: Restore erroneously deleted WikiMed file
+* FIX: Erroneous divOffsetHeight calculation in Electrop apps
+* FIX: Horizontal line cutting into infoboxes with locally cached Wikipedia styles
+* FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
 
 ## Release 3.1.7 / 3.1.8-WikiMed
 

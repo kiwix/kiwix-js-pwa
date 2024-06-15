@@ -103,29 +103,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>New feature: Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link</li>
-                                <li>Support building separate Windows 7 32bit Electron packages</li>
-                                <li>Standard NWJS packages (not XP) are now 64bit</li>
-                                <li>Windows 7/8/8.1 Electron apps no longer autoupdate, because they will update to a version not supported on Win 7+</li>
-                                <li>Reworked Wikivoyage custom landing page</li>
+                                <li>Packaged archive updated to mdwiki_en_all[-app]_maxi_2024-06.zim</li>
+                                <li>Patch rogue HTML entities appearing in dirEntry titles</li>
                                 <li>Popovers now support all dark themes</li>
-                                <li>Fixed bug which would reload the current ZIM archive if user accidentally initiated drag-drop</li>
-                                <li>Fixed bug with placement of popovers which didn't take into account the font zoom factor</li>
-                                <li>Fixed critical error detecting window.electronAPI on some platforms</li>
+                                <li>Fix incorrect close popover icon colour</li>
+                                <li>Fix bug with placement of popovers which didn't take into account the font zoom factor</li>
+                                <li>Fix critical error detecting window.electronAPI on some platforms</li>
                                 <li>In the Electron app, do not show GitHub updates if PWA update is needed</li>
-                                <li>Fixed bug with synchronization of tri-state checkboxes when unselecting dark themes</li>
-                                <li>Bump Electron to 29.3.1 for 64bit builds</li>
-                                <li>Packaged archive updated to mdwiki_en_all[-app]_maxi_2024-05.zim</li>
-                                <li>New feature: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link</li>
-                                <li>New feature: Security dialogue on opening a ZIM for the first time in ServiceWorker mode</li>
-                                <li>Rename "JQuery mode" to "Restricted mode"</li>
-                                <li>Support building separate Windows 7 32bit Electron packages</li>
-                                <li>Fix inability to reload packaged archive in WikiMed and Wikivoyage apps</li>
-                                <li>Add info about ZIM security and Persistent Permissions to About</li>
-                                <li>Fix bug which would reload current ZIM if user accidentally initiated drag-and-drop</li>
-                                <li>Fix bug preventing display of landing page when switching from Restricted mode</li>
-                                <li>Catch uncaught file verification exception</li>
-                                <li>Bump Electron to 29.3.1 for 64bit builds</li>
+                                <li>Fix bug with synchronization of tri-state checkboxes when unselecting dark themes</li>
+                                <li>Fix stutter effect when invoking popover</li>
+                                <li>Fix UWP positioning of popovers</li>
+                                <li>Restore erroneously deleted WikiMed file</li>
+                                <li>Fix erroneous divOffsetHeight calculation in Electrop apps</li>
+                                <li>Fix horizontal line cutting into infoboxes with locally cached Wikipedia styles</li>
+                                <li>Fix handling of custom protocols and URI schemata in ServiceWorker mode</li>
+                                <li>Update title tip info about Origin Private File System</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-WikiMed/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
