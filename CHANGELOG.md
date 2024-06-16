@@ -1,5 +1,18 @@
 # Changelog
 
+## In-progress release 3.3.4
+
+* FIX: Incorrect close popover icon colour
+* FIX: Stutter effect when invoking popover
+* FIX: UWP positioning of popovers
+* FIX: Restore erroneously deleted WikiMed file
+* FIX: Erroneous divOffsetHeight calculation in Electron apps
+* FIX: Horizontal line cutting into infoboxes with locally cached Wikipedia styles
+* FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
+* FIX: Ensure popover is always at top of z-index
+* UPDATE: Title tip info about Origin Private File System
+* WORKAROUND: Patch rogue HTML entities appearing in dirEntry titles
+
 ## Release 3.3.1 / 3.3.2
 
 * FEATURE: Add Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link

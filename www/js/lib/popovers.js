@@ -197,6 +197,7 @@ function attachKiwixPopoverCss (doc, dark) {
             /* add fade-in transition */
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 2;
         }
         
         .kiwixtooltip img {

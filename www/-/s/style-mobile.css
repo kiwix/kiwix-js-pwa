@@ -3341,7 +3341,8 @@ sub, sup {
         max-width: 320px;
         width: auto !important;
         float: right !important;
-        clear: right !important
+        clear: right !important;
+        z-index: 1;
     }
 
     #mw-mf-page-center .mw-mf-banner {
