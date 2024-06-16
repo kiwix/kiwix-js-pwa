@@ -209,16 +209,31 @@ app.whenReady().then(() => {
     // Serve static files from the www directory
     server.use(express.static(path.join(__dirname, '/')));
 
-    // https.createServer(options, server).listen(3000, '0.0.0.0', () => {
-    server.listen(port, () => {
-        // Create the new window
-        createWindow();
-        registerListeners();
-        mainWindow.webContents.on('did-finish-load', () => {
-            const launchFilePath = processLaunchFilePath(process.argv);
-            mainWindow.webContents.send('get-launch-file-path', launchFilePath);
+    // Function to start the Express server and check for port availability
+    const startServer = (port) => {
+        server.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+            // Create the new window
+            createWindow();
+            registerListeners();
+            mainWindow.webContents.on('did-finish-load', () => {
+                const launchFilePath = processLaunchFilePath(process.argv);
+                mainWindow.webContents.send('get-launch-file-path', launchFilePath);
+            });
+        }).on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                const newPort = port + 10;
+                console.log(`Port ${port} is already in use, trying port ${newPort}`);
+                store.set('expressPort', newPort);
+                startServer(newPort); // Try the next port
+            } else {
+                console.error(err);
+                app.quit(); // Or handle error differently
+            }
         });
-    })
+    };
+
+    startServer(port);
 
     var appName = app.getName();
     console.log('App name: ' + appName);
