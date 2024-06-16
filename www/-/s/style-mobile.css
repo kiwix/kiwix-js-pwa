@@ -113,7 +113,9 @@ body {
 }
 
 .content img {
-    vertical-align: middle
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
 }
 
 .content .floatright {
@@ -2848,53 +2850,6 @@ body {
 
 .content .magnify {
     display: none
-}
-
-.content img {
-    vertical-align: middle
-}
-
-.content .floatright {
-    clear: right;
-    float: right;
-    margin: 0 0 0.6em 0.6em
-}
-
-.content .floatleft {
-    clear: left;
-    float: left;
-    margin: 0 0.6em 0.6em 0
-}
-
-.content a > img {
-    max-width: 100% !important;
-    height: auto !important
-}
-
-.content .noresize {
-    max-width: 100%;
-    overflow-x: auto
-}
-
-    .content .noresize a > img {
-        max-width: none !important
-    }
-
-h1 {
-    font-size: 1.7em
-}
-
-h2 {
-    font-size: 1.5em
-}
-
-h3 {
-    font-size: 1.2em;
-    font-weight: bold
-}
-
-h4 {
-    font-weight: bold
 }
 
 .pre-content h1, .content h1, .content h2, h3, h4, h5, h6 {
