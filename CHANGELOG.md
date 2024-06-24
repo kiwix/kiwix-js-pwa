@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.3.4
+## In-progress release 3.3.6
 
 * FIX: Incorrect close popover icon colour
 * FIX: Stutter effect when invoking popover
