@@ -2,7 +2,7 @@
 
 Wikiovyage by Kiwix is an offline travel guide featuring more than 32,000 destinations worldwide. It contains the English-language content, including images, of the [Wikivoyage](https://www.wikivoyage.org/) online wiki, Wikipedia's official sister site. Other languages can be downloaded within the app.
 
-![Wikiovyage montage trans](https://user-images.githubusercontent.com/4304337/197711210-b17cdff0-dc40-4d25-ada8-25d2863fd4f0.png)
+![Wikivoyage_refresh](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/c7c45ba6-169f-4e2e-95d7-aa5343ac3461)
 
 These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html) and download the latest Wikivoyage archive from within the app.
 
