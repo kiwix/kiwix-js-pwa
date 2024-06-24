@@ -2,12 +2,14 @@
 
 ## In-progress release 3.3.6
 
+* FIX: Critical error on startup of Electron app if Express port is already in use
 * FIX: Incorrect close popover icon colour
 * FIX: Stutter effect when invoking popover
 * FIX: UWP positioning of popovers
 * FIX: Restore erroneously deleted WikiMed file
 * FIX: Erroneous divOffsetHeight calculation in Electron apps
 * FIX: Horizontal line cutting into infoboxes with locally cached Wikipedia styles
+* FIX: Horizontal line cutting into some images with locally cached Wikipedia styles
 * FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
 * FIX: Ensure popover is always at top of z-index
 * UPDATE: Title tip info about Origin Private File System
