@@ -5254,7 +5254,7 @@ function filterClickEvent (event) {
         var href = clickedAnchor.getAttribute('href');
         // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
         // By comparing the protocols, we can filter out links such as `mailto:`, `tel:`, `skype:`, etc. (these should open in a new window).
-        if (/^(?:http|ftp)/i.test(href) || clickedAnchor.protocol && articleWindow.location.protocol !== clickedAnchor.protocol) {
+        if (/^(?:http|ftp)/i.test(href) || clickedAnchor.protocol && clickedAnchor.protocol !== ':' && articleWindow.location.protocol !== clickedAnchor.protocol) {
             console.debug('filterClickEvent opening external link in new tab');
             clickedAnchor.newcontainer = true;
             uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
