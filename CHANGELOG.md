@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.3.6
+## Release 3.3.7 / 3.3.8
 
 * FIX: Critical error on startup of Electron app if Express port is already in use
 * FIX: Incorrect close popover icon colour
