@@ -12,6 +12,7 @@
 * FIX: Horizontal line cutting into some images with locally cached Wikipedia styles
 * FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
 * FIX: Ensure popover is always at top of z-index
+* FIX: Issues selecting and remembering the UI language in multi-lingual TED ZIMs
 * UPDATE: Title tip info about Origin Private File System
 * WORKAROUND: Patch rogue HTML entities appearing in dirEntry titles
 

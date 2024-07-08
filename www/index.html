@@ -102,19 +102,19 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For updates since v3.3.2, please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a></li>
-                                <li>New feature: Wikipedia/Wikivoyage previews when hovering over, tabbing into or long-pressing a ZIM link</li>
-                                <li>Support building separate Windows 7 32bit Electron packages</li>
-                                <li>Standard NWJS packages (not XP) are now 64bit</li>
-                                <li>Windows 7/8/8.1 Electron apps no longer autoupdate, because they will update to a version not supported on Win 7+</li>
-                                <li>Reworked Wikivoyage custom landing page</li>
-                                <li>Popovers now support all dark themes</li>
-                                <li>Fixed bug which would reload the current ZIM archive if user accidentally initiated drag-drop</li>
-                                <li>Fixed bug with placement of popovers which didn't take into account the font zoom factor</li>
-                                <li>Fixed critical error detecting window.electronAPI on some platforms</li>
-                                <li>In the Electron app, do not show GitHub updates if PWA update is needed</li>
-                                <li>Fixed bug with synchronization of tri-state checkboxes when unselecting dark themes</li>
-                                <li>Bump Electron to 29.3.1 for 64bit builds</li>
+                                <li>Fix ritical error on startup of Electron app if Express port is already in use</li>
+                                <li>Fix incorrect close popover icon colour</li>
+                                <li>Fix tutter effect when invoking popover</li>
+                                <li>Fix UWP positioning of popovers</li>
+                                <li>Restore erroneously deleted WikiMed file</li>
+                                <li>Fix erroneous divOffsetHeight calculation in Electron apps</li>
+                                <li>Fix horizontal line cutting into infoboxes with locally cached Wikipedia styles</li>
+                                <li>Fix horizontal line cutting into some images with locally cached Wikipedia styles</li>
+                                <li>Fix handling of custom protocols and URI schemata in ServiceWorker mode</li>
+                                <li>Ensure popover is always at top of z-index order</li>
+                                <li>Fix issues selecting and remembering the UI language in multi-lingual TED ZIMs</li>
+                                <li>Update title tip info about Origin Private File System</li>
+                                <li>Patch rogue HTML entities appearing in dirEntry titles</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
