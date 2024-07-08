@@ -4217,7 +4217,7 @@ function archiveReadyCallback (archive) {
     params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
-    if (/gutenberg|phet/i.test(archive.file.name) ||
+    if (/gutenberg|phet|ted_/i.test(archive.file.name) ||
       // params.isLandingPage ||
       /kolibri/i.test(archive.creator) ||
       archive.zimType !== 'open') {
