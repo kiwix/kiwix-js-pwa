@@ -5881,7 +5881,7 @@ params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=
 // fully supported wikimedia ZIMs, so they are excluded); 4) the script block is not of type "math" (these are MathJax markup scripts used
 // extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is common in unsupported
 // packaged UIs, e.g. PhET ZIMs.
-var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]*type=["']module["'])|(?=[^>]+src\b=["'][^"']*?\b(?:app|init|l1[08]9)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
+var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]*type=["']module["'])|(?=[^>]+src\b=["'][^"']*?\b(?:app|init|ractive|l1[08]9)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
 
 // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to
 // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
