@@ -1215,7 +1215,7 @@ function reportSearchProviderToAPIStatusPanel (provider) {
 /**
  * Warn the user that they clicked on an external link, and open it in a new tab
  *
- * @param {Event} event The click event (on an anchor) to handle (optional, but if not provided, clickedAnchor must be provided)
+ * @param {Event} event The click event to handle (optional, but if not provided, clickedAnchor must be provided)
  * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
  * @param {String} message The message to display to the user (optional, defaults to a generic message)
  */
@@ -1231,9 +1231,14 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
         clickedAnchor.href = clickedAnchor.href.replace(clickedAnchor.origin, appstate.selectedArchive.source.replace(/\/$/, ''));
     }
     var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
+    // @WORKAROUND: Note that for Zimit2 ZIMs (only), any querystring in an external link will be overencoded.
+    // See https://github.com/kiwix/kiwix-js/issues/1258. DEV: Monitor this issue, and remove the workaround if it is fixed upstream.
+    if (params.zimType === 'zimit2') {
+        href = decodeURIComponent(href);
+    }
     clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
     message = message || '<p>Click the link to open this external ' + clickedAnchor.type + ' (in a new ' + params.windowOpener + ')';
-    var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
+    var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + href + '</a>';
     message += ':</p><p>' + anchor + '</p><p>You may change whether links open in a window or a new browser tab in Configuration.</p>';
     var opener = function (ev) {
         try {
