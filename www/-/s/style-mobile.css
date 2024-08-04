@@ -89,7 +89,7 @@ body {
 
     .content figure .thumbinner, .content .thumb .thumbinner {
         margin: 0 auto;
-        max-width: 100% !important
+        /* max-width: 100% !important; */
     }
 
 .content figcaption, .content .thumbcaption {
@@ -2832,7 +2832,7 @@ body {
 
     .content .thumb .thumbinner {
         margin: 0 auto;
-        max-width: 100%
+        /* max-width: 100%; */
     }
 
 .content .thumbcaption {
@@ -4759,7 +4759,7 @@ div.infobox_v3 {
 
 .client-js .collapsible-heading {
     cursor: pointer;
-    position: relative
+    position: relative;
 }
 
     .client-js .collapsible-heading .indicator {
@@ -5526,7 +5526,7 @@ h3 .mw-headline {
     }
 
 .content figure .thumbinner, .content .thumbinner {
-    max-width: 100% !important;
+    /* max-width: 100% !important; */
 }
 
 .content h2, .content h3, .content h4, .content h5, .content h6 {

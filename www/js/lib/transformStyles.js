@@ -96,6 +96,7 @@ function filterCSS (zl, zim, cc, cs, i) {
                 /\/content.parsoid.css/i.test(zl) ||
                 /\/inserted_style_mobile.css/i.test(zl) ||
                 /\/inserted_style.css/i.test(zl) ||
+                /\/meta.wikimedia.org\/api\/rest_v1\/data\/css\/mobile\/base.css/i.test(zl) ||
                 /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
                 /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                 /-\/static\/main.css/i.test(zl) ||
@@ -105,7 +106,7 @@ function filterCSS (zl, zim, cc, cs, i) {
                 /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
             )) {
             zl = zl.replace(/\|/ig, '_'); // Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
-            if (/(-\/(?:s\/css_modules\/|mw\/)?style\.css)|minerva|inserted_style_mobile/i.test(zl)) { // If it matches one of the required styles...
+            if (/(-\/(?:s\/css_modules\/|mw\/)?style\.css)|minerva|inserted_style_mobile|base\.css/i.test(zl)) { // If it matches one of the required styles...
                 zl = cs === 'mobile' ? '-/s/style-mobile.css' : '-/s/style.css';
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept

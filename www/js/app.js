@@ -2565,7 +2565,10 @@ function removePageMaxWidth () {
     var docStyle;
     var updatedCssText;
     var doc = articleWindow.document;
-    if (!doc || !doc.head) return;
+    if (!doc || !doc.head || !doc.body) return;
+    var body = doc.body;
+    // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
+    if (body.style) body.style.maxWidth = '';
     zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
     cssSource = params.cssSource === 'auto' ? zimType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
@@ -6075,14 +6078,16 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
+            // Remove hard-coded image widths
+            htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1max-width: 321px$2"320px"');
             if (!params.isLandingPage) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
                 for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                        var summary = m2.replace(/(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                        var summary = m2.replace(/(?:<div\s+class=["']pcs-edit[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
                         return '<details ' + m1 + '>' + summary + '</details>';
                     });
-                    // We can stop iterating if all sections are consume
+                    // We can stop iterating if all sections are consumed
                     if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
                 }
             }
@@ -6316,13 +6321,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
         zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
-        if (/minerva|inserted.style/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+        if (/minerva|inserted.style|pcs\.css/i.test(testCSS) && (cssCache || zimType != cssSource)) {
             // Substitute ridiculously long style name TODO: move this code to transformStyles
             for (var i = arr.length; i--;) { // TODO: move to transfromStyles
                 arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') +
                     '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                 // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
-                if (/inserted.style/i.test(arr[i]) && /minerva/i.test(testCSS)) {
+                if (/inserted.style/i.test(arr[i]) && /minerva/i.test(testCSS) ||
+                    // We also remove the new pcs.css style as it is causing issues
+                    /pcs\.css/i.test(arr[i])) {
                     arr.splice(i, 1);
                 }
             }
@@ -7178,8 +7185,12 @@ function openAllSections (override, node) {
 
 function processSection (open, node) {
     if (/DETAILS|SECTION/.test(node.tagName)) {
-        if (open) node.setAttribute('open', '');
-        else node.removeAttribute('open');
+        if (open) {
+            node.setAttribute('open', '');
+            node.style.display = '';
+        } else {
+            node.removeAttribute('open');
+        }
         if (typeof HTMLDetailsElement === 'undefined' || node.tagName === 'SECTION') {
             var children = node.children;
             for (var y = children.length; y--;) {
