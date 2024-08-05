@@ -6329,8 +6329,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                 // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
                 if (/inserted.style/i.test(arr[i]) && /minerva/i.test(testCSS) ||
-                    // We also remove the new pcs.css style as it is causing issues
-                    /pcs\.css/i.test(arr[i])) {
+                  // We also remove the new pcs.css style as it is causing issues
+                  /pcs\.css/i.test(arr[i])) {
                     arr.splice(i, 1);
                 }
             }
