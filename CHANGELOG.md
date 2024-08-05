@@ -1,5 +1,14 @@
 # Changelog
 
+## In-progress release 3.3.10
+
+* UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
+* UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
+* UPDATE: Title tip info about Origin Private File System
+* UPDATE: Wikivoyage release template
+* FIX: Incorrect processing of empty link as external
+* FIX: Avoid redundant transformation of ZIM style mobile to mobile or desktop to desktop
+
 ## Release 3.3.7 / 3.3.8
 
 * FIX: Critical error on startup of Electron app if Express port is already in use
