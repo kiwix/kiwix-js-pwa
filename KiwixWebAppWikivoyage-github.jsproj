@@ -71,7 +71,7 @@
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikivoyage_en_all_maxi_2024-06.zim" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2024-08.zim" />
     <Content Include="archives\README.md" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />
