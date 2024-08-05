@@ -6078,8 +6078,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
-            // Remove hard-coded image widths
-            htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1max-width: 321px$2"320px"');
+            // Remove hard-coded image widths for new mobile html endpoint ZIMs
+            htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1$2"320px"');
+            htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
             if (!params.isLandingPage) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
                 for (i = 5; i--;) {
@@ -6408,12 +6409,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             cssArray = resultsArray;
             htmlArticle = htmlArticle.replace(regexpSheetHref, ''); // Void existing stylesheets
             var cssArray$ = '\r\n' + cssArray.join('\r\n') + '\r\n';
-            if (~cssSource.indexOf('mobile')) { // If user has selected mobile display mode...
+            if (~cssSource.indexOf('mobile') && zimType === 'desktop') { // If user has selected mobile display mode...
                 var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                 htmlArticle = mobileCSS.html;
                 cssArray$ = mobileCSS.css;
             }
-            if (~cssSource.indexOf('desktop')) { // If user has selected desktop display mode...
+            if (~cssSource.indexOf('desktop') && zimType === 'mobile') { // If user has selected desktop display mode...
                 var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                 htmlArticle = desktopCSS.html;
                 cssArray$ = desktopCSS.css;
