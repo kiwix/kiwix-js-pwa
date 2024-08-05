@@ -3,8 +3,8 @@
 ## Release 3.3.9 / 3.3.10-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2024-08`
-* UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html enpoint
-* UPDATE: Ensure transformation to desktop style is working with mobile html enpoint
+* UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
+* UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
 * UPDATE: Title tip info about Origin Private File System
 * UPDATE: Wikivoyage release template
 * FIX: Critical error on startup of Electron app if Express port is already in use
