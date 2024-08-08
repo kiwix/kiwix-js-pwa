@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.3.10
+## In-progress release 3.3.11
 
 * UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
 * UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
@@ -8,6 +8,7 @@
 * UPDATE: Wikivoyage release template
 * FIX: Incorrect processing of empty link as external
 * FIX: Avoid redundant transformation of ZIM style mobile to mobile or desktop to desktop
+* FIX: Fatal CORS error with extrernal links & custom protocols cuased by `wm_mobile_override_script.js` in new Wikimedia ZIMs
 
 ## Release 3.3.7 / 3.3.8
 
