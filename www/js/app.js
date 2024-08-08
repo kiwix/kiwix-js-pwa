@@ -6062,6 +6062,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // if (/^mdwiki/.test(appstate.selectedArchive.file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, '$1320px');
             // Remove landing page scripts that don't work in SW mode
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
+            // Remove wm_mobile_override script that intercepts all clicks and causes CORS errors
+            htmlArticle = htmlArticle.replace(/<script\b[^>]+wm_mobile_override_script\.js[^<]*<\/script>/i, '');
             // Set max-width for infoboxes (now set in -/s/styles.css)
             // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
             // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
