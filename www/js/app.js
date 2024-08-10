@@ -5363,14 +5363,17 @@ var articleLoadedSW = function (dirEntry, container) {
             if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
             // The content is ready : we can hide the spinner
             setTab();
-            setTimeout(function () {
+            var unhideArticleContainer = function () {
                 doc.bgcolor = '';
                 if (appstate.target === 'iframe') container.style.display = '';
                 docBody.style.display = 'block';
                 // Some contents need this to be able to display correctly (e.g. masonry landing pages)
                 iframe.style.height = 'auto';
                 resizeIFrame();
-            }, 200);
+            }
+            setTimeout(unhideArticleContainer, 200);
+            // Failsafe to ensure that the article container gets unhidden in slow contexts
+            setTimeout(unhideArticleContainer, 1500);
         }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
@@ -6619,7 +6622,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Hide the document to avoid display flash before stylesheets are loaded; also improves performance during loading of
         // assets in most browsers
         // DEV: We cannot do `articleWindow.document.documentElement.hidden = true;` because documentElement gets overwritten
-        // during the document.write() process; and since the latter is synchronous, we get slow display rewrites before it is
+        // during the document.write() process (if used); and since the latter is synchronous, we get slow display rewrites before it is
         // effective if we do it after document.close().
         // Note that UWP apps cannot communicate to a newly opened window except via postmessage, but Service Worker can still
         // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
