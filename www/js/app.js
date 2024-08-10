@@ -5290,7 +5290,7 @@ var articleLoadedSW = function (dirEntry, container) {
     if (loaded) return;
     loaded = true;
     // Get the container windows
-    var articleWindow = container.contentWindow || container;
+    articleWindow = container.contentWindow || container;
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
@@ -5365,18 +5365,24 @@ var articleLoadedSW = function (dirEntry, container) {
             setTab();
             var unhideArticleContainer = function () {
                 console.debug('Unhiding article container...');
-                doc.bgcolor = '';
-                if (appstate.target === 'iframe') container.style.display = '';
-                docBody.style.display = 'block';
-                // Some contents need this to be able to display correctly (e.g. masonry landing pages)
-                iframe.style.height = 'auto';
-                resizeIFrame();
+                if (articleWindow.document) {
+                    articleWindow.document.bgcolor = '';
+                    if (appstate.target === 'iframe') container.style.display = '';
+                    if (articleWindow.document.body && articleWindow.document.body.style) {
+                        articleWindow.document.body.style.display = 'block';
+                        // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+                        iframe.style.height = 'auto';
+                        resizeIFrame();
+                    }
+                }
             }
             // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
-            const intervalId = setInterval(() => {
+            var i = 12; // Repeast loop 12 times (= 6 seconds max), so we don't get an infinite loop
+            const intervalId = setInterval(function () {
+                i--;
                 unhideArticleContainer();
                 // Check that the contents of docBody aren't empty and that the unhiding worked
-                if (docBody.innerHTML && docBody.style.display === 'block') {
+                if (i < 1 || docBody.innerHTML && docBody.style.display === 'block') {
                     clearInterval(intervalId);
                 }
             }, 500);
