@@ -5372,9 +5372,13 @@ var articleLoadedSW = function (dirEntry, container) {
                 iframe.style.height = 'auto';
                 resizeIFrame();
             }
-            setTimeout(unhideArticleContainer, 400);
-            // Failsafe to ensure that the article container gets unhidden in slow contexts
-            setTimeout(unhideArticleContainer, 2800);
+            // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
+            const intervalId = setInterval(() => {
+                unhideArticleContainer();
+                if (docBody.style.display === 'block') {
+                    clearInterval(intervalId);
+                }
+            }, 500);
         }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
