@@ -5310,7 +5310,7 @@ var articleLoadedSW = function (dirEntry, container) {
         settingsStore.setItem(appstate.selectedArchive.file.name, lastPage, Infinity);
     }
     var docBody = doc ? doc.body : null;
-    if (docBody) {
+    if (docBody && docBody.innerHTML) { // docBody must contain contents, otherwise we haven't loaded an article yet
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
@@ -5373,6 +5373,11 @@ var articleLoadedSW = function (dirEntry, container) {
                         // Some contents need this to be able to display correctly (e.g. masonry landing pages)
                         iframe.style.height = 'auto';
                         resizeIFrame();
+                        // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
+                        articleWindow.scrollBy(0, 5);
+                        setTimeout(function () {
+                            articleWindow.scrollBy(0, -5);
+                        }, 250);
                     }
                 }
             }
