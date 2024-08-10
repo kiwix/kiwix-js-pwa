@@ -6094,9 +6094,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
                 }
             }
-        } else if (appstate.wikimediaZimLoaded && params.manipulateImages) {
-            // Remove incompatible webP handler that breaks on some Edge Legacy
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
+        } else if (appstate.wikimediaZimLoaded && params.openAllSections) {
+            // Remove incompatible webP handler that breaks on some Edge Legacy and conflicts with own webP handler
+            // @TODO It appears webpHandler is loaded by script.js, so this line and equivalent in block above may be redundant. Check for latest ZIMs.
+            // Maybe older ZIMs loaded them direct?
+            htmlArticle = htmlArticle.replace(/<script\b[^>]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
+            htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, '');
         }
 
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
