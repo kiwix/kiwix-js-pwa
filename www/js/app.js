@@ -5364,6 +5364,7 @@ var articleLoadedSW = function (dirEntry, container) {
             // The content is ready : we can hide the spinner
             setTab();
             var unhideArticleContainer = function () {
+                console.debug('Unhiding article container...');
                 doc.bgcolor = '';
                 if (appstate.target === 'iframe') container.style.display = '';
                 docBody.style.display = 'block';
@@ -5371,9 +5372,9 @@ var articleLoadedSW = function (dirEntry, container) {
                 iframe.style.height = 'auto';
                 resizeIFrame();
             }
-            setTimeout(unhideArticleContainer, 200);
+            setTimeout(unhideArticleContainer, 400);
             // Failsafe to ensure that the article container gets unhidden in slow contexts
-            setTimeout(unhideArticleContainer, 1500);
+            setTimeout(unhideArticleContainer, 2800);
         }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
