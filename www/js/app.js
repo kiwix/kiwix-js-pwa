@@ -5375,7 +5375,8 @@ var articleLoadedSW = function (dirEntry, container) {
             // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
             const intervalId = setInterval(() => {
                 unhideArticleContainer();
-                if (docBody.style.display === 'block') {
+                // Check that the contents of docBody aren't empty and that the unhiding worked
+                if (docBody.innerHTML && docBody.style.display === 'block') {
                     clearInterval(intervalId);
                 }
             }, 500);
