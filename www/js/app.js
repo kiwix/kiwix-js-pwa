@@ -6106,6 +6106,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, '');
         }
 
+        // Add a fake favicon to preven the browser making a useless search for one
+        if (!/<link\s[^>]*rel=["']icon["']/.test(htmlArticle)) htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)(\s*)/i, '$1<link rel="icon" href="data:,">$2');
+
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
         htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
 
