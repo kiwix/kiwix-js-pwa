@@ -5285,8 +5285,9 @@ function filterClickEvent (event) {
             if (!/^(?:#|javascript)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
-                // an event listener attached. For example, licks in popovers in external windows.
-                if (articleWindow && articleWindow.document && articleWindow.document.body) {
+                // an event listener attached. For example, licks in popovers in external windows. UWP doesn't allow access to the contents
+                // of the external window, so we can't clear it.
+                if (!/UWP/.test(params.appType) && articleWindow && articleWindow.document && articleWindow.document.body) {
                     articleWindow.document.body.innerHTML = '';
                 }
             }
