@@ -6989,7 +6989,7 @@ function addListenersToLink (a, href, baseUrl) {
         a.newcontainer = true; // Prevents double activation
         // uiUtil.showSlidingUIElements();
         // Tear down contents of articleWindow.document
-        if (articleWindow && articleWindow.document && articleWindow.document.body) {
+        if (!/UWP/.test(params.appType) && articleWindow && articleWindow.document && articleWindow.document.body) {
             articleWindow.document.body.innerHTML = '';
         }
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
