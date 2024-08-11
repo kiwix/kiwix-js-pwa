@@ -5228,7 +5228,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    // console.debug('filterClickEvent fired');
+    console.debug('filterClickEvent fired');
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Find the closest enclosing A tag (if any)
@@ -5388,6 +5388,7 @@ var articleLoadedSW = function (dirEntry, container) {
             }
             // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
             const intervalId = setInterval(function () {
+                docBody = articleWindow.document.body;
                 unhideArticleTries--;
                 unhideArticleContainer();
                 // Check that the contents of docBody aren't empty and that the unhiding worked
