@@ -4953,6 +4953,7 @@ function readArticle (dirEntry) {
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
+    articleContainer = articleContainer || articleWindow;
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -5287,9 +5288,36 @@ function filterClickEvent (event) {
 
 var loaded = false;
 var unhideArticleTries = 12; // Set up a repeasting loop 12 times (= 6 seconds max) to attempt to unhide the article container
+
+// Function to unhide a hidden article
+var unhideArticleContainer = function () {
+    console.debug('Unhiding article container...');
+    if (articleWindow.document) {
+        articleWindow.document.bgcolor = '';
+        if (appstate.target === 'iframe') iframe.style.display = '';
+        if (articleWindow.document.body && articleWindow.document.body.style) {
+            articleWindow.document.body.style.display = 'block';
+            // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+            iframe.style.height = 'auto';
+            resizeIFrame();
+            // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
+            articleWindow.scrollBy(0, 5);
+            setTimeout(function () {
+                articleWindow.scrollBy(0, -5);
+                unhideArticleTries = 12; // Reset counter
+            }, 250);
+        }
+    }
+}
+
+// The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
     console.debug('Checking if article loaded... ' + loaded);
-    if (loaded) return;
+    if (loaded) {
+        // Last-ditch attempt to unhide
+        unhideArticleContainer();
+        return;
+    }
     loaded = true;
     // Get the container windows
     articleWindow = container.contentWindow || container;
@@ -5367,25 +5395,6 @@ var articleLoadedSW = function (dirEntry, container) {
             if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
             // The content is ready : we can hide the spinner
             setTab();
-            var unhideArticleContainer = function () {
-                console.debug('Unhiding article container...');
-                if (articleWindow.document) {
-                    articleWindow.document.bgcolor = '';
-                    if (appstate.target === 'iframe') iframe.style.display = '';
-                    if (articleWindow.document.body && articleWindow.document.body.style) {
-                        articleWindow.document.body.style.display = 'block';
-                        // Some contents need this to be able to display correctly (e.g. masonry landing pages)
-                        iframe.style.height = 'auto';
-                        resizeIFrame();
-                        // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
-                        articleWindow.scrollBy(0, 5);
-                        setTimeout(function () {
-                            articleWindow.scrollBy(0, -5);
-                            unhideArticleTries = 12; // Reset counter
-                        }, 250);
-                    }
-                }
-            }
             // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
             const intervalId = setInterval(function () {
                 docBody = articleWindow.document.body;
