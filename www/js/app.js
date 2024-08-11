@@ -4953,6 +4953,7 @@ function readArticle (dirEntry) {
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
+    articleContainer = articleContainer || articleWindow;
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -5228,7 +5229,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    // console.debug('filterClickEvent fired');
+    console.debug('filterClickEvent fired');
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Find the closest enclosing A tag (if any)
@@ -5244,6 +5245,10 @@ function filterClickEvent (event) {
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
     if (clickedAnchor) {
+        // Get the window of the clicked anchor
+        articleWindow = clickedAnchor.ownerDocument.defaultView;
+        // Determine if the window is in an iframe
+        articleContainer = (articleWindow.self !== articleWindow.top) ? window.frames[0] : articleWindow;
         // This prevents any popover from being displayed when the user clicks on a link
         clickedAnchor.articleisloading = true;
         // Check for Zimit links that would normally be handled by the Replay Worker
@@ -5279,24 +5284,58 @@ function filterClickEvent (event) {
             var decHref = decodeURIComponent(href);
             if (!/^(?:#|javascript)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
-                // uiUtil.showSlidingUIElements();
+                // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
+                // an event listener attached. For example, licks in popovers in external windows.
+                if (articleWindow && articleWindow.document && articleWindow.document.body) {
+                    articleWindow.document.body.innerHTML = '';
+                }
             }
         }
     }
 };
 
 var loaded = false;
+var unhideArticleTries = 12; // Set up a repeasting loop 12 times (= 6 seconds max) to attempt to unhide the article container
+
+// Function to unhide a hidden article
+var unhideArticleContainer = function () {
+    console.debug('Unhiding article container...');
+    if (articleWindow.document) {
+        articleWindow.document.bgcolor = '';
+        if (appstate.target === 'iframe') iframe.style.display = '';
+        if (articleWindow.document.body && articleWindow.document.body.style) {
+            articleWindow.document.body.style.display = 'block';
+            // Some contents need this to be able to display correctly (e.g. masonry landing pages)
+            iframe.style.height = 'auto';
+            resizeIFrame();
+            // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
+            articleWindow.scrollBy(0, 5);
+            setTimeout(function () {
+                articleWindow.scrollBy(0, -5);
+                unhideArticleTries = 12; // Reset counter
+            }, 250);
+        }
+    }
+}
+
+// The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
-    if (loaded) return;
+    console.debug('Checking if article loaded... ' + loaded);
+    if (loaded) {
+        // Last-ditch attempt to unhide
+        unhideArticleContainer();
+        return;
+    }
     loaded = true;
     // Get the container windows
-    var articleWindow = container.contentWindow || container;
+    articleWindow = container.contentWindow || container;
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
     var mimeType = dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
+        console.debug('HTML appears to be available...');
         if (params.rememberLastPage) {
             params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         } else {
@@ -5310,7 +5349,8 @@ var articleLoadedSW = function (dirEntry, container) {
         settingsStore.setItem(appstate.selectedArchive.file.name, lastPage, Infinity);
     }
     var docBody = doc ? doc.body : null;
-    if (docBody) {
+    if (docBody && docBody.innerHTML) { // docBody must contain contents, otherwise we haven't loaded an article yet
+        console.debug('We appear to have a document body with HTML...');
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
@@ -5363,14 +5403,17 @@ var articleLoadedSW = function (dirEntry, container) {
             if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
             // The content is ready : we can hide the spinner
             setTab();
-            setTimeout(function () {
-                doc.bgcolor = '';
-                if (appstate.target === 'iframe') container.style.display = '';
-                docBody.style.display = 'block';
-                // Some contents need this to be able to display correctly (e.g. masonry landing pages)
-                iframe.style.height = 'auto';
-                resizeIFrame();
-            }, 200);
+            // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
+            const intervalId = setInterval(function () {
+                docBody = articleWindow.document.body;
+                unhideArticleTries--;
+                unhideArticleContainer();
+                // Check that the contents of docBody aren't empty and that the unhiding worked
+                if (unhideArticleTries < 1 || docBody.innerHTML && docBody.style.display === 'block') {
+                    console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
+                    clearInterval(intervalId);
+                }
+            }, 500);
         }
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
@@ -5391,11 +5434,13 @@ var articleLoadedSW = function (dirEntry, container) {
             popovers.attachKiwixPopoverCss(doc, darkTheme);
         }
         params.isLandingPage = false;
-    } else {
+    } else if (unhideArticleTries > 0) {
         // If we havent' loaded a text-type document, we probably haven't finished loading
-        if (!/^text\//i.test(mimeType)) {
-            loaded = false;
-        }
+        loaded = false;
+        unhideArticleTries--;
+        // Try again...
+        console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
+        setTimeout(articleLoadedSW, 250, dirEntry, container);
     }
 
     // Show spinner when the article unloads
@@ -6102,6 +6147,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, '');
         }
 
+        // Add a fake favicon to prevent the browser making a useless search for one
+        if (!/<link\s[^>]*rel=["']icon["']/.test(htmlArticle)) htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)(\s*)/i, '$1<link rel="icon" href="data:,">$2');
+
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
         htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
 
@@ -6599,8 +6647,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             setTab();
             checkToolbar();
             // Show the article
-            articleDocument.bgcolor = '';
-            docBody.style.display = 'block';
+            unhideArticleContainer();
             // Jump to any anchor parameter
             if (anchorParameter) {
                 var target = articleWindow.document.getElementById(anchorParameter);
@@ -6619,7 +6666,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Hide the document to avoid display flash before stylesheets are loaded; also improves performance during loading of
         // assets in most browsers
         // DEV: We cannot do `articleWindow.document.documentElement.hidden = true;` because documentElement gets overwritten
-        // during the document.write() process; and since the latter is synchronous, we get slow display rewrites before it is
+        // during the document.write() process (if used); and since the latter is synchronous, we get slow display rewrites before it is
         // effective if we do it after document.close().
         // Note that UWP apps cannot communicate to a newly opened window except via postmessage, but Service Worker can still
         // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
@@ -6940,6 +6987,10 @@ function addListenersToLink (a, href, baseUrl) {
         // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
         a.newcontainer = true; // Prevents double activation
         // uiUtil.showSlidingUIElements();
+        // Tear down contents of articleWindow.document
+        if (articleWindow && articleWindow.document && articleWindow.document.body) {
+            articleWindow.document.body.innerHTML = '';
+        }
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
     };
