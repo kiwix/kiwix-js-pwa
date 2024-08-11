@@ -6639,8 +6639,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             setTab();
             checkToolbar();
             // Show the article
-            articleDocument.bgcolor = '';
-            docBody.style.display = 'block';
+            unhideArticleContainer();
             // Jump to any anchor parameter
             if (anchorParameter) {
                 var target = articleWindow.document.getElementById(anchorParameter);
