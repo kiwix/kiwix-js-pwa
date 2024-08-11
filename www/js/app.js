@@ -5280,7 +5280,11 @@ function filterClickEvent (event) {
             var decHref = decodeURIComponent(href);
             if (!/^(?:#|javascript)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
-                // uiUtil.showSlidingUIElements();
+                // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
+                // an event listener attached. For example, licks in popovers in external windows.
+                if (articleWindow && articleWindow.document && articleWindow.document.body) {
+                    articleWindow.document.body.innerHTML = '';
+                }
             }
         }
     }
