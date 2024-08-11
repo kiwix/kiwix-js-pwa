@@ -5287,6 +5287,7 @@ function filterClickEvent (event) {
 
 var loaded = false;
 var articleLoadedSW = function (dirEntry, container) {
+    console.debug('Checking if article loaded... ' + loaded);
     if (loaded) return;
     loaded = true;
     // Get the container windows
@@ -5297,6 +5298,7 @@ var articleLoadedSW = function (dirEntry, container) {
     var mimeType = dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
+        console.debug('HTML appears to be available...');
         if (params.rememberLastPage) {
             params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         } else {
@@ -5311,6 +5313,7 @@ var articleLoadedSW = function (dirEntry, container) {
     }
     var docBody = doc ? doc.body : null;
     if (docBody && docBody.innerHTML) { // docBody must contain contents, otherwise we haven't loaded an article yet
+        console.debug('We appear to have a document body with HTML...');
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
