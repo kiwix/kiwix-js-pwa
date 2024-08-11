@@ -5371,7 +5371,7 @@ var articleLoadedSW = function (dirEntry, container) {
                 console.debug('Unhiding article container...');
                 if (articleWindow.document) {
                     articleWindow.document.bgcolor = '';
-                    if (appstate.target === 'iframe') container.style.display = '';
+                    if (appstate.target === 'iframe') iframe.style.display = '';
                     if (articleWindow.document.body && articleWindow.document.body.style) {
                         articleWindow.document.body.style.display = 'block';
                         // Some contents need this to be able to display correctly (e.g. masonry landing pages)
