@@ -5245,6 +5245,10 @@ function filterClickEvent (event) {
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
     if (clickedAnchor) {
+        // Get the window of the clicked anchor
+        articleWindow = clickedAnchor.ownerDocument.defaultView;
+        // Determine if the window is in an iframe
+        articleContainer = (articleWindow.self !== articleWindow.top) ? window.frames[0] : articleWindow;
         // This prevents any popover from being displayed when the user clicks on a link
         clickedAnchor.articleisloading = true;
         // Check for Zimit links that would normally be handled by the Replay Worker
