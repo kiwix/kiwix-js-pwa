@@ -5286,6 +5286,7 @@ function filterClickEvent (event) {
 };
 
 var loaded = false;
+var unhideArticleTries = 12; // Set up a repeasting loop 12 times (= 6 seconds max) to attempt to unhide the article container
 var articleLoadedSW = function (dirEntry, container) {
     console.debug('Checking if article loaded... ' + loaded);
     if (loaded) return;
@@ -5380,17 +5381,18 @@ var articleLoadedSW = function (dirEntry, container) {
                         articleWindow.scrollBy(0, 5);
                         setTimeout(function () {
                             articleWindow.scrollBy(0, -5);
+                            unhideArticleTries = 12; // Reset counter
                         }, 250);
                     }
                 }
             }
             // If the body is not yet displayed, we need to wait for it to be displayed before we can unhide the article container
-            var i = 12; // Repeast loop 12 times (= 6 seconds max), so we don't get an infinite loop
             const intervalId = setInterval(function () {
-                i--;
+                unhideArticleTries--;
                 unhideArticleContainer();
                 // Check that the contents of docBody aren't empty and that the unhiding worked
-                if (i < 1 || docBody.innerHTML && docBody.style.display === 'block') {
+                if (unhideArticleTries < 1 || docBody.innerHTML && docBody.style.display === 'block') {
+                    console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
                     clearInterval(intervalId);
                 }
             }, 500);
@@ -5414,11 +5416,13 @@ var articleLoadedSW = function (dirEntry, container) {
             popovers.attachKiwixPopoverCss(doc, darkTheme);
         }
         params.isLandingPage = false;
-    } else {
+    } else if (unhideArticleTries > 0) {
         // If we havent' loaded a text-type document, we probably haven't finished loading
-        if (!/^text\//i.test(mimeType)) {
-            loaded = false;
-        }
+        loaded = false;
+        unhideArticleTries--;
+        // Try again...
+        console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
+        setTimeout(articleLoadedSW, 250, dirEntry, container);
     }
 
     // Show spinner when the article unloads
