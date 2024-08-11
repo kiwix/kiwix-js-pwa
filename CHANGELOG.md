@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.3.11
+## In-progress release 3.3.12
 
 * UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
 * UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
@@ -9,6 +9,10 @@
 * FIX: Incorrect processing of empty link as external
 * FIX: Avoid redundant transformation of ZIM style mobile to mobile or desktop to desktop
 * FIX: Fatal CORS error with extrernal links & custom protocols cuased by `wm_mobile_override_script.js` in new Wikimedia ZIMs
+* FIX: Remove incompatible webPHandler in Wikimedia ZIMs (we supplo our own)
+* FIX: Race conditions which prevented unhiding of article window with slow browsers and some new windows/tabs
+* FIX: Detection of correct window or tab when user clicks on an unmanaged ZIM hyperlink
+* ENHANCEMENT: Faster and more reliable initiation of image lazy loading
 
 ## Release 3.3.7 / 3.3.8
 
