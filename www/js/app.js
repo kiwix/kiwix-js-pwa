@@ -4953,7 +4953,8 @@ function readArticle (dirEntry) {
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
-    articleContainer = articleContainer || articleWindow;
+    // articleContainer = articleContainer || articleWindow;
+    articleContainer = (articleWindow.self !== articleWindow.top) ? iframe : articleWindow;
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -5248,7 +5249,7 @@ function filterClickEvent (event) {
         // Get the window of the clicked anchor
         articleWindow = clickedAnchor.ownerDocument.defaultView;
         // Determine if the window is in an iframe
-        articleContainer = (articleWindow.self !== articleWindow.top) ? window.frames[0] : articleWindow;
+        articleContainer = (articleWindow.self !== articleWindow.top) ? iframe : articleWindow;
         // This prevents any popover from being displayed when the user clicks on a link
         clickedAnchor.articleisloading = true;
         // Check for Zimit links that would normally be handled by the Replay Worker
