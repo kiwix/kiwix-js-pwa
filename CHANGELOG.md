@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 3.3.12
+## In-progress release 3.3.13
 
+* REGRESSION: Fixed failure to return to Home page or display random pages in dynamic ZIMs
 * UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
 * UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
 * UPDATE: Title tip info about Origin Private File System
