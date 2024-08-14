@@ -4952,9 +4952,9 @@ function readArticle (dirEntry) {
     // Only update for expectedArticleURLToBeDisplayed.
     appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
     params.pagesLoaded++;
+    // Select the correct target window for the article, defaulting to the iframe
+    articleContainer = appstate.target === 'window' ? articleWindow : iframe;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
-    // articleContainer = articleContainer || articleWindow;
-    articleContainer = (articleWindow.self !== articleWindow.top) ? iframe : articleWindow;
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
     uiUtil.pollSpinner()
     // Show the spinner with a loading message
@@ -5242,14 +5242,15 @@ function filterClickEvent (event) {
     }
     // Remove any Kiwix Popovers that may be hanging around
     popovers.removeKiwixPopoverDivs(event.target.ownerDocument);
-    if (params.contentInjectionMode === 'jquery') return;
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen(event);
     if (clickedAnchor) {
         // Get the window of the clicked anchor
         articleWindow = clickedAnchor.ownerDocument.defaultView;
-        // Determine if the window is in an iframe
-        articleContainer = (articleWindow.self !== articleWindow.top) ? iframe : articleWindow;
+        // Select the correct target window for the article, defaulting to the iframe
+        articleContainer = articleWindow.self === articleWindow.top ? articleWindow : iframe;
+        appstate.target = articleContainer === articleWindow ? 'window' : 'iframe';
+        if (params.contentInjectionMode === 'jquery') return;
         // This prevents any popover from being displayed when the user clicks on a link
         clickedAnchor.articleisloading = true;
         // Check for Zimit links that would normally be handled by the Replay Worker
@@ -5311,11 +5312,13 @@ var unhideArticleContainer = function () {
             iframe.style.height = 'auto';
             resizeIFrame();
             // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
-            articleWindow.scrollBy(0, 5);
-            setTimeout(function () {
-                articleWindow.scrollBy(0, -5);
-                unhideArticleTries = 12; // Reset counter
-            }, 250);
+            if (!(/zimit/.test(params.zimType) || appstate.pureMode)) {
+                articleWindow.scrollBy(0, 5);
+                setTimeout(function () {
+                    articleWindow.scrollBy(0, -5);
+                    unhideArticleTries = 12; // Reset counter
+                }, 250);
+            }
         }
     }
 }
