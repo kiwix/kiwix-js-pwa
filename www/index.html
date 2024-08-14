@@ -102,20 +102,19 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For changes since v3.3.8, please see the online <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a></li>
-                                <li>Fix critical error on startup of Electron app if Express port is already in use</li>
-                                <li>Fix incorrect close popover icon colour</li>
-                                <li>Fix stutter effect when invoking popover</li>
-                                <li>Fix UWP positioning of popovers</li>
-                                <li>Restore erroneously deleted WikiMed file</li>
-                                <li>Fix erroneous divOffsetHeight calculation in Electron apps</li>
-                                <li>Fix horizontal line cutting into infoboxes with locally cached Wikipedia styles</li>
-                                <li>Fix horizontal line cutting into some images with locally cached Wikipedia styles</li>
-                                <li>Fix handling of custom protocols and URI schemata in ServiceWorker mode</li>
-                                <li>Ensure popover is always at top of z-index order</li>
-                                <li>Fix issues selecting and remembering the UI language in multi-lingual TED ZIMs</li>
+                                <li>Faster and more reliable initiation of image lazy loading in Wikimedia ZIMs</li>
+                                <li>Fix failure to return to Home page or display random pages in dynamic ZIMs</li>
+                                <li>Fix misdirection of article to non-existent container in Zimit ZIMs</li>
+                                <li>Adjust style processing to handle ZIMs scraped from new mobile html endpoint</li>
+                                <li>Ensure transformation to desktop style is working with mobile html endpoint</li>
                                 <li>Update title tip info about Origin Private File System</li>
-                                <li>Patch rogue HTML entities appearing in dirEntry titles</li>
+                                <li>Update Wikivoyage release template</li>
+                                <li>Fix incorrect processing of empty link as external</li>
+                                <li>Avoid redundant transformation of ZIM style mobile to mobile or desktop to desktop</li>
+                                <li>Fix fatal CORS error with extrernal links & custom protocols cuased by `wm_mobile_override_script.js` in new Wikimedia ZIMs</li>
+                                <li>Remove incompatible webPHandler in Wikimedia ZIMs (we supplo our own)</li>
+                                <li>Fix Race conditions which prevented unhiding of article window with slow browsers and some new windows/tabs</li>
+                                <li>Fix detection of correct window or tab when user clicks on an unmanaged ZIM hyperlink</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

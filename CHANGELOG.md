@@ -1,8 +1,10 @@
 # Changelog
 
-## In-progress release 3.3.14
+## Release 3.4.0 / 3.4.1
 
+* ENHANCEMENT: Faster and more reliable initiation of image lazy loading in Wikimedia ZIMs
 * REGRESSION: Fixed failure to return to Home page or display random pages in dynamic ZIMs
+* REGRESSION: Fixed misdirection of article to non-existent container in Zimit ZIMs
 * UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
 * UPDATE: Ensure transformation to desktop style is working with mobile html endpoint
 * UPDATE: Title tip info about Origin Private File System
@@ -13,7 +15,6 @@
 * FIX: Remove incompatible webPHandler in Wikimedia ZIMs (we supplo our own)
 * FIX: Race conditions which prevented unhiding of article window with slow browsers and some new windows/tabs
 * FIX: Detection of correct window or tab when user clicks on an unmanaged ZIM hyperlink
-* ENHANCEMENT: Faster and more reliable initiation of image lazy loading
 
 ## Release 3.3.7 / 3.3.8
 
