@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 3.3.13
+## In-progress release 3.3.14
 
 * REGRESSION: Fixed failure to return to Home page or display random pages in dynamic ZIMs
 * UPDATE: Adjust style processing to handle ZIMs scraped from new mobile html endpoint
