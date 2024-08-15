@@ -22,5 +22,6 @@ null
 /scripts/*secret*
 /scripts/*rsa
 /scripts/github_token
+/scripts/master_key*
 *.ppk
 .hintrc
