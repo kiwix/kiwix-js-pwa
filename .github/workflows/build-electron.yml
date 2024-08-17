@@ -253,7 +253,7 @@ jobs:
         echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
-        npm install && cd dist && npm install && cd ..
+        npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
         echo "Building Windows 7+ 32bit NSIS package..."
         npm run dist-win-nsis
@@ -284,7 +284,7 @@ jobs:
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Installing dependencies in root and dist"
-        npm install && cd dist && npm install && cd ..
+        npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
         echo "Building Windows packages..."
         if ($INPUT_SIGN) {

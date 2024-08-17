@@ -128,9 +128,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     "`nNo existing Electron package found: building $WinInstaller..."
     if (-Not $dryrun) {
       echo "`nInstalling dependencies in dist..."
-      cd dist
-      npm install
-      cd ..
+      cd dist; npm install; cd ..
       echo "`nBuilding Windows packages..."
       if ($winonly -eq "appx") {
         "[Only building the appx package because -winonly appx was specified]"
