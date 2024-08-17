@@ -14,7 +14,6 @@
     },
     "win": {
       "certificateSha1": "82b88b62a6f87fba62b2c933d747e52edbf0f7f6",
-      "certificateSubjectName": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
       "signingHashAlgorithms": [
         "sha256"
       ],

@@ -270,6 +270,7 @@ jobs:
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Run electron builder for Win 10/11
+      shell: powershell
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
