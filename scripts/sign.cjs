@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Read package.json
-const packageJsonPath = path.resolve(__dirname, 'package.json');
+const packageJsonPath = path.resolve(__dirname, '../package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
 // Extract rfc3161TimeStampServer from package.json
