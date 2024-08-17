@@ -213,7 +213,6 @@ jobs:
           # Install eSignerCKA
           New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
           ./eSigner_CKA_Installer.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR=”${{ env.INSTALL_DIR }}” | Out-Null
-                    ./eSigner_CKA.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}" | Out-Null
 
           # Disable logger
           $LogConfig = Get-Content -Path ${{ env.INSTALL_DIR }}/log4net.config
