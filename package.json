@@ -17,7 +17,8 @@
       "signingHashAlgorithms": [
         "sha256"
       ],
-      "timeStampServer": "http://ts.ssl.com",
+      "rfc3161TimeStampServer": "http://ts.ssl.com",
+      "sign": "node sign.js",
       "asar": "true",
       "extraResources": {
         "from": "archives",
