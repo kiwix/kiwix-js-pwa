@@ -13,7 +13,7 @@ export default async function (configuration) {
 
     // Extract rfc3161TimeStampServer and sha1 from package.json
     const rfc3161TimeStampServer = packageJson.build.win.rfc3161TimeStampServer;
-    const sha1 = packageJson.build.win.signingCertSha1;
+    const sha1 = packageJson.build.win.certificateSha1;
 
     // Extract file to sign from configuration
     const fileToSign = configuration.path;
