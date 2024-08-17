@@ -9,9 +9,15 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 // Extract rfc3161TimeStampServer from package.json
 const rfc3161TimeStampServer = packageJson.build.win.rfc3161TimeStampServer;
 
-const fileToSign = process.argv[2];
+const args = process.argv.slice(2);
+const fileToSign = args[0];
 const sha1 = process.env.ED_SIGNTOOL_THUMBPRINT;
 const signToolPath = process.env.SIGNTOOL_PATH;
+
+if (!fileToSign) {
+    console.error('No file specified to sign.');
+    process.exit(1);
+}
 
 if (!sha1) {
     console.error('Environment variable SIGNING_CERT_SHA1 is not set.');
