@@ -18,7 +18,7 @@
         "sha256"
       ],
       "rfc3161TimeStampServer": "http://ts.ssl.com",
-      "sign": "node sign.js",
+      "sign": "node ./scripts/sign.js",
       "asar": "true",
       "extraResources": {
         "from": "archives",
