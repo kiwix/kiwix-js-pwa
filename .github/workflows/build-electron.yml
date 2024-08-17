@@ -52,6 +52,7 @@ env:
 jobs:
 
   Release_Linux:
+    if: github.event.inputs.win11only != 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -100,7 +101,6 @@ jobs:
           exit 1
         fi
     - name: Build and publish 64bit
-      if: github.event.inputs.win11only != 'true'
       env: 
         USE_HARD_LINKS: false
       run: |
@@ -115,7 +115,6 @@ jobs:
           npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
         fi
     - name: Build and pulblish 32bit
-      if: github.event.inputs.win11only != 'true'
       env: 
         USE_HARD_LINKS: false
       run: |
@@ -271,7 +270,6 @@ jobs:
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Run electron builder for Win 10/11
-      shell: pwsh
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
