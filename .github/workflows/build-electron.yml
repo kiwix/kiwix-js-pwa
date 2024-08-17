@@ -21,13 +21,31 @@ on:
           - nightly
           - artefacts
         default: 'artefacts'
+      win11only:
+        description: Do you wish to build only for Windows 11?
+        type: choice
+        required: false
+        options:
+          - true
+          - false
+        default: 'false'
+      sign:
+        description: Do you wish to sign the Windows packages?
+        type: choice
+        required: false
+        options:
+          - true
+          - false
+        default: 'false'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
+  INPUT_SIGN: ${{ github.event.inputs.sign }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  CSC_LINK: ${{ secrets.CSC_LINK }}
-  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+  ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
+  ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
+  ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
   SSH_KEY: ${{ secrets.SSH_KEY }}
   REF_NAME: ${{ github.ref_name }}
       
@@ -82,6 +100,7 @@ jobs:
           exit 1
         fi
     - name: Build and publish 64bit
+      if: github.event.inputs.win11only != 'true'
       env: 
         USE_HARD_LINKS: false
       run: |
@@ -96,6 +115,7 @@ jobs:
           npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
         fi
     - name: Build and pulblish 32bit
+      if: github.event.inputs.win11only != 'true'
       env: 
         USE_HARD_LINKS: false
       run: |
@@ -176,7 +196,47 @@ jobs:
           Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
           exit 1
         }
+    - name: Install and configure eSigner CKA
+      if: github.event.inputs.sign == 'true'
+      env:
+        ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.6/SSL.COM-eSigner-CKA_1.0.6.zip
+        INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
+        MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
+      run: |
+          Set-StrictMode -Version 'Latest'
+
+          # Download, extract, and rename
+          Invoke-WebRequest -OutFile eSigner_CKA.zip "$env:ESIGNER_URL"
+          Expand-Archive -Path eSigner_CKA.zip -DestinationPath .
+          Get-ChildItem -Path * -Include "*_build_*.exe" | Rename-Item -NewName eSigner_CKA.exe
+
+          # Install
+          New-Item -ItemType Directory -Force -Path "$env:INSTALL_DIR"
+          ./eSigner_CKA.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}" | Out-Null
+
+          # Disable logger
+          $LogConfig = Get-Content -Path ${{ env.INSTALL_DIR }}/log4net.config
+          $LogConfig[0] = '<log4net threshold="OFF">'
+          $LogConfig | Set-Content -Path ${{ env.INSTALL_DIR }}/log4net.config
+
+          # Configure
+          ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode product -user "${{ env.ESIGNER_USERNAME }}" -pass "${{ env.ESIGNER_PASSWORD }}" -totp "${{ env.ESIGNER_TOTP_SECRET }}" -key "${{ env.MASTER_KEY_FILE }}" -r
+          ${{ env.INSTALL_DIR }}/eSignerCKATool.exe unload
+          ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
+
+          # Find certificate
+          $CodeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+          echo Certificate: $CodeSigningCert
+
+          # Extract thumbprint and subject name
+          $Thumbprint = $CodeSigningCert.Thumbprint
+          $SubjectName = ($CodeSigningCert.Subject -replace ", ?", "`n" | ConvertFrom-StringData).CN
+
+          echo "ED_SIGNTOOL_THUMBPRINT=$Thumbprint" >> $env:GITHUB_ENV
+          echo "ED_SIGNTOOL_SUBJECT_NAME=$SubjectName" >> $env:GITHUB_ENV
+    
     - name: Run electron builder for Win 7/8/8.1
+      if: github.event.inputs.win11only != 'true'
       shell: pwsh
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
@@ -217,6 +277,7 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        $INPUT_SIGN = !$CRON_LAUNCHED -and [System.Convert]::ToBoolean($Env:INPUT_SIGN)
         $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
         echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
@@ -227,7 +288,11 @@ jobs:
         npm install && cd dist && npm install && cd ..
         echo "Installed Electron version:$(npx electron --version)"
         echo "Building Windows packages..."
-        npm run publish
+        if ($INPUT_SIGN) {
+          npm run publish
+        } else {
+          npm run build-skipsigning
+        }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
       run: |
@@ -249,6 +314,7 @@ jobs:
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
+        $INPUT_SIGN = [System.Convert]::ToBoolean($Env:INPUT_SIGN)
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         if ($Env:REF_NAME -eq "main") {
           ./scripts/Publish-ElectronPackages.ps1 -portableonly
@@ -268,7 +334,7 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z     
 
   Release_NWJS:
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4      
