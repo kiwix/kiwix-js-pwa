@@ -13,7 +13,7 @@
       "buildResources": "../electron_icons"
     },
     "win": {
-      "certificateSha1": "82b88b62a6f87fba62b2c933d747e52edbf0f7f6",
+      "certificateSha1": "82B88B62A6F87FBA62B2C933D747E52EDBF0F7F6",
       "signingHashAlgorithms": [
         "sha256"
       ],

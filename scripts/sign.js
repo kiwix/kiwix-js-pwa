@@ -42,7 +42,7 @@ export default async function (configuration) {
         process.exit(1);
     }
 
-    const signCommand = `"${signToolPath}" sign /tr ${rfc3161TimeStampServer} /sha1 ${sha1} /s My /fd sha256 /td sha256 /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" "${fileToSign}"`;
+    const signCommand = `"${signToolPath}" sign /tr ${rfc3161TimeStampServer} /sha1 ${sha1} /s My /fd sha256 /td sha256 /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" /debug "${fileToSign}"`;
 
     // Debug statement to print the full sign command
     console.log('Sign Command:', signCommand);
