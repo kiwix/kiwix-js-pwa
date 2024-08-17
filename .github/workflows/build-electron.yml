@@ -204,14 +204,16 @@ jobs:
       run: |
           Set-StrictMode -Version 'Latest'
 
-          # Download, extract, and rename
-          Invoke-WebRequest -OutFile eSigner_CKA.zip "$env:ESIGNER_URL"
-          Expand-Archive -Path eSigner_CKA.zip -DestinationPath .
-          Get-ChildItem -Path * -Include "*_build_*.exe" | Rename-Item -NewName eSigner_CKA.exe
+          # Download and Unzip eSignerCKA Setup
+          Invoke-WebRequest -OutFile eSigner_CKA_Setup.zip "$env:ESIGNER_URL"
+          Expand-Archive -Force eSigner_CKA_Setup.zip
+          Remove-Item eSigner_CKA_Setup.zip
+          Move-Item -Destination “eSigner_CKA_Installer.exe” -Path “eSigner_CKA_*\*.exe”
 
-          # Install
-          New-Item -ItemType Directory -Force -Path "$env:INSTALL_DIR"
-          ./eSigner_CKA.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}" | Out-Null
+          # Install eSignerCKA
+          New-Item -ItemType Directory -Force -Path ${{ env.INSTALL_DIR }}
+          ./eSigner_CKA_Installer.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR=”${{ env.INSTALL_DIR }}” | Out-Null
+                    ./eSigner_CKA.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /DIR="${{ env.INSTALL_DIR }}" | Out-Null
 
           # Disable logger
           $LogConfig = Get-Content -Path ${{ env.INSTALL_DIR }}/log4net.config
