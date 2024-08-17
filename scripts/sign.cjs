@@ -2,39 +2,52 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Read package.json
-const packageJsonPath = path.resolve(__dirname, '../package.json');
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+exports.default = async function (configuration) {
+    // Read package.json
+    const packageJsonPath = path.resolve(__dirname, '../package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-// Extract rfc3161TimeStampServer from package.json
-const rfc3161TimeStampServer = packageJson.build.win.rfc3161TimeStampServer;
+    // Extract rfc3161TimeStampServer from package.json
+    const rfc3161TimeStampServer = packageJson.build.win.rfc3161TimeStampServer;
 
-const args = process.argv.slice(2);
-const fileToSign = args[0];
-const sha1 = process.env.ED_SIGNTOOL_THUMBPRINT;
-const signToolPath = process.env.SIGNTOOL_PATH;
+    // Extract file to sign from configuration
+    const fileToSign = configuration.path;
 
-if (!fileToSign) {
-    console.error('No file specified to sign.');
-    process.exit(1);
-}
+    // Debug statement to print the file to sign
+    console.log('FILE_TO_SIGN:', fileToSign);
 
-if (!sha1) {
-    console.error('Environment variable SIGNING_CERT_SHA1 is not set.');
-    process.exit(1);
-}
+    const sha1 = process.env.SIGNING_CERT_SHA1;
+    const signToolPath = process.env.SIGNTOOL_PATH;
 
-if (!rfc3161TimeStampServer) {
-    console.error('rfc3161TimeStampServer is not set in package.json.');
-    process.exit(1);
-}
+    // Debug statements to print environment variables
+    console.log('SIGNING_CERT_SHA1:', sha1);
+    console.log('SIGNTOOL_PATH:', signToolPath);
 
-const signCommand = `"${signToolPath}" sign /tr ${rfc3161TimeStampServer} /sha1 ${sha1} /s My /fd sha256 /td sha256 /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" /debug "${fileToSign}"`;
+    if (!fileToSign) {
+        console.error('No file specified to sign.');
+        process.exit(1);
+    }
 
-try {
-    execSync(signCommand, { stdio: 'inherit' });
-    console.log(`Successfully signed ${fileToSign}`);
-} catch (error) {
-    console.error(`Failed to sign ${fileToSign}`);
-    process.exit(1);
-}
+    if (!sha1) {
+        console.error('Environment variable SIGNING_CERT_SHA1 is not set.');
+        process.exit(1);
+    }
+
+    if (!rfc3161TimeStampServer) {
+        console.error('rfc3161TimeStampServer is not set in package.json.');
+        process.exit(1);
+    }
+
+    const signCommand = `"${signToolPath}" sign /tr ${rfc3161TimeStampServer} /sha1 ${sha1} /s My /fd sha256 /td sha256 /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" /debug "${fileToSign}"`;
+
+    // Debug statement to print the full sign command
+    console.log('Sign Command:', signCommand);
+
+    try {
+        execSync(signCommand, { stdio: 'inherit' });
+        console.log(`Successfully signed ${fileToSign}`);
+    } catch (error) {
+        console.error(`Failed to sign ${fileToSign}`);
+        process.exit(1);
+    }
+};
