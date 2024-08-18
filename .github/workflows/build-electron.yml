@@ -46,6 +46,7 @@ env:
   ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
   ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
   ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
+  MASTER_KEY_FILE: "C:\\Users\\runneradmin\\eSignerCKA\\master.key"
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
   SSH_KEY: ${{ secrets.SSH_KEY }}
   REF_NAME: ${{ github.ref_name }}
@@ -196,11 +197,11 @@ jobs:
           Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
           exit 1
         }
+
     - name: Install and configure eSigner CKA
       if: github.event.inputs.sign == 'true'
       env:
         ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.7/SSL.COM-eSigner-CKA_1.0.7.zip
-        MASTER_KEY_FILE: "C:\\Users\\runneradmin\\eSignerCKA\\master.key"
       run: |
           Set-StrictMode -Version 'Latest'
 
@@ -272,6 +273,7 @@ jobs:
           & ./scripts/Publish-ElectronPackages.ps1 -githubonly
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
+
     - name: Run electron builder for Win 10/11
       shell: powershell
       run: | 
