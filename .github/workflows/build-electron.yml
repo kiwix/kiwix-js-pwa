@@ -14,7 +14,7 @@ on:
         default: ''
       target:
         type: choice
-        description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Artefacts will appear under the workflow run. For release, a draft release with corresponding tag must exist.
+        description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Nightly will only publish on the main branch. Artefacts will appear under the workflow run. For release, a draft release with corresponding tag must exist.
         required: false
         options:
           - release
