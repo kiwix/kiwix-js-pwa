@@ -22,6 +22,10 @@ export default async function (configuration) {
     // console.log('FILE_TO_SIGN:', fileToSign);
 
     const signToolPath = process.env.SIGNTOOL_PATH;
+    const eSignerCKAPath = process.env.INSTALL_DIR + '/eSignerCKATool.exe';
+
+    console.log('eSigner CKA Status:');
+    execSync(`"${eSignerCKAPath}" status`, { stdio: 'inherit' });
 
     // Debug statements to print environment variables
     // console.log('SIGNING_CERT_SHA1:', sha1);
@@ -42,7 +46,7 @@ export default async function (configuration) {
         process.exit(1);
     }
 
-    const signCommand = `"${signToolPath}" sign /sha1 ${sha1} /s My /fd sha256 /tr ${rfc3161TimeStampServer} /td sha256 /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" /debug "${fileToSign}"`;
+    const signCommand = `"${signToolPath}" sign /sha1 ${sha1} /s My /fd sha256 /tr ${rfc3161TimeStampServer} /td sha256 /csp "eSignerKSP" /d "Kiwix JS Electron" /du "https://github.com/kiwix/kiwix-js-pwa#readme" /debug "${fileToSign}"`;
 
     // Debug statement to print the full sign command
     console.log('Sign Command:', signCommand);
