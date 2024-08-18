@@ -240,7 +240,7 @@ jobs:
     
     - name: Run electron builder for Win 7/8/8.1
       if: github.event.inputs.win11only != 'true'
-      shell: pwsh
+      shell: powershell
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
