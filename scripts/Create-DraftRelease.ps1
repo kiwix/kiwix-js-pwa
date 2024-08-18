@@ -618,11 +618,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "`nWARNING: Signing was skipped because user specified the -skipsigning flag. Be sure the bundle is signed!"
     } elseif (-Not $buildstorerelease) {
       "Signing app package for release on GitHub..."
-      $pfxpwd = Get-Content -Raw $PSScriptRoot\secret_kiwix.p12.pass
+      $certthumb = Get-Content -Raw $PSScriptRoot\master_key_thumbprint.txt
       if (-Not $dryrun) {
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /fd SHA256 /a /f `"$PSScriptRoot\kiwix2022.pfx`" /p $pfxpwd /tr http://timestamp.digicert.com /td SHA256 `"$ReleaseBundle`" "
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /fd SHA256 /a /sha1 `"$certthumb`" /tr http://ts.ssl.com /td SHA256 `"$ReleaseBundle`" "
       } else {
-        'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /f ' + $PSScriptRoot + '\kiwix2022.pfx /p ' + $pfxpwd + ' /tr http://timestamp.digicert.com  /td SHA256 ' + $ReleaseBundle + ' "'
+        'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /sha1 ' + $certthumb + ' /tr http://ts.ssl.com /td SHA256 ' + $ReleaseBundle + ' "'
       }
     }
     # ZIP the remaining assets

@@ -14,7 +14,7 @@
                 "type": "appx",
                 "identityName": "Kiwix.KiwixJS",
                 "dispalyName": "Kiwix JS",
-                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
                 "publisherDisplayName": "Association Kiwix"
             }
         }
@@ -34,7 +34,7 @@
                 "type": "appx",
                 "identityName": "Kiwix.WikiMed",
                 "displayName": "WikiMed by Kiwix",
-                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
                 "publisherDisplayName": "Association Kiwix"
             }
         }
@@ -54,7 +54,7 @@
                 "type": "appx",
                 "identityName": "Kiwix.WikivoyagebyKiwix",
                 "displayName": "Wikivoyage by Kiwix",
-                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
                 "publisherDisplayName": "Association Kiwix"
             }
         }

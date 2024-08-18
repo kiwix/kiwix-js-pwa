@@ -2,20 +2,15 @@
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../dist/bld/Electron/" -replace 'scripts/../', ''
 if (!$skipsigning -and !$buildstorerelease) {
-  # Ensure the correct $Env variables are set for code signing - DEV update these as necessary
-  if (!$Env:CSC_LINK) {
-    $Env:CSC_LINK = "$PSScriptRoot\kiwix2022.pfx"
-  }
-  if (!$Env:CSC_KEY_PASSWORD) {
-    $Env:CSC_KEY_PASSWORD = Get-Content -Raw "$PSScriptRoot/secret_kiwix.p12.pass"
-  }
+  $Env:INPUT_SIGN = $true
   if (!$Env:SIGNTOOL_PATH) {
     # We need to use a newer version of singtool than that provided in electron-builder
     $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
   }
 } else {
-  $Env:CSC_LINK = ""
-  $Env:CSC_KEY_PASSWORD = ""
+  $Env:INPUT_SIGN = $false
+  $Env:ESIGNER_USERNASME = ""
+  $Env:ESIGNER_PASSWORD = ""
   $Env:SIGNTOOL_PATH = ""
 }
 "`nSelected base_tag: $base_tag"
@@ -52,6 +47,7 @@ if ($electronbuild -eq "cloud") {
       'inputs' = @{ 
         'target' = 'release'
         'version' = $release_name
+        'sign' = 'true'
       }
     } | ConvertTo-Json
     ContentType = "application/json"
@@ -132,7 +128,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     "`nNo existing Electron package found: building $WinInstaller..."
     if (-Not $dryrun) {
       echo "`nInstalling dependencies in dist..."
-      cd dist && npm install && cd ..
+      cd dist; npm install; cd ..
       echo "`nBuilding Windows packages..."
       if ($winonly -eq "appx") {
         "[Only building the appx package because -winonly appx was specified]"
