@@ -9,12 +9,12 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Specific version to build like v9.9.9 (if empty, builds version in package.json)
+        description: Specific version to build like v9.9.9 without suffix (if empty, builds version in package.json)
         required: false
         default: ''
       target:
         type: choice
-        description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Artefacts will appear under the workflow run.
+        description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Artefacts will appear under the workflow run. For release, a draft release with corresponding tag must exist.
         required: false
         options:
           - release
@@ -22,7 +22,7 @@ on:
           - artefacts
         default: 'artefacts'
       win11only:
-        description: Do you wish to build only for Windows 11?
+        description: Do you wish to build only for Windows 11 (primarily for testing)?
         type: choice
         required: false
         options:
