@@ -150,7 +150,7 @@ jobs:
   Release_Windows:
     runs-on: windows-latest
     env: 
-      SIGNTOOL_PATH: "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe"
+      SIGNTOOL_PATH: "C:/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
     steps:
     - uses: actions/checkout@v4   
     - uses: actions/setup-node@v4
@@ -198,12 +198,15 @@ jobs:
           exit 1
         }
 
-    - name: Install and configure eSigner CKA
+    - name: Install and configure eSigner CKA and Windows SDK
       if: github.event.inputs.sign == 'true'
       env:
         ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.7/SSL.COM-eSigner-CKA_1.0.7.zip
       run: |
           Set-StrictMode -Version 'Latest'
+
+          # Install Windows SDK
+          choco install -y windows-sdk-10.0
 
           # Download and Unzip eSignerCKA Setup
           Invoke-WebRequest -OutFile eSigner_CKA_Setup.zip "$env:ESIGNER_URL"
