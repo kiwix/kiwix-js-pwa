@@ -291,7 +291,9 @@ jobs:
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Loading esigner configuration"
+        echo "Configuring and loading esigner..."
+        ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode product -user "${{ env.ESIGNER_USERNAME }}" -pass "${{ env.ESIGNER_PASSWORD }}" -totp "${{ env.ESIGNER_TOTP_SECRET }}" -key "${{ env.MASTER_KEY_FILE }}" -r
+        ${{ env.INSTALL_DIR }}/eSignerCKATool.exe unload
         ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
         echo "Building Windows packages..."
         if ($INPUT_SIGN) {
