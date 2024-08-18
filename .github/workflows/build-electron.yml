@@ -206,7 +206,7 @@ jobs:
           Set-StrictMode -Version 'Latest'
 
           # Install Windows SDK
-          winget install Microsoft.WindowsSDK.10.0.18362
+          choco install windows-sdk-10.1 -y
 
           # Download and Unzip eSignerCKA Setup
           Invoke-WebRequest -OutFile eSigner_CKA_Setup.zip "$env:ESIGNER_URL"
