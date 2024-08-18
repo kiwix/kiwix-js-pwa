@@ -98,7 +98,7 @@
       "backgroundColor": "transparent",
       "displayName": "Kiwix JS",
       "identityName": "Kiwix.KiwixJS",
-      "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+      "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
       "publisherDisplayName": "Association Kiwix",
       "languages": "en-GB",
       "showNameOnTiles": "true"
