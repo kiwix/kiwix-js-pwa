@@ -149,7 +149,7 @@ jobs:
   Release_Windows:
     runs-on: windows-latest
     env: 
-      SIGNTOOL_PATH: "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x64\\signtool.exe"
+      SIGNTOOL_PATH: "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe"
     steps:
     - uses: actions/checkout@v4   
     - uses: actions/setup-node@v4
@@ -199,8 +199,8 @@ jobs:
     - name: Install and configure eSigner CKA
       if: github.event.inputs.sign == 'true'
       env:
-        ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.6/SSL.COM-eSigner-CKA_1.0.6.zip
-        MASTER_KEY_FILE: C:\Users\runneradmin\eSignerCKA\master.key
+        ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.7/SSL.COM-eSigner-CKA_1.0.7.zip
+        MASTER_KEY_FILE: "C:\\Users\\runneradmin\\eSignerCKA\\master.key"
       run: |
           Set-StrictMode -Version 'Latest'
 
@@ -231,6 +231,8 @@ jobs:
           # Extract thumbprint and subject name
           $Thumbprint = $CodeSigningCert.Thumbprint
           $SubjectName = ($CodeSigningCert.Subject -replace ", ?", "`n" | ConvertFrom-StringData).CN
+
+          ls -l ${{ env.MASTER_KEY_FILE }}
 
           echo "ED_SIGNTOOL_THUMBPRINT=$Thumbprint" >> $env:GITHUB_ENV
           echo "ED_SIGNTOOL_SUBJECT_NAME=$SubjectName" >> $env:GITHUB_ENV
