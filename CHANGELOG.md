@@ -1,5 +1,12 @@
 # Changelog
 
+## In-progress release 3.4.2
+
+* BUILD: Switched to new eSigner code-signing certificate
+* BUILD: Disabled signing of nightly binaries due to cost
+* INFO: Added info in release templates regarding SmartScreen popups on Windows
+* INFO: Added info to README regarding the fact that nightly builds are unsigned 
+
 ## Release 3.4.0 / 3.4.1
 
 * ENHANCEMENT: Faster and more reliable initiation of image lazy loading in Wikimedia ZIMs
