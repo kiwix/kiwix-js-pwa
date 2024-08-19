@@ -263,9 +263,7 @@ jobs:
         if ($INPUT_SIGN) {
           npm run dist-win-nsis
         } else {
-          $Env:CSC_IDENTITY_AUTO_DISCOVERY = $False
-          npm run dist-win-nsis
-          $Env:CSC_IDENTITY_AUTO_DISCOVERY = $Null
+          npm run dist-win-nsis-skipsigning
         }
         echo "Renaming Windows 7+ executable"
         $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
@@ -305,9 +303,7 @@ jobs:
         if ($INPUT_SIGN) {
           npm run publish
         } else {
-          $Env:CSC_IDENTITY_AUTO_DISCOVERY = $False
-          npm run build
-          $Env:CSC_IDENTITY_AUTO_DISCOVERY = $Null
+          npm run build-skipsigning
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
