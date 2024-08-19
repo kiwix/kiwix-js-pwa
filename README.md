@@ -122,7 +122,7 @@ The latest code is usually on the main branch, but this is used for active devel
 Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32bit and 64bit) are available from
 [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be
-buggy and change rapidly.
+buggy and change rapidly. Additionally, nightly Windows binaries are **unsigned**.
 
 The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the [Kiwix Offline reader](https://kiwix.org/).
 Significant development has gone into packaging this app for various frameworks, and to add some features which are often backported
