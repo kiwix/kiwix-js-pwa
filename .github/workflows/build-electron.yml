@@ -260,7 +260,11 @@ jobs:
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
         echo "Building Windows 7+ 32bit NSIS package..."
-        npm run dist-win-nsis
+        if ($INPUT_SIGN) {
+          npm run dist-win-nsis
+        } else {
+          npm run dist-win-nsis-skipsigning
+        }
         echo "Renaming Windows 7+ executable"
         $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
         foreach ($file in $files) {
