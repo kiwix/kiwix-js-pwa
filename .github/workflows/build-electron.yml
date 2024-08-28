@@ -246,6 +246,7 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        $INPUT_SIGN = !$CRON_LAUNCHED -and [System.Convert]::ToBoolean($Env:INPUT_SIGN)
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1-E'
         } else {
@@ -326,7 +327,6 @@ jobs:
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
-        $INPUT_SIGN = [System.Convert]::ToBoolean($Env:INPUT_SIGN)
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         if ($Env:REF_NAME -eq "main") {
           ./scripts/Publish-ElectronPackages.ps1 -portableonly
