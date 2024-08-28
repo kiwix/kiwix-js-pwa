@@ -41,7 +41,7 @@ env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
-  INPUT_SIGN: ${{ github.event.inputs.sign }}
+  INPUT_SIGN: ${{ github.event.inputs.sign }} || 'false'
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ESIGNER_USERNAME: ${{ secrets.ESIGNER_USER_USERNAME }}
   ESIGNER_PASSWORD: ${{ secrets.ESIGNER_USER_PASSWORD }}
