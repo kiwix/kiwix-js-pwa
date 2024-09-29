@@ -1037,7 +1037,7 @@ function checkUpdateServer () {
 // Do update checks 10s after startup
 setTimeout(function () {
     if (/PWA/.test(params.appType)) {
-        console.log('Checking for updates to the PWA...');
+        console.log('Internally checking for updates to the PWA...');
         checkPWAUpdate();
     }
     // Delay GitHub checks so that any needed PWA update can be notified first
