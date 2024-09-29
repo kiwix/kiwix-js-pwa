@@ -6722,7 +6722,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             transDirEntry = dirEntry;
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
-            var encodedUrl = /zimit/.test(params.zimType) ? dirEntry.url : encodeURI(dirEntry.url);
+            var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
+                return encodeURIComponent(matchedSubstring);
+            });
             // If the request was not initiated by an existing controlled window, we instantiate the request here
             if (!messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
