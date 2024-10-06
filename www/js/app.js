@@ -5618,8 +5618,6 @@ function handleClickOnReplayLink (ev, anchor) {
             console.error('Error getting dirEntry for ' + zimUrl, err);
             uiUtil.systemAlert('There was an error looking up ' + zimUrl, 'Error reading direcotry entry!');
         });
-    } else {
-
     }
 }
 
