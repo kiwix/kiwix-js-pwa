@@ -718,7 +718,7 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
 
                 var slicedData = msgPortEvent.data.content;
 
-                if (range && zimType === 'zimit') {
+                if (range && /zimit/.test(zimType)) {
                     headers.set('Content-Range', range + '/*');
                 } else if (range && slicedData !== null) {
                     // The browser asks for a range of bytes (usually for a video or audio stream)
