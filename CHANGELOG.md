@@ -1,8 +1,11 @@
 # Changelog
 
-## In-progress release 3.4.2
+## In-progress release 3.4.4
 
 * FIX: Failure to display Wikimedia URLs ending in a question mark
+* FIX: Failure to display articles from links clicked in popovers
+* FIX: Remove title description from popovers in new Wikimedia ZIMs
+* FIX: Remove unused scripts from Wikimedia ZIMs scraped with mobile-html API 
 * BUILD: Switched to new eSigner code-signing certificate
 * BUILD: Disabled signing of nightly binaries due to cost
 * INFO: Added info in release templates regarding SmartScreen popups on Windows
