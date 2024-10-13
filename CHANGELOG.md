@@ -5,6 +5,9 @@
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2024-10`
 * ENHANCEMENT: Faster and more reliable initiation of image lazy loading
 * FIX: Failure to display Wikimedia URLs ending in a question mark
+* FIX: Failure to display articles from links clicked in popovers
+* FIX: Remove title description from popovers in new Wikimedia ZIMs
+* FIX: Remove unused scripts from Wikimedia ZIMs scraped with mobile-html API 
 * FIX: Fatal CORS error with extrernal links & custom protocols cuased by `wm_mobile_override_script.js` in new Wikimedia ZIMs
 * FIX: Remove incompatible webPHandler in Wikimedia ZIMs (we supplo our own)
 * FIX: Race conditions which prevented unhiding of article window with slow browsers and some new windows/tabs
