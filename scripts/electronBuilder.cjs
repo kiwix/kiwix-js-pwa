@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const packageJson = JSON.parse(fs.readFileSync('dist/package.json', 'utf8'));
 const baseConfig = packageJson.build;
 
 // Create a new configuration object, removing signing-related options
