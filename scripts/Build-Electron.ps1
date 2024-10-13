@@ -132,9 +132,17 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
       echo "`nBuilding Windows packages..."
       if ($winonly -eq "appx") {
         "[Only building the appx package because -winonly appx was specified]"
-        npx electron-builder --win appx --projectDir dist
+        if ($skipsigning -or $buildstorerelease) {
+          npx electron-builder build  --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
+        } else {
+          npx electron-builder --win appx --projectDir dist
+        }
       } else {
-        npm run dist-win
+        if ($skipsigning -or $buildstorerelease) {
+          npx electron-builder build  --config ../scripts/electronBuilder.cjs --win --publish never --projectDir dist
+        } else {
+          npm run dist-win
+        }
       }
       if (Test-Path $WinInstaller -PathType Leaf) {
         Write-Host "Successfully built." -ForegroundColor Green
