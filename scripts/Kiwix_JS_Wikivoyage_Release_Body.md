@@ -64,6 +64,7 @@ Please choose the correct version:
 ### Known Issues
 
 * The Electron app may need to be restarted TWICE to update fully to the latest code.
+* Headings can no longer be clicked to close or open due to a change in the ZIM format. **_Please ensure that Display settings -> Open all headings is selected in Configuration_ (the default setting), or else the main body of each article will be completely hidden.**
 * **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them).
 * Please see https://github.com/kiwix/kiwix-js-pwa/issues for further known issues. If you find a new issue, please open a new issue on that page.
 
