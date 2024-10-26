@@ -34,7 +34,7 @@ window.onerror = function (msg, url, line, col, error) {
 
 // Set a beforeUnload handler to prevent app reloads without confirmation if a ZIM file is loaded
 window.addEventListener('beforeunload', function (event) {
-    if (appstate && appstate.selectedArchive && params.appCache) {
+    if (appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
         var confirmationMessage = 'Warning: you may have to reload the ZIM archive if you leave this page!';
         event.preventDefault();
         // Included for legacy support, e.g. Chrome/Edge < 119
