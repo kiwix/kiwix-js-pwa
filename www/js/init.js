@@ -32,6 +32,18 @@ window.onerror = function (msg, url, line, col, error) {
     return true;
 };
 
+// Set a beforeUnload handler to prevent app reloads without confirmation if a ZIM file is loaded
+window.addEventListener('beforeunload', function (event) {
+    if (appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
+        var confirmationMessage = 'Warning: you may have to reload the ZIM archive if you leave this page!';
+        event.preventDefault();
+        // Included for legacy support, e.g. Chrome/Edge < 119
+        event.returnValue = confirmationMessage;
+        // For modern browsers
+        return confirmationMessage;
+    }
+});
+
 /**
  * Provides caching for assets contained in ZIM (variable needs to be available app-wide)
  * It significantly speeds up subsequent page display. See kiwix-js issue #335
@@ -54,7 +66,7 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.4.2'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.4.6'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
 params['packagedFile'] = getSetting('packagedFile') || ''; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)

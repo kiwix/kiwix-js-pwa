@@ -99,12 +99,17 @@ function getArticleLede (href, baseUrl, articleDocument, archive) {
 
 // Helper function to clean up the lede content
 function cleanUpLedeContent (node) {
+    // Define an array of exclusion filters (note .exclude-this-class is a dummy class as an example)
+    const exclusionFilters = ['#pcs-edit-section-title-description', '.exclude-this-class'];
+    // Construct the :not() selector string
+    const notSelector = exclusionFilters.map(filter => `:not(${filter})`).join('');
     // Remove all standalone style elements from the given DOM node, because their content is shown by innerText and textContent
     const styleElements = Array.from(node.querySelectorAll('style'));
     styleElements.forEach(style => {
         style.parentNode.removeChild(style);
     });
-    const paragraphs = Array.from(node.querySelectorAll('p'));
+    // Apply the style-based exclusion filters to remove unwanted paragraphs
+    const paragraphs = Array.from(node.querySelectorAll(`p${notSelector}`));
     // Filter out empty paragraphs or those with less than 50 characters
     const parasWithContent = paragraphs.filter(para => {
         const text = para.innerText.trim();

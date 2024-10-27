@@ -1,11 +1,17 @@
 # Changelog
 
-## In-progress release 3.4.2
+## Release 3.4.5 / 3.4.6
 
+* ENHANCEMENT: Prevent accidental app reload if an archive is loaded
+* FIX: Failure to display Wikimedia URLs ending in a question mark
+* FIX: Failure to display articles from links clicked in popovers
+* FIX: Remove title description from popovers in new Wikimedia ZIMs
+* FIX: Remove unused scripts from Wikimedia ZIMs scraped with mobile-html API 
 * BUILD: Switched to new eSigner code-signing certificate
 * BUILD: Disabled signing of nightly binaries due to cost
 * INFO: Added info in release templates regarding SmartScreen popups on Windows
 * INFO: Added info to README regarding the fact that nightly builds are unsigned 
+* DEV: Update Express server and dependencies
 
 ## Release 3.4.0 / 3.4.1
 

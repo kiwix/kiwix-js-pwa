@@ -102,19 +102,16 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Faster and more reliable initiation of image lazy loading in Wikimedia ZIMs</li>
-                                <li>Fix failure to return to Home page or display random pages in dynamic ZIMs</li>
-                                <li>Fix misdirection of article to non-existent container in Zimit ZIMs</li>
-                                <li>Adjust style processing to handle ZIMs scraped from new mobile html endpoint</li>
-                                <li>Ensure transformation to desktop style is working with mobile html endpoint</li>
-                                <li>Update title tip info about Origin Private File System</li>
-                                <li>Update Wikivoyage release template</li>
-                                <li>Fix incorrect processing of empty link as external</li>
-                                <li>Avoid redundant transformation of ZIM style mobile to mobile or desktop to desktop</li>
-                                <li>Fix fatal CORS error with extrernal links & custom protocols cuased by `wm_mobile_override_script.js` in new Wikimedia ZIMs</li>
-                                <li>Remove incompatible webPHandler in Wikimedia ZIMs (we supplo our own)</li>
-                                <li>Fix Race conditions which prevented unhiding of article window with slow browsers and some new windows/tabs</li>
-                                <li>Fix detection of correct window or tab when user clicks on an unmanaged ZIM hyperlink</li>
+                                <li>Prevent accidental app reload if an archive is loaded</li>
+                                <li>Fix failure to display Wikimedia URLs ending in a question mark</li>
+                                <li>Fix failure to display articles from links clicked in popovers</li>
+                                <li>Remove title description from popovers in new Wikimedia ZIMs</li>
+                                <li>Remove unused scripts from Wikimedia ZIMs scraped with mobile-html API</li>
+                                <li>Switched to new eSigner code-signing certificate</li>
+                                <li>Disabled signing of nightly binaries due to cost</li>
+                                <li>Added info in release templates regarding SmartScreen popups on Windows</li>
+                                <li>Added info to README regarding the fact that nightly builds are unsigned</li>
+                                <li>Update Express server and dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

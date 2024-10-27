@@ -5618,8 +5618,6 @@ function handleClickOnReplayLink (ev, anchor) {
             console.error('Error getting dirEntry for ' + zimUrl, err);
             uiUtil.systemAlert('There was an error looking up ' + zimUrl, 'Error reading direcotry entry!');
         });
-    } else {
-
     }
 }
 
@@ -6101,23 +6099,20 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         var i;
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {
-            // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
+            // Reduce weight of unused JS archives for mediawiki ZIMs and troublesome JS in mobile-html endpoint ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|wikimedia|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
             // @TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
             htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, '<a href="$1.html">$2</a>');
             htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, '<$1$2>');
             // @TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, '$1');
-            // @TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
-            // if (/^mdwiki/.test(appstate.selectedArchive.file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, '$1320px');
+            // Remove erroneous content frequently on front page
+            htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, '');
+            htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
             // Remove landing page scripts that don't work in SW mode
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
             // Remove wm_mobile_override script that intercepts all clicks and causes CORS errors
             htmlArticle = htmlArticle.replace(/<script\b[^>]+wm_mobile_override_script\.js[^<]*<\/script>/i, '');
-            // Set max-width for infoboxes (now set in -/s/styles.css)
-            // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
-            // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
-            // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
             // Edit sidebar style to make it an infobox
             htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             // Remove the script.js that closes top-level sections if user requested this
@@ -6130,9 +6125,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
-            // Remove hard-coded image widths for new mobile html endpoint ZIMs
+            // Remove hard-coded image widths for new mobile-html endpoint ZIMs
             htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1$2"320px"');
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
+            // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
+            htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
             if (!params.isLandingPage) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
                 for (i = 5; i--;) {
@@ -6157,10 +6154,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
         htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
-
-        // Remove erroneous content frequently on front page
-        htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, '');
-        htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
 
         // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
         var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
