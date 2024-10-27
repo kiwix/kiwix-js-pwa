@@ -32,9 +32,6 @@ window.onerror = function (msg, url, line, col, error) {
     return true;
 };
 
-// Clear the sessionStorage 
-sessionStorage.setItem('isReload');
-
 // Set a beforeUnload handler to prevent app reloads without confirmation if a ZIM file is loaded
 window.addEventListener('beforeunload', function (event) {
     if (params.interceptBeforeUnload && appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
