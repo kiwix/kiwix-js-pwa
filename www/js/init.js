@@ -283,10 +283,10 @@ document.getElementById('disableDragAndDropCheck').checked = params.disableDragA
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.debugLibzimASM === 'disable') document.getElementById('debugLibzimASMDrop').style.color = 'red';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
-    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false :
-    /iOS/.test(params.appType) ? false :
-    ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' : // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
-    /PWA/.test(params.appType) ? 'tab' : false;
+    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false
+        : /iOS/.test(params.appType) ? false
+            : ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
+                : /PWA/.test(params.appType) ? 'tab' : false;
 }
 if (params.windowOpener) params.allowHTMLExtraction = false;
 document.getElementById('allowHTMLExtractionCheck').checked = params.allowHTMLExtraction;
