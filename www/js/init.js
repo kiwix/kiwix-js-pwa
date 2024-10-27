@@ -78,7 +78,7 @@ params['cachedStartPages'] = {
     // 'mdwiki_en_all_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
-params['win7ElectronVersion'] = '22.3.25'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
+params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
 params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
