@@ -176,6 +176,8 @@ function getCacheNames (callback) {
 // Deregisters all Service Workers and reboots the app
 function _reloadApp () {
   var reboot = function () {
+    // Temporarily disable the beforeunload event listener
+    params.interceptBeforeUnload = false;
     console.debug('Performing app reload...');
     setTimeout(function () {
       window.location.href = location.origin + location.pathname + uriParams
