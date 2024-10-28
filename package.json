@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "3.4.6-E",
+  "version": "3.4.7-E",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -32,6 +32,13 @@
           "arch": "ia32"
         },
         {
+          "target": "portable",
+          "arch": "ia32"
+        },
+        {
+          "target": "appx"
+        },
+        {
           "target": "nsis-web",
           "arch": "ia32"
         },
@@ -42,13 +49,6 @@
         {
           "target": "nsis-web",
           "arch": "arm64"
-        },
-        {
-          "target": "portable",
-          "arch": "ia32"
-        },
-        {
-          "target": "appx"
         }
       ]
     },

@@ -76,7 +76,7 @@ if (-not $CRON_LAUNCHED) {
         }
         $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
         "`nUploading assets to: $upload_uri..."
-        $filter = '\.(exe|zip|msix|appx|7z)$'
+        $filter = '\.(exe|zip|msix|appx|7z|yml)$'
         if ($portableonly) {
             $filter = '\.(zip)$'
         }
