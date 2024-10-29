@@ -2165,6 +2165,10 @@ document.getElementById('hideToolbarsCheck').addEventListener('click', function 
     settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
     checkToolbar();
 });
+document.getElementById('interceptBeforeUnloadCheck').addEventListener('change', function () {
+    params.interceptBeforeUnload = this.checked;
+    settingsStore.setItem('interceptBeforeUnload', params.interceptBeforeUnload, Infinity);
+});
 Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(function (link) {
     link.addEventListener('click', function () {
         document.getElementById('btnAbout').click();

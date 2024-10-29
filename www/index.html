@@ -103,10 +103,12 @@
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.0</span></h3>
                             <ul style="padding-left: 15px;">
                                 <li>Prevent accidental app reload if an archive is loaded</li>
+                                <li>Add option in Configuration to disable accidental reload protection</li>
                                 <li>Fix failure to display Wikimedia URLs ending in a question mark</li>
                                 <li>Fix failure to display articles from links clicked in popovers</li>
                                 <li>Remove title description from popovers in new Wikimedia ZIMs</li>
                                 <li>Remove unused scripts from Wikimedia ZIMs scraped with mobile-html API</li>
+                                <li>Fix build of Win7 32bit app with wrong Electron version and block autoupdate</li>
                                 <li>Switched to new eSigner code-signing certificate</li>
                                 <li>Disabled signing of nightly binaries due to cost</li>
                                 <li>Added info in release templates regarding SmartScreen popups on Windows</li>
@@ -1222,6 +1224,28 @@
                     </div>
                     <div class="row">
                         <h4 class="panel-group-heading">Expert settings</h4>
+                        <div class="panel panel-warning" id="defaultBehaviourssDiv">
+                            <div class="panel-heading">Modify default behavours</div>
+                            <div class="panel-body">
+                                <div class="column">
+                                    <label class="checkbox" title="In some contexts, reloading the app will disconnect the currently loaded ZIM archive, requiring you to re-pick it. You may disable default interception here.">
+                                        <input type="checkbox" name="inerceptBeforeUnload" id="interceptBeforeUnloadCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Warn before leaving page with loaded archive</b> (<i>prevents accidental closing/reloading</i>)
+                                    </label>
+                                    <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction. Disable it here if it is causing issues." >
+                                        <input type="checkbox" name="disableDragAndDrop" id="disableDragAndDropCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Disable drag-and-drop</b> (in case it is causing anomalies)
+                                    </label>
+                                    <label class="checkbox" data-i18n-tip="configure-expert-enable-source-verification-tip" title="Warning: Some ZIM archives from untrusted sources could run malicious code in your browser. This can be prevented by using Restricted mode, which cannot run active content from the ZIM. Highly dynamic ZIMs will probably fail in Restricted mode, but ZIMs with largely static content should work. If you trust the source of all of your ZIMs, then disabling this option will use ServiceWorker mode by default, if available.">
+                                        <input type="checkbox" name="disableFileVerification" id="enableSourceVerificationCheck">
+                                        <span data-i18n="configure-expert-enable-source-verification-check-box" class="checkmark"></span>
+                                        <b>Enable source verification of new files</b> (<i>recommended</i>: you will only be prompted the first time you open a ZIM)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="panel panel-warning" id="expertSettingsDiv">
                             <div class="panel-heading">Troubleshooting and development</div>
                             <div class="panel-body">
@@ -1251,16 +1275,6 @@
                                         <span class="checkmark"></span>
                                         <b>Use legacy method for reading Zimit-based archives</b> (may be faster on some systems)
                                     </label>
-                                    <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction. Disable it here if it is causing issues." >
-                                        <input type="checkbox" name="disableDragAndDrop" id="disableDragAndDropCheck">
-                                        <span class="checkmark"></span>
-                                        <b>Disable drag-and-drop</b> (in case it is causing anomalies)
-                                    </label>
-                                    <label class="checkbox" data-i18n-tip="configure-expert-enable-source-verification-tip" title="Warning: Some ZIM archives from untrusted sources could run malicious code in your browser. This can be prevented by using Restricted mode, which cannot run active content from the ZIM. Highly dynamic ZIMs will probably fail in Restricted mode, but ZIMs with largely static content should work. If you trust the source of all of your ZIMs, then disabling this option will use ServiceWorker mode by default, if available.">
-                                        <input type="checkbox" name="disableFileVerification" id="enableSourceVerificationCheck" >
-                                        <span data-i18n="configure-expert-enable-source-verification-check-box" class="checkmark"></span>
-                                        <b>Enable source verification of new files</b> (<i>recommended</i>: you will only be prompted the first time you open a ZIM)
-                                    </label>
                                     <div id="expressPortInputDiv" style="display: none;" title="If you allowed network access on startup, you can access this app from any local browser by going to localhost:port in the browser address bar (e.g. http://localhost:3000).">
                                         <b>Customize the localhost port when accessing this app from a browser</b>:<br />
                                         <label>
@@ -1279,6 +1293,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    &nbsp;
+                    <div class="row">
                         <div class="panel panel-warning" id="apiStatusDiv">
                             <div class="panel-heading">API Status</div>
                             <div class="panel-body">

@@ -1,5 +1,10 @@
 # Changelog
 
+## Interim release 3.4.7
+
+* ENHANCEMENT: Add option in Configuration to disable accidental reload protection
+* REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
+
 ## Release 3.4.5 / 3.4.6
 
 * ENHANCEMENT: Prevent accidental app reload if an archive is loaded

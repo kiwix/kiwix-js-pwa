@@ -34,7 +34,7 @@ window.onerror = function (msg, url, line, col, error) {
 
 // Set a beforeUnload handler to prevent app reloads without confirmation if a ZIM file is loaded
 window.addEventListener('beforeunload', function (event) {
-    if (appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
+    if (params.interceptBeforeUnload && appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
         var confirmationMessage = 'Warning: you may have to reload the ZIM archive if you leave this page!';
         event.preventDefault();
         // Included for legacy support, e.g. Chrome/Edge < 119
@@ -125,6 +125,7 @@ params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|botto
 params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
 params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
 params['sourceVerification'] = params.contentInjectionMode === 'serviceworker' ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false; // Sets a boolean indicating weather a user trusts the source of zim files
+params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
@@ -282,10 +283,10 @@ document.getElementById('disableDragAndDropCheck').checked = params.disableDragA
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.debugLibzimASM === 'disable') document.getElementById('debugLibzimASMDrop').style.color = 'red';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
-    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false :
-    /iOS/.test(params.appType) ? false :
-    ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' : // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
-    /PWA/.test(params.appType) ? 'tab' : false;
+    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false
+        : /iOS/.test(params.appType) ? false
+            : ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
+                : /PWA/.test(params.appType) ? 'tab' : false;
 }
 if (params.windowOpener) params.allowHTMLExtraction = false;
 document.getElementById('allowHTMLExtractionCheck').checked = params.allowHTMLExtraction;
@@ -296,6 +297,7 @@ if (/^http/i.test(window.location.protocol) && params.allowInternetAccess === nu
     params.allowInternetAccess = true;
 }
 document.getElementById('bypassAppCacheCheck').checked = !params.appCache;
+document.getElementById('interceptBeforeUnloadCheck').checked = params.interceptBeforeUnload;
 // If we're in a PWA served from http, change the app titles
 if (/^http/i.test(window.location.protocol)) {
     Array.prototype.slice.call(document.querySelectorAll('span.identity')).forEach(function (ele) {
