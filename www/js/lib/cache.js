@@ -954,6 +954,35 @@ function populateOPFSStorageQuota () {
 }
 
 /**
+ * Request persistent storage for the app
+ * This function should be called when OPFS access is first requested
+ *
+ * @returns {Promise} A Promise that resolves when persistent storage is granted
+ */
+function requestPersistentStorage() {
+    if (navigator.storage && navigator.storage.persist) {
+        return navigator.storage.persisted().then(function (isPersisted) {
+            if (!isPersisted) {
+                return navigator.storage.persist().then(function (permission) {
+                    if (permission) {
+                        console.log('Persistent storage granted.');
+                    } else {
+                        console.log('Persistent storage denied.');
+                    }
+                    return true;
+                });
+            } else {
+                console.log('Persistent storage already granted.');
+                return true;
+            }
+        });
+    } else {
+        console.log('Persistent storage API not supported.');
+        return Promise.resolve(false);
+    }
+}
+
+/**
  * Wraps a semaphor in a Promise. A function can signal that it is done by setting a sempahor to true,
  * if it has first set it to false at the outset of the procedure. Ensure no other functions use the same
  * sempahor. The semaphor must be an object key of the app-wide assetsCache object.
@@ -996,5 +1025,6 @@ export default {
     deleteOPFSEntry: deleteOPFSEntry,
     iterateAsyncDirEntries: iterateAsyncDirEntries,
     iterateOPFSEntries: iterateOPFSEntries,
-    populateOPFSStorageQuota: populateOPFSStorageQuota
+    populateOPFSStorageQuota: populateOPFSStorageQuota,
+    requestPersistentStorage: requestPersistentStorage
 };

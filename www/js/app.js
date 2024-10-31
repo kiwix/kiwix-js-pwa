@@ -1501,16 +1501,21 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
     }
 });
 document.getElementById('useOPFSCheck').addEventListener('change', function (e) {
-    var checkAppType = function () {
-        return Promise.resolve(true);
+    var checkStorageType = function () {
+        // Requesting persistent storage (but we'll proceed anyway if the OPFS is available, even if persistence is not granted)
+        if (e.target.checked) {
+            return cache.requestPersistentStorage();
+        } else {
+            return Promise.resolve(true);
+        }
     };
     if (e.target.checked && /Electron/i.test(params.appType)) {
-        checkAppType = function () {
+        checkStorageType = function () {
             return uiUtil.systemAlert('<p>There is no advantage to using the Origin Private File System for Electron or NWJS apps.</p><p>Do you still want to use it?</p>',
             'Use OPFS?', true, null, 'Use OPFS');
         };
     }
-    return checkAppType().then(function (confirmed) {
+    return checkStorageType().then(function (confirmed) {
         if (confirmed) {
             params.useOPFS = e.target.checked;
             setOPFSUI();
