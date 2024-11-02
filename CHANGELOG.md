@@ -1,7 +1,9 @@
 # Changelog
 
-## Interim release 3.4.7
+## Interim release 3.4.8
 
+* ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
+* ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
 * REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
 
