@@ -650,17 +650,24 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
     }
     // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
     if (/Android/.test(params.appType) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
-        uiUtil.systemAlert('<p>We are selecting use of the Private File System (OPFS).</p>' +
-            '<p>Reason: you are using Android, and the OPFS provides significant benefits: faster file system access; ' +
-            'no permission prompts; automatic reload of archive on app start.</p>' +
-            '<p><b>Please accept any Storage permission prompt.</b></p>', 'Use OPFS', true, 'Use classic file picker')
-        .then(function (response) {
-            if (response) {
-                document.getElementById('useOPFSCheck').click();
-            } else {
-                settingsStore.setItem('useOPFS', false, Infinity);
-            }
-        });
+        // This will only run first time app is run on Android
+        setTimeout(function () {
+            uiUtil.systemAlert('<p>We are selecting use of the Private File System (OPFS).</p>' +
+                '<p>Reason: you are using Android, and the OPFS provides significant benefits: faster file system access; ' +
+                'no permission prompts; automatic reload of archive on app start.</p>' +
+                '<p><b>Please accept any Storage permission prompt.</b></p>', 'Use OPFS', true, 'Use classic file picker')
+            .then(function (response) {
+                if (response) {
+                    document.getElementById('useOPFSCheck').click();
+                } else {
+                    settingsStore.setItem('useOPFS', false, Infinity);
+                }
+            });
+        }, 1000);
+    } else if (!settingsStore.getItem('useOPFS')) {
+        // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
+        // app is running for the first time (so we don't keep prompting the user to use the OPFS)
+        settingsStore.setItem('useOPFS', false, Infinity);
     }
 });
 // Bottom bar :
