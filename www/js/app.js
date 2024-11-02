@@ -649,7 +649,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         displayFileSelect();
     }
     // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
-    if (/Android/.test(params.appType) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
         // This will only run first time app is run on Android
         setTimeout(function () {
             uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
@@ -3309,6 +3309,7 @@ if (storages !== null && storages.length > 0 ||
             getNativeFSHandle();
         } else {
             // We are in an app that cannot open files auotomatically, so populate archive list and show file pickers
+            document.getElementById('btnRescanDeviceStorage').click();
             btnConfigure.click();
             searchForArchivesInPreferencesOrStorage(true);
         }
