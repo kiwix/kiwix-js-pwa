@@ -653,9 +653,10 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         // This will only run first time app is run on Android
         setTimeout(function () {
             uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
-                '<p>Reason: the OPFS provides significant benefits: faster file system access; ' +
-                'no permission prompts; automatic reload of archive on app start.</p>' +
-                '<p><b>If asked, please accept a one-time Storage permission prompt.</b></p>', 'Switching to OPFS', true, 'Use classic file picker')
+                '<p><b>If asked, please accept a one-time Storage permission prompt.</b></p>' +
+                '<p>More info: the OPFS provides significant benefits such as: <i>faster file system access</i>; ' +
+                '<i>no permission prompts</i>; <i>automatic reload of archive on app start</i>.</p>',
+                'Switching to OPFS', true, 'Use classic file picker')
             .then(function (response) {
                 if (response) {
                     document.getElementById('useOPFSCheck').click();
