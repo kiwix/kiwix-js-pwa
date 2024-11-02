@@ -663,7 +663,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
                     settingsStore.setItem('useOPFS', false, Infinity);
                 }
             });
-        }, 1000);
+        }, 2000);
     } else if (!settingsStore.getItem('useOPFS')) {
         // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
         // app is running for the first time (so we don't keep prompting the user to use the OPFS)
