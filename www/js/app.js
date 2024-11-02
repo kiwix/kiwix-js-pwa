@@ -658,6 +658,8 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         .then(function (response) {
             if (response) {
                 document.getElementById('useOPFSCheck').click();
+            } else {
+                settingsStore.setItem('useOPFS', false, Infinity);
             }
         });
     }
@@ -1601,7 +1603,6 @@ function setOPFSUI () {
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
         cache.populateOPFSStorageQuota();
     } else {
-        settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
         archiveFileCol.classList.remove('col-xs-5');
         archiveFileCol.classList.add('col-xs-6');
