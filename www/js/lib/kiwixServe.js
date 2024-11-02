@@ -566,7 +566,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
-            bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li><a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
+            bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li>' +
+                '<a href="' + mirrorZimUrl + '" class="download" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download now</a> ' +
+                '<a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
             bodyDoc += '<p><b>Browser-managed download from mirrors, for larger archives:</b>';
         } else {
             bodyDoc += '<p><b>Browser-managed download from mirrors:</b>';

@@ -648,6 +648,28 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
     } else {
         displayFileSelect();
     }
+    // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
+    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+        // This will only run first time app is run on Android
+        setTimeout(function () {
+            uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
+                '<p><b><i>If asked, please accept a one-time Storage permission prompt.</i></b></p>' +
+                '<i>More info</i>: the OPFS provides significant benefits such as: <b>faster file system access</b>; ' +
+                '<b>no permission prompts</b>; <b>automatic reload of archive on app start</b>.</p>',
+                'Switching to OPFS', true, 'Use classic file picker')
+            .then(function (response) {
+                if (response) {
+                    document.getElementById('useOPFSCheck').click();
+                } else {
+                    settingsStore.setItem('useOPFS', false, Infinity);
+                }
+            });
+        }, 2000);
+    } else if (!settingsStore.getItem('useOPFS')) {
+        // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
+        // app is running for the first time (so we don't keep prompting the user to use the OPFS)
+        settingsStore.setItem('useOPFS', false, Infinity);
+    }
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -1506,7 +1528,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
         if (e.target.checked) {
             return cache.requestPersistentStorage();
         } else {
-            return Promise.resolve(true);
+            return Promise.resolve(false);
         }
     };
     if (e.target.checked && /Electron/i.test(params.appType)) {
@@ -1533,6 +1555,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
         } else {
             e.target.checked = false;
             params.useOPFS = false;
+            settingsStore.setItem('useOPFS', false, Infinity);
             setOPFSUI();
         }
     });
@@ -1552,6 +1575,7 @@ function loadOPFSDirectory () {
         });
     } else {
         params.useOPFS = false;
+        settingsStore.setItem('useOPFS', false, Infinity);
         setOPFSUI();
         return uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
     }
@@ -1588,7 +1612,6 @@ function setOPFSUI () {
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
         cache.populateOPFSStorageQuota();
     } else {
-        settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
         archiveFileCol.classList.remove('col-xs-5');
         archiveFileCol.classList.add('col-xs-6');
@@ -3287,6 +3310,7 @@ if (storages !== null && storages.length > 0 ||
             getNativeFSHandle();
         } else {
             // We are in an app that cannot open files auotomatically, so populate archive list and show file pickers
+            document.getElementById('btnRescanDeviceStorage').click();
             btnConfigure.click();
             searchForArchivesInPreferencesOrStorage(true);
         }
@@ -3362,7 +3386,7 @@ if (storages !== null && storages.length > 0 ||
     }
 } else {
     // If DeviceStorage is not available, we display the file select components
-    displayFileSelect();
+    document.getElementById('btnRescanDeviceStorage').click();
     if (document.getElementById('archiveFilesLegacy').files && document.getElementById('archiveFilesLegacy').files.length > 0) {
         // Archive files are already selected,
         setLocalArchiveFromFileSelect();
