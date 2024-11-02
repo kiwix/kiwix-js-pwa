@@ -959,25 +959,25 @@ function populateOPFSStorageQuota () {
  *
  * @returns {Promise} A Promise that resolves when persistent storage is granted
  */
-function requestPersistentStorage() {
+function requestPersistentStorage () {
     if (navigator.storage && navigator.storage.persist) {
         return navigator.storage.persisted().then(function (isPersisted) {
             if (!isPersisted) {
                 return navigator.storage.persist().then(function (permission) {
                     if (permission) {
-                        console.log('Persistent storage granted.');
+                        console.log('Persistent Storage granted.');
                     } else {
-                        console.log('Persistent storage denied.');
+                        console.warn('Persistent Storage denied (this is normal in Chromium browsers).');
                     }
                     return true;
                 });
             } else {
-                console.log('Persistent storage already granted.');
+                console.debug('Persistent Storage already granted.');
                 return true;
             }
         });
     } else {
-        console.log('Persistent storage API not supported.');
+        console.warn('Persistent Storage API not supported!');
         return Promise.resolve(false);
     }
 }
