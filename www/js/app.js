@@ -648,6 +648,19 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
     } else {
         displayFileSelect();
     }
+    // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
+    if (/Android/.test(params.appType) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+        document.getElementById('useOPFSCheck').click();
+        uiUtil.systemAlert('<p>We are selecting use of the Private File System (OPFS) for you.</p>' +
+            '<p>This is because you are using the device on Android, and the OPFS provides significant benefits in this context: much faster file system access; ' +
+            'the ability to access archives without permission prompts; and automatic reload of an archive on app start.</p>' +
+            '<p>Please accept the Storage permission prompt, if asked.</p>', 'Use OPFS', true, 'Use classic file picker')
+        .then(function (response) {
+            if (response) {
+                document.getElementById('useOPFSCheck').click();
+            }
+        });
+    }
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
