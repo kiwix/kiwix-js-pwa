@@ -5,6 +5,7 @@
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
+* ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
 * REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
 
 ## Release 3.4.5 / 3.4.6
