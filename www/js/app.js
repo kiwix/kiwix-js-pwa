@@ -1520,7 +1520,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
         if (e.target.checked) {
             return cache.requestPersistentStorage();
         } else {
-            return Promise.resolve(true);
+            return Promise.resolve(false);
         }
     };
     if (e.target.checked && /Electron/i.test(params.appType)) {
@@ -1547,6 +1547,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
         } else {
             e.target.checked = false;
             params.useOPFS = false;
+            settingsStore.setItem('useOPFS', false, Infinity);
             setOPFSUI();
         }
     });
@@ -1566,6 +1567,7 @@ function loadOPFSDirectory () {
         });
     } else {
         params.useOPFS = false;
+        settingsStore.setItem('useOPFS', false, Infinity);
         setOPFSUI();
         return uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
     }
@@ -3375,7 +3377,7 @@ if (storages !== null && storages.length > 0 ||
     }
 } else {
     // If DeviceStorage is not available, we display the file select components
-    displayFileSelect();
+    document.getElementById('btnRescanDeviceStorage').click();
     if (document.getElementById('archiveFilesLegacy').files && document.getElementById('archiveFilesLegacy').files.length > 0) {
         // Archive files are already selected,
         setLocalArchiveFromFileSelect();
