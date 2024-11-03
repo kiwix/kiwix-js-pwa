@@ -133,50 +133,62 @@ function getCacheNames (callback) {
 
 // Deregisters all Service Workers and reboots the app
 function reloadApp () {
-    var reboot = function () {
-        // Temporarily disable the beforeunload event listener
-        params.interceptBeforeUnload = false;
-        console.debug('Performing app reload...');
-        setTimeout(function () {
-            window.location.href = location.origin + location.pathname + uriParams
-        }, 600);
-    };
-    // Blank the querystring, so that parameters are not set on reload
+    // Store params for reload
     var uriParams = '';
     if (~window.location.href.indexOf(params.PWAServer) && params.referrerExtensionURL) {
-        // However, if we're in a PWA that was called from local code, then by definition we must remain in SW mode and we need to
-        // ensure the user still has access to the referrerExtensionURL (so they can get back to local code from the UI)
-        uriParams = '?allowInternetAccess=truee&contentInjectionMode=serviceworker';
+        uriParams = '?allowInternetAccess=true&contentInjectionMode=serviceworker';
         uriParams += '&referrerExtensionURL=' + encodeURIComponent(params.referrerExtensionURL);
     }
+
+    // Function to perform the actual reload
+    var reboot = async function () {
+        // Disable beforeunload interceptor
+        params.interceptBeforeUnload = false;
+
+        try {
+            // Clear browser cache for the app's origin
+            const cacheKeys = await caches.keys();
+            await Promise.all(
+                cacheKeys.map(key => caches.delete(key))
+            );
+
+            // Force reload from server, bypassing cache
+            console.debug('Performing hard reload...');
+            window.location.href = location.origin + location.pathname + uriParams +
+                (uriParams ? '&' : '?') + 'cache=' + Date.now();
+        } catch (err) {
+            console.error('Cache clear failed:', err);
+            // Fallback to regular reload
+            window.location.reload(true);
+        }
+    };
+
     if (navigator && navigator.serviceWorker) {
         console.debug('Deregistering Service Workers...');
-        var cnt = 0;
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            if (!registrations.length) {
-                reboot();
-                return;
-            }
-            cnt++;
-            registrations.forEach(function (registration) {
-                registration.unregister().then(function () {
-                    cnt--;
-                    if (!cnt) {
-                        console.debug('All Service Workers unregistered...');
-                        reboot();
-                    }
-                });
+        navigator.serviceWorker.getRegistrations()
+            .then(async function (registrations) {
+                if (!registrations.length) {
+                    await reboot();
+                    return;
+                }
+
+                // Wait for all service workers to unregister
+                await Promise.all(
+                    registrations.map(registration => registration.unregister())
+                );
+                console.debug('All Service Workers unregistered');
+
+                // Small delay to ensure cleanup
+                setTimeout(reboot, 100);
+            })
+            .catch(async function (err) {
+                console.error('SW deregistration failed:', err);
+                await reboot();
             });
-        }).catch(function (err) {
-            console.error(err);
-            reboot();
-        });
     } else {
-        console.debug('Performing app reload...');
         reboot();
     }
 }
-
 export default {
     reset: reset,
     reloadApp: reloadApp,
