@@ -3052,6 +3052,16 @@ function setContentInjectionMode (value) {
                     // The ServiceWorker is registered
                     console.log('Service worker is registered with a scope of ' + reg.scope);
                     serviceWorkerRegistration = reg;
+                    // Update handling code
+                    navigator.serviceWorker.ready.then(registration => {
+                        if (registration.waiting) {
+                            registration.waiting.postMessage('skipWaiting');
+                        }
+                    });
+                    // Controller change listener to reload the page
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        window.location.reload();
+                    });
                     // We need to wait for the ServiceWorker to be activated
                     // before sending the first init message
                     var serviceWorker = reg.installing || reg.waiting || reg.active;

@@ -114,6 +114,9 @@ const regexpZIMUrlWithNamespace = /(?:^|\/)([^/]+\/)([-ABCHIJMUVWX])\/(.+)/;
  */
 const regexpByteRangeHeader = /^\s*bytes=(\d+)-/;
 
+// Allow the SW to skip waiting and become active immediately
+self.skipWaiting();
+
 /**
  * The list of files that the app needs in order to run entirely from offline code
  */
@@ -261,50 +264,74 @@ if (typeof chrome !== 'undefined' && chrome.action) {
 // Process install event
 self.addEventListener('install', function (event) {
     console.debug('[SW] Install Event processing');
-    // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
-    // self.skipWaiting();
-    // We try to circumvent the browser's cache by adding a header to the Request, and it ensures all files are explicitly versioned
+
+    // Create requests with cache busting version parameter
     var requests = precacheFiles.map(function (urlPath) {
-        return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
+        return new Request(urlPath + '?v=' + appVersion, {
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                Pragma: 'no-cache'
+            }
+        });
     });
+
     if (!regexpExcludedURLSchema.test(requests[0].url)) {
-        event.waitUntil(caches.open(APP_CACHE).then(function (cache) {
-            return Promise.all(
-                requests.map(function (request) {
-                    return fetch(request).then(function (response) {
-                        // Fail on 404, 500 etc
-                        if (!response.ok) throw Error('Could not fetch ' + request.url);
-                        return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
-                    }).catch(function (err) {
-                        console.error('There was an error pre-caching files', err);
-                    });
+        event.waitUntil(
+            Promise.all([
+                caches.open(APP_CACHE).then(function (cache) {
+                    return Promise.all(
+                        requests.map(function (request) {
+                            return fetch(request).then(function (response) {
+                                if (!response.ok) throw Error('Could not fetch ' + request.url);
+
+                                const headers = new Headers(response.headers);
+                                headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+                                headers.set('Pragma', 'no-cache');
+                                headers.set('Expires', '0');
+
+                                const noCacheResponse = new Response(response.body, {
+                                    status: response.status,
+                                    statusText: response.statusText,
+                                    headers: headers
+                                });
+
+                                return cache.put(request.url.replace(/\?v[^?/]+$/, ''), noCacheResponse);
+                            }).catch(function (err) {
+                                console.error('There was an error pre-caching files', err);
+                            });
+                        })
+                    );
                 })
-            );
-        }));
+            ])
+        );
     }
 });
 
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
-    // "Claiming" the ServiceWorker is necessary to make it work right away,
-    // without the need to reload the page.
-    // See https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
-    event.waitUntil(self.clients.claim());
-    console.debug('[SW] Claiming clients for current page');
-    // Check all the cache keys, and delete any old caches
     event.waitUntil(
-        caches.keys().then(function (keyList) {
-            return Promise.all(keyList.map(function (key) {
-                console.debug('[SW] Current cache key is ' + key);
-                if (key !== APP_CACHE && key !== ASSETS_CACHE) {
-                    console.debug('[SW] App updated to version ' + appVersion + ': deleting old cache');
-                    return caches.delete(key);
-                } else {
-                    return Promise.resolve();
-                }
-            }));
-        })
+        Promise.all([
+            // Clear old caches
+            caches.keys().then(function (cacheNames) {
+                return Promise.all(
+                    cacheNames.map(function (cacheName) {
+                        if (cacheName !== APP_CACHE) {
+                            return caches.delete(cacheName);
+                        }
+                        return undefined; // Explicitly return for non-deleted caches
+                    })
+                );
+            }),
+            // Take control and reload all clients
+            self.clients.claim().then(() => {
+                // Force reload all clients
+                self.clients.matchAll().then(clients => {
+                    clients.forEach(client => client.navigate(client.url));
+                });
+            })
+        ])
     );
 });
 
@@ -443,6 +470,9 @@ self.addEventListener('fetch', function (event) {
  * Handle custom commands sent from app.js
  */
 self.addEventListener('message', function (event) {
+    if (event.data.action === 'skipWaiting') {
+        self.skipWaiting();
+    }
     if (event.data.action) {
         if (event.data.action === 'init') {
             // On 'init' message, we enable the fetchEventListener
@@ -793,17 +823,27 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
  * @returns {Promise<Response>} A Promise for the cached Response, or rejects with strings 'disabled' or 'no-match'
  */
 function fromCache (cache, requestUrl) {
-    // Prevents use of Cache API if user has disabled it
+    // Keep existing cache validation
     if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) {
         return Promise.reject(new Error('Cache disabled'));
     }
+
     return caches.open(cache).then(function (cacheObj) {
         return cacheObj.match(requestUrl).then(function (matching) {
             if (!matching || matching.status === 404) {
                 return Promise.reject(new Error('no-match'));
             }
             console.debug('[SW] Supplying ' + requestUrl + ' from ' + cache + '...');
-            return matching;
+            // Add no-cache headers to the matched response
+            const headers = new Headers(matching.headers);
+            headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            headers.set('Pragma', 'no-cache');
+            headers.set('Expires', '0');
+            return new Response(matching.body, {
+                status: matching.status,
+                statusText: matching.statusText,
+                headers: headers
+            });
         });
     });
 }

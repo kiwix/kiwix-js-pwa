@@ -163,6 +163,7 @@ function reloadApp () {
     var reboot = function () {
         // Disable beforeunload interceptor
         params.interceptBeforeUnload = false;
+        navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
         // Force reload from server, bypassing cache
         console.debug('Performing hard reload...');
         window.location.href = location.origin + location.pathname + uriParams;
