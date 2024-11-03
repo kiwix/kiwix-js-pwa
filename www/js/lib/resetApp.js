@@ -37,11 +37,15 @@ function reset (object) {
 
         // 1. Clear localStorage
         if (!object || object === 'localStorage') {
-            promises.push(new Promise(resolve => {
-                localStorage.clear();
-                console.debug('All Local Storage settings were deleted...');
+            if (/localStorage/.test(assetsCache.capability)) {
+                promises.push(new Promise(resolve => {
+                    localStorage.clear();
+                    console.debug('All Local Storage settings were deleted...');
                 resolve();
-            }));
+                }));
+            } else {
+                console.debug('Local Storage is not available...');
+            }
         }
 
         // 2. Clear sessionStorage
