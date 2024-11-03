@@ -2745,9 +2745,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
             noPackagedZIM.style.display = 'none';
         }
+        // We remove splashScreenDismissed from the settingsStore to ensure that the modal is displayed after an autorefresh if user didn't consciously dismiss it
+        settingsStore.removeItem('splashScreenDismissed');
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
         setTimeout(function () {
             uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
+                settingsStore.setItem('splashScreenDismissed', true, Infinity);
                 // We need to delay any attempt to launch the UWP Service Worker till after the bootstrap modal is displayed
                 // or else app is left in an anomalous situation whereby it's not possible to exit the modal in some cases
                 if (appstate.launchUWPServiceWorker) {
@@ -2769,6 +2772,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     } else if (appstate.launchUWPServiceWorker) {
         launchUWPServiceWorker();
+    } else {
+        if (!settingsStore.getItem('splashScreenDismissed')) {
+            // It looks like the user never dismissed the splash screen, so we need to display it
+            setTimeout(function () {
+                uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
+                    settingsStore.setItem('splashScreenDismissed', true, Infinity);
+                });
+            }, 2000);
+        }
     }
 });
 
