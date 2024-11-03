@@ -39,6 +39,7 @@ import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
 import updater from './lib/updater.js';
+import resetApp from './lib/resetApp.js';
 
 // Import stylesheets programmatically
 // document.adoptedStyleSheets = [styles, bootstrap];
@@ -1859,7 +1860,7 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
 });
 ['btnReset', 'btnReset2'].forEach(function (id) {
     document.getElementById(id).addEventListener('click', function () {
-        settingsStore.reset();
+        resetApp.reset();
     });
 });
 document.getElementById('btnRefreshApp').addEventListener('click', function () {
@@ -1872,7 +1873,7 @@ document.getElementById('bypassAppCacheCheck').addEventListener('change', functi
     } else {
         params.appCache = !this.checked;
         settingsStore.setItem('appCache', params.appCache, Infinity);
-        settingsStore.reset('cacheAPI');
+        resetApp.reset('cacheAPI');
     }
     // This will also send any new values to Service Worker
     refreshCacheStatus();
