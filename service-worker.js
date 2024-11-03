@@ -290,6 +290,7 @@ self.addEventListener('install', function (event) {
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
+    // Check all the cache keys, and delete any old caches
     event.waitUntil(
         Promise.all([
             // Clear old caches
@@ -802,11 +803,10 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
  * @returns {Promise<Response>} A Promise for the cached Response, or rejects with strings 'disabled' or 'no-match'
  */
 function fromCache (cache, requestUrl) {
-    // Prevents use of Cache API if user has disabled i
+    // Prevents use of Cache API if user has disabled it
     if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) {
         return Promise.reject(new Error('Cache disabled'));
     }
-
     return caches.open(cache).then(function (cacheObj) {
         return cacheObj.match(requestUrl).then(function (matching) {
             if (!matching || matching.status === 404) {
