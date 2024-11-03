@@ -267,44 +267,23 @@ self.addEventListener('install', function (event) {
 
     // Create requests with cache busting version parameter
     var requests = precacheFiles.map(function (urlPath) {
-        return new Request(urlPath + '?v=' + appVersion, {
-            cache: 'no-cache',
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                Pragma: 'no-cache'
-            }
-        });
+        return new Request(urlPath + '?v' + appVersion, { cache: 'no-cache' });
     });
 
     if (!regexpExcludedURLSchema.test(requests[0].url)) {
-        event.waitUntil(
-            Promise.all([
-                caches.open(APP_CACHE).then(function (cache) {
-                    return Promise.all(
-                        requests.map(function (request) {
-                            return fetch(request).then(function (response) {
-                                if (!response.ok) throw Error('Could not fetch ' + request.url);
-
-                                const headers = new Headers(response.headers);
-                                headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-                                headers.set('Pragma', 'no-cache');
-                                headers.set('Expires', '0');
-
-                                const noCacheResponse = new Response(response.body, {
-                                    status: response.status,
-                                    statusText: response.statusText,
-                                    headers: headers
-                                });
-
-                                return cache.put(request.url.replace(/\?v[^?/]+$/, ''), noCacheResponse);
-                            }).catch(function (err) {
-                                console.error('There was an error pre-caching files', err);
-                            });
-                        })
-                    );
+        event.waitUntil(caches.open(APP_CACHE).then(function (cache) {
+            return Promise.all(
+                requests.map(function (request) {
+                    return fetch(request).then(function (response) {
+                        // Fail on 404, 500 etc
+                        if (!response.ok) throw Error('Could not fetch ' + request.url);
+                        return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
+                    }).catch(function (err) {
+                        console.error('There was an error pre-caching files', err);
+                    });
                 })
-            ])
-        );
+            );
+        }));
     }
 });
 
@@ -823,7 +802,7 @@ function fetchUrlFromZIM (urlObjectOrString, range, expectedHeaders) {
  * @returns {Promise<Response>} A Promise for the cached Response, or rejects with strings 'disabled' or 'no-match'
  */
 function fromCache (cache, requestUrl) {
-    // Keep existing cache validation
+    // Prevents use of Cache API if user has disabled i
     if (!(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE)) {
         return Promise.reject(new Error('Cache disabled'));
     }
@@ -834,16 +813,7 @@ function fromCache (cache, requestUrl) {
                 return Promise.reject(new Error('no-match'));
             }
             console.debug('[SW] Supplying ' + requestUrl + ' from ' + cache + '...');
-            // Add no-cache headers to the matched response
-            const headers = new Headers(matching.headers);
-            headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            headers.set('Pragma', 'no-cache');
-            headers.set('Expires', '0');
-            return new Response(matching.body, {
-                status: matching.status,
-                statusText: matching.statusText,
-                headers: headers
-            });
+            return matching;
         });
     });
 }

@@ -3052,7 +3052,7 @@ function setContentInjectionMode (value) {
                     // The ServiceWorker is registered
                     console.log('Service worker is registered with a scope of ' + reg.scope);
                     serviceWorkerRegistration = reg;
-                    // Update handling code
+                    // Process registration waiting for immediate load
                     navigator.serviceWorker.ready.then(registration => {
                         if (registration.waiting) {
                             registration.waiting.postMessage('skipWaiting');
