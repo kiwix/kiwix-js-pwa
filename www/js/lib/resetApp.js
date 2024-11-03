@@ -1,4 +1,4 @@
-/**
+﻿/**
  * reset.js : Provide utilities for resetting the app to a fresh state
  * Copyright 2024 Jaifroid and contributors
  * License GPL v3:
@@ -32,85 +32,105 @@ import uiUtil from './uiUtil.js';
  * @param {String} object Optional name of the object to disable or delete ('cookie', 'localStorage', 'cacheAPI')
  */
 function reset (object) {
-    var performReset = function () {
-        // 1. Clear any cookie entries
-        if (!object || object === 'cookie') {
-            var regexpCookieKeys = /(?:^|;)\s*([^=]+)=([^;]*)/ig;
-            var currentCookie = document.cookie;
-            var foundCrumb = false;
-            var cookieCrumb = regexpCookieKeys.exec(currentCookie);
-            while (cookieCrumb !== null) {
-                // DEV: Note that we don't use the keyPrefix in legacy cookie support
-                foundCrumb = true;
-                // This expiry date will cause the browser to delete the cookie crumb on next page refresh
-                document.cookie = cookieCrumb[1] + '=;expires=Thu, 21 Sep 1979 00:00:01 UTC;';
-                cookieCrumb = regexpCookieKeys.exec(currentCookie);
-            }
-            if (foundCrumb) console.debug('All cookie keys were expired...');
-        }
+    function performReset () {
+        const promises = [];
 
-        // 2. Clear any localStorage settings
+        // 1. Clear localStorage
         if (!object || object === 'localStorage') {
-            if (/localStorage/.test(assetsCache.capability)) {
+            promises.push(new Promise(resolve => {
                 localStorage.clear();
                 console.debug('All Local Storage settings were deleted...');
-            }
+                resolve();
+            }));
         }
 
-        // 3. Clear any IndexedDB entries
+        // 2. Clear sessionStorage
+        if (!object || object === 'sessionStorage') {
+            promises.push(new Promise(resolve => {
+                sessionStorage.clear();
+                console.debug('All Session Storage settings were deleted...');
+                resolve();
+            }));
+        }
+
+        // 3. Clear IndexedDB
         if (!object || object === 'indexedDB') {
             if (/indexedDB/.test(assetsCache.capability)) {
-                window.indexedDB.deleteDatabase(params.indexedDB);
-                console.debug('All IndexedDB entries were deleted...');
+                promises.push(new Promise(resolve => {
+                    window.indexedDB.deleteDatabase(params.indexedDB);
+                    console.debug('All IndexedDB entries were deleted...');
+                    resolve();
+                }));
             }
         }
 
-        // 4. Clear any (remaining) Cache API caches
+        // 4. Clear Cache API caches
         if (!object || object === 'cacheAPI') {
-            getCacheNames(function (cacheNames) {
-                if (cacheNames && !cacheNames.error) {
-                    var cnt = 0;
-                    for (var cacheName in cacheNames) {
-                        cnt++;
-                        caches.delete(cacheNames[cacheName]).then(function () {
-                            cnt--;
-                            if (!cnt) {
-                                // All caches deleted
-                                console.debug('All Cache API caches were deleted...');
-                                // Reload if user performed full reset or if appCache is needed
-                                if (!object || params.appCache) reloadApp();
-                            }
+            promises.push(new Promise((resolve) => {
+                getCacheNames(function (cacheNames) {
+                    if (cacheNames && !cacheNames.error) {
+                        Promise.all(
+                            Object.values(cacheNames).map(cacheName =>
+                                caches.delete(cacheName)
+                                    .catch(err => console.error(`Failed to delete cache ${cacheName}:`, err))
+                            )
+                        ).then(function () {
+                            console.debug('All Cache API caches were deleted...');
+                            resolve();
+                        }).catch(function (err) {
+                            console.error('Error clearing caches:', err);
+                            resolve();
                         });
+                    } else {
+                        console.debug('No Cache API caches were in use.');
+                        resolve();
                     }
-                } else {
-                    console.debug('No Cache API caches were in use (or we do not have access to the names).');
-                    // All operations complete, reload if user performed full reset or if appCache is needed
-                    if (!object || params.appCache) reloadApp();
-                }
-            });
+                });
+            }));
         }
 
         // 5. Clear any Origin Private File System Archives
         // DEV: Method is currently behind a flag, so wait till fully implemented
         // if (!object || object === 'OPFS') {
-        //   if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
-        //     navigator.storage.getDirectory().then(function (handle) {
-        //       handle.remove({ recursive: true }).then(function () {
-        //         console.debug('All OPFS archives were deleted...');
-        //       });
-        //     });
-        //   }
+        //     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        //         promises.push(new Promise((resolve) => {
+        //             navigator.storage.getDirectory().then(function (handle) {
+        //                 handle.remove({ recursive: true }).then(function () {
+        //                     console.debug('All OPFS archives were deleted...');
+        //                     resolve();
+        //                 }).catch(function (err) {
+        //                     console.error('Error removing OPFS archives:', err);
+        //                     resolve();
+        //                 });
+        //             }).catch(function (err) {
+        //                 console.error('Error accessing OPFS directory:', err);
+        //                 resolve();
+        //             });
+        //         }));
+        //     }
         // }
-    };
-    // If no specific object was specified, we are doing a general reset, so ask user for confirmation
-    if (object) performReset();
-    else {
-        uiUtil.systemAlert('<p><b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches,' +
-      // ' <b>Archives stored in the Private File System</b>,' +
-      ' and settings! (Archives stored in the OPFS will be preserved.)<b></p><p>Make sure you have an Internet connection</b>' +
-      ' if this is an offline PWA, because it will be erased and reloaded.</p>', 'Warning!', true).then(function (confirm) {
-            if (confirm) performReset();
-            else console.debug('User cancelled');
+
+        return Promise.all(promises).then(function () {
+            if (!object || params.appCache) {
+                reloadApp();
+            }
+        });
+    }
+
+    // If no specific object was specified, ask for confirmation
+    if (object) {
+        return performReset();
+    } else {
+        return uiUtil.systemAlert(
+            '<p><b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches,' +
+            ' and settings! (Archives stored in the OPFS will be preserved.)<b></p><p>Make sure you have an Internet connection</b>' +
+            ' if this is an offline PWA, because it will be erased and reloaded.</p>',
+            'Warning!',
+            true
+        ).then(function (confirm) {
+            if (confirm) return performReset();
+            console.debug('User cancelled');
+            return Promise.resolve();
         });
     }
 }
@@ -139,39 +159,36 @@ function reloadApp () {
         uriParams = '?allowInternetAccess=true&contentInjectionMode=serviceworker';
         uriParams += '&referrerExtensionURL=' + encodeURIComponent(params.referrerExtensionURL);
     }
-
     // Function to perform the actual reload
     var reboot = function () {
         // Disable beforeunload interceptor
         params.interceptBeforeUnload = false;
         // Force reload from server, bypassing cache
         console.debug('Performing hard reload...');
-        window.location.href = location.origin + location.pathname + uriParams +
-            (uriParams ? '&' : '?') + 'cache=' + Date.now();
+        window.location.href = location.origin + location.pathname + uriParams;
     };
     if (navigator && navigator.serviceWorker) {
         console.debug('Deregistering Service Workers...');
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            if (!registrations.length) {
+        return navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                if (!registrations.length) {
+                    return Promise.resolve();
+                }
+                return Promise.all(
+                    registrations.map(registration => registration.unregister())
+                );
+            }).then(function () {
+                console.debug('Service Workers cleanup complete');
+                // Adding a small delay before reboot to ensure cleanup
+                return new Promise(resolve => setTimeout(resolve, 200));
+            }).then(reboot).catch(function (err) {
+                console.error('SW deregistration failed:', err);
                 reboot();
-                return;
-            }
-            // Wait for all service workers to unregister
-            return Promise.all(
-                registrations.map(registration => registration.unregister())
-            ).then(function () {
-                console.debug('All Service Workers unregistered');
-                // Small delay to ensure cleanup
-                setTimeout(reboot, 100);
             });
-        }).catch(function (err) {
-            console.error('SW deregistration failed:', err);
-            reboot();
-        });
-    } else {
-        reboot();
     }
+
+    return Promise.resolve().then(reboot);
 }
+
 export default {
     reset: reset,
     reloadApp: reloadApp,
