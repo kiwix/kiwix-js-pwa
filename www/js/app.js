@@ -2779,7 +2779,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
                     settingsStore.setItem('splashScreenDismissed', true, Infinity);
                 });
-            }, 2000);
+            }, 1200);
         }
     }
 });
