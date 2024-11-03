@@ -3053,11 +3053,11 @@ function setContentInjectionMode (value) {
                     console.log('Service worker is registered with a scope of ' + reg.scope);
                     serviceWorkerRegistration = reg;
                     // Process registration waiting for immediate load
-                    navigator.serviceWorker.ready.then(registration => {
-                        if (registration.waiting) {
-                            registration.waiting.postMessage('skipWaiting');
-                        }
-                    });
+                    // navigator.serviceWorker.ready.then(registration => {
+                    //     if (registration.waiting) {
+                    //         registration.waiting.postMessage('skipWaiting');
+                    //     }
+                    // });
                     // Controller change listener to reload the page
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         window.location.reload();
