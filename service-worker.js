@@ -293,9 +293,8 @@ self.addEventListener('activate', function (event) {
     // Check all the cache keys, and delete any old caches
     event.waitUntil(
         Promise.all([
-            // Clear old caches and track if any existed
+            // Clear old caches
             caches.keys().then(function (cacheNames) {
-                const hadExistingCaches = cacheNames.length > 0;
                 return Promise.all(
                     cacheNames.map(function (cacheName) {
                         if (cacheName !== APP_CACHE) {
@@ -303,18 +302,16 @@ self.addEventListener('activate', function (event) {
                         }
                         return undefined; // Explicitly return for non-deleted caches
                     })
-                ).then(() => hadExistingCaches); // Pass through whether we had caches
-            }).then(hadExistingCaches => {
-                // Take control and conditionally reload clients
-                return self.clients.claim().then(() => {
-                    if (hadExistingCaches) {
-                        // Only force reload if this was an update
-                        return self.clients.matchAll().then(clients => {
-                            clients.forEach(client => client.navigate(client.url));
-                        });
-                    }
-                });
-            })
+                );
+            })//,
+            // Take control and only reload if it's an update
+            // self.clients.claim().then(function () {
+            //     // Only force reload if this was an update
+            //     return self.registration.active.state === 'activating' && self.registration.previous
+            //         ? self.clients.matchAll().then(function (clients) {
+            //             clients.forEach(client => client.navigate(client.url));
+            //         }) : Promise.resolve();
+            // })
         ])
     );
 });
