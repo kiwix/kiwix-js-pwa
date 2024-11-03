@@ -6,7 +6,10 @@
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
 * ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
+* FIX: PWA can now update without user having to exit the app (with user gesture or automatically in Electron)
+* FIX: If user hasn't dismissed the splashscreen then it is shown again after a refresh
 * REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
+* DEV: Reset options are now in separate module to avoid circular dependencies
 
 ## Release 3.4.5 / 3.4.6
 
