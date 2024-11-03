@@ -141,50 +141,33 @@ function reloadApp () {
     }
 
     // Function to perform the actual reload
-    var reboot = async function () {
+    var reboot = function () {
         // Disable beforeunload interceptor
         params.interceptBeforeUnload = false;
-
-        try {
-            // Clear browser cache for the app's origin
-            const cacheKeys = await caches.keys();
-            await Promise.all(
-                cacheKeys.map(key => caches.delete(key))
-            );
-
-            // Force reload from server, bypassing cache
-            console.debug('Performing hard reload...');
-            window.location.href = location.origin + location.pathname + uriParams +
-                (uriParams ? '&' : '?') + 'cache=' + Date.now();
-        } catch (err) {
-            console.error('Cache clear failed:', err);
-            // Fallback to regular reload
-            window.location.reload(true);
-        }
+        // Force reload from server, bypassing cache
+        console.debug('Performing hard reload...');
+        window.location.href = location.origin + location.pathname + uriParams +
+            (uriParams ? '&' : '?') + 'cache=' + Date.now();
     };
-
     if (navigator && navigator.serviceWorker) {
         console.debug('Deregistering Service Workers...');
-        navigator.serviceWorker.getRegistrations()
-            .then(async function (registrations) {
-                if (!registrations.length) {
-                    await reboot();
-                    return;
-                }
-
-                // Wait for all service workers to unregister
-                await Promise.all(
-                    registrations.map(registration => registration.unregister())
-                );
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            if (!registrations.length) {
+                reboot();
+                return;
+            }
+            // Wait for all service workers to unregister
+            return Promise.all(
+                registrations.map(registration => registration.unregister())
+            ).then(function () {
                 console.debug('All Service Workers unregistered');
-
                 // Small delay to ensure cleanup
                 setTimeout(reboot, 100);
-            })
-            .catch(async function (err) {
-                console.error('SW deregistration failed:', err);
-                await reboot();
             });
+        }).catch(function (err) {
+            console.error('SW deregistration failed:', err);
+            reboot();
+        });
     } else {
         reboot();
     }
