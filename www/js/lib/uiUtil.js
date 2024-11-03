@@ -1045,15 +1045,36 @@ function showUpgradeReady (ver, type, url) {
         '    <span id="persistentMessage"></span>\n' +
         '</div>\n';
     var persistentMessage = document.getElementById('persistentMessage');
+    var reboot = function () {
+        // Disable beforeunload interceptor
+        params.interceptBeforeUnload = false;
+        navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+        window.location.reload();
+    };
     if (type === 'progress') {
         persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
     } else {
+        const reloadLink = (type === 'load'
+            ? ', or <a href="#" id="reloadNowLink" style="color:white;text-decoration:underline;">reload now</a>'
+            : '') + '.)';
         persistentMessage.innerHTML = 'Version ' + ver +
             (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>'
-                : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
+                : ' is ready to ' + type + '! (Re-launch app to ' + type + reloadLink);
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
+        if (type === 'load') {
+            if (!/Electron/.test(params.appType)) {
+                document.getElementById('reloadNowLink').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    reboot();
+                });
+            } else {
+                // In the Electron app, we will only have this banner with type 'load' if the app has just upgraded
+                // so we should reload the app immediately
+                reboot();
+            }
+        }
     }
 }
 
