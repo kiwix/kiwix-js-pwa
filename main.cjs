@@ -10,12 +10,21 @@ const contextMenu = require('electron-context-menu');
 
 const store = new Store();
 
-// Get the stored port value or 3000 if not set
+let expressServer; // This gets populated in the startServer function
+
+// Get the stored port value or standard value if not set
 // Use these values:
 // 3000: Main App
 // 3001: WikiMed
 // 3002: WikiVoyage
-const port = store.get('expressPort', 3000);
+let port = 3000;
+// Check if we previously stored a different port, and validate it for security
+if (store.has('expressPort')) {
+    const storedPort = store.get('expressPort');
+    if (typeof storedPort === 'number' && storedPort >= 3000 && storedPort <= 3999) {
+        port = storedPort;
+    }
+}
 console.log('Express Port: ' + port);
 
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
@@ -206,12 +215,29 @@ if (!gotSingleInstanceLock) {
 app.whenReady().then(() => {
     const server = express()
 
+    // Add security headers
+    server.use((req, res, next) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('X-XSS-Protection', '1; mode=block');
+        // We already set the CSP in the HTML file and in the SErviceWorker...
+        // res.setHeader('Content-Security-Policy', "default-src 'self'");
+        next();
+    });
+
     // Serve static files from the www directory
     server.use(express.static(path.join(__dirname, '/')));
 
     // Function to start the Express server and check for port availability
     const startServer = (port) => {
-        server.listen(port, () => {
+        if (port > 3999) { // Set a reasonable maximum
+            console.error('Unable to find available port in acceptable range');
+            // Remove the expressPort key from the store so app will try again on restart
+            store.delete('expressPort');
+            app.quit();
+            return;
+        }
+        expressServer = server.listen(port, '127.0.0.1', () => {
             console.log(`Server running on port ${port}`);
             // Create the new window
             createWindow();
@@ -258,4 +284,11 @@ app.on('window-all-closed', function () {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit();
+});
+
+// Explicit shutdown of the Express server for security
+app.on('before-quit', () => {
+    if (expressServer) {
+        expressServer.close();
+    }
 });
