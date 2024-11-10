@@ -218,7 +218,7 @@ app.whenReady().then(() => {
     // Add security headers
     server.use((req, res, next) => {
         res.setHeader('X-Content-Type-Options', 'nosniff');
-        res.setHeader('X-Frame-Options', 'DENY');
+        // res.setHeader('X-Frame-Options', 'SAMEORIGIN');
         res.setHeader('X-XSS-Protection', '1; mode=block');
         // We already set the CSP in the HTML file and in the SErviceWorker...
         // res.setHeader('Content-Security-Policy', "default-src 'self'");
@@ -237,7 +237,7 @@ app.whenReady().then(() => {
             app.quit();
             return;
         }
-        expressServer = server.listen(port, '127.0.0.1', () => {
+        expressServer = server.listen(port, () => {
             console.log(`Server running on port ${port}`);
             // Create the new window
             createWindow();
