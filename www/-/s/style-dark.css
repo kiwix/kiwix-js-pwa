@@ -1,4 +1,4 @@
-﻿
+
 /* Wikipedia Dark Theme v1.0.23 (1/17/2017)
  * https://github.com/StylishThemes/Wikipedia-Dark
  * http://userstyles.org/styles/
@@ -14,7 +14,7 @@
  */
 
   /* transparent background */
-div, span:not(.legend-color):not([class*="wikEd"]):not([style*="background"]), .MainPageBG, .navbox-list,
+div:not(.kiwixtooltip), span:not(.legend-color):not([class*="wikEd"]):not([style*="background"]), .MainPageBG, .navbox-list,
 div#mw-head, .mw-wsmfinal-content, #bodyContent, .referencetooltip > li + li,
 div.vectorTabs ul li, tr[style*="background:#F5FFFA"],
 th[style*="background-color: #fff"], .mw-echo-notifications-badge,
@@ -24,7 +24,7 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
 }
 
 /*** Overall ***/
-p, li, td:not([style*="background"]), th:not([style*="background"]), caption, div {
+p, li, td:not([style*="background"]), th:not([style*="background"]), caption, div:not(.kiwixtooltip) {
   color: lightgray !important;
   background-image: none !important;
 }
@@ -170,7 +170,7 @@ tr[style*="background: antiquewhite"], tr[style*="background-color:#ee"], tr[sty
 .mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
 table.navbox.collapsible tr:nth-child(2) > td, div.menu, div.NavHead, .oo-ui-popupWidget-popup,
 .oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
-.ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr, .dataTable tr, div.kiwixtooltip {
+.ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr, .dataTable tr {
     background-color: #222 !important;
 }
 
