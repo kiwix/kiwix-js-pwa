@@ -414,6 +414,7 @@ function printCleanup () {
         // We don't need a radical cleanup because there was no printIntercept
         removePageMaxWidth();
         setTab();
+        setArticleZoom(params.relativeFontSize);
         params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
         if (document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked) {
             // It seems darkReader has been auto-turned on, so we need to respect that
@@ -522,6 +523,8 @@ function printIntercept () {
         removePageMaxWidth();
         params.removePageMaxWidth = tempPageMaxWidth;
     }
+    // Reset zoom level to 100%
+    setArticleZoom(100);
     // Put doc into light mode
     params.cssTheme = 'light';
     switchCSSTheme();
@@ -697,8 +700,7 @@ document.getElementById('btnZoomout').addEventListener('click', function () {
 });
 let zoomLabelTimeout;
 function setArticleZoom (zoomLevel, set) {
-    const doc = document.getElementById('articleContent').contentDocument;
-    const root = doc.documentElement;
+    const root = articleDocument.documentElement || articleDocument;
     const percentageFontSize = zoomLevel + '%';
     // Set CSS fontSize and zoom if supported
     // Note that the zoom property is supported in Firefox since May 2024, but it doesn't
