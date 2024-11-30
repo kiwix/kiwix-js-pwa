@@ -333,7 +333,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     div.popoverisloading = true;
     const screenWidth = win.innerWidth - 40;
     const screenHeight = document.documentElement.clientHeight;
-    const zoomFactor = 'zoom' in currentDocument.documentElement.style && !isSafari() ? params.relativeFontSize / 100 : 1;
+    let zoomFactor = 'zoom' in currentDocument.documentElement.style && !isSafari() ? params.relativeFontSize / 100 : 1;
     let margin = 40;
     let divWidth = 512;
     if (screenWidth <= divWidth) {
@@ -411,6 +411,10 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     if (triangleX > divWidth - 10) triangleX = divWidth - 10;
     // Adjust positions to take into account the font zoom factor
     const adjustedScrollY = win.scrollY / zoomFactor;
+    if (isSafari()) {
+        // We have to reinstate zoomFactor as it is only applied to horizontal positioning in Safari
+        zoomFactor = params.relativeFontSize / 100;
+    }
     divRectX = divRectX / zoomFactor;
     triangleX = triangleX / zoomFactor;
     // Now set the calculated x and y positions
