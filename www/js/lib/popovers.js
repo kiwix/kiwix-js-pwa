@@ -363,7 +363,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     };
     // Note that since Chromium 128 getBoundingClientRect() now returns zoom-adjusted values, but if this is the case,
     // then currentCSSZoom will be defined as well, so we can adjust for this. Note that UWP also requires adjustment.
-    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom || window.safari) {
+    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom || needsZoomAdjustment()) {
         linkRect.top = linkRect.top / zoomFactor;
         linkRect.bottom = linkRect.bottom / zoomFactor;
         linkRect.left = linkRect.left / zoomFactor;
@@ -433,6 +433,20 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     `;
     return { div: div, span: span };
 }
+
+function needsZoomAdjustment () {
+    // Create a test element
+    const test = document.createElement('div');
+    test.style.width = '100px';
+    test.style.position = 'absolute';
+    test.style.visibility = 'hidden';
+    document.body.appendChild(test);
+    // Compare getBoundingClientRect() with offsetWidth
+    const rect = test.getBoundingClientRect();
+    const needsAdjustment = Math.round(rect.width) !== test.offsetWidth;
+    document.body.removeChild(test);
+    return needsAdjustment;
+};
 
 /**
  * Adds event listeners to the popover's control icons
