@@ -333,7 +333,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     div.popoverisloading = true;
     const screenWidth = win.innerWidth - 40;
     const screenHeight = document.documentElement.clientHeight;
-    const zoomFactor = params.relativeFontSize / 100;
+    const zoomFactor = 'zoom' in currentDocument.documentElement.style ? params.relativeFontSize / 100 : 1;
     let margin = 40;
     let divWidth = 512;
     if (screenWidth <= divWidth) {
