@@ -333,7 +333,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     div.popoverisloading = true;
     const screenWidth = win.innerWidth - 40;
     const screenHeight = document.documentElement.clientHeight;
-    const zoomFactor = 'zoom' in currentDocument.documentElement.style ? params.relativeFontSize / 100 : 1;
+    const zoomFactor = 'zoom' in currentDocument.documentElement.style && !isSafari() ? params.relativeFontSize / 100 : 1;
     let margin = 40;
     let divWidth = 512;
     if (screenWidth <= divWidth) {
@@ -363,7 +363,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     };
     // Note that since Chromium 128 getBoundingClientRect() now returns zoom-adjusted values, but if this is the case,
     // then currentCSSZoom will be defined as well, so we can adjust for this. Note that UWP also requires adjustment.
-    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom || isSafari()) {
+    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom) {
         linkRect.top = linkRect.top / zoomFactor;
         linkRect.bottom = linkRect.bottom / zoomFactor;
         linkRect.left = linkRect.left / zoomFactor;
