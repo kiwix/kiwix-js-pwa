@@ -363,7 +363,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     };
     // Note that since Chromium 128 getBoundingClientRect() now returns zoom-adjusted values, but if this is the case,
     // then currentCSSZoom will be defined as well, so we can adjust for this. Note that UWP also requires adjustment.
-    if (/UWP/.test(params.appType) || anchor.currentCSSZoom) {
+    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom) {
         linkRect.top = linkRect.top / zoomFactor;
         linkRect.bottom = linkRect.bottom / zoomFactor;
         linkRect.left = linkRect.left / zoomFactor;
@@ -373,7 +373,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     // Initially position the div 20px above the link
     const spacing = 20;
     let triangleDirection = 'top';
-    let divOffsetHeight = div.offsetHeight + spacing;
+    const divOffsetHeight = div.offsetHeight + spacing;
     let divRectY = linkRect.top - divOffsetHeight;
     let triangleY = divHeight + 6;
     // If we're less than half margin from the top, move the div below the link
