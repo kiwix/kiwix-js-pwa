@@ -363,7 +363,7 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     };
     // Note that since Chromium 128 getBoundingClientRect() now returns zoom-adjusted values, but if this is the case,
     // then currentCSSZoom will be defined as well, so we can adjust for this. Note that UWP also requires adjustment.
-    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom) {
+    if (/UWP/.test(params.appType) || 'MSBlobBuilder' in window || anchor.currentCSSZoom || isSafari()) {
         linkRect.top = linkRect.top / zoomFactor;
         linkRect.bottom = linkRect.bottom / zoomFactor;
         linkRect.left = linkRect.left / zoomFactor;
