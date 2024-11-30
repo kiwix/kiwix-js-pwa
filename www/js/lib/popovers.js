@@ -353,7 +353,14 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     // DEV: We need to insert the div into the target document before we can obtain its computed dimensions accurately
     currentDocument.body.appendChild(div);
     // Calculate the position of the link that is being hovered
-    const linkRect = anchor.getBoundingClientRect().toJSON();
+    const rect = anchor.getBoundingClientRect();
+    const linkRect = {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+        width: rect.width
+    };
     // Note that since Chromium 128 getBoundingClientRect() now returns zoom-adjusted values, but if this is the case,
     // then currentCSSZoom will be defined as well, so we can adjust for this. Note that UWP also requires adjustment.
     if (/UWP/.test(params.appType) || anchor.currentCSSZoom) {
