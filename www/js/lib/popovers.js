@@ -373,9 +373,8 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     // Initially position the div 20px above the link
     const spacing = 20;
     let triangleDirection = 'top';
-    const divOffsetHeight = /UWP/.test(params.appType) ? div.offsetHeight / zoomFactor + spacing : div.offsetHeight + spacing;
+    let divOffsetHeight = div.offsetHeight + spacing;
     let divRectY = linkRect.top - divOffsetHeight;
-    if (/UWP/.test(params.appType)) divRectY = divRectY * 100 / params.relativeFontSize;
     let triangleY = divHeight + 6;
     // If we're less than half margin from the top, move the div below the link
     if (divRectY < margin / 2) {
