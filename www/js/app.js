@@ -414,6 +414,7 @@ function printCleanup () {
         // We don't need a radical cleanup because there was no printIntercept
         removePageMaxWidth();
         setTab();
+        setArticleZoom(params.relativeFontSize);
         params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
         if (document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked) {
             // It seems darkReader has been auto-turned on, so we need to respect that
@@ -522,6 +523,8 @@ function printIntercept () {
         removePageMaxWidth();
         params.removePageMaxWidth = tempPageMaxWidth;
     }
+    // Reset zoom level to 100%
+    setArticleZoom(100);
     // Put doc into light mode
     params.cssTheme = 'light';
     switchCSSTheme();
@@ -688,38 +691,39 @@ document.getElementById('btnForward').addEventListener('click', function () {
     history.forward();
 });
 document.getElementById('btnZoomin').addEventListener('click', function () {
-    params.relativeFontSize += 5;
-    var doc = document.getElementById('articleContent').contentDocument;
-    var docElStyle = doc.documentElement.style;
-    // IE11 and Firefox need to use fontSize on the body style
-    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
-    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle;
-    docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
-    var lblZoom = document.getElementById('lblZoom');
-    lblZoom.innerHTML = params.relativeFontSize + '%';
-    lblZoom.style.cssText = 'position:absolute;right:' + window.innerWidth / 5 + 'px;bottom:50px;z-index:50;';
-    setTimeout(function () {
-        lblZoom.innerHTML = '';
-    }, 2000);
-    settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
-    document.getElementById('articleContent').contentWindow.focus();
+    params.relativeFontSize = Math.min(200, params.relativeFontSize + 5);
+    setArticleZoom(params.relativeFontSize, true);
 });
 document.getElementById('btnZoomout').addEventListener('click', function () {
-    params.relativeFontSize -= 5;
-    var doc = document.getElementById('articleContent').contentDocument;
-    var docElStyle = doc.documentElement.style;
-    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
-    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle;
-    docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
-    var lblZoom = document.getElementById('lblZoom');
-    lblZoom.innerHTML = params.relativeFontSize + '%';
-    lblZoom.style.cssText = 'position:absolute;right:' + window.innerWidth / 4 + 'px;bottom:50px;z-index:50;';
-    setTimeout(function () {
-        lblZoom.innerHTML = '';
-    }, 2000);
-    settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
-    document.getElementById('articleContent').contentWindow.focus();
+    params.relativeFontSize = Math.max(50, params.relativeFontSize - 5);
+    setArticleZoom(params.relativeFontSize, true);
 });
+let zoomLabelTimeout;
+function setArticleZoom (zoomLevel, set) {
+    const root = articleDocument.documentElement || articleDocument;
+    const percentageFontSize = zoomLevel + '%';
+    // Set CSS fontSize and zoom if supported
+    // Note that the zoom property is supported in Firefox since May 2024, but it doesn't
+    // scale the font size at least in Wikipedia pages, so we need to set fontSize as well
+    root.style.fontSize = percentageFontSize;
+    if ('zoom' in root.style) {
+        root.style.zoom = percentageFontSize;
+    }
+    // If we are setting a value from the UI, update the display and settings
+    if (set) {
+        // Update zoom label
+        const lblZoom = document.getElementById('lblZoom');
+        lblZoom.innerHTML = percentageFontSize;
+        lblZoom.style.cssText = 'position:absolute;right:' + window.innerWidth / 4 + 'px;bottom:50px;z-index:50;';
+        // Clear and set timeout to hide zoom label
+        if (zoomLabelTimeout) clearTimeout(zoomLabelTimeout);
+        zoomLabelTimeout = setTimeout(function () {
+            lblZoom.innerHTML = '';
+        }, 2500);
+            settingsStore.setItem('relativeFontSize', zoomLevel, Infinity);
+            document.getElementById('articleContent').contentWindow.focus();
+    }
+}
 setRelativeUIFontSize(params.relativeUIFontSize);
 document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function () {
     setRelativeUIFontSize(this.value);
@@ -5427,13 +5431,7 @@ var articleLoadedSW = function (dirEntry, container) {
         if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
         if (appstate.selectedArchive.zimType === 'open') {
             // Set relative font size + Stackexchange-family multiplier
-            var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? 'desktop' : 'mobile';
-            zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? 'desktop-stx' : zimType; // Support stackexchange
-            zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? 'mobile' : zimType;
-            var docElStyle = doc.documentElement.style;
-            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
-            docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
-            docElStyle[zoomProp] = ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
+            setArticleZoom(params.relativeFontSize);
             if (!params.isLandingPage) openAllSections();
         }
         checkToolbar();
@@ -6626,11 +6624,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 setupTableOfContents();
             }
-            // Set relative font size + Stackexchange-family multiplier
-            var docElStyle = articleDocument.style;
-            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
-            docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
-            docElStyle[zoomProp] = zimType && ~zimType.indexOf('stx') && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + '%' : params.relativeFontSize + '%';
+            // Set relative font size
+            setArticleZoom(params.relativeFontSize);
             // Set page width according to user preference
             removePageMaxWidth();
             setupHeadings();
