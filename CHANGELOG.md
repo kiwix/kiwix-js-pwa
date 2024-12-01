@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.4.9
+## Interim release 3.4.91
 
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
@@ -8,6 +8,7 @@
 * ENHANCEMENT: Disabled reload protection if app has persistent access to storage via FSA API
 * ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
 * ENHANCEMENT: Better styling for popovers in dark mode
+* INFO: If main Kiwix download server is inaccessible, app now provides a list of mirrors
 * FIX: Popovers now take into account the zoom factor on latest browsers with new support for `zoom`
 * FIX: PWA can now update without user having to exit the app (with user gesture or automatically in Electron)
 * FIX: If user hasn't dismissed the splashscreen then it is shown again after a refresh
