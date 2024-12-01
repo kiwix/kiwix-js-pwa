@@ -74,7 +74,7 @@ let imageDisplay = 'all';
 
 // Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpKiwixDownloadLinks = /download\.kiwix\.org|api\.github\.com/i;
+const regexpkiwixDownloadServers = /download\.kiwix\.org|api\.github\.com/i;
 
 /**
  * A global Boolean that records whether the ReplayWorker is available
@@ -379,7 +379,7 @@ self.addEventListener('fetch', function (event) {
         if (!(regexpZIMUrlWithNamespace.test(strippedUrl) && /\.zim\//i.test(strippedUrl))) return;
     }
     // Don't cache download links
-    if (regexpKiwixDownloadLinks.test(rqUrl)) return;
+    if (regexpkiwixDownloadServers.test(rqUrl)) return;
     // Select cache depending on request format
     var cache = /\.zim\//i.test(strippedUrl) ? ASSETS_CACHE : APP_CACHE;
     cache = /youtube|vimeo/i.test(strippedUrl) ? ASSETS_CACHE : cache;

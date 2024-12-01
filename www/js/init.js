@@ -81,8 +81,9 @@ params['cachedStartPages'] = {
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
-params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/'; // Include final slash
-params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
+params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
+params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
+params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 // params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-pwa/dist/'; // Test server

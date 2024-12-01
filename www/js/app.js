@@ -1719,7 +1719,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
-    kiwixServe.requestXhttpData(params.kiwixDownloadLink);
+    kiwixServe.requestXhttpData(params.kiwixDownloadServer);
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {

@@ -725,12 +725,12 @@ function verifyPermission (fileHandle, withWrite) {
  * Download an archive directly into the picked folder (primarily for use with the Origin Private File System)
  *
  * @param {String} archiveName The name of the archive to download (will be used as the filename)
- * @param {String} archiveUrl An optional URL to download the archive from (if not supplied, will use params.kiwixDownloadLink)
+ * @param {String} archiveUrl An optional URL to download the archive from (if not supplied, will use params.kiwixDownloadServer)
  * @param {Function} callback Callback function to report the progress of the download
  * @returns {Promise<FileSystemFileHandle>} A Promise for a FileHandle object representing the downloaded file
  */
 function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
-    archiveUrl = archiveUrl || params.kiwixDownloadLink + archiveName;
+    archiveUrl = archiveUrl || params.kiwixDownloadServer + archiveName;
     if (params.pickedFolder && params.pickedFolder.getFileHandle) {
         return verifyPermission(params.pickedFolder, true).then(function (permission) {
             if (permission) {

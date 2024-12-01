@@ -478,7 +478,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var header = document.getElementById('dl-panel-heading');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
-            if (~URL.indexOf(params.kiwixHiddenDownloadLink)) {
+            if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
                 headerDoc = 'This file is only available via browser-managed download:';
                 altURL = requestedURL.replace(/\/master\./i, '/mirror.');
             }
@@ -490,7 +490,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
-            (~URL.indexOf(params.kiwixHiddenDownloadLink) ? ''
+            (~URL.indexOf(params.kiwixhiddenDownloadServer) ? ''
                 : '<p><b>Download with bittorrent:</b></p>' +
                 '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
             body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
@@ -515,8 +515,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         } else {
             downloadLinks.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
                 '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
-                '<p>You can either try again or else open this link in a new browser window:<br />' +
-                '<a href="' + params.kiwixDownloadLink + '"' + target + '>' + params.kiwixDownloadLink + '</a></p><br /></span>';
+                '<p>You can either try again or else open one of these mirror links in a new browser window:</p><ul>';
+            params.kiwixDownloadMirrors.forEach(function (mirror) {
+                downloadLinks.innerHTML += '<li><a href="' + mirror + '"' + target + '>' + mirror + '</a></li>';
+            });
+            downloadLinks.innerHTML += '</ul></span><br />';
         }
         downloadLinks.style.display = 'block';
     }
@@ -938,14 +941,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 var dateID = dateSel ? dateSel.value : '';
                 var subjID = subjSel ? subjSel.value : '';
                 var replaceURL = URL + this.dataset.kiwixDl;
-                replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
-                replaceURL = /(archive)\//.test(this.text) ? params.kiwixDownloadLink.replace(/\/zim\//, '/archive/zim/') : replaceURL;
+                replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixhiddenDownloadServer + '.hidden/' + this.text : replaceURL;
+                replaceURL = /(archive)\//.test(this.text) ? params.kiwixDownloadServer.replace(/\/zim\//, '/archive/zim/') : replaceURL;
                 // Allow both zim and zip format
                 if (/\.zi[mp]$/i.test(this.dataset.kiwixDl)) {
                     replaceURL = replaceURL + '.meta4';
                 } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
                     replaceURL = URL.replace(/\/[^/]*\/$/i, '/');
-                    replaceURL = replaceURL.replace(params.kiwixHiddenDownloadLink, params.kiwixDownloadLink);
+                    replaceURL = replaceURL.replace(params.kiwixhiddenDownloadServer, params.kiwixDownloadServer);
                     replaceURL = replaceURL.replace(/\.hidden\//, '');
                     replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
                 } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
