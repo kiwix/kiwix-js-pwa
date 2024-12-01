@@ -34,7 +34,9 @@ window.onerror = function (msg, url, line, col, error) {
 
 // Set a beforeUnload handler to prevent app reloads without confirmation if a ZIM file is loaded
 window.addEventListener('beforeunload', function (event) {
-    if (params.interceptBeforeUnload && !params.useOPFS && appstate && appstate.selectedArchive && params.appCache && !/Electron/.test(params.appType)) {
+    if (params.interceptBeforeUnload && !params.useOPFS && params.appCache && !/UWP|Electron/.test(params.appType)) {
+        if (!appstate.selectedArchive) return; // No need to intercept if no archive is loaded
+        if (params.pickedFile || params.pickedFolder) return; // No need to intercept if we have FS access to a file or folder
         var confirmationMessage = 'Warning: you may have to reload the ZIM archive if you leave this page!';
         event.preventDefault();
         // Included for legacy support, e.g. Chrome/Edge < 119
