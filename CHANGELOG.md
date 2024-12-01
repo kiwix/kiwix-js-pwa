@@ -5,6 +5,7 @@
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
+* ENHANCEMENT: Disabled reload protection if app has persistent access to storage via FSA API
 * ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
 * ENHANCEMENT: Better styling for popovers in dark mode
 * FIX: Popovers now take into account the zoom factor on latest browsers with new support for `zoom`
