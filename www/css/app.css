@@ -394,6 +394,12 @@ footer .btn-xs {
     background: rgba(34,34,34,0.8) !important;
 }
 
+.console {
+    font-size: medium;
+    font-weight:bold;
+    font-family:consolas,monospace;
+}
+
 pre {
     font-weight: bold;
 }

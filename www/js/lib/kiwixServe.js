@@ -513,13 +513,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Add event listener for click on return link, to go back to list of archives
             document.getElementById('returnLink').addEventListener('click', submitSelectValues);
         } else {
-            downloadLinks.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
+            downloadLinks.innerHTML = '<div class="console">' +
                 '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
-                '<p>You can either try again or else open one of these mirror links in a new browser window:</p><ul>';
+                '<p>Try one of these mirror links (opens in a new browser window):</p><ul>';
             params.kiwixDownloadMirrors.forEach(function (mirror) {
-                downloadLinks.innerHTML += '<li><a href="' + mirror + '"' + target + '>' + mirror + '</a></li>';
+                downloadLinks.innerHTML += '<li class="console"><a href="' + mirror + '"' + target + '>' + mirror.replace(/^([^/]+\/\/[^/]+).*/, '$1') + '</a></li>';
             });
-            downloadLinks.innerHTML += '</ul></span><br />';
+            downloadLinks.innerHTML += '</ul></div><br />';
         }
         downloadLinks.style.display = 'block';
     }
