@@ -517,7 +517,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
                 '<p>Try one of these mirror links (opens in a new browser window):</p><ul>';
             params.kiwixDownloadMirrors.forEach(function (mirror) {
-                downloadLinks.innerHTML += '<li class="console"><a href="' + mirror + '"' + target + '>' + mirror.replace(/^([^/]+\/\/[^/]+).*/, '$1') + '</a></li>';
+                downloadLinks.innerHTML += '<li class="console"><a href="' + mirror + '" target="_blank">' + mirror.replace(/^([^/]+\/\/[^/]+).*/, '$1') + '</a></li>';
             });
             downloadLinks.innerHTML += '</ul></div><br />';
         }
