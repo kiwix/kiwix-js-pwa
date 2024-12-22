@@ -200,6 +200,7 @@ const precacheFiles = [
     'www/js/lib/images.js',
     'www/js/lib/kiwixServe.js',
     'www/js/lib/popovers.js',
+    'www/js/lib/resetApp.js',
     'www/js/lib/settingsStore.js',
     'www/js/lib/transformStyles.js',
     'www/js/lib/transformZimit.js',
