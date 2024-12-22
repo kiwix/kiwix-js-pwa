@@ -4,7 +4,6 @@
 
 * ENHANCEMENT: Prevent accidental app reload if an archive is loaded
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
-* ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
 * ENHANCEMENT: Better styling for popovers in dark mode
 * INFO: If main Kiwix download server is inaccessible, app now provides a list of mirrors
 * INFO: Added info to README regarding the fact that nightly builds are unsigned 
