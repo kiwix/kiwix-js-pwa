@@ -170,6 +170,7 @@
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
+    <Content Include="www\js\lib\resetApp.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
     <Content Include="www\js\lib\transformStyles.js" />
