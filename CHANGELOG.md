@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.4.91
+## Interim release 3.5.1
 
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
