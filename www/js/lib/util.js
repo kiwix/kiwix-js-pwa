@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿/**
  * util.js : Utility functions
  *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
@@ -487,7 +487,13 @@ function Hilitor (node, tag) {
                 if (appstate.isReplayWorkerAvailable) {
                     iframeWindow = document.getElementById('articleContent').contentDocument.getElementById('replay_iframe').contentWindow;
                 }
-                var scrollOffset = hilitedNodes[start].offsetTop - window.innerHeight / 4;
+                var root = iframeWindow.document.documentElement;
+                var zoomFactor = 'zoom' in root.style && params.relativeFontSize && !window.MSBlobBuilder
+                    ? params.relativeFontSize / 100 : 1;
+                // Convert both the element position and viewport height to zoomed coordinates
+                var elementPosition = hilitedNodes[start].offsetTop * zoomFactor;
+                var viewportOffset = window.innerHeight / 4;
+                var scrollOffset = elementPosition - viewportOffset;
                 if ('scrollBehavior' in document.documentElement.style) {
                     iframeWindow.scrollTo({
                         top: scrollOffset,
