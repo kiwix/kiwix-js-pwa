@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.5.1
+## Interim release 3.5.2
 
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
@@ -12,7 +12,9 @@
 * FIX: Popovers now take into account the zoom factor on latest browsers with new support for `zoom`
 * FIX: PWA can now update without user having to exit the app (with user gesture or automatically in Electron)
 * FIX: If user hasn't dismissed the splashscreen then it is shown again after a refresh
-* FIX: When printing, the zoom level of the article is temporarily reset for more predictable results 
+* FIX: When printing, the zoom level of the article is temporarily reset for more predictable results
+* FIX: Handle navigation correctly in new DevDoc ZIMs
+* REGRESSION: Search now takes into account any article zoom level 
 * REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
 * DEV: Reset options are now in separate module to avoid circular dependencies
 
