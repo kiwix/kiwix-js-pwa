@@ -5344,7 +5344,7 @@ function filterClickEvent (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
-            if (!/^(?:#|javascript)/i.test(decHref)) {
+            if (!/^(?:#|javascript|null)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
                 // an event listener attached. For example, links in popovers in external windows. UWP doesn't allow access to the contents
