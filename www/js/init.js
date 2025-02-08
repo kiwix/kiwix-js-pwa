@@ -108,7 +108,7 @@ params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == t
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
-params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not
+params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps

@@ -703,12 +703,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Remove unused README file
             doc = doc.replace(/^<a\s+href\b[^<]+README.+$[\r\n]*/m, '');
         }
-        // Add in some directories from hidden
+        // Add in some directories for developers (other than custom_apps)
         if (/wikipedia\//.test(doc)) {
-            doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">archive/</a>    $3$1$2$3');
+            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">archive/</a>    $3$1$2$3');
             doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">custom_apps/</a>$3$1$2$3');
-            doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">dev/</a>        $3$1$2$3');
-            doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
+            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">dev/</a>        $3$1$2$3');
+            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
         }
         var stDoc; // Placeholder for standardized doc to be used to get arrays
         if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
