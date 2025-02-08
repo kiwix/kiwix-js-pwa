@@ -331,13 +331,14 @@ function createNewKiwixPopoverCointainer (win, anchor, event) {
     const linkHref = anchor.getAttribute('href');
     const currentDocument = win.document;
     div.popoverisloading = true;
-    const screenWidth = win.innerWidth - 40;
-    const screenHeight = document.documentElement.clientHeight;
     let zoomFactor = 'zoom' in currentDocument.documentElement.style && !isSafari() ? params.relativeFontSize / 100 : 1;
+    // Account for zoom when calculating available screen width
+    const screenWidth = (win.innerWidth - 40) / zoomFactor;
+    const screenHeight = document.documentElement.clientHeight;
     let margin = 40;
-    let divWidth = 512;
-    if (screenWidth <= divWidth) {
-        divWidth = screenWidth;
+    // Base width scaled by zoom factor
+    const divWidth = Math.min(512, screenWidth);
+    if (screenWidth <= 512) {
         margin = 10;
     }
     // Check if we have restricted screen height
