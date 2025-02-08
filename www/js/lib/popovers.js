@@ -99,20 +99,26 @@ function getArticleLede (href, baseUrl, articleDocument, archive) {
 
 // Helper function to clean up the lede content
 function cleanUpLedeContent (node) {
-    // Define an array of exclusion filters (note .exclude-this-class is a dummy class as an example)
+    // Define an array of exclusion filters
+    // (note `.exclude-this-class` is a dummy class used as an example for any future exclusion filters)
     const exclusionFilters = ['#pcs-edit-section-title-description', '.exclude-this-class'];
-    // Construct the :not() selector string
+    // Construct the `:not()` CSS exclusion selector list
     const notSelector = exclusionFilters.map(filter => `:not(${filter})`).join('');
+
     // Remove all standalone style elements from the given DOM node, because their content is shown by innerText and textContent
     const styleElements = Array.from(node.querySelectorAll('style'));
     styleElements.forEach(style => {
         style.parentNode.removeChild(style);
     });
-    // Apply the style-based exclusion filters to remove unwanted paragraphs
+    // Apply this style-based exclusion filter to remove unwanted paragraphs in the popover
     const paragraphs = Array.from(node.querySelectorAll(`p${notSelector}`));
+
     // Filter out empty paragraphs or those with less than 50 characters
     const parasWithContent = paragraphs.filter(para => {
-        const text = para.innerText.trim();
+        // DEV: Note that innerText is not supported in Firefox OS, so we need to use textContent as a fallback
+        // The reason we prefer innerText is that it strips out hidden text and unnecessary whitespace, which is not the case with textContent
+        const innerText = para.innerText ? para.innerText : para.textContent;
+        const text = innerText.trim();
         return !/^\s*$/.test(text) && text.length >= 50;
     });
     return parasWithContent;
@@ -125,7 +131,8 @@ function fillBalloonString (paras, baseURL, pathPrefix) {
     // Add enough paras to complete the word count
     for (let i = 0; i < paras.length; i++) {
         // Get the character count: to fill the larger box we need ~850 characters (815 plus leeway)
-        const plainText = paras[i].innerText;
+        // DEV: Note that innerText is not supported in Firefox OS, so we need to use textContent as a fallback
+        const plainText = paras[i].innerText ? paras[i].innerText : paras[i].textContent;
         cumulativeCharCount += plainText.length;
         // In ServiceWorker mode, we need to transform the URLs of any links in the paragraph
         if (params.contentInjectionMode === 'serviceworker') {
@@ -138,8 +145,8 @@ function fillBalloonString (paras, baseURL, pathPrefix) {
                 }
             });
         }
-        // Get the transformed HTML. Note that in Safe mode, we risk breaking the UI if user clicks on an
-        // embedded link, so only use innerText in that case
+        // Get the transformed HTML. Note that in Restricted mode, we risk breaking the UI if user clicks on an
+        // embedded link, so only use plainText in that case
         const content = params.contentInjectionMode === 'jquery' ? plainText
             : paras[i].innerHTML;
         concatenatedText += '<p>' + content + '</p>';
