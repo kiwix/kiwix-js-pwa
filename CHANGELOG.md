@@ -1,5 +1,11 @@
 # Changelog
 
+## Interim release 3.5.41
+
+* FIX: Fix popover width scaling when `zoom` attribute is set
+* FIX: Support older Firefox versions when creating popovers
+* DEV: Developer directories are no longer shown in the download library
+
 ## Release 3.5.3 / 3.5.4
 
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
