@@ -2,19 +2,17 @@
 
 ## Release 3.5.5 / 3.5.6-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2025-02`
+* INFO: If main Kiwix download server is inaccessible, app now provides a list of mirrors
 * ENHANCEMENT: Prevent accidental app reload if an archive is loaded
-* ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
-* ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
 * ENHANCEMENT: Disabled reload protection if app has persistent access to storage via FSA API
 * ENHANCEMENT: Prominent "Download now" button in library if OPFS is enabled
 * ENHANCEMENT: Better styling for popovers in dark mode
-* INFO: If main Kiwix download server is inaccessible, app now provides a list of mirrors
 * FIX: Popovers now take into account the zoom factor on latest browsers with new support for `zoom`
 * FIX: PWA can now update without user having to exit the app (with user gesture or automatically in Electron)
 * FIX: If user hasn't dismissed the splashscreen then it is shown again after a refresh
 * FIX: When printing, the zoom level of the article is temporarily reset for more predictable results
-* FIX: Handle navigation correctly in new DevDoc ZIMs
 * FIX: Fix popover width scaling when `zoom` attribute is set
 * FIX: Support older Firefox versions when creating popovers
 * REGRESSION: Search now takes into account any article zoom level 
