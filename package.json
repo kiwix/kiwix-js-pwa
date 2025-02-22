@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikivoyage",
   "productName": "Wikivoyage by Kiwix",
-  "version": "3.4.4-E",
+  "version": "3.5.6-E",
   "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
