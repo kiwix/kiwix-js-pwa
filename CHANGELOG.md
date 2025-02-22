@@ -1,13 +1,8 @@
 # Changelog
 
-## Interim release 3.5.41
+## Release 3.5.5 / 3.5.6-Wikivoyage
 
-* FIX: Fix popover width scaling when `zoom` attribute is set
-* FIX: Support older Firefox versions when creating popovers
-* DEV: Developer directories are no longer shown in the download library
-
-## Release 3.5.3 / 3.5.4
-
+* ENHANCEMENT: Prevent accidental app reload if an archive is loaded
 * ENHANCEMENT: App now prompts user to switch to OPFS on Android and Firefox Desktop
 * ENHANCEMENT: App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota
 * ENHANCEMENT: Add option in Configuration to disable accidental reload protection
@@ -20,13 +15,12 @@
 * FIX: If user hasn't dismissed the splashscreen then it is shown again after a refresh
 * FIX: When printing, the zoom level of the article is temporarily reset for more predictable results
 * FIX: Handle navigation correctly in new DevDoc ZIMs
+* FIX: Fix popover width scaling when `zoom` attribute is set
+* FIX: Support older Firefox versions when creating popovers
 * REGRESSION: Search now takes into account any article zoom level 
 * REGRESSION: Fix build of Win7 32bit app with wrong Electron version and block autoupdate
+* DEV: Developer directories are no longer shown in the download library
 * DEV: Reset options are now in separate module to avoid circular dependencies
-
-## Release 3.4.5 / 3.4.6
-
-* ENHANCEMENT: Prevent accidental app reload if an archive is loaded
 
 ## Release 3.4.3 / 3.4.4-Wikivoyage
 
