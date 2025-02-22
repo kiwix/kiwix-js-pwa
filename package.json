@@ -1,13 +1,13 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "3.5.41-E",
-  "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
+  "name": "kiwix-js-wikivoyage",
+  "productName": "Wikivoyage by Kiwix",
+  "version": "3.4.4-E",
+  "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikivoyage",
+    "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "../electron_icons"
@@ -74,12 +74,6 @@
           "arch": [
             "x64"
           ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
         }
       ],
       "category": "Education"
@@ -96,8 +90,8 @@
     },
     "appx": {
       "backgroundColor": "transparent",
-      "displayName": "Kiwix JS",
-      "identityName": "Kiwix.KiwixJS",
+      "displayName": "Wikivoyage by Kiwix",
+      "identityName": "Kiwix.WikivoyagebyKiwix",
       "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, S=Canton of Vaud, C=CH",
       "publisherDisplayName": "Association Kiwix",
       "languages": "en-GB",
@@ -142,7 +136,11 @@
   "repository": "https://github.com/kiwix/kiwix-js-pwa",
   "keywords": [
     "Kiwix",
+    "Wikivoyage",
     "offline",
+    "travel",
+    "guide",
+    "tourism",
     "Wikipedia",
     "ZIM",
     "reader"
