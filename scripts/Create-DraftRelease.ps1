@@ -181,8 +181,8 @@ if ($buildalluwp) { $plus_electron = $true }
 if ($text_tag -eq '') { $text_tag = 'Windows' }
 # Put the dash back in the tag name
 if (-not $plus_electron) {
-  $tag_name = $tag_name -replace '-?([EN])', '-$1'
-  $base_tag = $base_tag -replace '-?([EN])', '-$1'
+  $tag_name = $tag_name -creplace '-?([EN])', '-$1'
+  $base_tag = $base_tag -creplace '-?([EN])', '-$1'
 }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix UWP $base_tag" }
