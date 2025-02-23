@@ -1,6 +1,6 @@
 ## Portable and installable builds for UWP and Electron
 
-Wikiovyage by Kiwix is an offline travel guide featuring more than 32,000 destinations worldwide. It contains the English-language content, including images, of the [Wikivoyage](https://www.wikivoyage.org/) online wiki, Wikipedia's official sister site. Other languages can be downloaded within the app.
+Wikiovyage by Kiwix is an offline travel guide featuring more than 33,000 destinations worldwide. It contains the English-language content, including images, of the [Wikivoyage](https://www.wikivoyage.org/) online wiki, Wikipedia's official sister site. Other languages can be downloaded within the app.
 
 ![Wikivoyage_refresh](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/c7c45ba6-169f-4e2e-95d7-aa5343ac3461)
 
