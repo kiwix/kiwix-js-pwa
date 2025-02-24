@@ -202,6 +202,12 @@ if (params.navButtonsPos === 'top') {
     btnRandomAlt.id = 'btnRandomArticle';
     btnRandom.style.display = 'none';
     btnRandomAlt.style.display = 'inline';
+    var btnToggleTheme = document.getElementById('btnToggleTheme');
+    var btnToggleThemeAlt = document.getElementById('btnToggleThemeAlt');
+    btnToggleTheme.id = 'btnToggleThemeAlt';
+    btnToggleThemeAlt.id = 'btnToggleTheme';
+    btnToggleTheme.style.display = 'none';
+    btnToggleThemeAlt.style.display = 'inline';
 }
 
 // Process pointerup events (used for checking if mouse back / forward buttons have been clicked)
@@ -637,6 +643,22 @@ document.getElementById('btnRandomArticle').addEventListener('click', function (
     setTab('btnRandomArticle');
     // Re-enable top-level scrolling
     goToRandomArticle();
+});
+
+document.getElementById('btnToggleTheme').addEventListener('click', function () {
+    var determinedTheme = cssUIThemeGetOrSet(params.cssUITheme, true);
+    var desiredTheme = determinedTheme === 'light' ? 'dark' : 'light';
+    var themeToggle = document.getElementById('cssUIDarkThemeCheck');
+    // This is a tri-state switch, so we may need to click up to three times
+    themeToggle.click();
+    determinedTheme = cssUIThemeGetOrSet(params.cssUITheme, true);
+    if (determinedTheme !== desiredTheme) {
+        themeToggle.click();
+    }
+    determinedTheme = cssUIThemeGetOrSet(params.cssUITheme, true);
+    if (determinedTheme !== desiredTheme) {
+        themeToggle.click();
+    }
 });
 
 document.getElementById('btnRescanDeviceStorage').addEventListener('click', function () {

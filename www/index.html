@@ -252,6 +252,7 @@
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
                                         <a class="btn btn-primary" title="Ctrl-Shift-F or Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
                                         <a class="btn btn-primary" title="Random Article" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span></a>
+                                        <a class="btn btn-primary" title="Switch between light and dark modes" id="btnToggleTheme"><span class="glyphicon glyphicon-adjust"></span></a>
                                         <a class="btn btn-primary" title="Settings" id="btnConfigure"><span class="glyphicon glyphicon-wrench"></span></a>
                                         <a class="btn btn-primary" title="About" id="btnAbout" style="margin-right:5px;"><span class="glyphicon glyphicon-info-sign"></span></a>
                                     </span>
@@ -603,7 +604,7 @@
                     </p>
                     <p>
                         <b><i>Help! - when I click on an external link it gets blocked!</i></b> Don't panic, this is the Content Security Policy potecting you. You have probably activated Service Worker mode. To open
-                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in Service Worker mode). In Restricted mode, external links will open in a new tab/window regardliness of this
+                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in ServiceWorker mode). In Restricted mode, external links will open in a new tab/window regardliness of this
                         setting. Additionally, please note that your browser's <b>popup blocker</b> may be interfering with options that open new tabs or windows. When asked, enable popups always for the app
                         (if you trust Kiwix), and then reload the app. 
                     </p>
@@ -1348,6 +1349,7 @@
                     <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                     <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                     <a class="btn btn-default col-xs-2" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><span class="glyphicon glyphicon-random"></span></a>
+                    <a class="btn btn-default col-xs-2" id="btnToggleThemeAlt" title="Switch between light and dark modes"><span class="glyphicon glyphicon-adjust"></span></a>
                     <div class="dropup">
                         <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>&nbsp;ToC&nbsp;</b>
