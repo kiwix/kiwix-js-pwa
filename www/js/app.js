@@ -2372,6 +2372,26 @@ document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('cha
     }
     params.cssThemeOriginal = null;
 });
+document.getElementById('triStateThemeRandomBtnCheck').addEventListener('click', function () {
+    if (this.readOnly) this.checked = this.readOnly = false;
+    else if (!this.checked) this.readOnly = this.indeterminate = true;
+    params.displayThemeOrRandomButtons = this.indeterminate ? 'both' : this.checked ? 'random' : 'theme';
+    settingsStore.setItem('displayThemeOrRandomButtons', params.displayThemeOrRandomButtons, Infinity);
+    document.getElementById('triStateThemeRandomBtnState').innerHTML = params.displayThemeOrRandomButtons;
+    toggleThemeOrRandomButtons();
+});
+function toggleThemeOrRandomButtons() {
+    var btnToggleTheme = document.getElementById('btnToggleTheme');
+    var btnRandom = document.getElementById('btnRandomArticle');
+    btnToggleTheme.style.display = 'inline';
+    btnRandom.style.display = 'inline';
+    if (params.displayThemeOrRandomButtons === 'random') {
+        btnToggleTheme.style.display = 'none';
+    } else if (params.displayThemeOrRandomButtons === 'theme') {
+        btnRandom.style.display = 'none';
+    }
+}
+toggleThemeOrRandomButtons();
 
 function cssUIThemeGetOrSet (value, getOnly) {
     if (value === 'auto') {

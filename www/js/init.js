@@ -101,6 +101,7 @@ params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('
 params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; // Set default to true to use cached CSS, false to use Zim only
 params['cssTheme'] = getSetting('cssTheme') || 'light'; // Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; // Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
+params['displayThemeOrRandomButtons'] = getSetting('displayThemeOrRandomButtons') != null ? getSetting('displayThemeOrRandomButtons') : 'theme'; // theme | random | both
 params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') == true; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; // Set default to display images from Zim
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; // Makes dataURIs by default instead of BLOB URIs for images
@@ -264,6 +265,10 @@ document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.
 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme == 'darkReader';
+document.getElementById('triStateThemeRandomBtnCheck').checked = params.displayThemeOrRandomButtons === 'random';
+document.getElementById('triStateThemeRandomBtnCheck').indeterminate = params.displayThemeOrRandomButtons === 'both';
+document.getElementById('triStateThemeRandomBtnCheck').readOnly = params.displayThemeOrRandomButtons === 'both';
+document.getElementById('triStateThemeRandomBtnState').innerHTML = params.displayThemeOrRandomButtons;
 document.getElementById('resetDisplayOnResizeCheck').checked = params.resetDisplayOnResize;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
