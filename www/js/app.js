@@ -2380,7 +2380,7 @@ document.getElementById('triStateThemeRandomBtnCheck').addEventListener('click',
     document.getElementById('triStateThemeRandomBtnState').innerHTML = params.displayThemeOrRandomButtons;
     toggleThemeOrRandomButtons();
 });
-function toggleThemeOrRandomButtons() {
+function toggleThemeOrRandomButtons () {
     var btnToggleTheme = document.getElementById('btnToggleTheme');
     var btnRandom = document.getElementById('btnRandomArticle');
     btnToggleTheme.style.display = 'inline';
