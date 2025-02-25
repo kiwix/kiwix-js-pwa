@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -286,6 +286,7 @@
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#security">Security</a></li>
+                        <li><a href="#themes">Themes (dark and light)</a></li>
                         <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
@@ -435,6 +436,18 @@
                         <a href="#modes">Restricted mode</a> first, so you can check the validity of the content. Restricted mode prevents most dynamic content from running. When you
                         next open a trusted file, the app will automatically switch back to ServiceWorker mode. If you make a mistake, and accidentally trust a malicious ZIM, then you
                         should reset the app using the button in Configuration (and, of course, delete the ZIM).
+                    </p>
+                    <h3 id="themes">Themes (dark and light)</h3>
+                    <p>
+                        The default theme for the app is light. There are three dark themes available:
+                    </p>
+                    <ul>
+                        <li><b>Standard</b> - This is best for Wikimedia archives and provides a carefully designed dark theme that works well with Wikipedia, WikiMed, and other Wikimedia content</li>
+                        <li><b>Invert</b> - A generic inversion theme that re-inverts images to display them correctly</li>
+                        <li><b>DarkReader</b> - Uses a built-in DarkReader script, which works best for Zimit archives</li>
+                    </ul>
+                    <p>
+                        To toggle between basic light and dark modes, use the <span class="glyphicon glyphicon-adjust"></span> button in the top toolbar. For more fine-grained control over themes, including selecting specific dark themes, use the options in the <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page under "Display settings".
                     </p>
                     <h3 id="filehandling">File handling and File System access</h3>
                     <p>
