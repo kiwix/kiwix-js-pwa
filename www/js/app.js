@@ -2549,6 +2549,14 @@ function switchCSSTheme () {
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
+    // Remove the link element with id kiwixtooltipstylesheet
+    var kiwixTooltipStyleSheet = doc.getElementById('kiwixtooltipstylesheet');
+    if (kiwixTooltipStyleSheet) {
+        kiwixTooltipStyleSheet.disabled = true;
+        kiwixTooltipStyleSheet.parentNode.removeChild(kiwixTooltipStyleSheet);
+    }
+    // Set the kiwixtooltipstylesheet link element
+    popovers.attachKiwixPopoverCss(doc, determinedWikiTheme !== 'light');
     document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
 }
