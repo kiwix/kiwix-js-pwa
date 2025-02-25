@@ -2,9 +2,13 @@
 
 ## Interim release 3.5.41
 
+* ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes
 * FIX: Fix popover width scaling when `zoom` attribute is set
 * FIX: Support older Firefox versions when creating popovers
+* FIX: Repeated titles in Wikivoyage ZIMs made from the mobile-html API
+* FIX: Dark/light theme is now applied correctly to popovers as soon as the theme is switched
 * DEV: Developer directories are no longer shown in the download library
+* DEV: Correction of errors in Draft Release script and better feedback in workflow 
 
 ## Release 3.5.3 / 3.5.4
 
