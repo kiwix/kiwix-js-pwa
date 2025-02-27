@@ -25,3 +25,4 @@ null
 /scripts/master_key*
 *.ppk
 .hintrc
+CLAUDE.md
