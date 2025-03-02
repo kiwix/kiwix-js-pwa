@@ -154,6 +154,10 @@ div:not(.panel-success, .alert-message) {
     padding: 0px 1em !important;
 }
 
+#btnRandomArticle, #btnToggleTheme {
+    top: 2px;
+}
+
 #OPFSQuota {
     padding: 4px;
     width: -moz-fit-content;
