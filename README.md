@@ -145,7 +145,7 @@ However, if you plan to store your ZIM file on an SD card formatted as **FAT32**
 you will need to split the ZIM: see
 [file splitting instructions](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms).
 
-A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
+A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I contribute
 actively. Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and
 then Kiwix HTML5, which eventually became Kiwix JS. The port and further development of Kiwix JS PWA and other apps is by Geoffrey
 Kantaris. I can be contacted by email: egk10 at cam ac uk.
