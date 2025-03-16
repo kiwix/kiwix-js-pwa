@@ -11,7 +11,8 @@
 * FIX: Various typos in the app
 * UPDATE: Wikivoyage and WikiMed templates and associated info
 * DEV: Developer directories are no longer shown in the download library unless the app is in developer mode
-* DEV: Correction of errors in Draft Release script and better feedback in workflow 
+* DEV: Correction of errors in Draft Release script and better feedback in workflow
+* DEV: Update Vite to v6.2.2
 * DEV: Various security updates for dependencies
 
 ## Release 3.5.3 / 3.5.4
