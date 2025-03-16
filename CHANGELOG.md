@@ -1,14 +1,18 @@
 # Changelog
 
-## Interim release 3.5.41
+## Release 3.5.7 / 3.5.8
 
 * ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes
 * FIX: Fix popover width scaling when `zoom` attribute is set
 * FIX: Support older Firefox versions when creating popovers
 * FIX: Repeated titles in Wikivoyage ZIMs made from the mobile-html API
 * FIX: Dark/light theme is now applied correctly to popovers as soon as the theme is switched
-* DEV: Developer directories are no longer shown in the download library
+* FIX: Aligning of new UI icons
+* FIX: Various typos in the app
+* UPDATE: Wikivoyage and WikiMed templates and associated info
+* DEV: Developer directories are no longer shown in the download library unless the app is in developer mode
 * DEV: Correction of errors in Draft Release script and better feedback in workflow 
+* DEV: Various security updates for dependencies
 
 ## Release 3.5.3 / 3.5.4
 
