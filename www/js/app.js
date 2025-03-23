@@ -5008,9 +5008,23 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
  * @returns {Boolean} Always returns false for JQuery event handling
  */
 function handleTitleClick (event) {
-    var dirEntryId = decodeURIComponent(event.target.getAttribute('dirEntryId'));
+    event.preventDefault();
+    // User may have clicked on a child element of the list item if it contains HTML (for example, italics),
+    // so we may need to find the closest list item
+    let target = event.target;
+    if (target.className !== 'list-group-item') {
+        console.warn('User clicked on child element of list item, looking for parent...');
+        while (target && target.className !== 'list-group-item') {
+            target = target.parentNode;
+        }
+        if (!target) {
+            // No list item found, so we can't do anything
+            console.warn('No list item could be found for clicked event!');
+            return;
+        }
+    }
+    var dirEntryId = decodeURIComponent(target.getAttribute('dirEntryId'));
     findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
-    return false;
 }
 
 /**
