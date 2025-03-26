@@ -4815,7 +4815,7 @@ function showZIMIndex (start, search) {
                 var dirEntry = dirEntryArray[i];
                 // NB Ensure you use double quotes for HTML attributes below - see comment in populateListOfArticles
                 newHtml += '\n<a  class="list-group-item" href="#" dirEntryId="' + encodeURIComponent(dirEntry.toStringId()) +
-                    '">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
+                    '" role="option">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
             }
             start = start || 0;
             var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
@@ -4978,7 +4978,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         var dirEntryTitle = dirEntry.getTitleOrUrl();
         dirEntryTitle = dirEntryTitle.replace(/&lt;([ib])>([^&]+)&lt;\/\1>/g, '<$1>$2</$1>');
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-            '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
+            '" class="list-group-item" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
     articleListDiv.innerHTML = articleListDivHtml;
     // We have to use mousedown below instead of click as otherwise the prefix blur event fires first

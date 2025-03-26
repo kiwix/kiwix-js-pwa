@@ -231,7 +231,7 @@
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
-                        <form id="formArticleSearch">
+                        <form id="formArticleSearch" role="search" aria-label="Search articles">
                             <div class="" id="row">
                                 <span class="input-group">
                                     <span class="input-group-btn">
@@ -1338,8 +1338,8 @@
                 </div>
                 <!-- List of articles matching the typed prefix -->
                 <div id="articleListWithHeader" style="display: none;" class="container">
-                    <span id="articleListHeaderMessage"></span>
-                    <div id="articleList" class="list-group">
+                    <span id="articleListHeaderMessage" aria-live="polite"></span>
+                    <div id="articleList" class="list-group" role="listbox">
                     </div>
                 </div>
             </div>
