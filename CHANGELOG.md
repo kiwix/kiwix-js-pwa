@@ -4,7 +4,7 @@
 
 * ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes
 * ENHANCEMENT: Make search results accessible for screen readers
-* FIX: Bug that opened articles in new windows after switching from Zimit to Wikimedia archive
+* FIX: Bug that opened articles in new windows after switching from Zimit to Wikimedia archives
 * FIX: Fix popover width scaling when `zoom` attribute is set
 * FIX: Support older Firefox versions when creating popovers
 * FIX: Repeated titles in Wikivoyage ZIMs made from the mobile-html API
