@@ -7100,7 +7100,7 @@ function addListenersToLink (a, href, baseUrl) {
             zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
         }
         // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
-        a.newcontainer = true; // Prevents double activation
+        // a.newcontainer = true; // Prevents double activation
         // uiUtil.showSlidingUIElements();
         // Tear down contents of articleWindow.document
         if (!/UWP/.test(params.appType) && articleWindow && articleWindow.document && articleWindow.document.body) {
