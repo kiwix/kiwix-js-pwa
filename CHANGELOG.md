@@ -14,6 +14,7 @@
 * FIX: Handle user clicking on child element of list item in article list
 * UPDATE: Wikivoyage and WikiMed templates and associated info
 * DEV: Developer directories are no longer shown in the download library unless the app is in developer mode
+* DEV: Babel now generates more compact code, and build warning eliminated
 * DEV: Correction of errors in Draft Release script and better feedback in workflow
 * DEV: Update Vite to v6.2.4
 * DEV: Various security updates for dependencies
