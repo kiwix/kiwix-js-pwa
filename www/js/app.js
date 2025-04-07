@@ -7300,7 +7300,7 @@ function setupTableOfContents () {
     var tableOfContents = new uiUtil.ToC(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
 
-    if(headings.length === 0) {
+    if(headings.length <= 1) {
         dropup.style.display = 'none';
         
         document.getElementById('btnBack').classList.remove('col-xs-1');
