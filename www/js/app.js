@@ -5426,7 +5426,7 @@ var unhideArticleTries = 12; // Set up a repeasting loop 12 times (= 6 seconds m
 
 // Function to unhide a hidden article
 var unhideArticleContainer = function () {
-    console.debug('Unhiding article container...');
+    // console.debug('Unhiding article container...');
     if (articleWindow.document) {
         articleWindow.document.bgcolor = '';
         if (appstate.target === 'iframe') iframe.style.display = '';
@@ -5449,7 +5449,7 @@ var unhideArticleContainer = function () {
 
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
-    console.debug('Checking if article loaded... ' + loaded);
+    // console.debug('Checking if article loaded... ' + loaded);
     if (loaded) {
         // Last-ditch attempt to unhide
         unhideArticleContainer();
@@ -5461,10 +5461,10 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
-    var mimeType = dirEntry.getMimetype();
+    var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
-        console.debug('HTML appears to be available...');
+        // console.debug('HTML appears to be available...');
         if (params.rememberLastPage) {
             params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         } else {
@@ -5479,7 +5479,7 @@ var articleLoadedSW = function (dirEntry, container) {
     }
     var docBody = doc ? doc.body : null;
     if (docBody && docBody.innerHTML) { // docBody must contain contents, otherwise we haven't loaded an article yet
-        console.debug('We appear to have a document body with HTML...');
+        // console.debug('We appear to have a document body with HTML...');
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
@@ -5533,7 +5533,7 @@ var articleLoadedSW = function (dirEntry, container) {
                 unhideArticleContainer();
                 // Check that the contents of docBody aren't empty and that the unhiding worked
                 if (unhideArticleTries < 1 || docBody.innerHTML && docBody.style.display === 'block') {
-                    console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
+                    // console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
                     clearInterval(intervalId);
                 }
             }, 500);
@@ -5551,7 +5551,8 @@ var articleLoadedSW = function (dirEntry, container) {
             }
             anchorParameter = '';
         }
-        if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
+        var title = params.useLibzim ? dirEntry.url : dirEntry.getTitleOrUrl();
+        if (dirEntry) uiUtil.makeReturnLink(title);
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
             popovers.attachKiwixPopoverCss(doc, darkTheme);
@@ -5562,7 +5563,7 @@ var articleLoadedSW = function (dirEntry, container) {
         loaded = false;
         unhideArticleTries--;
         // Try again...
-        console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
+        // console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
         setTimeout(articleLoadedSW, 250, dirEntry, container);
     }
 
