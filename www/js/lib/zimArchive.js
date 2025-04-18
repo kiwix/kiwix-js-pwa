@@ -468,13 +468,13 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
 ZIMArchive.prototype.getContentNamespace = function () {
     if (this.isReady()) {
         var ver = this.file.minorVersion;
-        // DEV: There are currently only three defined values for minorVersion in the OpenZIM specification
+        // DEV: There are currently only four defined values for minorVersion in the OpenZIM specification
         // If this changes, adapt the error checking and return values
         switch (ver) {
         case 0:
             return 'A'; // Old-format ZIM files
-        case 1: // ZIM with new namespaces, with all user content under 'C'
-        case 2: // ZIM explicitly allowing alias entries       
+        case 1: // ZIM with new namespaces, all user content under 'C'
+        case 2: // ZIM explicitly allowing alias entries
         case 3: // ZIMs without a v0 title index (no 'listing/titleOrdered/v0')
             return 'C'; // New-format ZIM files
         default:
