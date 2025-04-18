@@ -1,4 +1,4 @@
-﻿/**
+/**
  * zimArchive.js: Support for archives in ZIM format.
  *
  * Copyright 2015-2023 Mossroy, Jaifroid and contributors
@@ -473,8 +473,9 @@ ZIMArchive.prototype.getContentNamespace = function () {
         switch (ver) {
         case 0:
             return 'A'; // Old-format ZIM files
-        case 1:
-        case 3: // Explicitly handle version 3 as equivalent to version 1
+        case 1: // ZIM with new namespaces, with all user content under 'C'
+        case 2: // ZIM explicitly allowing alias entries       
+        case 3: // ZIMs without a v0 title index (no 'listing/titleOrdered/v0')
             return 'C'; // New-format ZIM files
         default:
             console.warn('Unknown ZIM minor version: ' + ver + '! Assuming content namespace is C.');
