@@ -468,7 +468,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
 ZIMArchive.prototype.getContentNamespace = function () {
     if (this.isReady()) {
         var ver = this.file.minorVersion;
-        // DEV: There are currently only two defined values for minorVersion in the OpenZIM specification
+        // DEV: There are currently only three defined values for minorVersion in the OpenZIM specification
         // If this changes, adapt the error checking and return values
         switch (ver) {
             case 0:
