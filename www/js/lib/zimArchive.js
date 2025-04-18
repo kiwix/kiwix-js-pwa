@@ -461,19 +461,20 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
 /**
  * A method to return the namespace in the ZIM file that contains the primary user content. In old-format ZIM files (minor
  * version 0) there are a number of content namespaces, but the primary one in which to search for titles is 'A'. In new-format
- * ZIMs (minor version 1) there is a single content namespace 'C'. See https://openzim.org/wiki/ZIM_file_format. This method
+ * ZIMs (minor version >= 1) there is a single content namespace 'C'. See https://openzim.org/wiki/ZIM_file_format. This method
  * throws an error if it cannot determine the namespace or if the ZIM is not ready.
  * @returns {String} The content namespace for the ZIM archive
  */
 ZIMArchive.prototype.getContentNamespace = function () {
     if (this.isReady()) {
         var ver = this.file.minorVersion;
-        // DEV: There are currently only two defined values for minorVersion in the OpenZIM specification
+        // DEV: There are currently only four defined values for minorVersion in the OpenZIM specification
+        // For meaning of minorVersion values, see https://openzim.org/wiki/ZIM_file_format#Major_.26_Minor_versions
         // If this changes, adapt the error checking and return values
-        if (ver > 2) {
-            console.error('Unknown ZIM minor version: ' + ver + '! Assuming content namespace is C.');
+        if (ver > 3) {
+            console.warn('Unknown ZIM minor version: ' + ver + '! Assuming content namespace is C.');
         }
-        return ver === 0 ? 'A' : 'C';
+        return ver === 0 ? 'A' : 'C'; // Only minorVersion 0 uses namespace A (for Articles)
     } else {
         throw new Error('We could not determine the content namespace because the ZIM file is not ready!');
     }
