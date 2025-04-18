@@ -474,7 +474,9 @@ ZIMArchive.prototype.getContentNamespace = function () {
         case 0:
             return 'A'; // Old-format ZIM files
         case 1: // ZIM with new namespaces, all user content under 'C'
+            // fall-through
         case 2: // ZIM explicitly allowing alias entries
+            // fall-through
         case 3: // ZIMs without a v0 title index (no 'listing/titleOrdered/v0')
             return 'C'; // New-format ZIM files
         default:
