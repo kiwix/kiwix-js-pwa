@@ -470,10 +470,16 @@ ZIMArchive.prototype.getContentNamespace = function () {
         var ver = this.file.minorVersion;
         // DEV: There are currently only two defined values for minorVersion in the OpenZIM specification
         // If this changes, adapt the error checking and return values
-        if (ver > 3) {
-            console.warn('Unknown ZIM minor version: ' + ver + '! Assuming content namespace is C.');
+        switch (ver) {
+            case 0:
+                return 'A'; // Old-format ZIM files
+            case 1:
+            case 3: // Explicitly handle version 3 as equivalent to version 1
+                return 'C'; // New-format ZIM files
+            default:
+                console.warn('Unknown ZIM minor version: ' + ver + '! Assuming content namespace is C.');
+                return 'C'; // Default assumption for unknown versions
         }
-        return ver === 0 ? 'A' : 'C';
     } else {
         throw new Error('We could not determine the content namespace because the ZIM file is not ready!');
     }
