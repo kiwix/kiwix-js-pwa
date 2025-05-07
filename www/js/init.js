@@ -68,11 +68,11 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.5.8'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.5.1-WikiMed'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
-params['packagedFile'] = getSetting('packagedFile') || ''; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || 'mdwiki_en_all-app_maxi_2024-06.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = getSetting('fileVersion') || ''; // This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || 'mdwiki_en_all-app_maxi_2024-06.zim (15 June 2024)'; // This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
@@ -81,7 +81,7 @@ params['cachedStartPages'] = {
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
-params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
+params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/wikipedia/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
 params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
@@ -112,8 +112,8 @@ params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // 
 params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-// params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+// params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; // Set to true to display hidden file selectors in packaged apps
+params['showFileSelectors'] = false; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['useLibzim'] = getSetting('useLibzim') == true; // Set to true to use libzim for decoding ZIM files (experimental)
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;

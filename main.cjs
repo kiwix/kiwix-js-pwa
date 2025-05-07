@@ -17,7 +17,7 @@ let expressServer; // This gets populated in the startServer function
 // 3000: Main App
 // 3001: WikiMed
 // 3002: WikiVoyage
-let port = 3000;
+let port = 3001;
 // Check if we previously stored a different port, and validate it for security
 if (store.has('expressPort')) {
     const storedPort = store.get('expressPort');
@@ -67,7 +67,7 @@ function createWindow () {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'build/64x64.png'),
         // titleBarStyle: 'hidden',
         // titleBarOverlay: {
         //     color: '#000000',
