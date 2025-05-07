@@ -1,7 +1,9 @@
 ## Kiwix PWA Privacy Policy
 
 This Privacy Policy applies to the Kiwix JS Progressive Web App (Kiwix PWA) and versions of it packaged for the Electron, NWJS and UWP
-frameworks that are published on Kiwix servers, and by official Kiwix accounts on GitHub and other third-party vendor stores ("app stores"). 
+frameworks that are published on Kiwix servers, and by official Kiwix accounts on GitHub and other third-party vendor stores ("app stores").
+It also covers WikiMed by Kiwix and Wikivoyage by Kiwix, which are versions of Kiwix JS packaged with WikiMed, MDWiki, or Wikivoyage ZIM
+archives respectively.
 
 When installed, this application is capable of working entirely offline. It does not collect or record any of your personal data, though
 if you installed it from a Store, the Store operator may collect anonymous usage data (see below). The app only remembers your browsing
