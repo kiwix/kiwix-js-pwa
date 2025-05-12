@@ -5219,7 +5219,7 @@ function readArticle (dirEntry) {
             htmlContent = -1;
             // @TODO: Why are we double-encoding here????? Clearly we double-decode somewhere...
             // var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
-            var encURL = encodeURI(encodeURI(params.cachedStartPages[zimName]));
+            var encURL = params.cachedStartPages[zimName];
             uiUtil.XHR(encURL, 'text', function (responseTxt, status) {
                 htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                 if (htmlContent) {
