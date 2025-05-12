@@ -1,5 +1,15 @@
 # Changelog
 
+## Interim release 3.5.9
+
+* INFO: Added separate Privacy Policy to satisfy store requirements and cover packaged apps
+* FIX: Failure to load some cached landing pages with special characters
+* FIX: Libzim loading and reduce debug messages
+* UPDATE: Cached Open Textbook of Medicine landing page
+* UPDATE: Libzim libraries to v0.7
+* DEV: Accept new ZIMs with minorVersion set to 3
+* DEV: Synchronize Babel versions
+
 ## Release 3.5.7 / 3.5.8
 
 * ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes
