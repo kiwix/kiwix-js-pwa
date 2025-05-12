@@ -73,14 +73,19 @@ params['appVersion'] = '3.5.1-WikiMed'; // DEV: Manually update this version whe
 params['packagedFile'] = getSetting('packagedFile') || 'mdwiki_en_all-app_maxi_2024-06.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
 params['fileVersion'] = getSetting('fileVersion') || 'mdwiki_en_all-app_maxi_2024-06.zim (15 June 2024)'; // This will be displayed in the app - optionally include date of ZIM file
-// List of known start pages cached in the FS - ensure these strings are double-URI-encoded, as they will be decoded once in the app
+
+// List of known start pages cached in the FS - ensure these strings are double-URI-encoded, and then store the file itself with single-
+// URI-enoding. This string will be decoded once in the app. E.g. the file name "A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
+// should be stored in the directory as "A/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2" (since we can't store colons in some
+// file systems), and the string "A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2" will be decoded to this
 // before being passed to the Service Worker
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikipedia_en_medicine_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
-    // 'mdwiki_en_all_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    mdwiki_en_all_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
+
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/wikipedia/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
