@@ -1,23 +1,29 @@
 # Changelog
 
-## Release 3.5.7 / 3.5.8
+## Release 3.6.0 / 3.6.1-WikiMed
 
+* UPDATE: WikiMed templates and associated info
+* UPDATE: Cached Open Textbook of Medicine landing page
+* UPDATE: Libzim libraries to v0.7
 * ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes
 * ENHANCEMENT: Make search results accessible for screen readers
+* INFO: Added separate Privacy Policy to satisfy store requirements and cover packaged apps
+* FIX: Failure to load some cached landing pages with special characters
 * FIX: Bug that opened articles in new windows after switching from Zimit to Wikimedia archives
 * FIX: Fix popover width scaling when `zoom` attribute is set
 * FIX: Support older Firefox versions when creating popovers
-* FIX: Repeated titles in Wikivoyage ZIMs made from the mobile-html API
 * FIX: Dark/light theme is now applied correctly to popovers as soon as the theme is switched
 * FIX: Aligning of new UI icons
 * FIX: Various typos in the app
 * FIX: Handle user clicking on child element of list item in article list
-* UPDATE: Wikivoyage and WikiMed templates and associated info
+* FIX: Libzim loading and reduce debug messages
 * DEV: Developer directories are no longer shown in the download library unless the app is in developer mode
 * DEV: Babel now generates more compact code, and build warning eliminated
 * DEV: Correction of errors in Draft Release script and better feedback in workflow
 * DEV: Update Vite to v6.2.4
 * DEV: Various security updates for dependencies
+* DEV: Accept new ZIMs with minorVersion set to 3
+* DEV: Synchronize Babel versions
 
 ## Release 3.5.0 / 3.5.1-WikiMed
 
