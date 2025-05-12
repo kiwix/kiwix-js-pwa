@@ -68,11 +68,11 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.5.1-WikiMed'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.6.1-WikiMed'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
-params['packagedFile'] = getSetting('packagedFile') || 'mdwiki_en_all-app_maxi_2024-06.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || 'wikipedia_en_medicine_maxi_2025-03.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = getSetting('fileVersion') || 'mdwiki_en_all-app_maxi_2024-06.zim (15 June 2024)'; // This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || 'wikipedia_en_medicine_maxi_2025-03 (1 March 2025)'; // This will be displayed in the app - optionally include date of ZIM file
 
 // List of known start pages cached in the FS - ensure these strings are double-URI-encoded, and then store the file itself with single-
 // URI-enoding. This string will be decoded once in the app. E.g. the file name "A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
