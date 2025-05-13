@@ -1,6 +1,6 @@
 ## Portable and installable builds for Electron and UWP
 
-WikiMed by Kiwix is an offline medical encyclopaedia with content curated by [MDwiki](https://mdwiki.org/) and Wikipedia's WikiProject Medicine. Containing more than 67,000 medical and health-related articles, it makes medical knowledge available to people with limited Internet access or anyone who needs quick reference access to in-depth medical information. Other languages can be downloaded within the app.
+WikiMed by Kiwix is an offline medical encyclopaedia with content curated by Wikipedia's WikiProject Medicine. Containing more than 67,000 medical and health-related articles, it makes medical knowledge available to people with limited Internet access or anyone who needs quick reference access to in-depth medical information. Other languages can be downloaded within the app.
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
@@ -63,7 +63,6 @@ Please choose the correct version:
 
 ### Known Issues
 
-* The Electron app may need to be restarted TWICE to update fully to the latest code.
 * **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them).
 * Please see https://github.com/kiwix/kiwix-js-pwa/issues for further known issues. If you find a new issue, please open a new issue on that page.
 
