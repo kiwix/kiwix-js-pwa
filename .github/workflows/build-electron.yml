@@ -29,6 +29,14 @@ on:
           - true
           - false
         default: 'false'
+      nsisweb:
+        description: For Windows 11 builds, do you want to build only the nsis-web installer?
+        type: choice
+        required: false
+        options:
+          - true
+          - false
+        default: 'false'
       sign:
         description: Do you wish to sign the Windows packages?
         type: choice
@@ -309,12 +317,17 @@ jobs:
         # ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
         echo "Building Windows packages..."
         if ($INPUT_SIGN) {
-          npm run publish
+          if (github.event.inputs.nsisweb -eq 'true') {
+            npm run publish-nsis-web
+          } else {
+            npm run publish
+          }
         } else {
           npm run build-skipsigning
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
+      if: github.event.inputs.nsisweb != 'true'
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
