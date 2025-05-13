@@ -50,6 +50,7 @@ env:
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
   INPUT_SIGN: ${{ github.event.inputs.sign || 'false' }}
+  NSISWEB_ONLY: ${{ github.event.inputs.nsisweb }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ESIGNER_USERNAME: ${{ secrets.ESIGNER_USER_USERNAME }}
   ESIGNER_PASSWORD: ${{ secrets.ESIGNER_USER_PASSWORD }}
@@ -317,7 +318,7 @@ jobs:
         # ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
         echo "Building Windows packages..."
         if ($INPUT_SIGN) {
-          if (github.event.inputs.nsisweb -eq 'true') {
+          if ($Env:NSISWEB_ONLY -eq 'true') {
             npm run publish-nsis-web
           } else {
             npm run publish
