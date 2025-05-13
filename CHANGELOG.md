@@ -2,6 +2,7 @@
 
 ## Release 3.6.0 / 3.6.1-WikiMed
 
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine_maxi_2025-03`
 * UPDATE: WikiMed templates and associated info
 * UPDATE: Cached Open Textbook of Medicine landing page
 * UPDATE: Libzim libraries to v0.7
