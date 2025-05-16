@@ -1,7 +1,8 @@
 # Changelog
 
-## Interim release 3.5.9
+## Interim release 3.6.1
 
+* ENHANCEMENT: Reduce height of navigation bar
 * INFO: Added separate Privacy Policy to satisfy store requirements and cover packaged apps
 * FIX: Failure to load some cached landing pages with special characters
 * FIX: Libzim loading and reduce debug messages
@@ -9,6 +10,8 @@
 * UPDATE: Libzim libraries to v0.7
 * DEV: Accept new ZIMs with minorVersion set to 3
 * DEV: Synchronize Babel versions
+* DEV: Update build script to us Windows PowerShell instead of PS Core (unsupported by Electron Builder)
+* DEV: Add Workflow option to build only nsis-web installer if this has to be regenerated
 
 ## Release 3.5.7 / 3.5.8
 
