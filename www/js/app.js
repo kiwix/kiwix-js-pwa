@@ -756,6 +756,7 @@ function setRelativeUIFontSize (value) {
     document.getElementById('spinnerVal').innerHTML = value + '%';
     document.getElementById('search-article').style.fontSize = value + '%';
     document.getElementById('relativeUIFontSizeSlider').value = value;
+    document.getElementById('navbar').style.height = params.navbarHeight * (value / 100) + 'px';
     var forms = document.querySelectorAll('.form-control');
     var i;
     for (i = 0; i < forms.length; i++) {

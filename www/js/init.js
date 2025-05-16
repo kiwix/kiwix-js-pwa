@@ -325,6 +325,8 @@ Array.prototype.slice.call(document.querySelectorAll('input[name=cssInjectionMod
         radio.checked = true;
     }
 });
+// Set the initial value for params.navbarHeight from the computedvalues of #navbar
+params.navbarHeight = parseInt(getComputedStyle(document.getElementById('navbar')).height, 10) || 0;
 
 // Get app type
 function getAppType () {
