@@ -2684,6 +2684,16 @@ function removePageMaxWidth () {
         }
         docStyle.margin = '0 auto';
     }
+    // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
+    var actionParseRemoveClasses = ['mw-page-container-inner', ''];
+    for (i = 0; i < actionParseRemoveClasses.length; i++) {
+        var mwPageContainer = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        if (mwPageContainer && mwPageContainer.length) {
+            for (var j = 0; j < mwPageContainer.length; j++) {
+                mwPageContainer[j].classList.remove(actionParseRemoveClasses[i]);
+            }
+        }
+    }
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
     }
@@ -6243,8 +6253,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Put site.js in the correct position
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
-            // Add missing title to WikiMedia articles for post June 2023 scrapes
-            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
+            // Add missing title to WikiMedia articles for post June 2023 scrapes, also post-June 2025
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header|first-heading)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
             // Remove hard-coded image widths for new mobile-html endpoint ZIMs
             htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1$2"320px"');
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
@@ -6254,7 +6264,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
                 for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                        var summary = m2.replace(/(?:<div\s+class=["']pcs-edit[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                        var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
                         return '<details ' + m1 + '>' + summary + '</details>';
                     });
                     // We can stop iterating if all sections are consumed
@@ -6491,7 +6501,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         zimType = /-\/s\/style\.css/i.test(testCSS) ? 'desktop' : zimType;
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? 'desktop-stx' : zimType; // Support stackexchange
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
-        zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
+        zimType = /minerva|mobile|vector/i.test(testCSS) ? 'mobile' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
         if (/minerva|inserted.style|pcs\.css/i.test(testCSS) && (cssCache || zimType != cssSource)) {
             // Substitute ridiculously long style name TODO: move this code to transformStyles
