@@ -6491,7 +6491,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         zimType = /-\/s\/style\.css/i.test(testCSS) ? 'desktop' : zimType;
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? 'desktop-stx' : zimType; // Support stackexchange
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
-        zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
+        zimType = /minerva|mobile|vector/i.test(testCSS) ? 'mobile' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
         if (/minerva|inserted.style|pcs\.css/i.test(testCSS) && (cssCache || zimType != cssSource)) {
             // Substitute ridiculously long style name TODO: move this code to transformStyles

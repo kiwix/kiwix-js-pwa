@@ -143,6 +143,7 @@ const precacheFiles = [
     'www/-/mw/mw.PopUpMediaTransform.css',
     'www/-/mw/mw.TMHGalleryHook.js.css',
     'www/-/mw/newstyle_main_page.css',
+    'www/-/mw/skins.vector.styles.css',
     'www/-/mw/style.css',
     'www/-/s/css_modules/content.parsoid.css',
     'www/-/s/css_modules/ext.cite.a11y.css',
