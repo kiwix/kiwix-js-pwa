@@ -6243,8 +6243,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Put site.js in the correct position
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
-            // Add missing title to WikiMedia articles for post June 2023 scrapes
-            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
+            // Add missing title to WikiMedia articles for post June 2023 scrapes, also post-June 2025
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header|first-heading)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
             // Remove hard-coded image widths for new mobile-html endpoint ZIMs
             htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1$2"320px"');
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
