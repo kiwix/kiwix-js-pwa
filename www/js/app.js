@@ -2684,6 +2684,16 @@ function removePageMaxWidth () {
         }
         docStyle.margin = '0 auto';
     }
+    // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
+    var actionParseRemoveClasses = ['mw-page-container-inner', ''];
+    for (i = 0; i < actionParseRemoveClasses.length; i++) {
+        var mwPageContainer = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        if (mwPageContainer && mwPageContainer.length) {
+            for (var j = 0; j < mwPageContainer.length; j++) {
+                mwPageContainer[j].classList.remove(actionParseRemoveClasses[i]);
+            }
+        }
+    }
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
     }

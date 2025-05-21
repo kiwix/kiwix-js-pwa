@@ -4106,7 +4106,6 @@ This impacts language button and talk add topic. */
 }
 @media screen and (min-width: 1120px) {
   .mw-body {
-    display: grid;
     grid-template: min-content min-content min-content 1fr / minmax(0, 59.25rem) min-content;
     /**
 		 * NOTE: T327715 - 'titlebar-cx' grid area is a temporary workaround to accommodate
