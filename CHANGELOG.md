@@ -1,8 +1,9 @@
 # Changelog
 
-## Interim release 3.6.1
+## Interim release 3.6.4
 
 * ENHANCEMENT: Reduce height of navigation bar
+* ENHANCEMENT: Added support for Wikimedia ZIMs based on new ActionParse API
 * INFO: Added separate Privacy Policy to satisfy store requirements and cover packaged apps
 * FIX: Failure to load some cached landing pages with special characters
 * FIX: Libzim loading and reduce debug messages
