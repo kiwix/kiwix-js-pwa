@@ -2,7 +2,7 @@
 
 ## Release 3.6.3 / 3.6.4-Wikivoyage
 
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2025-04`
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2025-05`
 * UPDATE: Wikivoyage and WikiMed templates and associated info
 * ENHANCEMENT: Reduce height of navigation bar
 * ENHANCEMENT: Added support for Wikimedia ZIMs based on new ActionParse API
