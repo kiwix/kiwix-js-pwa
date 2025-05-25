@@ -103,6 +103,7 @@ function filterCSS (zl, zim, cc, cs, i) {
                 /\/static\/css\/sotoki.css/i.test(zl) ||
                 /\/mobile.css/i.test(zl) ||
                 /\/style-mobile.css/i.test(zl) ||
+                /\/skins.vector.styles.css/i.test(zl) ||
                 /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
             )) {
             zl = zl.replace(/\|/ig, '_'); // Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
@@ -112,6 +113,7 @@ function filterCSS (zl, zim, cc, cs, i) {
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
             zl = /\/mobile_main_page\.css/.test(zl) ? '-/mw/newstyle_main_page.css' : zl;
             zl = /\/content\.parsoid\.css/.test(zl) ? '-/s/css_modules/content.parsoid.css' : zl;
+            zl = /skins\.vector\.styles\.css/.test(zl) ? '-/mw/skins.vector.styles.css' : zl;
             zl = /\/sotoki\.css/.test(zl) ? 'C/static/css/sotoki.css' : zl;
             // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
             zl = zl.replace(/.+(bootstrap[^/]*?\.css)/i, 'css/$1');
