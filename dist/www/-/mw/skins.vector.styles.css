@@ -1,0 +1,4565 @@
+﻿
+/* start https://en.wikipedia.org/w/load.php?debug=true&lang=en&modules=skins.vector.styles&only=styles&skin=vector-2022&version=&* */
+
+
+/**
+ * Respect users who prefer reduced motion.
+ * Inspiration taken from sanitize.css
+ * https://github.com/csstools/sanitize.css/blob/v13.0.0/reduce-motion.css,
+ * itself based on collection at
+ * https://github.com/jensimmons/cssremedy/issues/11
+ *
+ * Note, we also don't set `background-attachment: initial !important;` as
+ * setting a background property changes the default rendering of unstyled
+ * elements like `button`s and we don't feature `fixed` anywhere in deployed
+ * skins or extensions.
+ */
+/* stylelint-disable declaration-no-important, time-min-milliseconds, plugin/no-unsupported-browser-features */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-delay: -0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/**
+ * MediaWiki style sheet for addressing (normalizing) browser bugs and inconsistencies.
+ *
+ * Meant for normalizing elements and attribute selectors used by MediaWiki.
+ * General element styles and element-bound classes belong to 'elements.css'.
+ * If adding/changing rules, please consult https://github.com/necolas/normalize.css v7.0.0
+ * which this file is heavily inspired from, additionally orients on our
+ * Basic (Grade C) supported browsers.
+ * See https://www.mediawiki.org/wiki/Compatibility#Browser_support_matrix
+ */
+body {
+  margin: 0;
+}
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+abbr[title] {
+  border-bottom: 1px dotted;
+  cursor: help;
+}
+@supports ( text-decoration: underline dotted ) {
+  abbr[title] {
+    border-bottom: 0;
+    text-decoration: underline dotted;
+  }
+}
+pre,
+code,
+tt,
+kbd,
+samp {
+  font-family: monospace, monospace;
+}
+sub,
+sup {
+  line-height: 1;
+}
+figure {
+  margin: 0;
+}
+button,
+input,
+optgroup,
+select,
+textarea {
+  margin: 0;
+}
+button::-moz-focus-inner,
+[type='button']::-moz-focus-inner,
+[type='reset']::-moz-focus-inner,
+[type='submit']::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+legend {
+  padding: 0;
+}
+
+/**
+ * These styles are common to both print and screen media.
+ * Use the -print or without postfix files to apply styles more selectively.
+ */
+/* stylelint-disable selector-class-pattern */
+/**
+ * ###IMPORTANT:##
+ * If editing this file, please also edit the respective file in the MinervaNeue skin.
+ * ####
+ *
+ * This file is a LESS @import match for "mediawiki.skin.variables.less"
+ * when Vector 2022 is the active skin.
+ * Please note, that legacy Vector is handled by
+ * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+ *
+ * Please also note, that both current Codex, design system for Wikimedia based skins,
+ * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+ * repositories.
+ */
+/* stylelint-disable @stylistic/indentation */
+/**
+ * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+ * The CSS variable values are imported in CSSCustomProperties.less.
+ */
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable selector-no-vendor-prefix */
+/* stylelint-enable selector-no-vendor-prefix */
+/* @noflip */
+div.tright,
+div.floatright,
+table.floatright {
+  clear: right;
+  float: right;
+}
+@media all and (max-width: calc(640px - 1px)) {
+  body.skin--responsive div.tright,
+  body.skin--responsive div.floatright,
+  body.skin--responsive table.floatright {
+    clear: both;
+    float: none;
+  }
+}
+/* @noflip */
+div.tleft,
+div.floatleft,
+table.floatleft {
+  float: left;
+  clear: left;
+}
+@media all and (max-width: calc(640px - 1px)) {
+  body.skin--responsive div.tleft,
+  body.skin--responsive div.floatleft,
+  body.skin--responsive table.floatleft {
+    clear: both;
+    float: none;
+  }
+}
+div.floatright,
+table.floatright {
+  /* @noflip */
+  margin: 0 0 0.5em 0.5em;
+}
+div.floatleft,
+table.floatleft {
+  /* @noflip */
+  margin: 0 0.5em 0.5em 0;
+}
+div.thumb {
+  width: auto;
+  background-color: transparent;
+  margin-bottom: 0.5em;
+}
+/* @noflip */
+div.tleft {
+  margin: 0.5em 1.4em 1.3em 0;
+}
+/* @noflip */
+div.tright {
+  margin: 0.5em 0 1.3em 1.4em;
+}
+.thumbcaption {
+  text-align: start;
+  line-height: 1.4em;
+  padding: 3px;
+}
+.thumbcaption:empty {
+  padding: 0;
+}
+div.thumbinner {
+  padding: 3px;
+  text-align: center;
+  /* new block formatting context,
+	 * to clear background from floating content */
+  overflow: hidden;
+}
+@media all and (max-width: calc(640px - 1px)) {
+  body.skin--responsive  .mw-parser-output .thumb .thumbinner {
+    display: flex;
+    place-content: flex-start center;
+    flex-flow: column wrap;
+  }
+  body.skin--responsive  .mw-parser-output .thumb .thumbinner > .thumbcaption {
+    justify-content: space-between;
+    width: 100%;
+    flex: 1 0 100%;
+    order: 1;
+    display: block;
+  }
+}
+
+/* stylelint-disable selector-class-pattern */
+/**
+ * ###IMPORTANT:##
+ * If editing this file, please also edit the respective file in the MinervaNeue skin.
+ * ####
+ *
+ * This file is a LESS @import match for "mediawiki.skin.variables.less"
+ * when Vector 2022 is the active skin.
+ * Please note, that legacy Vector is handled by
+ * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+ *
+ * Please also note, that both current Codex, design system for Wikimedia based skins,
+ * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+ * repositories.
+ */
+/* stylelint-disable @stylistic/indentation */
+/**
+ * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+ * The CSS variable values are imported in CSSCustomProperties.less.
+ */
+/**
+ * Block media items
+ */
+figure[typeof~='mw:File'],
+figure[typeof~='mw:File/Frameless'] {
+  /* Hide the caption for frameless and plain floated images */
+}
+.mw-body-content figure[typeof~='mw:File'] > a,
+.mw-body-content figure[typeof~='mw:File/Frameless'] > a {
+  border: 0;
+}
+figure[typeof~='mw:File'].mw-halign-right,
+figure[typeof~='mw:File/Frameless'].mw-halign-right {
+  /* @noflip */
+  margin: 0 0 0.5em 0.5em;
+  /* @noflip */
+  clear: right;
+  /* @noflip */
+  float: right;
+}
+figure[typeof~='mw:File'].mw-halign-left,
+figure[typeof~='mw:File/Frameless'].mw-halign-left {
+  /* @noflip */
+  margin: 0 0.5em 0.5em 0;
+  /* @noflip */
+  clear: left;
+  /* @noflip */
+  float: left;
+}
+figure[typeof~='mw:File'].mw-halign-none,
+figure[typeof~='mw:File/Frameless'].mw-halign-none {
+  clear: none;
+  float: none;
+}
+figure[typeof~='mw:File'].mw-halign-center,
+figure[typeof~='mw:File/Frameless'].mw-halign-center {
+  /* Matches *.center * in element.css */
+  margin: 0 auto;
+  display: table;
+  border-collapse: collapse;
+  clear: none;
+  float: none;
+}
+figure[typeof~='mw:File'] > figcaption,
+figure[typeof~='mw:File/Frameless'] > figcaption {
+  display: none;
+}
+figure[typeof~='mw:File/Thumb'],
+figure[typeof~='mw:File/Frame'] {
+  display: table;
+  text-align: center;
+  border-collapse: collapse;
+  line-height: 0;
+  margin: 0.5em 0 1.3em 1.4em;
+  clear: right;
+  float: right;
+}
+.mw-body-content figure[typeof~='mw:File/Thumb'] > a,
+.mw-body-content figure[typeof~='mw:File/Frame'] > a {
+  border: 0;
+}
+.mw-content-ltr figure[typeof~='mw:File/Thumb'],
+.mw-content-ltr figure[typeof~='mw:File/Frame'] {
+  /* @noflip */
+  margin: 0.5em 0 1.3em 1.4em;
+  /* @noflip */
+  clear: right;
+  /* @noflip */
+  float: right;
+}
+.mw-content-rtl figure[typeof~='mw:File/Thumb'],
+.mw-content-rtl figure[typeof~='mw:File/Frame'] {
+  /* @noflip */
+  margin: 0.5em 1.4em 1.3em 0;
+  /* @noflip */
+  clear: left;
+  /* @noflip */
+  float: left;
+}
+figure[typeof~='mw:File/Thumb'].mw-halign-right,
+figure[typeof~='mw:File/Frame'].mw-halign-right {
+  /* @noflip */
+  margin: 0.5em 0 1.3em 1.4em;
+  /* @noflip */
+  clear: right;
+  /* @noflip */
+  float: right;
+}
+figure[typeof~='mw:File/Thumb'].mw-halign-left,
+figure[typeof~='mw:File/Frame'].mw-halign-left {
+  /* @noflip */
+  margin: 0.5em 1.4em 1.3em 0;
+  /* @noflip */
+  clear: left;
+  /* @noflip */
+  float: left;
+}
+figure[typeof~='mw:File/Thumb'].mw-halign-none,
+figure[typeof~='mw:File/Frame'].mw-halign-none {
+  /* Override the default margin from mw-content-xxx above */
+  margin: 0;
+  margin-bottom: 0.5em;
+  clear: none;
+  float: none;
+}
+figure[typeof~='mw:File/Thumb'].mw-halign-center,
+figure[typeof~='mw:File/Frame'].mw-halign-center {
+  /* Override the default margin from mw-content-xxx above
+		 * And, matches *.center * in element.css
+		 */
+  margin: 0 auto 0.5em auto;
+  clear: none;
+  float: none;
+}
+figure[typeof~='mw:File/Thumb'] > :not( figcaption ),
+figure[typeof~='mw:File/Frame'] > :not( figcaption ) {
+  /**
+		 * Broken media get a span instead.
+		 */
+}
+figure[typeof~='mw:File/Thumb'] > :not( figcaption ) .mw-file-element,
+figure[typeof~='mw:File/Frame'] > :not( figcaption ) .mw-file-element {
+  margin: 3px;
+}
+figure[typeof~='mw:File/Thumb'] > :not( figcaption ) .mw-broken-media,
+figure[typeof~='mw:File/Frame'] > :not( figcaption ) .mw-broken-media {
+  display: inline-block;
+  line-height: 1.6em;
+  word-break: break-word;
+  /* This is hardcoded in Linker::makeThumbLink2 for broken media */
+  width: 180px;
+  /* Styles the text of broken media */
+  font-size: 94%;
+}
+figure[typeof~='mw:File/Thumb'] > figcaption,
+figure[typeof~='mw:File/Frame'] > figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  background-color: inherit;
+  line-height: 1.4em;
+  /**
+		 * The "break-word" value is deprecated, however, it's well supported
+		 * at 94.73%
+		 * https://caniuse.com/mdn-css_properties_word-break_break-word
+		 *
+		 * The spec suggests it has the same effect as,
+		 *
+		 *   word-break: normal;
+		 *   overflow-wrap: anywhere;
+		 *
+		 * https://drafts.csswg.org/css-text-3/#word-break-property
+		 *
+		 * So, we should use that.  However, support for "anywhere" is lagging
+		 * at just 72.39%, with Safari being a notable miss.
+		 * https://caniuse.com/mdn-css_properties_overflow-wrap_anywhere
+		 *
+		 * "Soft wrap opportunities introduced by the word break are considered
+		 * when calculating min-content intrinsic sizes."
+		 * From https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap
+		 */
+  word-break: break-word;
+  text-align: start;
+  /* taken from .thumbcaption, plus .thumbinner */
+  padding: 0 6px 6px 6px;
+}
+/**
+ * Disable floating on mobile devices and automatically center on the page.
+ * This overrides any inline styles in the process.
+ */
+@media all and (max-width: calc(640px - 1px)) {
+  body.skin--responsive figure {
+    /* stylelint-disable-next-line declaration-no-important */
+    margin: 0 auto !important;
+    /* stylelint-disable-next-line declaration-no-important */
+    float: none !important;
+  }
+}
+figure[typeof~='mw:File/Frame'] > figcaption:empty {
+  padding-bottom: 0;
+}
+figure[typeof~='mw:File/Thumb'] > figcaption:empty {
+  padding-bottom: 3px;
+}
+/**
+ * Inline media items
+ */
+.mw-valign-middle .mw-file-element {
+  vertical-align: middle;
+}
+.mw-valign-baseline .mw-file-element {
+  vertical-align: baseline;
+}
+.mw-valign-sub .mw-file-element {
+  vertical-align: sub;
+}
+.mw-valign-super .mw-file-element {
+  vertical-align: super;
+}
+.mw-valign-top .mw-file-element {
+  vertical-align: top;
+}
+.mw-valign-text-top .mw-file-element {
+  vertical-align: text-top;
+}
+.mw-valign-bottom .mw-file-element {
+  vertical-align: bottom;
+}
+.mw-valign-text-bottom .mw-file-element {
+  vertical-align: text-bottom;
+}@media screen {
+	/**
+	 * MediaWiki style sheet for styles relating to thumbnails.
+	 *
+	 * CSS that does not relate to styling thumbnails generated by the parser in a vanilla
+	 * MediaWiki install do not belong here.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-no-vendor-prefix */
+	/* stylelint-enable selector-no-vendor-prefix */
+	/* Thumbnails */
+	div.thumbinner {
+	  border: 1px solid var(--border-color-subtle, #c8ccd1);
+	  background-color: var(--background-color-interactive-subtle, #f8f9fa);
+	  font-size: 94%;
+	}
+	.thumbimage {
+	  background-color: var(--background-color-base-fixed, #fff);
+	  border: 1px solid var(--border-color-subtle, #c8ccd1);
+	}
+	.thumbcaption {
+	  /* Default styles when there's no .mw-content-ltr or .mw-content-rtl, overridden below */
+	  border: 0;
+	  font-size: 94%;
+	}
+	.thumbborder {
+	  border: 1px solid #eaecf0;
+	}
+	.magnify {
+	  /* Default styles when there's no .mw-content-ltr or .mw-content-rtl, overridden below */
+	  float: right;
+	  margin-left: 3px;
+	  margin-right: 0;
+	  -webkit-margin-start: 3px;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 3px;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	  /* Directionality-specific styles for thumbnails - their positioning depends on content language */
+	}
+	.magnify a {
+	  display: block;
+	  /* Hide the text… */
+	  text-indent: 15px;
+	  white-space: nowrap;
+	  overflow: hidden;
+	  /* …and replace it with the image */
+	  width: 15px;
+	  height: 11px;
+	  /* Default styles when there's no .mw-content-ltr or .mw-content-rtl, overridden below */
+	  background-image: url(magnify-clip-ltr.svg);
+	  /* Don't annoy people who copy-paste everything too much */
+	  -webkit-user-select: none;
+	  -moz-user-select: none;
+	  user-select: none;
+	}
+	.mw-content-ltr .magnify {
+	  /* @noflip */
+	  float: right;
+	}
+	.mw-content-ltr .magnify a {
+	  /* @noflip */
+	  background-image: url(magnify-clip-ltr.svg);
+	}
+	.mw-content-rtl .magnify {
+	  /* @noflip */
+	  float: left;
+	}
+	.mw-content-rtl .magnify a {
+	  /* @noflip */
+	  background-image: url(magnify-clip-rtl.svg);
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-no-vendor-prefix */
+	/* stylelint-enable selector-no-vendor-prefix */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	figure[typeof~='mw:File/Thumb'],
+	figure[typeof~='mw:File/Frame'] {
+	  border: 1px solid var(--border-color-subtle, #c8ccd1);
+	  border-bottom: 0;
+	  background-color: var(--background-color-interactive-subtle, #f8f9fa);
+	  color: var(--color-base, #202122);
+	}
+	figure[typeof~='mw:File/Thumb'] > :not( figcaption ) .mw-file-element,
+	figure[typeof~='mw:File/Frame'] > :not( figcaption ) .mw-file-element {
+	  background-color: var(--background-color-base-fixed, #fff);
+	  color: var(--color-base-fixed, #202122);
+	  border: 1px solid var(--border-color-subtle, #c8ccd1);
+	}
+	figure[typeof~='mw:File/Thumb'] > figcaption,
+	figure[typeof~='mw:File/Frame'] > figcaption {
+	  border: 1px solid var(--border-color-subtle, #c8ccd1);
+	  border-top: 0;
+	  /* In mw-core the font-size is duplicated, 94% in thumbinner
+			 * and again 94% in thumbcaption. 88.4% for font size of the
+			 * caption results in the same behavior. */
+	  font-size: 88.40000000000001%;
+	}
+	.mw-image-border .mw-file-element {
+	  border: 1px solid #eaecf0;
+	}
+	figure[typeof~='mw:File/Thumb'] > figcaption::before {
+	  content: '';
+	  width: 15px;
+	  height: 11px;
+	  margin: 0;
+	  margin-left: 3px;
+	  margin-right: 0;
+	  -webkit-margin-start: 3px;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 3px;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	  float: right;
+	}
+	.mw-content-ltr figure[typeof~='mw:File/Thumb'] > figcaption::before {
+	  /* @noflip */
+	  float: right;
+	}
+	.mw-content-rtl figure[typeof~='mw:File/Thumb'] > figcaption::before {
+	  /* @noflip */
+	  float: left;
+	}
+	body.skin--responsive figure[typeof~='mw:File/Thumb'] > figcaption::before {
+	  /** Disable magnifying glass at lower resolutions */
+	}
+	@media all and (max-width: calc(640px - 1px)) {
+	  body.skin--responsive figure[typeof~='mw:File/Thumb'] > figcaption::before {
+	    content: none;
+	  }
+	}
+	figure[typeof~='mw:File/Thumb'] > .mw-file-description,
+	figure[typeof~='mw:File/Thumb'] > .mw-file-magnify {
+	  display: block;
+	  position: relative;
+	}
+	figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	  content: '';
+	  width: 15px;
+	  height: 11px;
+	  position: absolute;
+	  bottom: -11px;
+	  right: 6px;
+	  background-image: url(magnify-clip-ltr.svg);
+	  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	  /** Disable magnifying glass at lower resolutions to maximize space for caption. */
+	}
+	.skin-theme-clientpref-night figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	.skin-theme-clientpref-night figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	  filter: invert(1);
+	}
+	@media (prefers-color-scheme: dark) {
+	  .skin-theme-clientpref-os figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	  .skin-theme-clientpref-os figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	    filter: invert(1);
+	  }
+	}
+	.mw-content-ltr figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	.mw-content-ltr figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	  /* @noflip */
+	  right: 6px;
+	  /* @noflip */
+	  left: auto;
+	  /* @noflip */
+	  background-image: url(magnify-clip-ltr.svg);
+	}
+	.mw-content-rtl figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	.mw-content-rtl figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	  /* @noflip */
+	  right: auto;
+	  /* @noflip */
+	  left: 6px;
+	  /* @noflip */
+	  background-image: url(magnify-clip-rtl.svg);
+	}
+	@media all and (max-width: calc(640px - 1px)) {
+	  figure[typeof~='mw:File/Thumb'] > .mw-file-description::after,
+	  figure[typeof~='mw:File/Thumb'] > .mw-file-magnify::after {
+	    /* stylelint-disable-next-line declaration-no-important */
+	    background-image: none !important;
+	  }
+	}
+	/**
+	 * RESPONSIVE IMAGES FOR RESPONSIVE SKINS (T113101 and T367463)
+	 * Note we restrict to img's to avoid conflicts with VisualEditor shields.
+	 * Note this currently doesn't apply to frameless images (tracked in T367831) and
+	 * does not currently apply to responsive images in MobileFrontend.
+	 */
+	body.skin--responsive .mw-parser-output {
+	  /**
+		 * When the noresize class is used e.g. on a panorama or image map
+		 * with clickable regions (T22030), do not subject the image to a max-width rule.
+		 *
+		 * [[File:example.jpg|thumb|class=noresize]] and imagemap extension put the class on figure itself (T368034)
+		 */
+	}
+	body.skin--responsive .mw-parser-output figure img.mw-file-element {
+	  height: auto;
+	  max-width: 100%;
+	}
+	body.skin--responsive .mw-parser-output figure[typeof~='mw:File/Thumb'] img.mw-file-element,
+	body.skin--responsive .mw-parser-output figure[typeof~='mw:File/Frame'] img.mw-file-element {
+	  max-width: calc(100% - (2 * 3px) - (2 * 1px));
+	}
+	body.skin--responsive .mw-parser-output .noresize figure img.mw-file-element,
+	body.skin--responsive .mw-parser-output figure.noresize img.mw-file-element {
+	  max-width: none;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	html.skin-theme-clientpref-night {
+	  /* Desktop legacy HTML */
+	}
+	html.skin-theme-clientpref-night .mw-parser-output > span.mw-default-size img,
+	html.skin-theme-clientpref-night section .mw-heading ~ div > span.mw-default-size img,
+	html.skin-theme-clientpref-night section > span.mw-default-size img,
+	html.skin-theme-clientpref-night dd > span.mw-default-size img,
+	html.skin-theme-clientpref-night p > span.mw-default-size img,
+	html.skin-theme-clientpref-night .mw-parser-output > figure[typeof='mw:File'] img,
+	html.skin-theme-clientpref-night section .mw-heading ~ div > figure[typeof='mw:File'] img,
+	html.skin-theme-clientpref-night section > figure[typeof='mw:File'] img,
+	html.skin-theme-clientpref-night dd > figure[typeof='mw:File'] img,
+	html.skin-theme-clientpref-night p > figure[typeof='mw:File'] img,
+	html.skin-theme-clientpref-night .mw-parser-output > figure[typeof='mw:File/Thumb'] img,
+	html.skin-theme-clientpref-night section .mw-heading ~ div > figure[typeof='mw:File/Thumb'] img,
+	html.skin-theme-clientpref-night section > figure[typeof='mw:File/Thumb'] img,
+	html.skin-theme-clientpref-night dd > figure[typeof='mw:File/Thumb'] img,
+	html.skin-theme-clientpref-night p > figure[typeof='mw:File/Thumb'] img,
+	html.skin-theme-clientpref-night .mw-parser-output > figure[typeof='mw:File/Frameless'] img,
+	html.skin-theme-clientpref-night section .mw-heading ~ div > figure[typeof='mw:File/Frameless'] img,
+	html.skin-theme-clientpref-night section > figure[typeof='mw:File/Frameless'] img,
+	html.skin-theme-clientpref-night dd > figure[typeof='mw:File/Frameless'] img,
+	html.skin-theme-clientpref-night p > figure[typeof='mw:File/Frameless'] img {
+	  background-color: var(--background-color-base-fixed, #fff);
+	  color: var(--color-base-fixed, #202122);
+	  filter: brightness(0.8);
+	}
+	@media (prefers-color-scheme: dark) {
+	  html.skin-theme-clientpref-os {
+	    /* Desktop legacy HTML */
+	  }
+	  html.skin-theme-clientpref-os .mw-parser-output > span.mw-default-size img,
+	  html.skin-theme-clientpref-os section .mw-heading ~ div > span.mw-default-size img,
+	  html.skin-theme-clientpref-os section > span.mw-default-size img,
+	  html.skin-theme-clientpref-os dd > span.mw-default-size img,
+	  html.skin-theme-clientpref-os p > span.mw-default-size img,
+	  html.skin-theme-clientpref-os .mw-parser-output > figure[typeof='mw:File'] img,
+	  html.skin-theme-clientpref-os section .mw-heading ~ div > figure[typeof='mw:File'] img,
+	  html.skin-theme-clientpref-os section > figure[typeof='mw:File'] img,
+	  html.skin-theme-clientpref-os dd > figure[typeof='mw:File'] img,
+	  html.skin-theme-clientpref-os p > figure[typeof='mw:File'] img,
+	  html.skin-theme-clientpref-os .mw-parser-output > figure[typeof='mw:File/Thumb'] img,
+	  html.skin-theme-clientpref-os section .mw-heading ~ div > figure[typeof='mw:File/Thumb'] img,
+	  html.skin-theme-clientpref-os section > figure[typeof='mw:File/Thumb'] img,
+	  html.skin-theme-clientpref-os dd > figure[typeof='mw:File/Thumb'] img,
+	  html.skin-theme-clientpref-os p > figure[typeof='mw:File/Thumb'] img,
+	  html.skin-theme-clientpref-os .mw-parser-output > figure[typeof='mw:File/Frameless'] img,
+	  html.skin-theme-clientpref-os section .mw-heading ~ div > figure[typeof='mw:File/Frameless'] img,
+	  html.skin-theme-clientpref-os section > figure[typeof='mw:File/Frameless'] img,
+	  html.skin-theme-clientpref-os dd > figure[typeof='mw:File/Frameless'] img,
+	  html.skin-theme-clientpref-os p > figure[typeof='mw:File/Frameless'] img {
+	    background-color: var(--background-color-base-fixed, #fff);
+	    color: var(--color-base-fixed, #202122);
+	    filter: brightness(0.8);
+	  }
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	/**
+	 * NOTE: This feature is enabled for all skins. Please read the instructions below before adding anything
+	 * new to this file.
+	 *
+	 * This feature provides various styles associated with the body content of an article.
+	 * The article body is considered to be anything that can be generated by OutputPage::getHTML()
+	 * that is (or could be considered) universal to all pages in the main namespace.
+	 *
+	 * It is expected that this HTML is wrapped by SkinTemplate::wrapHTML and that the wrapping
+	 * element makes use of the `mw-body-content` class.
+	 *
+	 * All styles here should be be scoped to the `.mw-body-content` or one of its child class
+	 * e.g. `mw-parser-output class` where more appropriate.
+	 *
+	 * Styles here should be limited to CSS classes generated by PHP code inside MediaWiki core.
+	 * Classes added that require an on-wiki template in the Template space and cannot be reproduced
+	 * with a vanilla MediaWiki install are not allowed here. Please use MediaWiki:Common.css and
+	 * MediaWiki:<skin>.css for such styles.
+	 */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-no-vendor-prefix */
+	/* stylelint-enable selector-no-vendor-prefix */
+	/**
+	 * It's possible to add HTML elements inside wikitext, for example <div style="float:right;"></div>
+	 * Editors have grown to expect that any floated elements added inside wikitext will be cleared
+	 * automatically by the skin. This rule encapsulates that user expectation in a central place that
+	 * applies to all skins.
+	 * Note, this applies to mw-body-content not mw-parser-output as on pages such as the category page,
+	 * the body of a page includes other sibling elements aside from the output of the parser.
+	 */
+	.mw-body-content::after {
+	  clear: both;
+	  content: '';
+	  display: block;
+	}
+	.mw-body-content a.external.free {
+	  word-wrap: break-word;
+	}
+	.mw-body-content .error {
+	  font-size: larger;
+	  color: var(--color-error, #bf3c2c);
+	}
+	/* External URLs should always be treated as LTR (T6330) */
+	/* @noflip */
+	.rtl .mw-parser-output a.external.free,
+	.rtl .mw-parser-output a.external.autonumber {
+	  direction: ltr;
+	  unicode-bidi: embed;
+	}
+	/* body */
+	.mw-hide-empty-elt .mw-parser-output:not( .mw-show-empty-elt ) .mw-empty-elt {
+	  display: none;
+	}
+
+  summary.section-heading {
+    display: list-item !important;
+    cursor: pointer;
+  }
+	
+	/**
+	 * wikitable class for skinning normal tables.
+	 * Keep in sync with content.tables-print.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	@media all and (max-width: calc(640px - 1px)) {
+	  .mw-parser-output {
+	    /**
+			 * Disable the above behaviour when noresize is present.
+			 * See mediawiki.skinning/interface for more information.
+			 */
+	  }
+	  .mw-parser-output table {
+	    display: block;
+	    overflow: auto;
+	    max-width: 100%;
+	  }
+	  .mw-parser-output .noresize table {
+	    display: table;
+	  }
+	}
+	.wikitable {
+	  background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	  color: var(--color-base, #202122);
+	  margin: 1em 0;
+	  border: 1px solid var(--border-color-base, #a2a9b1);
+	  border-collapse: collapse;
+	}
+	.wikitable > tr > th,
+	.wikitable > tr > td,
+	.wikitable > * > tr > th,
+	.wikitable > * > tr > td {
+	  border: 1px solid var(--border-color-base, #a2a9b1);
+	  padding: 0.2em 0.4em;
+	}
+	.wikitable > tr > th,
+	.wikitable > * > tr > th {
+	  background-color: var(--background-color-neutral, #eaecf0);
+	  color: var(--color-base, #202122);
+	  text-align: center;
+	}
+	.wikitable > caption {
+	  font-weight: bold;
+	}
+	@media all and (max-width: calc(640px - 1px)) {
+	  body.skin--responsive .wikitable {
+	    float: none;
+	    margin-left: 0;
+	    margin-right: 0;
+	  }
+	}
+	
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	#catlinks {
+	  /**
+		 * Overrides text justification (user preference)
+		 * See T33990
+		 */
+	  text-align: left;
+	}
+	.catlinks {
+	  background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	  margin-top: 1em;
+	  border: 1px solid var(--border-color-base, #a2a9b1);
+	  padding: 5px;
+	  clear: both;
+	}
+	.catlinks ul {
+	  display: inline;
+	  margin: 0;
+	  padding: 0;
+	  list-style: none;
+	}
+	.catlinks li {
+	  display: inline-block;
+	  line-height: 1.25em;
+	  margin: 0.125em 0;
+	  border-left: 1px solid var(--border-color-base, #a2a9b1);
+	  padding: 0 0.5em;
+	  /* (T7346) make category redirects italic */
+	}
+	.catlinks li:first-child {
+	  border-left: 0;
+	  padding-left: 0.25em;
+	}
+	.catlinks li a.mw-redirect {
+	  font-style: italic;
+	}
+	/**
+	 * Hidden categories
+	 */
+	.mw-hidden-cats-hidden,
+	.catlinks-allhidden {
+	  display: none;
+	}
+	
+	/**
+	 * MediaWiki style sheet for common core styles on interfaces
+	 *
+	 * Styles for the Monobook/Vector pattern of laying out common interfaces.
+	 * These ids/classes are not built into the system,
+	 * they are outputted by the actual MonoBook/Vector code by convention.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/**
+	 * Hide empty portlets. Controlled by mw.util.(show|hide)Portlet.
+	 *
+	 * Note: Historically this class was provided by the skins themselves but in
+	 * I2ba68122fd82a254a5ad0e45157f095508f6fa39 was moved into core to formalize
+	 * the behaviour of hidden portlets.
+	 */
+	.emptyPortlet {
+	  display: none;
+	}
+	.printfooter,
+	.client-nojs #t-print {
+	  display: none;
+	  /* T167956 */
+	}
+	.noresize {
+	  max-width: 100%;
+	  overflow-x: auto;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-no-vendor-prefix */
+	/* stylelint-enable selector-no-vendor-prefix */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	.mw-editsection {
+	  -webkit-user-select: none;
+	  -moz-user-select: none;
+	  user-select: none;
+	}
+	/* Display editsection links smaller and next to headings */
+	.mw-editsection,
+	.mw-editsection-like {
+	  font-size: small;
+	  font-weight: normal;
+	  margin-left: 1em;
+	  margin-right: 0;
+	  -webkit-margin-start: 1em;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 1em;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	  vertical-align: baseline;
+	  /* Avoid affecting the height of the heading */
+	  line-height: 0;
+	  unicode-bidi: isolate;
+	}
+	.mw-editsection a,
+	.mw-editsection-like a {
+	  white-space: nowrap;
+	}
+	.mw-editsection::before,
+	.mw-editsection-like::before {
+	  /* T253601 */
+	  content: '\200B';
+	}
+	.mw-editsection-bracket,
+	.mw-editsection-divider {
+	  color: var(--color-subtle, #54595d);
+	}
+	
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable-next-line selector-class-pattern */
+	.usermessage {
+	  background-color: var(--background-color-warning-subtle, #fdf2d5);
+	  border: 1px solid var(--border-color-warning, #ab7f2a);
+	  color: var(--color-emphasized, #101418);
+	  font-weight: bold;
+	  margin: 2em 0 1em;
+	  padding: 0.5em 1em;
+	  vertical-align: middle;
+	}
+	
+	/**
+	 * MediaWiki style sheet for general styles on basic content elements.
+	 * IMPORTANT: All rules in this file should only apply to __tag__ selectors (T255717).
+	 * Styling of non-tag selectors is permitted for backwards compatibility, in only two cases:
+	 * 1) There is an equivalent tag with the same name in HTML4 (e.g. `.small and <small>)
+	 * 2) A class matches a tag name and is prefixed with `mw-` e.g. `code` and `.mw-code`
+	 *
+	 * Styles for basic elements: links, headings, lists, ….
+	 *
+	 * This style sheet is used by the Monobook and Vector skins.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/* stylelint-disable selector-no-vendor-prefix */
+	/* stylelint-enable selector-no-vendor-prefix */
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	/* Links */
+	a {
+	  text-decoration: none;
+	  color: #0645ad;
+	  background: none;
+	}
+	a:not( [ href ] ) {
+	  cursor: pointer;
+	  /* Always cursor:pointer even without href */
+	}
+	a:visited {
+	  color: #0b0080;
+	}
+	a:active {
+	  color: #faa700;
+	}
+	a:hover,
+	a:focus {
+	  text-decoration: underline;
+	}
+	/* Inline Elements */
+	img {
+	  border: 0;
+	  /* FIXME: Remove after adding 'normalize.less' added to all 'elements.less' calling skins. */
+	  vertical-align: middle;
+	}
+	hr {
+	  height: 1px;
+	  background-color: var(--border-color-base, #a2a9b1);
+	  border: 0;
+	  margin: 0.2em 0;
+	}
+	/* Structural Elements */
+	.mw-heading,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+	  color: var(--color-emphasized, #101418);
+	  font-weight: bold;
+	  margin: 0;
+	  padding-top: 0.5em;
+	  padding-bottom: 0.17em;
+	  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	  display: flow-root;
+	  word-break: break-word;
+	}
+	.mw-heading1,
+	h1,
+	.mw-heading2,
+	h2 {
+	  margin-bottom: 0.6em;
+	  border-bottom: 1px solid var(--border-color-base, #a2a9b1);
+	}
+	.mw-heading3,
+	h3,
+	.mw-heading4,
+	h4,
+	.mw-heading5,
+	h5 {
+	  margin-bottom: 0.3em;
+	}
+	.mw-heading1,
+	h1 {
+	  font-size: 188%;
+	  font-weight: normal;
+	}
+	.mw-heading2,
+	h2 {
+	  font-size: 150%;
+	  font-weight: normal;
+	}
+	.mw-heading3,
+	h3 {
+	  font-size: 128%;
+	}
+	.mw-heading4,
+	h4 {
+	  font-size: 116%;
+	}
+	.mw-heading5,
+	h5 {
+	  font-size: 108%;
+	}
+	.mw-heading6,
+	h6 {
+	  font-size: 100%;
+	}
+	.mw-heading h1,
+	.mw-heading h2,
+	.mw-heading h3,
+	.mw-heading h4,
+	.mw-heading h5,
+	.mw-heading h6 {
+	  display: inline;
+	  border: 0;
+	  margin: 0;
+	  padding: 0;
+	  color: inherit;
+	  font: inherit;
+	}
+	p {
+	  margin: 0.4em 0 0.5em 0;
+	}
+	p img {
+	  margin: 0;
+	}
+	ul {
+	  margin-top: 0.3em;
+	  margin-bottom: 0;
+	  margin-left: 1.6em;
+	  margin-right: 0;
+	  -webkit-margin-start: 1.6em;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 1.6em;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	  padding: 0;
+	}
+	ol {
+	  margin-top: 0.3em;
+	  margin-bottom: 0;
+	  margin-left: 3.2em;
+	  margin-right: 0;
+	  -webkit-margin-start: 3.2em;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 3.2em;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	  padding: 0;
+	  list-style-image: none;
+	}
+	dd {
+	  margin-bottom: 0.1em;
+	  margin-left: 1.6em;
+	  margin-right: 0;
+	  -webkit-margin-start: 1.6em;
+	  -webkit-margin-end: 0;
+	  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
+	  margin-inline-start: 1.6em;
+	  margin-inline-end: 0;
+	  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
+	}
+	li {
+	  margin-bottom: 0.1em;
+	}
+	dt {
+	  font-weight: bold;
+	  margin-bottom: 0.1em;
+	}
+	dl {
+	  margin-top: 0.2em;
+	  margin-bottom: 0.5em;
+	}
+	/* FIXME: Duplicated ruleset if skins using ResourceLoaderSkinModule
+	load the features `normalize` and `elements`. */
+	pre,
+	code,
+	tt,
+	kbd,
+	samp,
+	.mw-code {
+	  /* Support: Blink, Gecko, Webkit; enable unified font sizes for monospace font. T176636 */
+	  font-family: monospace, monospace;
+	}
+	pre,
+	code,
+	.mw-code {
+	  background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	  color: var(--color-emphasized, #101418);
+	  border: 1px solid var(--border-color-muted, #dadde3);
+	}
+	code {
+	  border-radius: 2px;
+	  padding: 1px 4px;
+	}
+	pre,
+	.mw-code {
+	  padding: 1em;
+	  /* Wrap lines in overflow. T2260, T103780 */
+	  white-space: pre-wrap;
+	  /* Create a new block formatting context */
+	  overflow-x: hidden;
+	  /* Break really long words when they overflow to the next line */
+	  word-wrap: break-word;
+	}
+	/* Tables */
+	table {
+	  font-size: 100%;
+	}
+	/* Forms */
+	fieldset {
+	  border: 1px solid #2a4b8d;
+	  margin: 1em 0 1em 0;
+	  padding: 0 1em 1em;
+	}
+	legend {
+	  padding: 0.5em;
+	}
+	form {
+	  border: 0;
+	  margin: 0;
+	}
+	textarea {
+	  display: block;
+	  box-sizing: border-box;
+	  width: 100%;
+	  /* Support: Firefox */
+	  /* Border rule required to override system appearance on Linux. T13641. */
+	  border: 1px solid var(--border-color-base, #a2a9b1);
+	  padding: 0.1em;
+	}
+	/* Emulate Center */
+	.center {
+	  width: 100%;
+	  text-align: center;
+	}
+	*.center * {
+	  margin-left: auto;
+	  margin-right: auto;
+	}
+	/* Small for tables and similar */
+	.small {
+	  font-size: 94%;
+	}
+	table.small {
+	  font-size: 100%;
+	}
+	
+	/* Taken from https://www.w3.org/TR/predefined-counter-styles/#meetei-styles */
+	/* Not supported by all browsers */
+	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	@counter-style meetei {
+		system: numeric;
+		symbols: '\ABF0' '\ABF1' '\ABF2' '\ABF3' '\ABF4' '\ABF5' '\ABF6' '\ABF7' '\ABF8' '\ABF9';
+		suffix: ') ';
+	}
+	
+	/* Taken from https://www.w3.org/TR/predefined-counter-styles/#ol-chiki-styles */
+	/* Not supported by all browsers */
+	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	@counter-style santali {
+		system: numeric;
+		symbols: '\1C50' '\1C51' '\1C52' '\1C53' '\1C54' '\1C55' '\1C56' '\1C57' '\1C58' '\1C59';
+	}
+	
+	/* Taken from https://www.w3.org/TR/predefined-counter-styles/#myanmar-styles */
+	/* Not supported by all browsers */
+	/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	@counter-style myanmar_with_period {
+		system: numeric;
+		symbols: '\1040' '\1041' '\1042' '\1043' '\1044' '\1045' '\1046' '\1047' '\1048' '\1049';
+		suffix: '\104B\0020';
+	}
+	
+	/* Localised ordered list numbering for some languages */
+	ol:lang( azb ) li,
+	ol:lang( bcc ) li,
+	ol:lang( bgn ) li,
+	ol:lang( bqi ) li,
+	ol:lang( fa ) li,
+	ol:lang( glk ) li,
+	ol:lang( kk-arab ) li,
+	ol:lang( lrc ) li,
+	ol:lang( luz ) li,
+	ol:lang( mzn ) li {
+	  list-style-type: persian;
+	}
+	ol:lang( ckb ) li,
+	ol:lang( sdh ) li {
+	  list-style-type: arabic-indic;
+	}
+	ol:lang( hi ) li,
+	ol:lang( mai ) li,
+	ol:lang( mr ) li,
+	ol:lang( ne ) li {
+	  list-style-type: devanagari;
+	}
+	ol:lang( as ) li,
+	ol:lang( bn ) li {
+	  list-style-type: bengali;
+	}
+	ol:lang( mni ) li {
+	  list-style-type: meetei;
+	}
+	ol:lang( or ) li {
+	  list-style-type: oriya;
+	}
+	ol:lang( sat ) li {
+	  list-style-type: santali;
+	}
+	ol:lang( blk ) li,
+	ol:lang( kjp ) li,
+	ol:lang( ksw ) li,
+	ol:lang( mnw ) li,
+	ol:lang( my ) li,
+	ol:lang( shn ) li {
+	  list-style-type: myanmar_with_period;
+	}
+	
+	/*
+	 * ### Language specific height correction for titles.###
+	 * Ref T31405 and T32809.
+	 *
+	 * NOTE: THIS FILE SHOULD ONLY INCLUDE LANGUAGES WRITTEN IN BRAHMIC SCRIPTS. If adding a language that
+	 * uses a different script, it should be discussed and this comment should be expanded.
+	 * In these scripts, the writing systems require slightly more vertical space to show diacritics properly
+	 * as by default will be truncated by line-height.
+	 */
+	.mw-heading1:lang( anp ),
+	.mw-heading1:lang( as ),
+	.mw-heading1:lang( awa ),
+	.mw-heading1:lang( bgc ),
+	.mw-heading1:lang( bh ),
+	.mw-heading1:lang( bho ),
+	.mw-heading1:lang( blk ),
+	.mw-heading1:lang( bn ),
+	.mw-heading1:lang( bo ),
+	.mw-heading1:lang( bpy ),
+	.mw-heading1:lang( ccp ),
+	.mw-heading1:lang( dty ),
+	.mw-heading1:lang( dz ),
+	.mw-heading1:lang( gom ),
+	.mw-heading1:lang( gu ),
+	.mw-heading1:lang( hi ),
+	.mw-heading1:lang( kjp ),
+	.mw-heading1:lang( km ),
+	.mw-heading1:lang( kn ),
+	.mw-heading1:lang( ks ),
+	.mw-heading1:lang( ksw ),
+	.mw-heading1:lang( mag ),
+	.mw-heading1:lang( mai ),
+	.mw-heading1:lang( ml ),
+	.mw-heading1:lang( mnw ),
+	.mw-heading1:lang( mr ),
+	.mw-heading1:lang( my ),
+	.mw-heading1:lang( new ),
+	.mw-heading1:lang( nit ),
+	.mw-heading1:lang( nod ),
+	.mw-heading1:lang( or ),
+	.mw-heading1:lang( pa ),
+	.mw-heading1:lang( pi ),
+	.mw-heading1:lang( rki ),
+	.mw-heading1:lang( sa ),
+	.mw-heading1:lang( shn ),
+	.mw-heading1:lang( si ),
+	.mw-heading1:lang( syl ),
+	.mw-heading1:lang( ta ),
+	.mw-heading1:lang( tcy ),
+	.mw-heading1:lang( tdd ),
+	.mw-heading1:lang( te ),
+	h1:lang( anp ),
+	h1:lang( as ),
+	h1:lang( awa ),
+	h1:lang( bgc ),
+	h1:lang( bh ),
+	h1:lang( bho ),
+	h1:lang( blk ),
+	h1:lang( bn ),
+	h1:lang( bo ),
+	h1:lang( bpy ),
+	h1:lang( ccp ),
+	h1:lang( dty ),
+	h1:lang( dz ),
+	h1:lang( gom ),
+	h1:lang( gu ),
+	h1:lang( hi ),
+	h1:lang( kjp ),
+	h1:lang( km ),
+	h1:lang( kn ),
+	h1:lang( ks ),
+	h1:lang( ksw ),
+	h1:lang( mag ),
+	h1:lang( mai ),
+	h1:lang( ml ),
+	h1:lang( mnw ),
+	h1:lang( mr ),
+	h1:lang( my ),
+	h1:lang( new ),
+	h1:lang( nit ),
+	h1:lang( nod ),
+	h1:lang( or ),
+	h1:lang( pa ),
+	h1:lang( pi ),
+	h1:lang( rki ),
+	h1:lang( sa ),
+	h1:lang( shn ),
+	h1:lang( si ),
+	h1:lang( syl ),
+	h1:lang( ta ),
+	h1:lang( tcy ),
+	h1:lang( tdd ),
+	h1:lang( te ) {
+	  line-height: 1.6em !important;
+	  /* stylelint-disable-line declaration-no-important */
+	}
+	.mw-heading:lang( anp ),
+	.mw-heading:lang( as ),
+	.mw-heading:lang( awa ),
+	.mw-heading:lang( bgc ),
+	.mw-heading:lang( bh ),
+	.mw-heading:lang( bho ),
+	.mw-heading:lang( blk ),
+	.mw-heading:lang( bn ),
+	.mw-heading:lang( bo ),
+	.mw-heading:lang( bpy ),
+	.mw-heading:lang( ccp ),
+	.mw-heading:lang( dty ),
+	.mw-heading:lang( dz ),
+	.mw-heading:lang( gom ),
+	.mw-heading:lang( gu ),
+	.mw-heading:lang( hi ),
+	.mw-heading:lang( kjp ),
+	.mw-heading:lang( km ),
+	.mw-heading:lang( kn ),
+	.mw-heading:lang( ks ),
+	.mw-heading:lang( ksw ),
+	.mw-heading:lang( mag ),
+	.mw-heading:lang( mai ),
+	.mw-heading:lang( ml ),
+	.mw-heading:lang( mnw ),
+	.mw-heading:lang( mr ),
+	.mw-heading:lang( my ),
+	.mw-heading:lang( new ),
+	.mw-heading:lang( nit ),
+	.mw-heading:lang( nod ),
+	.mw-heading:lang( or ),
+	.mw-heading:lang( pa ),
+	.mw-heading:lang( pi ),
+	.mw-heading:lang( rki ),
+	.mw-heading:lang( sa ),
+	.mw-heading:lang( shn ),
+	.mw-heading:lang( si ),
+	.mw-heading:lang( syl ),
+	.mw-heading:lang( ta ),
+	.mw-heading:lang( tcy ),
+	.mw-heading:lang( tdd ),
+	.mw-heading:lang( te ),
+	h2:lang( anp ),
+	h2:lang( as ),
+	h2:lang( awa ),
+	h2:lang( bgc ),
+	h2:lang( bh ),
+	h2:lang( bho ),
+	h2:lang( blk ),
+	h2:lang( bn ),
+	h2:lang( bo ),
+	h2:lang( bpy ),
+	h2:lang( ccp ),
+	h2:lang( dty ),
+	h2:lang( dz ),
+	h2:lang( gom ),
+	h2:lang( gu ),
+	h2:lang( hi ),
+	h2:lang( kjp ),
+	h2:lang( km ),
+	h2:lang( kn ),
+	h2:lang( ks ),
+	h2:lang( ksw ),
+	h2:lang( mag ),
+	h2:lang( mai ),
+	h2:lang( ml ),
+	h2:lang( mnw ),
+	h2:lang( mr ),
+	h2:lang( my ),
+	h2:lang( new ),
+	h2:lang( nit ),
+	h2:lang( nod ),
+	h2:lang( or ),
+	h2:lang( pa ),
+	h2:lang( pi ),
+	h2:lang( rki ),
+	h2:lang( sa ),
+	h2:lang( shn ),
+	h2:lang( si ),
+	h2:lang( syl ),
+	h2:lang( ta ),
+	h2:lang( tcy ),
+	h2:lang( tdd ),
+	h2:lang( te ),
+	h3:lang( anp ),
+	h3:lang( as ),
+	h3:lang( awa ),
+	h3:lang( bgc ),
+	h3:lang( bh ),
+	h3:lang( bho ),
+	h3:lang( blk ),
+	h3:lang( bn ),
+	h3:lang( bo ),
+	h3:lang( bpy ),
+	h3:lang( ccp ),
+	h3:lang( dty ),
+	h3:lang( dz ),
+	h3:lang( gom ),
+	h3:lang( gu ),
+	h3:lang( hi ),
+	h3:lang( kjp ),
+	h3:lang( km ),
+	h3:lang( kn ),
+	h3:lang( ks ),
+	h3:lang( ksw ),
+	h3:lang( mag ),
+	h3:lang( mai ),
+	h3:lang( ml ),
+	h3:lang( mnw ),
+	h3:lang( mr ),
+	h3:lang( my ),
+	h3:lang( new ),
+	h3:lang( nit ),
+	h3:lang( nod ),
+	h3:lang( or ),
+	h3:lang( pa ),
+	h3:lang( pi ),
+	h3:lang( rki ),
+	h3:lang( sa ),
+	h3:lang( shn ),
+	h3:lang( si ),
+	h3:lang( syl ),
+	h3:lang( ta ),
+	h3:lang( tcy ),
+	h3:lang( tdd ),
+	h3:lang( te ),
+	h4:lang( anp ),
+	h4:lang( as ),
+	h4:lang( awa ),
+	h4:lang( bgc ),
+	h4:lang( bh ),
+	h4:lang( bho ),
+	h4:lang( blk ),
+	h4:lang( bn ),
+	h4:lang( bo ),
+	h4:lang( bpy ),
+	h4:lang( ccp ),
+	h4:lang( dty ),
+	h4:lang( dz ),
+	h4:lang( gom ),
+	h4:lang( gu ),
+	h4:lang( hi ),
+	h4:lang( kjp ),
+	h4:lang( km ),
+	h4:lang( kn ),
+	h4:lang( ks ),
+	h4:lang( ksw ),
+	h4:lang( mag ),
+	h4:lang( mai ),
+	h4:lang( ml ),
+	h4:lang( mnw ),
+	h4:lang( mr ),
+	h4:lang( my ),
+	h4:lang( new ),
+	h4:lang( nit ),
+	h4:lang( nod ),
+	h4:lang( or ),
+	h4:lang( pa ),
+	h4:lang( pi ),
+	h4:lang( rki ),
+	h4:lang( sa ),
+	h4:lang( shn ),
+	h4:lang( si ),
+	h4:lang( syl ),
+	h4:lang( ta ),
+	h4:lang( tcy ),
+	h4:lang( tdd ),
+	h4:lang( te ),
+	h5:lang( anp ),
+	h5:lang( as ),
+	h5:lang( awa ),
+	h5:lang( bgc ),
+	h5:lang( bh ),
+	h5:lang( bho ),
+	h5:lang( blk ),
+	h5:lang( bn ),
+	h5:lang( bo ),
+	h5:lang( bpy ),
+	h5:lang( ccp ),
+	h5:lang( dty ),
+	h5:lang( dz ),
+	h5:lang( gom ),
+	h5:lang( gu ),
+	h5:lang( hi ),
+	h5:lang( kjp ),
+	h5:lang( km ),
+	h5:lang( kn ),
+	h5:lang( ks ),
+	h5:lang( ksw ),
+	h5:lang( mag ),
+	h5:lang( mai ),
+	h5:lang( ml ),
+	h5:lang( mnw ),
+	h5:lang( mr ),
+	h5:lang( my ),
+	h5:lang( new ),
+	h5:lang( nit ),
+	h5:lang( nod ),
+	h5:lang( or ),
+	h5:lang( pa ),
+	h5:lang( pi ),
+	h5:lang( rki ),
+	h5:lang( sa ),
+	h5:lang( shn ),
+	h5:lang( si ),
+	h5:lang( syl ),
+	h5:lang( ta ),
+	h5:lang( tcy ),
+	h5:lang( tdd ),
+	h5:lang( te ),
+	h6:lang( anp ),
+	h6:lang( as ),
+	h6:lang( awa ),
+	h6:lang( bgc ),
+	h6:lang( bh ),
+	h6:lang( bho ),
+	h6:lang( blk ),
+	h6:lang( bn ),
+	h6:lang( bo ),
+	h6:lang( bpy ),
+	h6:lang( ccp ),
+	h6:lang( dty ),
+	h6:lang( dz ),
+	h6:lang( gom ),
+	h6:lang( gu ),
+	h6:lang( hi ),
+	h6:lang( kjp ),
+	h6:lang( km ),
+	h6:lang( kn ),
+	h6:lang( ks ),
+	h6:lang( ksw ),
+	h6:lang( mag ),
+	h6:lang( mai ),
+	h6:lang( ml ),
+	h6:lang( mnw ),
+	h6:lang( mr ),
+	h6:lang( my ),
+	h6:lang( new ),
+	h6:lang( nit ),
+	h6:lang( nod ),
+	h6:lang( or ),
+	h6:lang( pa ),
+	h6:lang( pi ),
+	h6:lang( rki ),
+	h6:lang( sa ),
+	h6:lang( shn ),
+	h6:lang( si ),
+	h6:lang( syl ),
+	h6:lang( ta ),
+	h6:lang( tcy ),
+	h6:lang( tdd ),
+	h6:lang( te ) {
+	  line-height: 1.4em;
+	}
+	.mw-heading1:lang( ne ),
+	h1:lang( ne ) {
+	  line-height: 1.9;
+	}
+	.mw-heading2:lang( th ),
+	.mw-heading2:lang( ne ),
+	h2:lang( th ),
+	h2:lang( ne ) {
+	  line-height: 1.6;
+	}}@media print {
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	/* stylelint-disable selector-class-pattern */
+	table.floatright,
+	div.floatright,
+	table.floatleft,
+	div.floatleft {
+	  border: 0;
+	}
+	div.thumb {
+	  /* Pagination */
+	  page-break-inside: avoid;
+	}
+	div.thumb a {
+	  border-bottom: 0;
+	}
+	div.thumbinner {
+	  background-color: #fff;
+	  color: #666;
+	  min-width: 100px;
+	  border: 1pt solid #000;
+	  border-radius: 2px;
+	  font-size: 10pt;
+	}
+	.thumbborder {
+	  border: 1pt solid #ddd;
+	}
+	.magnify {
+	  display: none;
+	}
+	
+	/**
+	 * ###IMPORTANT:##
+	 * If editing this file, please also edit the respective file in the MinervaNeue skin.
+	 * ####
+	 *
+	 * This file is a LESS @import match for "mediawiki.skin.variables.less"
+	 * when Vector 2022 is the active skin.
+	 * Please note, that legacy Vector is handled by
+	 * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+	 *
+	 * Please also note, that both current Codex, design system for Wikimedia based skins,
+	 * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+	 * repositories.
+	 */
+	/* stylelint-disable @stylistic/indentation */
+	/**
+	 * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+	 * The CSS variable values are imported in CSSCustomProperties.less.
+	 */
+	figure[typeof~='mw:File/Thumb'],
+	figure[typeof~='mw:File/Frame'] {
+	  border: 1pt;
+	  border-bottom: 0;
+	  background-color: #fff;
+	}
+	figure[typeof~='mw:File/Thumb'] > :not( figcaption ) .mw-file-element,
+	figure[typeof~='mw:File/Frame'] > :not( figcaption ) .mw-file-element {
+	  border: 1pt solid #ddd;
+	}
+	figure[typeof~='mw:File/Thumb'] > figcaption,
+	figure[typeof~='mw:File/Frame'] > figcaption {
+	  background-color: #fff;
+	  color: #666;
+	  font-size: 10pt;
+	  border: 1pt;
+	  border-top: 0;
+	}
+	.mw-image-border .mw-file-element {
+	  border: 1pt;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	.mw-parser-output a.external {
+	  /* Expand URLs for printing */
+	  /* Expand protocol-relative URLs for printing */
+	}
+	.mw-parser-output a.external.text::after,
+	.mw-parser-output a.external.autonumber::after {
+	  content: ' (' attr(href) ')';
+	  word-break: break-all;
+	  word-wrap: break-word;
+	}
+	.mw-parser-output a.external.text[href^='//']:after,
+	.mw-parser-output a.external.autonumber[href^='//']:after {
+	  content: ' (https:' attr(href) ')';
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	.wikitable {
+	  background: #fff;
+	  margin: 1em 0;
+	  border: 1pt solid #aaa;
+	  border-collapse: collapse;
+	  font-size: 10pt;
+	  /* Pagination */
+	  page-break-inside: avoid;
+	}
+	.wikitable > caption {
+	  padding: 5px;
+	  font-size: 10pt;
+	}
+	.wikitable > tr > th,
+	.wikitable > tr > td,
+	.wikitable > * > tr > th,
+	.wikitable > * > tr > td {
+	  /* Important is required to override any inline styles provided by editors */
+	  background: #fff !important;
+	  /* stylelint-disable-line declaration-no-important */
+	  /* We need to also set color in case editors applied a light text color */
+	  color: #000 !important;
+	  /* stylelint-disable-line declaration-no-important */
+	  border: 1pt solid #aaa;
+	  padding: 0.4em 0.6em;
+	}
+	.wikitable > tr > th,
+	.wikitable > * > tr > th {
+	  text-align: center;
+	}
+	table.listing,
+	table.listing td {
+	  border: 1pt solid #000;
+	  border-collapse: collapse;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	.catlinks ul {
+	  display: inline;
+	  padding: 0;
+	  list-style: none;
+	}
+	.catlinks li {
+	  display: inline-block;
+	  line-height: 1.15;
+	  margin: 0.1em 0;
+	  border-left: 1pt solid #aaa;
+	  padding: 0 0.4em;
+	}
+	.catlinks li:first-child {
+	  border-left: 0;
+	  padding-left: 0.2em;
+	}
+	.mw-hidden-catlinks,
+	.catlinks {
+	  display: none;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	.mw-editsection,
+	.mw-editsection-like,
+	.mw-indicators,
+	#siteNotice,
+	.usermessage {
+	  display: none;
+	}
+	.printfooter {
+	  clear: both;
+	  padding: 1em 0;
+	}
+	
+	/* stylelint-disable selector-class-pattern */
+	.center {
+	  text-align: center;
+	}
+	/* Links */
+	a {
+	  background: none !important;
+	  /* stylelint-disable-line declaration-no-important */
+	  padding: 0 !important;
+	  /* stylelint-disable-line declaration-no-important */
+	}
+	a,
+	a.external,
+	a.new,
+	a.stub {
+	  color: inherit !important;
+	  /* stylelint-disable-line declaration-no-important */
+	  text-decoration: inherit !important;
+	  /* stylelint-disable-line declaration-no-important */
+	}
+	dt {
+	  font-weight: bold;
+	}
+	.mw-heading,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+	  font-weight: bold;
+	  /* Pagination */
+	  page-break-after: avoid;
+	}
+	p {
+	  margin: 1em 0;
+	  line-height: 1.2;
+	  /* Pagination */
+	  /* oprhans/widows not supported by Firefox */
+	  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	  orphans: 3;
+	  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+	  widows: 3;
+	}
+	img,
+	figure {
+	  /* Pagination */
+	  page-break-inside: avoid;
+	}
+	img {
+	  border: 0;
+	  vertical-align: middle;
+	}
+	pre,
+	.mw-code {
+	  background: #fff;
+	  color: #000;
+	  border: 1pt dashed #000;
+	  padding: 1em;
+	  font-size: 8pt;
+	  white-space: pre-wrap;
+	  /* Create a new block formatting context */
+	  overflow-x: hidden;
+	  /* Break really long words when they overflow to the next line */
+	  word-wrap: break-word;
+	}
+	ul {
+	  list-style-type: square;
+	}}/**
+ * ###IMPORTANT:##
+ * If editing this file, please also edit the respective file in the MinervaNeue skin.
+ * ####
+ *
+ * This file is a LESS @import match for "mediawiki.skin.variables.less"
+ * when Vector 2022 is the active skin.
+ * Please note, that legacy Vector is handled by
+ * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+ *
+ * Please also note, that both current Codex, design system for Wikimedia based skins,
+ * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+ * repositories.
+ */
+/* stylelint-disable @stylistic/indentation */
+/**
+ * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+ * The CSS variable values are imported in CSSCustomProperties.less.
+ */
+/**
+ * Codex Design Tokens v2.0.0-rc.1
+ * Design System for Wikimedia
+ * See https://doc.wikimedia.org/codex/latest/design-tokens/overview.html
+ */
+/**
+ * Codex Design Tokens v2.0.0-rc.1
+ * Design System for Wikimedia
+ * See https://doc.wikimedia.org/codex/latest/design-tokens/overview.html
+ */
+/**
+ * T365764 - OOUI Icon classes for inverted dark-mode icons.
+ * This includes OOUI icons that are not colored (progressive/destructive), checkbox icons, and
+ * indicator widgets.
+ */
+@media screen {
+  /**
+	 * Light mode
+	 *
+	 * Applies the light mode color palette by default
+	 * or with the .skin-invert, or .notheme classes
+	 */
+  :root,
+  .skin-invert,
+  .notheme {
+    --color-base: #202122;
+    --color-base-fixed: #202122;
+    --color-base--hover: #404244;
+    --color-emphasized: #101418;
+    --color-subtle: #54595d;
+    --color-placeholder: #72777d;
+    --color-disabled: #a2a9b1;
+    --color-disabled-emphasized: #a2a9b1;
+    --color-inverted: #fff;
+    --color-inverted-fixed: #fff;
+    /* The same as color-inverted in light mode, but does not change in dark mode. Use this for things that should be white in both modes. */
+    --color-progressive: #36c;
+    /* 'Progressive' Color and states */
+    --color-progressive--hover: #3056a9;
+    --color-progressive--active: #233566;
+    --color-progressive--focus: #36c;
+    --color-destructive: #bf3c2c;
+    /* 'Destructive' Color and states */
+    --color-destructive--hover: #9f3526;
+    --color-destructive--active: #612419;
+    --color-destructive--focus: #36c;
+    --color-visited: #6a60b0;
+    /* 'Visited' color. In combination with progressive. Used for default links. */
+    --color-visited--hover: #534fa3;
+    --color-visited--active: #353262;
+    --color-destructive--visited: #9f5555;
+    /* Red link 'Visited' color. Used for visited red links. */
+    --color-destructive--visited--hover: #854848;
+    --color-destructive--visited--active: #512e2e;
+    --color-error: #bf3c2c;
+    --color-error--hover: #9f3526;
+    --color-error--active: #612419;
+    --color-warning: #886425;
+    --color-success: #177860;
+    --color-notice: #404244;
+    --color-icon-error: #f54739;
+    --color-icon-warning: #ab7f2a;
+    --color-icon-success: #099979;
+    --color-icon-notice: #72777d;
+    --color-content-added: #006400;
+    --color-content-removed: #8b0000;
+    --filter-invert-icon: 0;
+    --filter-invert-primary-button-icon: 1;
+    --box-shadow-color-base: #a2a9b1;
+    --box-shadow-color-progressive--active: #233566;
+    --box-shadow-color-progressive--focus: #36c;
+    --box-shadow-color-progressive-selected: #36c;
+    --box-shadow-color-progressive-selected--hover: #3056a9;
+    --box-shadow-color-progressive-selected--active: #233566;
+    --box-shadow-color-destructive--focus: #36c;
+    --box-shadow-color-inverted: #fff;
+    --box-shadow-color-alpha-base: rgba(0, 0, 0, 0.06);
+    --box-shadow-color-transparent: transparent;
+    --mix-blend-mode-base: normal;
+    --mix-blend-mode-blend: multiply;
+    --background-color-base: #fff;
+    /* Background Colors for static elements (for page layout, sections, etc.) from here on. */
+    --background-color-base-fixed: #fff;
+    /* The same as background-color-base in light mode, but does not change in dark mode. Use this for things that should be white in both modes. */
+    --background-color-neutral: #eaecf0;
+    --background-color-neutral-subtle: #f8f9fa;
+    --background-color-interactive: #eaecf0;
+    --background-color-interactive--hover: #dadde3;
+    --background-color-interactive--active: #c8ccd1;
+    --background-color-interactive-subtle: #f8f9fa;
+    --background-color-interactive-subtle--hover: #eaecf0;
+    --background-color-interactive-subtle--active: #dadde3;
+    --background-color-disabled: #dadde3;
+    /* Components like Buttons, Checkboxes, Radios, ProgressBars…. */
+    --background-color-disabled-subtle: #eaecf0;
+    /* Components like TextInputs, Selects…. */
+    --background-color-inverted: #101418;
+    --background-color-progressive: #36c;
+    --background-color-progressive--hover: #3056a9;
+    --background-color-progressive--active: #233566;
+    --background-color-progressive--focus: #36c;
+    --background-color-progressive-subtle: #f1f4fd;
+    --background-color-progressive-subtle--hover: #dce3f9;
+    --background-color-progressive-subtle--active: #cbd6f6;
+    --background-color-destructive: #bf3c2c;
+    --background-color-destructive--hover: #9f3526;
+    --background-color-destructive--active: #612419;
+    --background-color-destructive--focus: #36c;
+    --background-color-destructive-subtle: #ffe9e5;
+    --background-color-destructive-subtle--hover: #ffdad3;
+    --background-color-destructive-subtle--active: #ffc8bd;
+    --background-color-error: #f54739;
+    --background-color-error--hover: #d74032;
+    --background-color-error--active: #bf3c2c;
+    --background-color-error-subtle: #ffe9e5;
+    --background-color-error-subtle--hover: #ffdad3;
+    --background-color-error-subtle--active: #ffc8bd;
+    --background-color-warning-subtle: #fdf2d5;
+    --background-color-success-subtle: #dff2eb;
+    --background-color-notice-subtle: #eaecf0;
+    --background-color-content-added: #a3d3ff;
+    --background-color-content-removed: #ffe49c;
+    --background-color-transparent: transparent;
+    --background-color-backdrop-light: rgba(255, 255, 255, 0.65);
+    /* Backdrop is the term used by CSS Fullscreen API and is used to dim the background when a modal Dialog is open. Also known as overlay mask. */
+    --background-color-backdrop-dark: rgba(0, 0, 0, 0.65);
+    --background-color-button-quiet--hover: rgba(0, 24, 73, 0.027);
+    --background-color-button-quiet--active: rgba(0, 24, 73, 0.082);
+    --background-color-input-binary--checked: #36c;
+    --background-color-tab-list-item-framed--hover: rgba(255, 255, 255, 0.3);
+    --background-color-tab-list-item-framed--active: rgba(255, 255, 255, 0.65);
+    --opacity-icon-base: 0.87;
+    --opacity-icon-base--hover: 0.74;
+    --opacity-icon-base--selected: 1;
+    --opacity-icon-base--disabled: 0.51;
+    --opacity-icon-placeholder: 0.51;
+    --opacity-icon-subtle: 0.67;
+    --border-color-base: #a2a9b1;
+    --border-color-subtle: #c8ccd1;
+    --border-color-muted: #dadde3;
+    --border-color-interactive: #72777d;
+    --border-color-interactive--hover: #27292d;
+    --border-color-interactive--active: #202122;
+    --border-color-disabled: #c8ccd1;
+    --border-color-inverted: #fff;
+    --border-color-inverted-fixed: #fff;
+    /* The same as color-inverted in light mode, but does not change in dark mode. Use this for things that should be white in both modes. */
+    --border-color-progressive: #6485d1;
+    --border-color-progressive--hover: #3056a9;
+    --border-color-progressive--active: #233566;
+    --border-color-progressive--focus: #36c;
+    --border-color-destructive: #f54739;
+    --border-color-destructive--hover: #9f3526;
+    --border-color-destructive--active: #612419;
+    --border-color-destructive--focus: #36c;
+    --border-color-error: #f54739;
+    --border-color-error--hover: #9f3526;
+    --border-color-error--active: #612419;
+    --border-color-warning: #ab7f2a;
+    --border-color-success: #099979;
+    --border-color-notice: #72777d;
+    --border-color-content-added: #a3d3ff;
+    --border-color-content-removed: #ffe49c;
+    --border-color-transparent: transparent;
+    --border-color-divider: #a2a9b1;
+    --outline-color-progressive--focus: #36c;
+    /* Use in places where no more customized focus styles are provided, for example on generic `:focus`. */
+    --color-link-red: var(--color-destructive);
+    /* Red ('new') Link color and states */
+    --color-link-red--hover: var(--color-destructive--hover);
+    --color-link-red--active: var(--color-destructive--active);
+    --color-link-red--focus: var(--color-destructive--focus);
+    --color-link-red--visited: var(--color-destructive--visited);
+    --color-link-red--visited--hover: var(--color-destructive--visited--hover);
+    --color-link-red--visited--active: var(--color-destructive--visited--active);
+    --accent-color-base: #36c;
+    --border-color-input--hover: var(--border-color-interactive);
+    --border-color-input-binary: var(--border-color-interactive);
+    --border-color-input-binary--hover: var(--border-color-progressive--hover);
+    --border-color-input-binary--active: var(--border-color-progressive--active);
+    --border-color-input-binary--focus: var(--border-color-progressive--focus);
+    --border-color-input-binary--checked: var(--border-color-progressive);
+    /* DEPRECATED TOKENS */
+    /* Warning: the following token name is deprecated (Use `color-subtle` instead. Note, that `color-subtle` is using `color.gray600` instead of `color.gray500` now.) */
+    --color-base--subtle: #54595d;
+  }
+  /**
+	 * Forced night mode.
+	 *
+	 * Applies the night mode color palette per the users explicit preference,
+	 * regardless of system settings.
+	 */
+  html.skin-theme-clientpref-night {
+    color-scheme: dark;
+    --color-base: #eaecf0;
+    --color-base--hover: #f8f9fa;
+    --color-emphasized: #f8f9fa;
+    --color-subtle: #a2a9b1;
+    --color-disabled: #54595d;
+    --color-disabled-emphasized: #72777d;
+    --color-inverted: #101418;
+    --color-progressive: #88a3e8;
+    /* 'Progressive' Color and states */
+    --color-progressive--hover: #b0c1f0;
+    --color-progressive--active: #cbd6f6;
+    --color-destructive: #fd7865;
+    /* 'Destructive' Color and states */
+    --color-destructive--hover: #fea898;
+    --color-destructive--active: #ffc8bd;
+    --color-visited: #a799cd;
+    /* 'Visited' color. In combination with progressive. Used for default links. */
+    --color-visited--hover: #c5b9dd;
+    --color-visited--active: #d9d0e9;
+    --color-destructive--visited: #c99391;
+    /* Red link 'Visited' color. Used for visited red links. */
+    --color-destructive--visited--hover: #dcb5b3;
+    --color-destructive--visited--active: #e8cecd;
+    --color-error: #fd7865;
+    --color-error--hover: #fea898;
+    --color-error--active: #ffc8bd;
+    --color-warning: #ca982e;
+    --color-success: #2cb491;
+    --color-notice: #a2a9b1;
+    --color-content-added: #80cdb3;
+    --color-content-removed: #fd7865;
+    --color-base--subtle: #a2a9b1;
+    --box-shadow-color-base: #72777d;
+    --box-shadow-color-progressive--focus: #6485d1;
+    --box-shadow-color-progressive-selected: #88a3e8;
+    --box-shadow-color-progressive-selected--hover: #b0c1f0;
+    --box-shadow-color-progressive-selected--active: #cbd6f6;
+    --box-shadow-color-destructive--focus: #6485d1;
+    --box-shadow-color-inverted: #000;
+    --box-shadow-color-alpha-base: rgba(0, 0, 0, 0.87);
+    --mix-blend-mode-blend: screen;
+    --background-color-base: #101418;
+    /* Background Colors for static elements (for page layout, sections, etc.) from here on. */
+    --background-color-neutral: #27292d;
+    --background-color-neutral-subtle: #202122;
+    --background-color-interactive: #27292d;
+    --background-color-interactive--hover: #404244;
+    --background-color-interactive--active: #54595d;
+    --background-color-interactive-subtle: #202122;
+    --background-color-interactive-subtle--hover: #27292d;
+    --background-color-interactive-subtle--active: #404244;
+    --background-color-disabled: #404244;
+    /* Components like Buttons, Checkboxes, Radios, ProgressBars…. */
+    --background-color-disabled-subtle: #27292d;
+    /* Components like TextInputs, Selects…. */
+    --background-color-inverted: #f8f9fa;
+    --background-color-progressive--focus: #6485d1;
+    --background-color-progressive-subtle: #1b223d;
+    --background-color-progressive-subtle--hover: #233566;
+    --background-color-progressive-subtle--active: #3056a9;
+    --background-color-destructive--focus: #6485d1;
+    --background-color-destructive-subtle: #3c1a13;
+    --background-color-destructive-subtle--hover: #612419;
+    --background-color-destructive-subtle--active: #9f3526;
+    --background-color-error-subtle: #3c1a13;
+    --background-color-error-subtle--hover: #612419;
+    --background-color-error-subtle--active: #9f3526;
+    --background-color-warning-subtle: #2d2212;
+    --background-color-success-subtle: #132821;
+    --background-color-notice-subtle: #27292d;
+    --background-color-content-added: #233566;
+    --background-color-content-removed: #453217;
+    --background-color-backdrop-light: rgba(0, 0, 0, 0.65);
+    /* Backdrop is the term used by CSS Fullscreen API and is used to dim the background when a modal Dialog is open. Also known as overlay mask. */
+    --background-color-backdrop-dark: rgba(255, 255, 255, 0.65);
+    --border-color-base: #72777d;
+    --border-color-subtle: #54595d;
+    --border-color-muted: #404244;
+    --border-color-interactive--hover: #a2a9b1;
+    --border-color-interactive--active: #c8ccd1;
+    --border-color-disabled: #54595d;
+    --border-color-inverted: #101418;
+    --border-color-progressive--hover: #88a3e8;
+    --border-color-progressive--active: #b0c1f0;
+    --border-color-progressive--focus: #6485d1;
+    --border-color-destructive--hover: #fd7865;
+    --border-color-destructive--active: #fea898;
+    --border-color-destructive--focus: #6485d1;
+    --border-color-error--hover: #fd7865;
+    --border-color-error--active: #fea898;
+    --border-color-content-added: #233566;
+    --border-color-content-removed: #987027;
+  }
+  /**
+	 * Inverted Dark-mode
+	 * Creates a dark-mode effect on elements by flipping their color,
+	 * (usually from black to white).
+	 * Applied as a last resort when using CSS variables is not possible.
+	 * NOTE: `.skin-invert` is used in templates and user generated content.
+	 *
+	 * - T365102 invert class specifically for image related element
+	 * - T365764 special treatment of inverted OOUI icons
+	 */
+  html.skin-theme-clientpref-night .skin-invert-image img,
+  html.skin-theme-clientpref-night .skin-invert,
+  html.skin-theme-clientpref-night .oo-ui-iconElement-icon:not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ):not( .oo-ui-checkboxInputWidget-checkIcon ):not( .oo-ui-image-invert ):not( .mw-no-invert ),
+  html.skin-theme-clientpref-night .oo-ui-indicatorElement-indicator {
+    color-scheme: light;
+    filter: invert(1) hue-rotate(180deg);
+  }
+  /**
+	 * Forced light mode.
+	 * Makes elements appear in light-mode when dark-mode is enabled.
+	 * NOTE: might be used in templates and user generated content.
+	 */
+  html.skin-theme-clientpref-night .notheme {
+    color-scheme: light;
+    color: var(--color-base);
+  }
+  /**
+	 * Prevent double inversion.
+	 * Do not apply invert to elements that are inside a notheme or a skin-invert class to avoid inversion in light theme or
+	 * double inversion in an already inverted element
+	 * - OOUI icons inside .notheme OOUI elements
+	 * - OOUI icons inside elements with .skin-invert
+	 * - OOUI icons inside elements with .notheme
+	 */
+  .skin-invert .oo-ui-indicatorElement-indicator,
+  .notheme .oo-ui-indicatorElement-indicator,
+  .skin-invert .oo-ui-iconElement-icon:not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ):not( .oo-ui-checkboxInputWidget-checkIcon ):not( .oo-ui-image-invert ):not( .mw-no-invert ),
+  .notheme .oo-ui-iconElement-icon:not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ):not( .oo-ui-checkboxInputWidget-checkIcon ):not( .oo-ui-image-invert ):not( .mw-no-invert ) {
+    filter: none !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  /**
+	 * Font size settings
+	 *
+	 * Notes:
+	 * `.mw-body-content .cdx-message` selector:
+	 * Temporary workaround to prevent Codex messages from scaling with text size T391890.
+	 * Remove the workaround once font size modes are fully integrated in Vector.
+	 *
+	 * `.no-font-mode-scale` (@unstable) selector:
+	 * Temporary and not be considered stable class, which is not designed for use in
+	 * article content.
+	 */
+  html.vector-feature-custom-font-size-clientpref--excluded,
+  .vector-feature-custom-font-size-clientpref--excluded,
+  html.vector-feature-custom-font-size-clientpref-0,
+  .no-font-mode-scale,
+  .mw-body-content .cdx-message {
+    --font-size-medium: var(--font-size-small, 0.875rem);
+    --line-height-medium: 1.5714285;
+  }
+  html.vector-feature-custom-font-size-clientpref-1 {
+    --font-size-medium: var(--font-size-medium, 1rem);
+    --line-height-medium: 1.6;
+  }
+  html.vector-feature-custom-font-size-clientpref-2 {
+    --font-size-medium: var(--font-size-x-large, 1.25rem);
+    --line-height-medium: 1.5;
+  }
+}
+/**
+ * Auto night mode.
+ *
+ * Applies the night mode color palette only in response to system settings.
+ */
+@media screen and (prefers-color-scheme: dark) {
+  html.skin-theme-clientpref-os {
+    color-scheme: light dark;
+    --color-base: #eaecf0;
+    --color-base--hover: #f8f9fa;
+    --color-emphasized: #f8f9fa;
+    --color-subtle: #a2a9b1;
+    --color-disabled: #54595d;
+    --color-disabled-emphasized: #72777d;
+    --color-inverted: #101418;
+    --color-progressive: #88a3e8;
+    /* 'Progressive' Color and states */
+    --color-progressive--hover: #b0c1f0;
+    --color-progressive--active: #cbd6f6;
+    --color-destructive: #fd7865;
+    /* 'Destructive' Color and states */
+    --color-destructive--hover: #fea898;
+    --color-destructive--active: #ffc8bd;
+    --color-visited: #a799cd;
+    /* 'Visited' color. In combination with progressive. Used for default links. */
+    --color-visited--hover: #c5b9dd;
+    --color-visited--active: #d9d0e9;
+    --color-destructive--visited: #c99391;
+    /* Red link 'Visited' color. Used for visited red links. */
+    --color-destructive--visited--hover: #dcb5b3;
+    --color-destructive--visited--active: #e8cecd;
+    --color-error: #fd7865;
+    --color-error--hover: #fea898;
+    --color-error--active: #ffc8bd;
+    --color-warning: #ca982e;
+    --color-success: #2cb491;
+    --color-notice: #a2a9b1;
+    --color-content-added: #80cdb3;
+    --color-content-removed: #fd7865;
+    --color-base--subtle: #a2a9b1;
+    --box-shadow-color-base: #72777d;
+    --box-shadow-color-progressive--focus: #6485d1;
+    --box-shadow-color-progressive-selected: #88a3e8;
+    --box-shadow-color-progressive-selected--hover: #b0c1f0;
+    --box-shadow-color-progressive-selected--active: #cbd6f6;
+    --box-shadow-color-destructive--focus: #6485d1;
+    --box-shadow-color-inverted: #000;
+    --box-shadow-color-alpha-base: rgba(0, 0, 0, 0.87);
+    --mix-blend-mode-blend: screen;
+    --background-color-base: #101418;
+    /* Background Colors for static elements (for page layout, sections, etc.) from here on. */
+    --background-color-neutral: #27292d;
+    --background-color-neutral-subtle: #202122;
+    --background-color-interactive: #27292d;
+    --background-color-interactive--hover: #404244;
+    --background-color-interactive--active: #54595d;
+    --background-color-interactive-subtle: #202122;
+    --background-color-interactive-subtle--hover: #27292d;
+    --background-color-interactive-subtle--active: #404244;
+    --background-color-disabled: #404244;
+    /* Components like Buttons, Checkboxes, Radios, ProgressBars…. */
+    --background-color-disabled-subtle: #27292d;
+    /* Components like TextInputs, Selects…. */
+    --background-color-inverted: #f8f9fa;
+    --background-color-progressive--focus: #6485d1;
+    --background-color-progressive-subtle: #1b223d;
+    --background-color-progressive-subtle--hover: #233566;
+    --background-color-progressive-subtle--active: #3056a9;
+    --background-color-destructive--focus: #6485d1;
+    --background-color-destructive-subtle: #3c1a13;
+    --background-color-destructive-subtle--hover: #612419;
+    --background-color-destructive-subtle--active: #9f3526;
+    --background-color-error-subtle: #3c1a13;
+    --background-color-error-subtle--hover: #612419;
+    --background-color-error-subtle--active: #9f3526;
+    --background-color-warning-subtle: #2d2212;
+    --background-color-success-subtle: #132821;
+    --background-color-notice-subtle: #27292d;
+    --background-color-content-added: #233566;
+    --background-color-content-removed: #453217;
+    --background-color-backdrop-light: rgba(0, 0, 0, 0.65);
+    /* Backdrop is the term used by CSS Fullscreen API and is used to dim the background when a modal Dialog is open. Also known as overlay mask. */
+    --background-color-backdrop-dark: rgba(255, 255, 255, 0.65);
+    --border-color-base: #72777d;
+    --border-color-subtle: #54595d;
+    --border-color-muted: #404244;
+    --border-color-interactive--hover: #a2a9b1;
+    --border-color-interactive--active: #c8ccd1;
+    --border-color-disabled: #54595d;
+    --border-color-inverted: #101418;
+    --border-color-progressive--hover: #88a3e8;
+    --border-color-progressive--active: #b0c1f0;
+    --border-color-progressive--focus: #6485d1;
+    --border-color-destructive--hover: #fd7865;
+    --border-color-destructive--active: #fea898;
+    --border-color-destructive--focus: #6485d1;
+    --border-color-error--hover: #fd7865;
+    --border-color-error--active: #fea898;
+    --border-color-content-added: #233566;
+    --border-color-content-removed: #987027;
+  }
+  html.skin-theme-clientpref-os .notheme {
+    color-scheme: light;
+    color: var(--color-base);
+  }
+  html.skin-theme-clientpref-os .skin-invert-image img,
+  html.skin-theme-clientpref-os .skin-invert,
+  html.skin-theme-clientpref-os .oo-ui-iconElement-icon:not( .oo-ui-image-progressive ):not( .oo-ui-image-destructive ):not( .oo-ui-checkboxInputWidget-checkIcon ):not( .oo-ui-image-invert ):not( .mw-no-invert ),
+  html.skin-theme-clientpref-os .oo-ui-indicatorElement-indicator {
+    color-scheme: light;
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+/**
+ * Vector modern stylesheets
+ * See '../common/common.less' for common screen and print Vector stylesheets.
+ */
+/**
+ * ###IMPORTANT:##
+ * If editing this file, please also edit the respective file in the MinervaNeue skin.
+ * ####
+ *
+ * This file is a LESS @import match for "mediawiki.skin.variables.less"
+ * when Vector 2022 is the active skin.
+ * Please note, that legacy Vector is handled by
+ * "mediawiki.less.legacy/mediawiki.skin.variables.less".
+ *
+ * Please also note, that both current Codex, design system for Wikimedia based skins,
+ * Vector 2022 and Minerva Neue are using the same variable values respectively in their
+ * repositories.
+ */
+/* stylelint-disable @stylistic/indentation */
+/**
+ * Codex design tokens. This imports Less variables, some of which refer to CSS variables.
+ * The CSS variable values are imported in CSSCustomProperties.less.
+ */
+/* Use of minmax is important to restrict the maximum grid column width more information: T314756 */
+/**
+ * Less mixins.
+ */
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable selector-no-vendor-prefix */
+/* stylelint-enable selector-no-vendor-prefix */
+@media screen {
+  /**
+ * Vector modern layout styles for screen
+ *
+ * Layout rules divide the page into sections and how VectorComponents should be arranged in the skin.
+ * The rules here should only define the layout, not color or typography.
+ */
+  html {
+    scroll-padding-top: 75px;
+  }
+  body {
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    color: var(--color-base, #202122);
+  }
+  .mw-body,
+  .parsoid-body {
+    direction: ltr;
+  }
+  .mw-body .firstHeading {
+    word-wrap: break-word;
+    margin-bottom: 0;
+  }
+  .mw-header {
+    position: relative;
+    z-index: 3;
+  }
+  #mw-content-text {
+    margin-top: 16px;
+  }
+  /* Content */
+  .mw-indicators {
+    z-index: 1;
+  }
+  .vector-page-titlebar {
+    box-shadow: none;
+  }
+  .vector-page-titlebar::after {
+    clear: both;
+    content: '';
+    display: block;
+  }
+  .vector-page-titlebar::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-color-base, #a2a9b1);
+  }
+  .vector-page-titlebar-blank::after {
+    content: none;
+  }
+  .vector-body-before-content {
+    overflow: hidden;
+  }
+  .vector-body-before-content .mw-indicators {
+    margin-top: 8px;
+  }
+  .mw-body .mw-portlet-lang {
+    float: right;
+  }
+  .vector-body {
+    position: relative;
+    z-index: 0;
+  }
+  #siteSub {
+    margin-top: 8px;
+  }
+  #contentSub:not( :empty ),
+  #contentSub2 {
+    font-size: var(--font-size-small, 0.875rem);
+    color: var(--color-subtle, #54595d);
+    width: auto;
+    margin: 8px 0 0;
+  }
+  .mw-page-container {
+    min-width: 18.75em;
+    max-width: 99.75rem;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 0;
+    margin: 0 auto;
+    padding-top: 0.05px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    background-color: var(--background-color-base, #fff);
+  }
+  .vector-header-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .vector-header-container .mw-header,
+  .vector-header-container .vector-sticky-header {
+    width: 100%;
+    min-height: 3.125rem;
+    background-color: var(--background-color-base, #fff);
+    min-width: 18.75em;
+    max-width: 99.75rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+  }
+  .vector-feature-limited-width-clientpref-0 .mw-page-container,
+  .vector-feature-limited-width-clientpref-0 .vector-sticky-header,
+  .vector-feature-limited-width-clientpref-0 .mw-header {
+    max-width: none;
+  }
+  .skin--responsive .mw-page-container {
+    min-width: auto;
+  }
+  html {
+    touch-action: manipulation;
+  }
+  .vector-feature-main-menu-pinned-disabled.vector-toc-not-available .mw-page-container-inner,
+  .vector-feature-main-menu-pinned-disabled.vector-feature-toc-pinned-clientpref-0 .mw-page-container-inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'siteNotice' 'pageContent' 'columnStart' 'footer';
+  }
+  .vector-feature-main-menu-pinned-disabled.vector-toc-not-available .mw-page-container-inner .mw-body,
+  .vector-feature-main-menu-pinned-disabled.vector-feature-toc-pinned-clientpref-0 .mw-page-container-inner .mw-body {
+    justify-content: center;
+  }
+  .vector-column-start {
+    margin-left: -12px;
+  }
+  .vector-column-start .vector-main-menu-container {
+    margin-left: 12px;
+  }
+  .mixin-toc-below-page-title {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    margin: 0;
+    z-index: 50;
+  }
+  .client-nojs.vector-feature-toc-pinned-clientpref-0 .vector-page-titlebar-toc {
+    margin-right: 8px;
+  }
+  .client-nojs.vector-feature-toc-pinned-clientpref-0 .vector-page-titlebar-toc .vector-dropdown-content {
+    max-width: none;
+  }
+  .client-nojs.vector-feature-toc-pinned-clientpref-0 .vector-page-titlebar-toc .vector-toc {
+    width: max-content;
+    min-width: 200px;
+    max-width: min( 0.85 * 59.25rem, 75vw );
+  }
+  /*
+ * Normalize styles across rendering engines.
+ * Ideally, these rules should live in core and be shared across skins.
+ *
+ */
+  html,
+  body {
+    height: 100%;
+  }
+  :focus {
+    outline-color: var(--outline-color-progressive--focus, #36c);
+  }
+  /*
+ * Vector's common typography rules,
+ * including whitespace with `margin` & `padding` and list bullets
+ * as part of typographic styles. Iconography wouldn't belong here.
+ *
+ */
+  html {
+    font-size: 100%;
+  }
+  html,
+  body {
+    font-family: sans-serif;
+  }
+  ul {
+    list-style-type: disc;
+  }
+  pre,
+  .mw-code {
+    line-height: 1.3;
+  }
+  .mw-jump-link:not( :focus ) {
+    display: block;
+    position: absolute !important;
+    /* stylelint-disable-line declaration-no-important */
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  /* Use unscoped selector to allow edit sections outside of .mw-body-content and .vector-body (T160269) */
+  .mw-editsection,
+  .mw-editsection-like {
+    font-family: sans-serif;
+  }
+  /* Main content area, including siteNotice, indicators, categories, firstHeading and `.vector-body`. */
+  .mw-body h1,
+  .mw-body .mw-heading1,
+  .mw-body-content h1,
+  .mw-body-content .mw-heading1,
+  .mw-body-content h2,
+  .mw-body-content .mw-heading2 {
+    font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+    line-height: 1.375;
+    /* Burmese (Myanmar) language headlines would be cropped with set `line-height` */
+    /* See T193270 */
+  }
+  .mw-body h1:lang( ja ),
+  .mw-body .mw-heading1:lang( ja ),
+  .mw-body-content h1:lang( ja ),
+  .mw-body-content .mw-heading1:lang( ja ),
+  .mw-body-content h2:lang( ja ),
+  .mw-body-content .mw-heading2:lang( ja ),
+  .mw-body h1:lang( he ),
+  .mw-body .mw-heading1:lang( he ),
+  .mw-body-content h1:lang( he ),
+  .mw-body-content .mw-heading1:lang( he ),
+  .mw-body-content h2:lang( he ),
+  .mw-body-content .mw-heading2:lang( he ),
+  .mw-body h1:lang( ko ),
+  .mw-body .mw-heading1:lang( ko ),
+  .mw-body-content h1:lang( ko ),
+  .mw-body-content .mw-heading1:lang( ko ),
+  .mw-body-content h2:lang( ko ),
+  .mw-body-content .mw-heading2:lang( ko ) {
+    /* See T65827 */
+    font-family: sans-serif;
+  }
+  .mw-body h1:lang( ckb ),
+  .mw-body .mw-heading1:lang( ckb ),
+  .mw-body-content h1:lang( ckb ),
+  .mw-body-content .mw-heading1:lang( ckb ),
+  .mw-body-content h2:lang( ckb ),
+  .mw-body-content .mw-heading2:lang( ckb ) {
+    /* See T306317 */
+    font-family: 'Scheherazade', 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+  }
+  .mw-body h1:lang( my ),
+  .mw-body .mw-heading1:lang( my ),
+  .mw-body-content h1:lang( my ),
+  .mw-body-content .mw-heading1:lang( my ),
+  .mw-body-content h2:lang( my ),
+  .mw-body-content .mw-heading2:lang( my ) {
+    line-height: normal;
+  }
+  .mw-body h1,
+  .mw-body .mw-heading1,
+  .mw-body-content h1,
+  .mw-body-content .mw-heading1 {
+    font-size: 1.8em;
+  }
+  .mw-body .mw-heading2,
+  .mw-body h2 {
+    font-size: 1.5em;
+  }
+  .mw-body .mw-heading3,
+  .mw-body h3,
+  .mw-body .mw-heading4,
+  .mw-body h4,
+  .mw-body .mw-heading5,
+  .mw-body h5,
+  .mw-body .mw-heading6,
+  .mw-body h6 {
+    padding-bottom: 0;
+    line-height: 1.6;
+  }
+  .mw-body .mw-heading2,
+  .mw-body h2,
+  .mw-body .mw-heading3,
+  .mw-body h3,
+  .mw-body .mw-heading4,
+  .mw-body h4,
+  .mw-body .mw-heading5,
+  .mw-body h5,
+  .mw-body .mw-heading6,
+  .mw-body h6 {
+    display: inline;
+    margin: 0.25em 0 0.25em 0;
+  }
+  .mw-body .mw-heading3,
+  .mw-body h3 {
+    font-size: 1.2em;
+  }
+  .mw-body .mw-heading3,
+  .mw-body h3,
+  .mw-body .mw-heading4,
+  .mw-body h4 {
+    font-weight: bold;
+  }
+  .mw-body .mw-heading4,
+  .mw-body h4,
+  .mw-body .mw-heading5,
+  .mw-body h5,
+  .mw-body .mw-heading6,
+  .mw-body h6 {
+    font-size: 100%;
+  }
+  .mw-body .mw-heading1 h1,
+  .mw-body .mw-heading2 h2,
+  .mw-body .mw-heading3 h3,
+  .mw-body .mw-heading4 h4,
+  .mw-body .mw-heading5 h5,
+  .mw-body .mw-heading6 h6 {
+    margin-top: 0;
+    font-size: inherit;
+  }
+  .mw-body p {
+    margin: 0.5em 0 1em 0;
+  }
+  .mw-body p + ul,
+  .mw-body p + ol,
+  .mw-body p + table,
+  .mw-body p + dl,
+  .mw-body p + blockquote {
+    margin-top: -0.5em;
+  }
+  .mw-body blockquote {
+    border-left: 4px solid var(--border-color-muted, #dadde3);
+    padding: 8px 32px;
+  }
+  .mw-body blockquote > :first-child {
+    margin-top: 0;
+  }
+  .mw-body blockquote > :last-child {
+    margin-bottom: 0;
+  }
+  #siteSub {
+    font-size: var(--font-size-small, 0.875rem);
+    display: none;
+  }
+  .vector-body {
+    font-size: var(--font-size-medium);
+    line-height: var(--line-height-medium);
+  }
+  /*
+ * This not does apply to links with role button per discussion on T373989
+ * The `where` it used here as specificity is important so support overriding
+ * in skins and extensions.
+ * When changing this file - DO NOT disable stylelint rule selector-max-specificity
+*/
+  a:where( :not( [ role='button' ] )) {
+    color: var(--color-progressive, #36c);
+    border-radius: 2px;
+    text-decoration: none;
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  }
+  a:where( :not( [ role='button' ] )):visited {
+    color: var(--color-visited, #6a60b0);
+  }
+  a:where( :not( [ role='button' ] )):visited:hover {
+    color: var(--color-visited--hover, #534fa3);
+  }
+  a:where( :not( [ role='button' ] )):visited:active {
+    color: var(--color-visited--active, #353262);
+  }
+  a:where( :not( [ role='button' ] )):hover {
+    color: var(--color-progressive--hover, #3056a9);
+    text-decoration: underline;
+  }
+  a:where( :not( [ role='button' ] )):active {
+    color: var(--color-progressive--active, #233566);
+    text-decoration: underline;
+  }
+  a:where( :not( [ role='button' ] )):focus-visible {
+    outline: solid 2px var(--outline-color-progressive--focus, #36c);
+  }
+  @supports not selector( :focus-visible ) {
+    a:where( :not( [ role='button' ] )):focus {
+      outline: solid 2px var(--outline-color-progressive--focus, #36c);
+    }
+  }
+  a:where( :not( [ role='button' ] )) .cdx-icon:not( .cdx-thumbnail__placeholder__icon--vue ):last-child {
+    min-width: 10px;
+    min-height: 10px;
+    width: var(--font-size-medium, 1rem);
+    height: var(--font-size-medium, 1rem);
+    padding-left: 4px;
+    vertical-align: middle;
+  }
+  a:where( .new:not( [ role='button' ] )) {
+    color: var(--color-destructive, #bf3c2c);
+  }
+  a:where( .new:not( [ role='button' ] )):visited {
+    color: var(--color-destructive--visited, #9f5555);
+  }
+  a:where( .new:not( [ role='button' ] )):visited:hover {
+    color: var(--color-destructive--visited--hover, #854848);
+  }
+  a:where( .new:not( [ role='button' ] )):visited:active {
+    color: var(--color-destructive--visited--active, #512e2e);
+  }
+  a:where( .new:not( [ role='button' ] )):hover {
+    color: var(--color-destructive--hover, #9f3526);
+    text-decoration: underline;
+  }
+  a:where( .new:not( [ role='button' ] )):active {
+    color: var(--color-destructive--active, #612419);
+    text-decoration: underline;
+  }
+  a:where( .new:not( [ role='button' ] )):focus {
+    outline-color: var(--outline-color-progressive--focus, #36c);
+  }
+  /* stylelint-disable selector-max-specificity */
+  .mw-parser-output a {
+    word-wrap: break-word;
+  }
+  .mw-parser-output a.external {
+    background-image: url(link.ernal-small-ltr-progressive.svg);
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: 0.857em;
+    padding-right: 1em;
+  }
+  .mw-parser-output a.external.free {
+    word-break: break-all;
+  }
+  /* stylelint-enable selector-max-specificity */
+  /**
+ * The following styles are copied from content.links.less
+ */
+  /* self links */
+  /* stylelint-disable selector-max-specificity */
+  a.mw-selflink {
+    color: inherit;
+    font-weight: bold;
+    text-decoration: inherit;
+  }
+  a.mw-selflink:hover {
+    cursor: inherit;
+  }
+  /* Underline preference */
+  .mw-underline-always a {
+    text-decoration: underline;
+  }
+  .mw-underline-never a {
+    text-decoration: none;
+  }
+  /* Plainlinks - this can be used to switch
+ * off special external link styling */
+  .plainlinks a.external {
+    background: none !important;
+    /* stylelint-disable-line declaration-no-important */
+    padding: 0 !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  /* stylelint-enable selector-max-specificity */
+  /**
+ * Dropdown container
+ */
+  .vector-dropdown {
+    position: relative;
+    /**
+ 	 * Dropdown toggle buttons. Doesn't apply to icon only buttons like the main menu dropdown.
+ 	 * - language variants, Actions menus
+ 	 * - more menu, user menu
+ 	 * - ULS button in sticky header
+ 	 */
+    /**
+	 * Invisible checkbox covering the dropdown toggle button.
+	 */
+  }
+  .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only ) {
+    display: inline-flex;
+    align-items: center;
+  }
+  .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only )::after {
+    content: '';
+    /* stylelint-enable @stylistic/indentation */
+    min-width: 10px;
+    min-height: 10px;
+    width: calc(var(--font-size-medium, 1rem) - 4px);
+    height: calc(var(--font-size-medium, 1rem) - 4px);
+    display: inline-block;
+    vertical-align: text-bottom;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 7px;
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only )::after {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only )::after {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only )::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      filter: invert(var(--filter-invert-icon, 0));
+      opacity: var(--opacity-icon-base, 0.87);
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-dropdown .vector-dropdown-label:not( .cdx-button--icon-only )::after {
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      background-color: var(--color-base, #202122);
+    }
+  }
+  .vector-dropdown .vector-dropdown-label-text {
+    font-size: var(--font-size-small, 0.875rem);
+  }
+  .vector-dropdown .vector-dropdown-checkbox {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .vector-dropdown .vector-dropdown-checkbox:checked ~ .vector-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+  }
+  .vector-dropdown .vector-dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    opacity: 0;
+    height: 0;
+    visibility: hidden;
+    overflow: hidden auto;
+    z-index: 50;
+    background-color: var(--background-color-base, #fff);
+    padding: 16px 16px;
+    font-size: var(--font-size-small, 0.875rem);
+    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.2);
+    transition-property: opacity;
+    transition-duration: 100ms;
+    width: max-content;
+    max-width: 200px;
+    max-height: 75vh;
+  }
+  .vector-pinnable-element .vector-menu-heading {
+    color: var(--color-subtle, #54595d);
+    font-weight: normal;
+    cursor: default;
+    padding: 6px 0;
+    margin: 6px 0;
+    border-bottom: 1px solid var(--background-color-interactive, #eaecf0);
+  }
+  .vector-pinnable-element .mw-list-item,
+  .vector-dropdown-content .mw-list-item {
+    padding: 0;
+  }
+  .vector-pinnable-element .mw-list-item a,
+  .vector-dropdown-content .mw-list-item a {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .vector-pinnable-element .mw-list-item a .vector-icon,
+  .vector-dropdown-content .mw-list-item a .vector-icon {
+    margin-right: 6px;
+  }
+  .vector-pinnable-element .mw-list-item a:not( .mw-selflink ):visited,
+  .vector-dropdown-content .mw-list-item a:not( .mw-selflink ):visited {
+    color: var(--color-progressive, #36c);
+  }
+  .vector-pinnable-element .mw-list-item a:not( .mw-selflink ):visited:hover,
+  .vector-dropdown-content .mw-list-item a:not( .mw-selflink ):visited:hover {
+    color: var(--color-progressive--hover, #3056a9);
+  }
+  .vector-pinnable-element .mw-list-item a.selected a,
+  .vector-dropdown-content .mw-list-item a.selected a {
+    color: var(--color-base, #202122) !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  .vector-feature-main-menu-pinned-enabled .vector-header-start .vector-main-menu-landmark,
+  .vector-feature-main-menu-pinned-disabled .vector-main-menu-container .vector-main-menu-landmark {
+    display: none;
+  }
+  .vector-main-menu #p-navigation .vector-menu-heading {
+    display: none;
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a,
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a .vector-icon,
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content .vector-icon {
+    margin-right: 6px;
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a:not( .mw-selflink ):visited,
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content:not( .mw-selflink ):visited {
+    color: var(--color-progressive, #36c);
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a:not( .mw-selflink ):visited:hover,
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content:not( .mw-selflink ):visited:hover {
+    color: var(--color-progressive--hover, #3056a9);
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a.selected a,
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content.selected a {
+    color: var(--color-base, #202122) !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  .vector-main-menu .vector-main-menu-action-opt-out a {
+    font-weight: bold;
+  }
+  .vector-main-menu .vector-main-menu-action-lang-alert .vector-main-menu-action-content {
+    padding-top: 0;
+  }
+  /**
+ * PinnableElement
+ * Pinned containers are typically dropdown menus that have been
+ * placed in a sidebar column, e.g. page tools menu, main menu.
+ */
+  .vector-pinnable-element {
+    font-size: var(--font-size-small, 0.875rem);
+  }
+  .vector-pinned-container {
+    background-color: var(--background-color-base, #fff);
+    padding: 0 16px;
+    margin-bottom: 2rem;
+    display: none;
+  }
+  @supports ( display: grid ) {
+    .vector-pinned-container {
+      display: block;
+    }
+  }
+  .vector-column-start,
+  .vector-column-end {
+    contain: paint;
+  }
+  .vector-sticky-pinned-container {
+    overflow: hidden auto;
+    position: sticky;
+    top: 24px;
+    box-sizing: border-box;
+    max-height: calc( 100vh - ( 24px * 2 ) );
+  }
+  .vector-sticky-pinned-container::after {
+    content: '';
+    display: block;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 16px;
+    background: linear-gradient(rgba(255, 255, 255, 0), var(--background-color-base, #fff));
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  .vector-pinnable-header {
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--background-color-interactive, #eaecf0);
+    line-height: 1.6;
+  }
+  .vector-pinnable-header-label {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: var(--font-size-small, 0.875rem);
+    margin: 0 0.5rem 0 0 !important;
+    /* stylelint-disable-line declaration-no-important */
+    padding: 0;
+    border: 0;
+    font-weight: bold;
+  }
+  .vector-pinnable-header-toggle-button {
+    display: none;
+    border: 0;
+    padding: 4px 8px;
+    background-color: var(--background-color-interactive, #eaecf0);
+    color: var(--color-base, #202122);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.75rem;
+    border-radius: 2px;
+  }
+  .vector-pinnable-header-toggle-button:hover {
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+  }
+  .vector-feature-page-tools-pinned-enabled .vector-page-toolbar-container .vector-page-tools-landmark,
+  .vector-feature-page-tools-pinned-disabled .vector-column-end .vector-page-tools-landmark {
+    display: none;
+  }
+  .vector-page-tools .vector-more-collapsible-item {
+    display: block;
+  }
+  .vector-toc .vector-pinnable-header {
+    margin-left: 12px;
+  }
+  .vector-toc .vector-pinnable-header-label {
+    font-size: 100%;
+  }
+  .vector-toc .vector-toc-numb {
+    display: none;
+  }
+  .vector-toc .vector-toc-toggle {
+    display: none;
+    transition: 100ms;
+    position: absolute;
+    left: calc(-1 * 22px / 2);
+    top: 1px;
+    min-width: 22px;
+    min-height: 22px;
+    padding: 0;
+    font-size: 0.7rem;
+  }
+  .vector-toc .vector-toc-link {
+    display: block;
+    word-break: break-word;
+  }
+  .vector-toc .vector-toc-list-item-active > .vector-toc-link,
+  .vector-toc .vector-toc-level-1-active:not( .vector-toc-list-item-expanded ) > .vector-toc-link,
+  .vector-toc .vector-toc-list-item-active.vector-toc-level-1-active > .vector-toc-link {
+    color: var(--color-base, #202122) !important;
+    /* stylelint-disable-line declaration-no-important */
+    font-weight: bold;
+  }
+  .vector-toc .vector-toc-list-item-active > .vector-toc-link .vector-toc-text,
+  .vector-toc .vector-toc-level-1-active:not( .vector-toc-list-item-expanded ) > .vector-toc-link .vector-toc-text,
+  .vector-toc .vector-toc-list-item-active.vector-toc-level-1-active > .vector-toc-link .vector-toc-text {
+    width: calc( 100% + 16px );
+  }
+  .vector-toc .vector-toc-level-1-active:not( .vector-toc-list-item-active ) > .vector-toc-link {
+    color: var(--color-base, #202122) !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  .vector-toc .vector-toc-text {
+    padding: 6px 0;
+  }
+  .vector-toc .vector-toc-contents,
+  .vector-toc .vector-toc-list {
+    margin: 0;
+    list-style: none;
+  }
+  .vector-toc .vector-toc-list-item {
+    position: relative;
+    list-style-type: none;
+    padding-left: 12px;
+    margin: 0;
+  }
+  .client-js .vector-toc .vector-toc-level-1 .vector-toc-list-item {
+    display: none;
+  }
+  .client-js .vector-toc .vector-toc-level-1.vector-toc-list-item-expanded .vector-toc-list-item {
+    display: block;
+  }
+  .client-js .vector-toc .vector-toc-toggle {
+    display: block;
+  }
+  .client-js .vector-toc .vector-toc-level-1.vector-toc-list-item-expanded .vector-toc-toggle {
+    transform: rotate(0deg);
+  }
+  .client-js body.ltr .vector-toc .vector-toc-toggle {
+    transform: rotate(-90deg);
+  }
+  .client-js body.rtl .vector-toc .vector-toc-toggle {
+    transform: rotate(90deg);
+  }
+  .vector-toc-landmark {
+    display: none;
+  }
+  .vector-feature-toc-pinned-clientpref-0 body:not( .vector-sticky-header-visible ) .vector-page-titlebar .vector-toc-landmark,
+  .vector-feature-toc-pinned-clientpref-0 .vector-sticky-header-visible .vector-sticky-header-context-bar .vector-toc-landmark,
+  .vector-feature-toc-pinned-clientpref-1 .vector-column-start .vector-toc-landmark {
+    display: block;
+  }
+  .cdx-button:not( .cdx-button--icon-only ) .vector-icon {
+    margin-right: 6px;
+  }
+  .cdx-button {
+    justify-content: center;
+  }
+  .cdx-button.cdx-button--icon-only span + span {
+    display: block;
+    position: absolute !important;
+    /* stylelint-disable-line declaration-no-important */
+    clip: rect(1px, 1px, 1px, 1px);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  input:hover + .cdx-button--weight-quiet:not( .cdx-button--action-progressive ) {
+    background-color: var(--background-color-interactive-subtle--hover, #eaecf0);
+  }
+  input:active + .cdx-button--weight-quiet:not( .cdx-button--action-progressive ) {
+    background-color: var(--background-color-interactive-subtle--active, #dadde3);
+    color: var(--color-emphasized, #101418);
+  }
+  input:focus:not( :active ) + .cdx-button:not( .cdx-button--action-progressive ) {
+    border-color: var(--border-color-progressive--focus, #36c);
+    box-shadow: inset 0 0 0 1px var(--box-shadow-color-progressive--focus, #36c);
+  }
+  input:hover + .cdx-button--weight-quiet.cdx-button--action-progressive {
+    background-color: var(--background-color-progressive-subtle, #f1f4fd);
+    color: var(--color-progressive--hover, #3056a9);
+  }
+  input:active + .cdx-button--weight-quiet.cdx-button--action-progressive {
+    background-color: var(--background-color-progressive--active, #233566);
+    color: var(--color-inverted, #fff);
+    border-color: var(--border-color-progressive--active, #233566);
+  }
+  input:focus:not( :active ) + .cdx-button--action-progressive {
+    border-color: var(--border-color-progressive--focus, #36c);
+    box-shadow: inset 0 0 0 1px var(--box-shadow-color-progressive--focus, #36c) inset 0 0 0 2px var(--box-shadow-color-inverted, #fff);
+  }
+  .vector-feature-appearance-pinned-clientpref-1 .vector-user-links .vector-appearance-landmark,
+  .vector-feature-appearance-pinned-clientpref-0 .vector-column-end .vector-appearance-landmark {
+    display: none;
+  }
+  #vector-appearance-dropdown .vector-dropdown-content {
+    left: auto;
+    right: 0;
+  }
+  .exclusion-notice {
+    color: var(--color-disabled, #a2a9b1);
+  }
+  /* If JS is disabled the menu should not render at all */
+  .client-nojs .vector-appearance-landmark {
+    display: none;
+  }
+  .skin-client-pref-exclusion-notice {
+    display: none;
+  }
+  .vector-page-titlebar .mw-portlet-lang {
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .client-nojs .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-0 {
+    display: none;
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-label {
+    user-select: none;
+    opacity: 1;
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-label.cdx-button--action-progressive.cdx-button--weight-quiet::after {
+    mask-image: url(arrow-down-progressive.svg);
+    background-color: var(--color-progressive, #36c);
+    opacity: 1;
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-checkbox:active + .vector-dropdown-label.cdx-button--action-progressive.cdx-button--weight-quiet {
+    color: var(--color-inverted-fixed, #fff);
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-checkbox:active + .vector-dropdown-label.cdx-button--action-progressive.cdx-button--weight-quiet .vector-icon {
+    filter: brightness(0) invert(1);
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-checkbox:active + .vector-dropdown-label.cdx-button--action-progressive.cdx-button--weight-quiet::after {
+    background-image: url(arrow-down-invert.svg);
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-content {
+    box-sizing: border-box;
+    max-height: 65vh;
+    overflow: auto;
+    left: auto;
+    right: 0;
+  }
+  .vector-page-titlebar .mw-portlet-lang .vector-dropdown-content li a {
+    font-size: inherit;
+  }
+  .vector-page-titlebar .mw-portlet-lang .after-portlet {
+    margin-top: 10px;
+  }
+  .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty {
+    display: inline-flex;
+    align-items: center;
+  }
+  .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty::after {
+    content: '';
+    /* stylelint-enable @stylistic/indentation */
+    min-width: 10px;
+    min-height: 10px;
+    width: calc(var(--font-size-medium, 1rem) - 4px);
+    height: calc(var(--font-size-medium, 1rem) - 4px);
+    display: inline-block;
+    vertical-align: text-bottom;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 7px;
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty::after {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty::after {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      filter: invert(var(--filter-invert-icon, 0));
+      opacity: var(--opacity-icon-base, 0.87);
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty::after {
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      background-color: var(--color-base, #202122);
+    }
+  }
+  .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty + .vector-dropdown-content {
+    min-width: 300px;
+  }
+  .vector-page-titlebar .mw-portlet-lang .mw-portlet-lang-heading-empty + .vector-dropdown-content .mw-portlet-empty-language-selector-body {
+    padding: 20px;
+    border-bottom: solid 1px var(--border-color-subtle, #c8ccd1);
+    color: var(--color-subtle, #54595d);
+  }
+  #p-lang-btn.mw-portlet-empty {
+    display: none;
+  }
+  .mw-interlanguage-selector {
+    display: inline-flex;
+    align-items: center;
+  }
+  .mw-interlanguage-selector::after {
+    content: '';
+    /* stylelint-enable @stylistic/indentation */
+    min-width: 10px;
+    min-height: 10px;
+    width: calc(var(--font-size-medium, 1rem) - 4px);
+    height: calc(var(--font-size-medium, 1rem) - 4px);
+    display: inline-block;
+    vertical-align: text-bottom;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 7px;
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .mw-interlanguage-selector::after {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .mw-interlanguage-selector::after {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .mw-interlanguage-selector::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      filter: invert(var(--filter-invert-icon, 0));
+      opacity: var(--opacity-icon-base, 0.87);
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .mw-interlanguage-selector::after {
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      background-color: var(--color-base, #202122);
+    }
+  }
+  .vector-dropdown > .mw-portlet-lang-heading-0 {
+    display: none;
+  }
+  .client-js .mw-portlet-lang .vector-dropdown-content {
+    display: none;
+  }
+  .vector-uls-disabled.client-js .mw-portlet-lang .vector-dropdown-content {
+    display: inherit;
+  }
+  .client-js .action-view .vector-dropdown > .mw-portlet-lang-heading-0 {
+    display: flex;
+  }
+  .client-js .action-view .vector-dropdown .mw-interlanguage-selector-empty:checked ~ .vector-dropdown-content {
+    display: inherit;
+  }
+  /**
+* UserLinks
+* All links and menus that appear in the header,
+* at the top of the page, after the search bar.
+*/
+  /**
+ * Top-most container that holds ALL menus in the user links section
+ * (horizontal menus and dropdowns)
+ * Logged-in and logged-out.
+ */
+  .vector-user-links {
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: flex-end;
+    flex-shrink: 1;
+  }
+  .vector-user-links .mw-list-item,
+  .vector-user-links .vector-dropdown-label {
+    margin: 0 4px;
+  }
+  .vector-user-links .vector-dropdown-content .mw-list-item {
+    margin: 0;
+  }
+  /**
+ * Container that holds just the dropdown user menu (displays "..." when logged out).
+ * Logged-in and logged-out.
+ */
+  .vector-user-menu .vector-dropdown-content {
+    left: auto;
+    right: 0;
+  }
+  .vector-user-menu.user-links-collapsible-item--none,
+  .vector-user-menu .user-links-collapsible-item--none {
+    display: none;
+  }
+  /**
+ * Container that holds all menus except the user menu (.vector-user-menu).
+ * Logged-in and logged-out.
+ */
+  .vector-user-links-main {
+    display: flex;
+    align-items: center;
+  }
+  .vector-user-links-main .vector-menu-content-list {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-size-small, 0.875rem);
+  }
+  /**
+ * Logged-in dropdown user menu.
+ */
+  .vector-user-menu-logged-in .vector-dropdown-label {
+    display: inline-flex;
+    align-items: center;
+  }
+  .vector-user-menu-logged-in .vector-dropdown-label::after {
+    content: '';
+    /* stylelint-enable @stylistic/indentation */
+    min-width: 10px;
+    min-height: 10px;
+    width: calc(var(--font-size-medium, 1rem) - 4px);
+    height: calc(var(--font-size-medium, 1rem) - 4px);
+    display: inline-block;
+    vertical-align: text-bottom;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 7px;
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-user-menu-logged-in .vector-dropdown-label::after {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-user-menu-logged-in .vector-dropdown-label::after {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      mask-size: calc(max( calc(var(--font-size-medium, 1rem) - 4px), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-user-menu-logged-in .vector-dropdown-label::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      filter: invert(var(--filter-invert-icon, 0));
+      opacity: var(--opacity-icon-base, 0.87);
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-user-menu-logged-in .vector-dropdown-label::after {
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"%23000\"><path d=\"m17.5 4.75-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z\"/></svg>");
+      background-color: var(--color-base, #202122);
+    }
+  }
+  /**
+ * Logged-out dropdown user menu items- Special treatment for special links.
+ */
+  #p-user-menu-anon-editor .vector-menu-heading {
+    display: block;
+  }
+  #p-user-menu-anon-editor .vector-menu-heading a::before {
+    content: '(';
+  }
+  #p-user-menu-anon-editor .vector-menu-heading a::after {
+    content: ')';
+  }
+  /**
+ * Logged-in user-page link in personal (overflow) menu.
+ */
+  #pt-userpage-2 {
+    max-width: 9.6875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #pt-userpage-2 a:not( .mw-selflink ) {
+    color: var(--color-progressive, #36c);
+  }
+  #pt-userpage-2 span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mw-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 16px;
+  }
+  .mw-header .vector-header-start {
+    gap: 20px;
+  }
+  .mw-header .vector-header-start,
+  .mw-header .vector-header-end {
+    display: flex;
+    align-items: center;
+  }
+  .mw-header .vector-header-end {
+    flex-grow: 1;
+  }
+  .mw-header .search-toggle {
+    display: inline-flex;
+    float: right;
+    font-size: 1rem;
+  }
+  .mw-header .vector-typeahead-search-container {
+    display: none;
+  }
+  .vector-icon {
+    -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=);
+    mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=);
+    /* stylelint-enable @stylistic/indentation */
+    min-width: 10px;
+    min-height: 10px;
+    width: calc(var(--font-size-medium, 1rem) + 4px);
+    height: calc(var(--font-size-medium, 1rem) + 4px);
+    display: inline-block;
+    vertical-align: text-bottom;
+    background-color: var(--color-base, #202122);
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-icon {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( calc(var(--font-size-medium, 1rem) + 4px), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-icon {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( calc(var(--font-size-medium, 1rem) + 4px), 10px ));
+      mask-size: calc(max( calc(var(--font-size-medium, 1rem) + 4px), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  /* If the class contains the string -progressive convert to a progressive icon.
+This impacts language button and talk add topic. */
+  .vector-icon[class*='-progressive'] {
+    background-color: var(--color-progressive, #36c);
+  }
+  .mw-indicators {
+    font-size: var(--font-size-small, 0.875rem);
+    line-height: 1.6;
+    position: relative;
+    float: right;
+    display: flex;
+    column-gap: 8px;
+    flex-wrap: wrap;
+  }
+  .mw-indicator {
+    display: inline-block;
+  }
+  .mw-footer-container {
+    padding-top: 50px;
+    padding-bottom: 82px;
+  }
+  .mw-footer {
+    direction: ltr;
+    border-top: 1px solid var(--border-color-base, #a2a9b1);
+    padding: 0.75em 0;
+  }
+  .mw-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mw-footer li {
+    color: var(--color-base, #202122);
+    margin: 0;
+    padding: 0.5em 0;
+    font-size: 0.75em;
+  }
+  #footer-icons {
+    float: right;
+  }
+  #footer-icons li {
+    float: left;
+    margin-left: 0.5em;
+    line-height: 2;
+    text-align: right;
+  }
+  #footer-icons a {
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #f8f9fa;
+  }
+  #footer-info li {
+    line-height: 1.4;
+  }
+  #footer-places li {
+    float: left;
+    margin-right: 1em;
+    line-height: 2;
+  }
+  .vector-menu .vector-menu-content-list {
+    list-style: none;
+    margin: 0;
+  }
+  /**
+ * Styling for namespace tabs (page, discussion) and views (read, edit, view history, watch and other actions)
+ */
+  /* Tab list items */
+  .vector-menu-tabs {
+    float: left;
+    /* focus and hover have outlines. Text underline interferes with bottom border */
+    /* T361841 add invisible bottom border by default */
+  }
+  .vector-menu-tabs .mw-list-item .cdx-button--icon-only {
+    margin: 2px 0 0;
+  }
+  .vector-menu-tabs .mw-list-item.vector-tab-noicon a:focus,
+  .vector-menu-tabs .mw-list-item.vector-tab-noicon a:hover {
+    text-decoration: none;
+    border-bottom: 2px solid;
+  }
+  .vector-menu-tabs .mw-list-item.vector-tab-noicon a {
+    border-bottom: 2px solid var(--border-color-transparent, transparent);
+  }
+  .vector-menu-tabs .mw-list-item a:visited {
+    color: var(--color-progressive, #36c);
+  }
+  .vector-menu-tabs .mw-list-item a:visited:hover {
+    color: var(--color-progressive--hover, #3056a9);
+  }
+  .vector-menu-tabs .mw-list-item.new a:visited {
+    color: var(--color-destructive, #bf3c2c);
+  }
+  .vector-menu-tabs .mw-list-item.new a:visited:hover {
+    color: var(--color-destructive--hover, #9f3526);
+  }
+  .vector-menu-tabs .mw-list-item.selected a {
+    color: var(--color-base, #202122) !important;
+    /* stylelint-disable-line declaration-no-important */
+    border-bottom: 2px solid;
+  }
+  /**
+ * Tab list item appearance. Applies to both <li>'s inside .vector-menu-tabs
+ * and dropdown menus inside the article toolbar
+ */
+  .vector-menu-tabs .mw-list-item.vector-tab-noicon,
+  .vector-page-toolbar-container .vector-dropdown {
+    margin: 0 8px;
+  }
+  .vector-menu-tabs .mw-list-item,
+  .vector-page-toolbar-container .vector-dropdown-label {
+    white-space: nowrap;
+  }
+  .vector-menu-tabs .mw-list-item,
+  .vector-page-toolbar-container .vector-dropdown {
+    float: left;
+    margin-bottom: 0;
+    /* overrides default `li` styling */
+  }
+  .vector-menu-tabs .mw-list-item > a,
+  .vector-page-toolbar-container .vector-dropdown > a,
+  .vector-menu-tabs .mw-list-item .vector-dropdown-label,
+  .vector-page-toolbar-container .vector-dropdown .vector-dropdown-label {
+    display: inline-flex;
+    position: relative;
+    cursor: pointer;
+    font-weight: normal;
+  }
+  .vector-menu-tabs .mw-list-item .vector-dropdown-label,
+  .vector-page-toolbar-container .vector-dropdown .vector-dropdown-label {
+    font-size: inherit;
+    border: 0;
+  }
+  .vector-menu-tabs .mw-list-item.vector-tab-noicon > a,
+  .vector-page-toolbar-container .vector-dropdown.vector-tab-noicon > a,
+  .vector-menu-tabs .mw-list-item .vector-dropdown-label,
+  .vector-page-toolbar-container .vector-dropdown .vector-dropdown-label {
+    padding: 12px 0 7px 0;
+    margin-bottom: -1px;
+  }
+  .vector-page-titlebar {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .vector-page-titlebar-blank {
+    box-shadow: none;
+  }
+  .vector-page-titlebar .firstHeading {
+    flex-grow: 1;
+    padding: 0;
+    border: 0;
+  }
+  .vector-page-titlebar .vector-page-titlebar-toc.ve-active {
+    display: none !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  .vector-page-titlebar > .cdx-button {
+    font-size: var(--font-size-small, 0.875rem);
+    white-space: nowrap;
+  }
+  .vector-page-titlebar > .cdx-button,
+  .vector-page-titlebar > .mw-portlet-lang {
+    flex-shrink: 0;
+  }
+  .vector-page-titlebar > .cdx-button:last-child,
+  .vector-page-titlebar > .mw-portlet-lang:last-child {
+    margin-right: calc(-1 * 12px);
+  }
+  .vector-page-titlebar > .mw-portlet-lang-icon-only:last-child {
+    margin-right: calc(-1 * 6px);
+  }
+  .vector-page-toolbar-container {
+    display: flex;
+    font-size: var(--font-size-small, 0.875rem);
+    box-shadow: 0 1px var(--border-color-subtle, #c8ccd1);
+    margin-bottom: 1px;
+  }
+  .vector-page-toolbar-container .mw-portlet-views {
+    display: none;
+  }
+  .vector-page-toolbar-container .vector-icon {
+    min-width: 10px;
+    min-height: 10px;
+    width: var(--font-size-medium, 1rem);
+    height: var(--font-size-medium, 1rem);
+    display: inline-block;
+    vertical-align: text-bottom;
+    background-size: calc( max( var(--font-size-medium, 1rem), 14px ) );
+  }
+  @supports not ( ( -webkit-mask-image: none ) or ( mask-image: none ) ) {
+    .vector-page-toolbar-container .vector-icon {
+      background-position: center;
+      background-repeat: no-repeat;
+      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+      background-size: calc(max( var(--font-size-medium, 1rem), 10px ));
+    }
+  }
+  @supports ( -webkit-mask-image: none ) or ( mask-image: none ) {
+    .vector-page-toolbar-container .vector-icon {
+      /* stylelint-disable plugin/no-unsupported-browser-features */
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: calc(max( var(--font-size-medium, 1rem), 10px ));
+      mask-size: calc(max( var(--font-size-medium, 1rem), 10px ));
+      /* stylelint-enable plugin/no-unsupported-browser-features */
+    }
+  }
+  #left-navigation {
+    display: flex;
+    margin-left: -8px;
+    flex-grow: 1;
+  }
+  #right-navigation {
+    display: flex;
+    margin-right: -8px;
+  }
+  #right-navigation .vector-dropdown-content {
+    left: auto;
+    right: 0;
+  }
+  .vector-search-box {
+    font-size: var(--font-size-small, 0.875rem);
+    flex-grow: 1;
+  }
+  .vector-search-box .vector-typeahead-search-container {
+    max-width: 31.25rem;
+    margin-right: 12px;
+  }
+  .vector-search-box .cdx-typeahead-search--show-thumbnail.cdx-typeahead-search--auto-expand-width:not( .cdx-typeahead-search--expanded ) {
+    margin-left: calc((12px + 40px) - (18px + 8px));
+  }
+  /** element that wraps a notice that comes from wiki page */
+  #localNotice {
+    margin-bottom: 0.9em;
+  }
+  /* Site Notice (includes notices from CentralNotice extension) */
+  #siteNotice {
+    font-size: 0.8em;
+    margin: 24px 0;
+    position: relative;
+    text-align: center;
+  }
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /* Watch/Unwatch Icon Styling */
+  /* Only use icon if the menu item is not collapsed into the "More" dropdown
+ * (in which case it is inside `.vector-dropdown` instead of `.vector-menu-tabs`). */
+  .vector-animations-ready .mw-watchlink .vector-icon {
+    transition: transform 500ms;
+  }
+  [dir='ltr'] .mw-watchlink .mw-ui-icon-wikimedia-unStar {
+    transform: rotate(72deg);
+  }
+  [dir='rtl'] .mw-watchlink .mw-ui-icon-wikimedia-unStar {
+    transform: rotate(-72deg);
+  }
+  /* FIXME: Remove vector-settings class when cache cleared. */
+  .mw-portlet-dock-bottom,
+  .vector-settings {
+    display: none;
+  }
+  .vector-sticky-header-container {
+    display: none;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .mw-page-container,
+  .vector-header-container .mw-header,
+  .vector-header-container .vector-sticky-header {
+    padding-left: 2.75rem;
+    padding-right: 2.75rem;
+  }
+}
+@media screen and (min-width: 1680px) {
+  .mw-page-container,
+  .vector-header-container .mw-header,
+  .vector-header-container .vector-sticky-header {
+    padding-left: 3.25rem;
+    padding-right: 3.25rem;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .mw-page-container-inner {
+    display: grid;
+    column-gap: 24px;
+    grid-template: min-content 1fr min-content / 12.25rem minmax(0, 1fr);
+    grid-template-areas: 'siteNotice siteNotice' 'columnStart pageContent' 'footer footer';
+  }
+  .vector-sitenotice-container {
+    grid-area: siteNotice;
+  }
+  .vector-column-start {
+    grid-area: columnStart;
+    overflow-anchor: none;
+  }
+  .mw-content-container {
+    grid-area: pageContent;
+  }
+  .mw-footer-container {
+    grid-area: footer;
+  }
+  .vector-feature-page-tools-pinned-enabled .vector-column-end,
+  .vector-feature-appearance-pinned-clientpref-1 .vector-column-end {
+    width: 12.25rem;
+  }
+  .vector-column-start,
+  .vector-column-end {
+    margin-top: 2.8rem;
+    border-top: 1px solid transparent;
+  }
+}
+@media screen and (min-width: 1680px) {
+  .mw-page-container-inner {
+    grid-template-columns: 15.5rem minmax(0, 1fr);
+  }
+  .mw-header {
+    display: grid;
+    column-gap: 24px;
+    grid-template: auto / 15.5rem minmax(0, 1fr);
+    grid-template-areas: 'headerStart headerEnd';
+  }
+  .mw-header .vector-header-start {
+    grid-area: headerStart;
+  }
+  .mw-header .vector-header-end {
+    grid-area: headerEnd;
+  }
+  .vector-feature-page-tools-pinned-enabled .vector-column-end,
+  .vector-feature-appearance-pinned-clientpref-1 .vector-column-end {
+    width: 15.5rem;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .mw-body {
+    grid-template: min-content min-content min-content 1fr / minmax(0, 59.25rem) min-content;
+    /**
+		 * NOTE: T327715 - 'titlebar-cx' grid area is a temporary workaround to accommodate
+		 * the Content Translation extension and should not be used beyond that.
+		 * FIXME: This can be removed when T322740 is resolved.
+		 */
+    grid-template-areas: 'titlebar-cx .' 'titlebar columnEnd' 'toolbar columnEnd' 'content columnEnd';
+  }
+  .mw-body .vector-page-titlebar {
+    grid-area: titlebar;
+  }
+  .mw-body .vector-page-toolbar {
+    grid-area: toolbar;
+  }
+  .mw-body #bodyContent {
+    grid-area: content;
+  }
+  .mw-body .vector-column-end {
+    grid-area: columnEnd;
+    overflow-anchor: none;
+  }
+  .vector-feature-page-tools-pinned-enabled .mw-body,
+  .vector-feature-appearance-pinned-clientpref-1 .mw-body {
+    column-gap: 24px;
+  }
+  .vector-feature-limited-width-clientpref-0 .mw-body,
+  .vector-feature-limited-width-content-disabled .mw-body {
+    grid-template-columns: minmax(0, 1fr) min-content;
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .client-js .vector-page-titlebar-toc {
+    margin-right: 8px;
+  }
+  .client-js .vector-page-titlebar-toc .vector-dropdown-content {
+    max-width: none;
+  }
+  .client-js .vector-page-titlebar-toc .vector-toc {
+    width: max-content;
+    min-width: 200px;
+    max-width: min( 0.85 * 59.25rem, 75vw );
+  }
+  .client-js .vector-below-page-title .vector-page-titlebar-toc {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    margin: 0;
+    z-index: 50;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .client-js.vector-feature-toc-pinned-clientpref-0 body:not( .vector-sticky-header-visible ) .vector-page-titlebar-toc {
+    margin-right: 8px;
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 body:not( .vector-sticky-header-visible ) .vector-page-titlebar-toc .vector-dropdown-content {
+    max-width: none;
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 body:not( .vector-sticky-header-visible ) .vector-page-titlebar-toc .vector-toc {
+    width: max-content;
+    min-width: 200px;
+    max-width: min( 0.85 * 59.25rem, 75vw );
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 body:not( .vector-sticky-header-visible ).vector-below-page-title .vector-page-titlebar-toc {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    margin: 0;
+    z-index: 50;
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 .vector-sticky-header-visible .vector-sticky-header-toc {
+    margin-right: 8px;
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 .vector-sticky-header-visible .vector-sticky-header-toc .vector-dropdown-content {
+    max-width: none;
+  }
+  .client-js.vector-feature-toc-pinned-clientpref-0 .vector-sticky-header-visible .vector-sticky-header-toc .vector-toc {
+    width: max-content;
+    min-width: 200px;
+    max-width: min( 0.85 * 59.25rem, 75vw );
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .client-nojs.vector-feature-toc-pinned-clientpref-1 .vector-sticky-pinned-container {
+    position: static;
+  }
+  .client-nojs.vector-feature-toc-pinned-clientpref-1 #vector-toc-pinned-container {
+    max-height: 200px;
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .client-js .vector-pinned-container {
+    display: none;
+  }
+  .client-js .vector-sticky-pinned-container {
+    display: none;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .client-js .vector-pinnable-header-unpinned .vector-pinnable-header-pin-button,
+  .client-js .vector-pinnable-header-pinned .vector-pinnable-header-unpin-button {
+    display: inline-block;
+  }
+}
+@media screen and (min-width: 640px) {
+  .vector-page-tools .vector-more-collapsible-item {
+    display: none;
+  }
+}
+@media screen and (max-width: calc(640px - 1px)) {
+  .vector-page-tools .vector-has-collapsible-items {
+    display: block;
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .client-js .vector-page-titlebar .vector-toc-landmark {
+    display: block;
+  }
+  .client-js .mw-table-of-contents-container.vector-toc-landmark {
+    display: none;
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  #p-lang-btn-label.cdx-button--icon-only,
+  #vector-page-titlebar-toc-label,
+  .vector-header .cdx-button.cdx-button--icon-only {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .vector-button-flush-left {
+    margin-left: calc(-1 * 6px);
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .vector-button-flush-left {
+    margin-left: calc(-1 * 12px);
+  }
+}
+@media screen and (min-width: 1120px) {
+  .vector-button-flush-right {
+    margin-right: calc(-1 * 6px);
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .vector-button-flush-right {
+    margin-right: calc(-1 * 12px);
+  }
+}
+@media screen and (max-width: 1399px) {
+  .vector-feature-limited-width-clientpref-0 #skin-client-prefs-vector-feature-limited-width .skin-client-pref-exclusion-notice {
+    display: block;
+  }
+}
+@media screen and (min-width: 640px) {
+  .vector-user-menu.user-links-collapsible-item,
+  .vector-user-menu .user-links-collapsible-item {
+    display: none;
+  }
+}
+@media screen and (max-width: calc(640px - 1px)) {
+  .vector-user-links-main .user-links-collapsible-item {
+    display: none;
+  }
+}
+@media screen and (min-width: 1680px) {
+  #pt-userpage-2 {
+    max-width: 12.5rem;
+  }
+}
+@media screen and (min-width: 1120px) {
+  .mw-header .search-toggle {
+    display: none !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+}
+@media screen and (min-width: 1120px) {
+  .mw-header .vector-typeahead-search-container {
+    display: block;
+  }
+}
+@media screen and (max-width: calc(1120px - 1px)) {
+  .mw-header {
+    /**
+	 	 * Toggles the visibility of the search box at lower resolutions.
+		 */
+  }
+  .mw-header.vector-header-search-toggled .vector-header-start,
+  .mw-header.vector-header-search-toggled .search-toggle {
+    display: none;
+  }
+  .mw-header.vector-header-search-toggled .vector-typeahead-search-container {
+    display: block;
+    max-width: none;
+  }
+  .mw-header.vector-header-search-toggled .vector-search-box {
+    position: relative;
+  }
+  .mw-header.vector-header-search-toggled .cdx-typeahead-search--expanded .cdx-search-input__end-button {
+    border-bottom-right-radius: 0;
+  }
+}
+@media screen and (min-width: 640px) {
+  .vector-page-toolbar-container .mw-portlet-views:not( .emptyPortlet ) {
+    display: block;
+  }
+}
+@media screen and (min-width: 1680px) {
+  .client-js  .vector-search-box.vector-search-box-auto-expand-width {
+    margin-left: calc(-1 * 24px);
+  }
+}
+@media all {
+  .mw-logo {
+    display: flex;
+    height: 100%;
+    align-items: center;
+  }
+  .mw-logo-icon {
+    float: left;
+    margin-right: 10px;
+    display: none;
+    width: 3.125em;
+    height: 3.125em;
+  }
+  .mw-logo-container {
+    float: left;
+    max-width: 120px;
+  }
+  .mw-logo-container img {
+    width: 100%;
+  }
+  .mw-logo-wordmark {
+    display: block;
+    margin: 0 auto;
+  }
+  .mw-logo-tagline {
+    display: block;
+    margin: 5px auto 0;
+  }
+}
+@media all and (min-width: 640px) {
+  .mw-logo-icon {
+    display: block;
+  }
+}
+@media all and (min-width: 640px) {
+  .mw-logo-container {
+    max-width: none;
+  }
+  .mw-logo-container img {
+    width: auto;
+  }
+}
+@media print {
+  /* These styles retain the existing typography in skin.less
+In future (when deploying these styles) we may want to refactor skins.vector.styles
+to apply certain styles in print as well as screen mode. */
+  .toc,
+  body {
+    padding: 10px;
+    font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+  }
+  .printfooter,
+  .mw-footer,
+  .thumb,
+  figure,
+  table,
+  ol,
+  dl,
+  ul,
+  .mw-heading3,
+  h3,
+  .mw-heading4,
+  h4,
+  .mw-heading5,
+  h5,
+  .mw-heading6,
+  h6 {
+    font-family: sans-serif;
+  }
+  img {
+    font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+  }
+  .mw-body a:not( .image ) {
+    border-bottom: 1px solid #aaa;
+  }
+  .firstHeading {
+    font-size: 25pt;
+    line-height: 28pt;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+  }
+  .firstHeading,
+  .mw-heading2,
+  h2 {
+    overflow: hidden;
+    border-bottom: 2px solid var(--color-emphasized, #101418);
+  }
+  .mw-heading3,
+  h3,
+  .mw-heading4,
+  h4,
+  .mw-heading5,
+  h5,
+  .mw-heading6,
+  h6 {
+    margin: 30px 0 0;
+  }
+  .mw-heading2,
+  h2,
+  .mw-heading3,
+  h3,
+  .mw-heading4,
+  h4,
+  .mw-heading5,
+  h5,
+  .mw-heading6,
+  h6 {
+    padding: 0;
+    position: relative;
+  }
+  .mw-heading2,
+  h2 {
+    font-size: 18pt;
+    line-height: 24pt;
+    margin-bottom: 0.25em;
+  }
+  .mw-heading3,
+  h3 {
+    font-size: 14pt;
+    line-height: 20pt;
+  }
+  .mw-heading4,
+  h4,
+  .mw-heading5,
+  h5,
+  .mw-heading6,
+  h6 {
+    font-size: 12pt;
+    line-height: 16pt;
+  }
+  p {
+    font-size: 12pt;
+    line-height: 16pt;
+    margin-top: 5px;
+    text-align: justify;
+  }
+  p::before {
+    content: '';
+    display: block;
+    width: 120pt;
+    overflow: hidden;
+    page-break-after: avoid;
+  }
+  blockquote {
+    border-left: 2px solid var(--color-emphasized, #101418);
+    padding-left: 20px;
+  }
+  ol,
+  ul {
+    margin: 10px 0 0 1.6em;
+    padding: 0;
+  }
+  ol li,
+  ul li {
+    padding: 2px 0;
+    font-size: 12pt;
+  }
+  table ol li,
+  table ul li {
+    font-size: inherit;
+  }
+  .toc {
+    page-break-before: avoid;
+    page-break-after: avoid;
+    background: none;
+    border: 0;
+    display: table;
+  }
+  .toc a {
+    border: 0;
+    font-weight: normal;
+  }
+  .toc > ul > li {
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  .toc ul {
+    margin: 0;
+    list-style: none;
+  }
+  .toc ul ul {
+    padding-left: 30px;
+  }
+  .toc li.toclevel-1 > a {
+    font-size: 12pt;
+    font-weight: bold;
+  }
+  #mw-navigation,
+  .noprint,
+  .mw-jump-link,
+  .mw-portlet-lang,
+  .toc .tocnumber {
+    display: none;
+  }
+  .printfooter {
+    margin-top: 10px;
+    border-top: 3px solid var(--color-emphasized, #101418);
+    padding-top: 10px;
+    font-size: 10pt;
+    clear: both;
+  }
+  .mw-footer {
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+    padding-top: 5px;
+  }
+  #footer-info {
+    margin: 0;
+    padding: 0;
+  }
+  #footer-info li {
+    color: #999;
+    list-style: none;
+    display: block;
+    padding-bottom: 10px;
+    font-size: 10pt;
+  }
+  #footer-info li a {
+    color: #999 !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
+  #footer-info-lastmod {
+    color: var(--color-emphasized, #101418);
+    font-size: 12pt;
+    font-weight: bold;
+  }
+  /* stylelint-disable no-invalid-double-slash-comments */
+  .vector-page-toolbar,
+  .vector-header-start > *:not( .mw-logo ),
+  .vector-header-end,
+  #mw-panel-toc,
+  #vector-sticky-header,
+  #p-lang-btn,
+  .vector-menu-checkbox,
+  nav,
+  #vector-page-titlebar-toc,
+  #footer {
+    /* stylelint-disable-next-line declaration-no-important */
+    display: none !important;
+  }
+}
+
+
+
+/* end   https://en.wikipedia.org/w/load.php?debug=true&lang=en&modules=skins.vector.styles&only=styles&skin=vector-2022&version=&* */
