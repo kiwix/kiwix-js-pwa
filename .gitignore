@@ -26,3 +26,4 @@ null
 *.ppk
 .hintrc
 CLAUDE.md
+.claude/settings.local.json
