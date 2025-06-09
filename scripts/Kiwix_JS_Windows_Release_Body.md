@@ -77,9 +77,8 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ### Known Issues
 
-* The Electron app may need to be restarted TWICE to update fully to the latest code.
+* Transform to desktop style does not work with new ActionParse ZIMs
 * **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them). It is not possible to print Zimit-based articles in Firefox.
-* Headings can no longer be clicked to close or open due to a change in the ZIM format. **_Please ensure that Display settings -> Open all headings is selected in Configuration_ (the default setting), or else the main body of each article will be completely hidden.**
 * **There are various issues with the NWJS app** - we recommend you use the Electron app instead (except on Windowx XP):
   - PDFs in Zimit-based archives are blocked from viewing in the NWJS app.
   - If you download an archive from within the NWJS app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed.
