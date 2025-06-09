@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.6.4
+## Release 3.6.5 / 3.6.6
 
 * ENHANCEMENT: Reduce height of navigation bar
 * ENHANCEMENT: Added support for Wikimedia ZIMs based on new ActionParse API
@@ -8,7 +8,7 @@
 * FIX: Failure to load some cached landing pages with special characters
 * FIX: Libzim loading and reduce debug messages
 * UPDATE: Cached Open Textbook of Medicine landing page
-* UPDATE: Libzim libraries to v0.7
+* UPDATE: Libzim libraries to v0.8
 * DEV: Accept new ZIMs with minorVersion set to 3
 * DEV: Synchronize Babel versions
 * DEV: Update build script to us Windows PowerShell instead of PS Core (unsupported by Electron Builder)
