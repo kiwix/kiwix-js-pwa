@@ -143,11 +143,11 @@ div:not(.panel-success, .alert-message) {
     padding-bottom: 5px;
 }
 
-#articleList a:hover, #articleList a.hover, div.snippet-header.hover, .backgroundLightBlue {
+#articleList a:hover, #articleList a.hover, .snippet-header:hover, .snippet-header.hover, .backgroundLightBlue {
     background: lightblue;
 }
 
-.dark #articleList a:hover, .dark #articleList a.hover, .dark div.snippet-header.hover {
+.dark #articleList a:hover, .dark #articleList a.hover, .dark .snippet-header:hover, .dark .snippet-header.hover  {
     background: darkslategray;
 }
 
@@ -166,15 +166,8 @@ div:not(.panel-success, .alert-message) {
     background-color: #f8f9fa;
     border-left: 3px solid #dee2e6;
     font-size: 0.9em;
-    color: #6c757d;
+    color: slategray;
     transition: background-color 0.2s ease;
-}
-
-.snippet-header:hover,
-.snippet-header:focus {
-    background-color: #e9ecef;
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
 }
 
 .snippet-indicator {
@@ -211,9 +204,16 @@ div:not(.panel-success, .alert-message) {
     border-top: none;
 }
 
-.dark .snippet-header, .dark .snippet-content {
+.dark .snippet-header {
     background: #222;
     border: 0;
+    color: lightgray;
+}
+
+.dark .snippet-content {
+    background: #222;
+    border: 0;
+    color: whitesmoke;
 }
 
 #btnHome {
