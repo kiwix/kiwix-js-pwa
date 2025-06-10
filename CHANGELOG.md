@@ -1,5 +1,10 @@
 # Changelog
 
+## Interim release 3.6.61
+
+* ENHANCEMENT: Report current default ZIM style (desktop/mobile) to Configuration
+* UPDATE: Support transforming ActionParse ZIMs to mobile style
+
 ## Release 3.6.5 / 3.6.6
 
 * ENHANCEMENT: Reduce height of navigation bar
