@@ -177,12 +177,6 @@ div:not(.panel-success, .alert-message) {
     outline-offset: -2px;
 }
 
-.dark .snippet-header, .dark .snippet-content {
-    background-color: #343a40;
-    color: #adb5bd;
-    border-left: 3px solid #495057;
-}
-
 .snippet-indicator {
     display: inline-block;
     margin-right: 8px;
@@ -214,9 +208,6 @@ div:not(.panel-success, .alert-message) {
     padding-bottom: 0;
     opacity: 0;
     overflow: hidden;
-}
-
-.snippet-content.collapsed {
     border-top: none;
 }
 
