@@ -265,28 +265,36 @@ prefix.addEventListener('keydown', function (e) {
     }
     // Arrow-key selection code adapted from https://stackoverflow.com/a/14747926/9727685
     // IE11 produces "Down" instead of "ArrowDown" and "Up" instead of "ArrowUp"
-    if (/^((Arrow)?Down|(Arrow)?Up|Enter)$/.test(e.key)) {
-        // User pressed Down arrow or Up arrow or Enter
+    if (/^((Arrow)?(Down|Up|Left|Right)|Enter)$/.test(e.key)) {
+        // User pressed Down arrow, Up arrow, Left arrow, Right arrow, or Enter
         e.preventDefault();
         e.stopPropagation();
         // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
         keyPressHandled = true;
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
-        // If user presses Enter, read the dirEntry
-        if (/Enter/.test(e.key)) {
-            if (activeElement.classList.contains('hover')) {
+        // If user presses Enter or Right arrow, read the dirEntry or open snippet
+        if (/Enter|Right|Left/.test(e.key)) {
+            if (activeElement.classList.contains('hover') && !activeElement.classList.contains('snippet-container')) {
                 var dirEntryId = activeElement.getAttribute('dirEntryId');
                 findDirEntryFromDirEntryIdAndLaunchArticleRead(decodeURIComponent(dirEntryId));
+                return;
+            } else if (activeElement.classList.contains('snippet-container')) {
+                // Open the snippet container
+                uiUtil.toggleSnippet(activeElement);
                 return;
             }
         }
         // If user presses ArrowDown...
-        // (NB selection is limited to five possibilities by regex above)
+        // (NB selection is limited to arrow keys and Enter by regex above)
         if (/Down/.test(e.key)) {
             if (activeElement.classList.contains('hover')) {
                 activeElement.classList.remove('hover');
+                if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
                 activeElement = activeElement.nextElementSibling || activeElement;
+                if (activeElement.classList.contains('snippet-container')) {
+                    activeElement.firstElementChild.classList.add('hover');
+                }
                 var nextElement = activeElement.nextElementSibling || activeElement;
                 if (!uiUtil.isElementInView(window, nextElement, true)) nextElement.scrollIntoView(false);
             }
@@ -294,7 +302,11 @@ prefix.addEventListener('keydown', function (e) {
         // If user presses ArrowUp...
         if (/Up/.test(e.key)) {
             activeElement.classList.remove('hover');
+            if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
             activeElement = activeElement.previousElementSibling || activeElement;
+            if (activeElement.classList.contains('snippet-container')) {
+                activeElement.firstElementChild.classList.add('hover');
+            }
             var previousElement = activeElement.previousElementSibling || activeElement;
             if (!uiUtil.isElementInView(window, previousElement, true)) previousElement.scrollIntoView();
             if (previousElement === activeElement) {
@@ -1927,8 +1939,13 @@ if (window.electronAPI) {
     // Set the Zoom values for the window
     electronAPI.setZoomLimits(1, 3);
 }
+document.getElementById('libzimSearchType').addEventListener('change', function (e) {
+    params.libzimSearchType = e.target.checked ? 'searchWithSnippets' : 'search';
+    settingsStore.setItem('libzimSearchType', params.libzimSearchType, Infinity);
+});
+
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
-    params.disableDragAndDrop = this.checked;
+    params.disableDragAndDrop = !!this.checked;
     settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);
     uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' +
         '<p>(If you cancel, then the setting will only be applied when you next start the app.)</p>', 'Reload app', true).then(function (result) {
@@ -4948,7 +4965,7 @@ function showZIMIndex (start, search) {
 /**
  * Display the list of articles with the given array of DirEntry
  * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
- * @param {Object} reportingSearch The the reporting search object
+ * @param {Object} reportingSearch The reporting search object
  */
 function populateListOfArticles (dirEntryArray, reportingSearch) {
     // Do not allow cancelled searches to report
@@ -4986,12 +5003,23 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
         // DEV: Some titles may contain malformed HTML characters like '&lt;i>' for '<i>', so we transform only bold and italics for display
         // @TODO: Remove when [openzim/mwoffliner #1797] is fixed
-        var dirEntryTitle = dirEntry.getTitleOrUrl();
+        var dirEntryTitle = dirEntry.title || dirEntry.getTitleOrUrl();
         dirEntryTitle = dirEntryTitle.replace(/&lt;([ib])>([^&]+)&lt;\/\1>/g, '<$1>$2</$1>');
+        // Make title bold if entry has a snippet
+        if (dirEntry.snippet) {
+            dirEntryTitle = '<strong>' + dirEntryTitle + '</strong>';
+        }
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
             '" class="list-group-item" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
+
+    // Set the innerHTML once
     articleListDiv.innerHTML = articleListDivHtml;
+
+    // Now add snippets and event listeners in a single loop
+    var articleLinks = articleListDiv.querySelectorAll('a[dirEntryId]');
+    uiUtil.createSnippetElements(dirEntryArray, articleLinks, listLength);
+
     // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
     // and prevents this event from firing; note that touch also triggers mousedown
     document.querySelectorAll('#articleList a').forEach(function (link) {

@@ -122,6 +122,7 @@ params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax
 params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['useLibzim'] = getSetting('useLibzim') === true; // Set to true to use libzim for decoding ZIM files (experimental)
+params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippets'; // Sets a value indicating the type of search to use with libzim (currently 'search' or 'searchWithSnippets')
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
@@ -281,6 +282,7 @@ document.getElementById('rememberLastPageCheck').checked = params.rememberLastPa
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
+document.getElementById('libzimSearchType').checked = params.libzimSearchType === 'searchWithSnippets';
 document.getElementById('enableSourceVerificationCheck').checked = getSetting('sourceVerification') === null ? true : getSetting('sourceVerification');
 document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
