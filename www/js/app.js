@@ -2647,7 +2647,6 @@ function removePageMaxWidth () {
     if (!appstate.wikimediaZimLoaded) return;
     // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
     if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
-    var zimType;
     var cssSource;
     var contentElement;
     var docStyle;
@@ -2657,8 +2656,8 @@ function removePageMaxWidth () {
     var body = doc.body;
     // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
-    zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
-    cssSource = params.cssSource === 'auto' ? zimType : params.cssSource;
+    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
+    cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
     for (var i = 0; i < idArray.length; i++) {
         contentElement = doc.getElementById(idArray[i]);
@@ -2680,7 +2679,7 @@ function removePageMaxWidth () {
             updatedCssText = params.removePageMaxWidth ? '100%' : '55.8em';
             docStyle.maxWidth = updatedCssText;
             docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-            if (params.removePageMaxWidth || zimType == 'mobile') docStyle.border = '0';
+            if (params.removePageMaxWidth || appstate.zimThemeType == 'mobile') docStyle.border = '0';
         }
         docStyle.margin = '0 auto';
     }
@@ -4336,6 +4335,7 @@ function archiveReadyCallback (archive) {
     // (this only affects Restricted mode)
     appstate.target = 'iframe';
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
+    appstate.zimThemeType = 'desktop';
     appstate.pureMode = false;
     // Reset params.assetsCache in case it was changed below
     params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
@@ -6291,26 +6291,27 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(noexcerpt[1], '');
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
         }
-        // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-        var hatnote;
-        var hatnotes = [];
-        do {
-            hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
-            if (hatnote && hatnote.length) {
-                // Ensure the next matching hatnote is under h1
-                if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
-                    htmlArticle = htmlArticle.replace(hatnote[0], '');
-                    hatnotes.push(hatnote[0]);
-                } else {
-                    break;
+        if (appstate.zimThemeType === 'mobile') {
+            // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+            var hatnote;
+            var hatnotes = [];
+            do {
+                hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
+                if (hatnote && hatnote.length) {
+                    // Ensure the next matching hatnote is under h1
+                    if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
+                        htmlArticle = htmlArticle.replace(hatnote[0], '');
+                        hatnotes.push(hatnote[0]);
+                    } else {
+                        break;
+                    }
                 }
+            } while (hatnote.length);
+            // Ensure we replace them in the right order
+            for (i = hatnotes.length; i--;) {
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
             }
-        } while (hatnote.length);
-        // Ensure we replace them in the right order
-        for (i = hatnotes.length; i--;) {
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
         }
-
         // Remove white background colour (causes flashes in dark mode)
         htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
         htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
