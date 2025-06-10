@@ -257,7 +257,6 @@ prefix.addEventListener('keydown', function (e) {
     if (/^Esc/.test(e.key)) {
         // Hide the article list
         e.preventDefault();
-        e.stopPropagation();
         document.getElementById('articleListWithHeader').style.display = 'none';
         document.getElementById('articleContent').focus();
         document.getElementById('mycloseMessage').click(); // This is in case the modal box is showing with an index search
@@ -267,24 +266,23 @@ prefix.addEventListener('keydown', function (e) {
     // IE11 produces "Down" instead of "ArrowDown" and "Up" instead of "ArrowUp"
     if (/^((Arrow)?(Down|Up|Left|Right)|Enter)$/.test(e.key)) {
         // User pressed Down arrow, Up arrow, Left arrow, Right arrow, or Enter
-        e.preventDefault();
-        e.stopPropagation();
         // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
         keyPressHandled = true;
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
         // If user presses Enter or Right arrow, read the dirEntry or open snippet
         if (/Enter|Right|Left/.test(e.key)) {
-            if (activeElement.classList.contains('hover') && !activeElement.classList.contains('snippet-container')) {
+            if (/Enter/.test(e.key) && activeElement.classList.contains('hover') && !activeElement.classList.contains('snippet-container')) {
                 var dirEntryId = activeElement.getAttribute('dirEntryId');
                 findDirEntryFromDirEntryIdAndLaunchArticleRead(decodeURIComponent(dirEntryId));
-                return;
             } else if (activeElement.classList.contains('snippet-container')) {
+                e.preventDefault();
                 // Open the snippet container
                 uiUtil.toggleSnippet(activeElement);
-                return;
             }
+            return;
         }
+        e.preventDefault();
         // If user presses ArrowDown...
         // (NB selection is limited to arrow keys and Enter by regex above)
         if (/Down/.test(e.key)) {
@@ -5019,19 +5017,21 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     // Now add snippets and event listeners in a single loop
     var articleLinks = articleListDiv.querySelectorAll('a[dirEntryId]');
     uiUtil.createSnippetElements(dirEntryArray, articleLinks, listLength);
+    // Add event listeners to article links
+    uiUtil.attachArticleListEventListeners(findDirEntryFromDirEntryIdAndLaunchArticleRead, appstate);
 
-    // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
-    // and prevents this event from firing; note that touch also triggers mousedown
-    document.querySelectorAll('#articleList a').forEach(function (link) {
-        link.addEventListener('mousedown', function (e) {
-            e.preventDefault();
-            // Cancel search immediately
-            appstate.search.status = 'cancelled';
-            handleTitleClick(e);
-            scrollbox.style.height = 0;
-            document.getElementById('articleListWithHeader').style.display = 'none';
-        });
-    });
+    // // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
+    // // and prevents this event from firing; note that touch also triggers mousedown
+    // document.querySelectorAll('#articleList a').forEach(function (link) {
+    //     link.addEventListener('mousedown', function (e) {
+    //         e.preventDefault();
+    //         // Cancel search immediately
+    //         appstate.search.status = 'cancelled';
+    //         handleTitleClick(e);
+    //         scrollbox.style.height = 0;
+    //         document.getElementById('articleListWithHeader').style.display = 'none';
+    //     });
+    // });
     if (!stillSearching) uiUtil.clearSpinner();
     document.getElementById('articleListWithHeader').style.display = '';
     if (reportingSearch.status === 'error') {

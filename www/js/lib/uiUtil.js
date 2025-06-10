@@ -1500,7 +1500,7 @@ function getBrowserLanguage () {
  * @param {Event} event The click event to handle
  * @param {Function} findDirEntryCallback Callback to find and launch article
  */
-function handleTitleClick(event, findDirEntryCallback) {
+function handleTitleClick (event, findDirEntryCallback) {
     event.preventDefault();
     // User may have clicked on a child element of the list item if it contains HTML (for example, italics),
     // so we may need to find the closest list item
@@ -1523,49 +1523,49 @@ function handleTitleClick(event, findDirEntryCallback) {
 /**
  * Creates and inserts snippet elements for search results
  * @param {Array} entriesArray Array of directory entries
- * @param {NodeList} links The article link elements  
+ * @param {NodeList} links The article link elements
  * @param {Number} length Number of items to process
  */
-function createSnippetElements(entriesArray, links, length) {
+function createSnippetElements (entriesArray, links, length) {
     for (var i = 0; i < length; i++) {
         var dirEntry = entriesArray[i];
-        
+
         // Add snippet if it exists
         if (dirEntry.snippet && links[i]) {
             var snippetId = 'snippet-' + i;
-            
+
             // Create snippet container
             var snippetContainer = document.createElement('div');
             snippetContainer.className = 'snippet-container';
-            
+
             // Create and populate snippet header
             var snippetHeader = document.createElement('div');
             snippetHeader.className = 'snippet-header';
             snippetHeader.tabIndex = 0;
             snippetHeader.setAttribute('data-target', snippetId);
             snippetHeader.setAttribute('aria-expanded', 'false');
-            
+
             var indicator = document.createElement('span');
             indicator.className = 'snippet-indicator';
             indicator.textContent = '▶';
-            
+
             var preview = document.createElement('span');
             preview.className = 'snippet-preview';
             preview.innerHTML = dirEntry.snippet.substring(0, 80) + '...';
-            
+
             snippetHeader.appendChild(indicator);
             snippetHeader.appendChild(preview);
-            
+
             // Create snippet content
             var content = document.createElement('div');
             content.id = snippetId;
             content.className = 'snippet-content collapsed';
             content.innerHTML = dirEntry.snippet;
-            
+
             // Assemble and insert
             snippetContainer.appendChild(snippetHeader);
             snippetContainer.appendChild(content);
-            
+
             // Insert after the article link
             links[i].parentNode.insertBefore(snippetContainer, links[i].nextSibling);
         }
@@ -1574,13 +1574,13 @@ function createSnippetElements(entriesArray, links, length) {
 
 /**
  * Expands or collapses fulltext search snippet content when the header is selected
- * @param {Element} ele The container element that was selected 
- * @param {Event} ev The event to handle or null if called programmatically  
+ * @param {Element} ele The container element that was selected
+ * @param {Event} ev The event to handle or null if called programmatically
 */
 function toggleSnippet (ele, ev) {
     if (ev) {
         ev.preventDefault();
-        ev.stopPropagation(); // Prevent triggering the article link        
+        ev.stopPropagation(); // Prevent triggering the article link
     }
     var header = ele.children[0]; // Snippet header
     var content = ele.children[1]; // Snippet content
@@ -1601,7 +1601,7 @@ function toggleSnippet (ele, ev) {
  * @param {Function} findDirEntryCallback Function to find and launch article by dirEntryId
  * @param {Object} appstate App state object containing search status
  */
-function attachArticleListEventListeners(findDirEntryCallback, appstate) {
+function attachArticleListEventListeners (findDirEntryCallback, appstate) {
     // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
     // and prevents this event from firing; note that touch also triggers mousedown
     document.querySelectorAll('#articleList a, .snippet-container').forEach(function (element) {
@@ -1615,7 +1615,7 @@ function attachArticleListEventListeners(findDirEntryCallback, appstate) {
                 handleTitleClick(e, findDirEntryCallback);
             }
         });
-        
+
         // Add hover functionality for snippet containers with delay
         if (element.classList.contains('snippet-container')) {
             var hoverTimeout;
@@ -1625,10 +1625,9 @@ function attachArticleListEventListeners(findDirEntryCallback, appstate) {
                     clearTimeout(hoverTimeout);
                 }
                 // Set a delay before expanding (e.g., 300ms)
-                hoverTimeout = setTimeout(function() {
+                hoverTimeout = setTimeout(function () {
                     // Safety check: ensure the element still has the expected children
                     if (element.children.length < 2) return;
-                    
                     var header = element.children[0];
                     var content = element.children[1];
                     var isExpanded = header.getAttribute('aria-expanded') === 'true';
@@ -1639,7 +1638,7 @@ function attachArticleListEventListeners(findDirEntryCallback, appstate) {
                     }
                 }, 400);
             });
-            
+
             element.addEventListener('mouseleave', function () {
                 // Clear the timeout if user leaves before delay completes
                 if (hoverTimeout) {
@@ -1648,7 +1647,7 @@ function attachArticleListEventListeners(findDirEntryCallback, appstate) {
                 }
                 // Safety check: ensure the element still has the expected children
                 if (element.children.length < 2) return;
-                
+
                 // Always collapse on mouse leave
                 // var header = element.children[0];
                 // var content = element.children[1];
@@ -1658,7 +1657,6 @@ function attachArticleListEventListeners(findDirEntryCallback, appstate) {
         }
     });
 }
-
 
 /**
  * Functions and classes exposed by this module
