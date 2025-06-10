@@ -1,9 +1,10 @@
 # Changelog
 
-## Interim release 3.6.61
+## Interim release 3.6.63
 
 * ENHANCEMENT: Report current default ZIM style (desktop/mobile) to Configuration
 * UPDATE: Support transforming ActionParse ZIMs to mobile style
+* REGRESSION: Fix code that misplaced hatnotes in ActionParse ZIMs
 
 ## Release 3.6.5 / 3.6.6
 
