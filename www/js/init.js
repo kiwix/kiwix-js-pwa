@@ -96,8 +96,8 @@ params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-// Maximum number of article titles to return (range is 5 - 100, default 30)
-params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
+// Maximum number of article titles to return (range is 5 - 100, default 20), but see intelligent search-size calculation below
+params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 20);
 params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); // Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); // Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || 'auto'; // Set default to "auto", "desktop" or "mobile"
@@ -242,6 +242,25 @@ if (getSetting('lastPageLoad') === 'failed') {
 } else {
     // Cookie will signal failure until article is fully loaded
     setSetting('lastPageLoad', 'failed');
+}
+
+// Use intelligent search-size calculation based on app type and environment
+// This is because fulltext search with snippets is slower than basic fulltext search, and excruciatingly slow on Android if not using the OPFS
+if (!getSetting('maxSearchResultsSize')) {
+    if (params.libzimSearchType === 'search') {
+        // If the user has set the search type to basic search, we can use a larger number of results
+        params.maxSearchResultsSize = 30;
+    }
+    if (/Android/.test(params.appType)) {
+        if (params.useOPFS) {
+            // Android with OPFS can handle more results: 15 with snippets, 20 with basic search
+            params.maxSearchResultsSize = params.libzimSearchType === 'search' ? 20 : 15;
+        } else {
+            // Android without OPFS needs restricted results and basic search
+            params.maxSearchResultsSize = 10;
+            params.libzimSearchType = getSetting('libzimSearchType') || 'search';
+        }
+    }
 }
 
 // Initialize checkbox, radio and other values
