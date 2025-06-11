@@ -7301,34 +7301,12 @@ function setupTableOfContents () {
     var headings = tableOfContents.getHeadingObjects();
 
     if(headings.length <= 1) {
-        dropup.style.display = 'none';
-        
-        document.getElementById('btnBack').classList.remove('col-xs-1');
-        document.getElementById('btnBack').classList.add('col-xs-2');
-
-        document.getElementById('btnForward').classList.remove('col-xs-1');
-        document.getElementById('btnForward').classList.add('col-xs-2');
-
-        document.getElementById('btnZoomout').classList.remove('col-xs-1');
-        document.getElementById('btnZoomout').classList.add('col-xs-2');
-
-        document.getElementById('btnZoomin').classList.remove('col-xs-1');
-        document.getElementById('btnZoomin').classList.add('col-xs-2');
+        var dropupElement = document.getElementById('dropup');
+        dropupElement.classList.remove('btn-default');
+        dropupElement.style.pointerEvents = 'none';        
+        dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b>';
+        document.getElementById('ToCList').style.visibility = 'hidden';
         return;
-    } else {
-        dropup.style.display = 'block';
-
-        document.getElementById('btnBack').classList.remove('col-xs-2');
-        document.getElementById('btnBack').classList.add('col-xs-1');
-
-        document.getElementById('btnForward').classList.remove('col-xs-2');
-        document.getElementById('btnForward').classList.add('col-xs-1');
-        
-        document.getElementById('btnZoomout').classList.remove('col-xs-2');
-        document.getElementById('btnZoomout').classList.add('col-xs-1');
-
-        document.getElementById('btnZoomin').classList.remove('col-xs-2');
-        document.getElementById('btnZoomin').classList.add('col-xs-1');
     }
 
     dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + 'px';
