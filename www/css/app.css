@@ -781,94 +781,81 @@ pre {
     background-color: #ccc !important;
 }
 
+/* Collapsible features section */
+.collapsible-section {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px 0;
+}
 
-    @media (max-width: 768px) {
-        /*Increase touchability of bottom buttons*/
-        footer .btn-default {
-            font-size: 120% !important;
-        }
+.features-summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    padding: 15px;
+    margin: 0;
+    outline: none;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
 
-        /* Pour réduire la taille du menu en haut */
-        /*.navbar {
-            min-height: 20px !important;
-            margin-bottom: 1px !important;
-        }*/
-        /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
-        /*padding-top: 2px !important;
-        padding-bottom: 1px !important;
-        height: 25px !important;
+.features-summary:hover {
+    background-color: #e9ecef;
+}
+
+.features-summary::-webkit-details-marker {
+    display: none;
+}
+
+.features-summary h3 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.collapse-indicator {
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+
+.collapsible-section[open] .collapse-indicator {
+    transform: rotate(180deg);
+}
+
+.features-content {
+    margin-top: 0;
+    padding: 0 15px 15px;
+}
+
+/* Dark theme support */
+.dark .collapsible-section {
+    border-color: #4a5568;
+}
+
+.dark .features-summary {
+    background-color: #2d3748;
+}
+
+.dark .features-summary:hover {
+    background-color: #374151;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {
+    /*Increase touchability of bottom buttons*/
+    footer .btn-default {
+        font-size: 120% !important;
     }
-
-    .navbar-nav a {
-        padding-bottom: 15px !important;
-    }*/
-
-        /*.navbar-toggle {
-            padding-top: 2px !important;
-            padding-bottom: 2px !important;
-            margin-top: 2px !important;
-            margin-bottom: 0px !important;
-            background-color: lightgray !important;
-        }*/
-        /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
-    .navbar-nav, .navbar-nav > li {
-        padding-top: 2px !important;
-        padding-bottom: 2px !important;
-        margin-top: 2px !important;
-        margin-bottom: 0px !important;
-    } */
-        .navbar-nav {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-        }
-            /*Make sure these align correctly rather than stacking at full width - GK*/
-            .navbar-nav > li > a {
-                /*float: left !important;*/
-                /*Added this to prevent the buttons becoming so small*/
-                padding-top: 15px !important;
-            }
-
-        /*.col-md-offset-1 {
-        padding-left: 5px !important;
-    }
-
-    [role=region] > header {
-        margin-bottom: 10px !important;
-    }*/
-        /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
-    .list-group {
+    .navbar-nav {
+        margin-top: 0 !important;
         margin-bottom: 0 !important;
-    } */
-        /* Pour réduire la taille du champ de recherche 
-    .form-control {
-        height: 28px !important;
-        padding-bottom: 5px !important;
-    } */
-
-        /*.dropdown-menu {
-        font-size: 20px !important;
     }
-
-     Pour réduire la taille des boutons en haut de l'écran 
-    .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
-        font-size: 10px !important;
-    }*/
-        /* Pour réduire la taille des boutons en bas de l'écran 
-    .btn-lg, .btn-group-lg > .btn {
-        padding-top: 1px !important;
-        padding-bottom: 1px !important;
-        font-size: 16px !important;
-    }*/
+    /*Make sure these align correctly rather than stacking at full width - GK*/
+    .navbar-nav > li > a {
+        /*float: left !important;*/
+        /*Added this to prevent the buttons becoming so small*/
+        padding-top: 15px !important;
     }
-
-    @media (max-width: 440px) {
-        /*.btn-primary {
-        font-size: 12px !important;
-    }
-    .input-group-btn {
-        display: inline !important;
-    }
-    #btnHome {
-        float: left;
-    }*/
-    }
+}
