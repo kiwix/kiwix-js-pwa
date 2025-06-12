@@ -1679,6 +1679,10 @@ function dynamicallySetMaxSearchResults () {
             }
         }
     }
+    // Set UI state for maxSearchResultsSize and libzimSearchType
+    document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
+    document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
+    document.getElementById('libzimSearchType').checked = params.libzimSearchType === 'searchWithSnippets';
 }
 
 /**

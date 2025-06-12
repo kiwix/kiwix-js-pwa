@@ -282,13 +282,10 @@ document.getElementById('rememberLastPageCheck').checked = params.rememberLastPa
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 document.getElementById('useLibzimReaderCheck').checked = params.useLibzim;
-document.getElementById('libzimSearchType').checked = params.libzimSearchType === 'searchWithSnippets';
 document.getElementById('enableSourceVerificationCheck').checked = getSetting('sourceVerification') === null ? true : getSetting('sourceVerification');
 document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
-document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
-document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
 document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
