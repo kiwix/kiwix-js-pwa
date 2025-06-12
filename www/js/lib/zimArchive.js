@@ -332,7 +332,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
     search.rgxPrefix = null;
     var prefix = search.prefix;
     // Launch a full-text search if possible
-    if (LZ && !search.searchUrlIndex) {
+    if (LZ && !(search.searchUrlIndex || search.searchTitleIndex)) {
         that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
             // If user initiated a new search, cancel this one
             // In particular, do not set the search status back to 'complete'
@@ -566,6 +566,10 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
         };
         return addDirEntries(firstIndex);
     }).then(function (objWithIndex) {
+        // If we have found the requested number of results, we can stop the search
+        if (objWithIndex.dirEntries.length >= search.size) {
+            search.status = 'complete';
+        }
         return callback(objWithIndex.dirEntries, objWithIndex.nextStart);
     });
 };

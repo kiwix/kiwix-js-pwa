@@ -4789,13 +4789,15 @@ function listenForSearchKeys () {
  * Search the index for DirEntries with title that start with the given prefix (implemented
  * with a binary search inside the index file)
  * @param {String} prefix The string that must appear at the start of any title searched for
+ * @param {Boolean} searchTitleIndex If true, the search will only be done in the title index, otherwise with fulltext index as well
+ * @param {Number} size The number of results to return (default is params.maxSearchResultsSize)
  */
-function searchDirEntriesFromPrefix (prefix, size) {
+function searchDirEntriesFromPrefix (prefix, searchTitleIndex, size) {
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         // Cancel the old search (zimArchive search object will receive this change)
         appstate.search.status = 'cancelled';
-        // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-        appstate.search = { prefix: prefix, status: 'init', type: '', size: size || params.maxSearchResultsSize };
+        // Initiate a new search object and point appstate.search to it (the zimArchive search object will continue to point to the old object)
+        appstate.search = { prefix: prefix, status: 'init', type: '', size: size || params.maxSearchResultsSize, searchTitleIndex: searchTitleIndex || false };
         uiUtil.hideActiveContentWarning();
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -4985,7 +4987,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     }
     if (!stillSearching && reportingSearch.scanCount) {
         message += ' [scanned ' + reportingSearch.scanCount + ' titles] ' +
-        '<a href="#" id="getMoreResults">Get more</a>';
+        '<a href="#" id="getMoreResults">[ Get more ]</a>' + (appstate.search.searchTitleIndex ? ' <a href="#" id="full">[ full search? ]</a>' : ' <a href="#" id="titleOnly">[ title only? ]</a>');
     }
 
     articleListHeaderMessageDiv.innerHTML = message;
@@ -4995,7 +4997,8 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     if (stopScanElement && !stopScanElement.hasAttribute('data-listener-added')) {
         stopScanElement.addEventListener('mousedown', function (e) {
             e.preventDefault();
-            appstate.search.status = 'cancelled';
+            appstate.search.status = 'complete';
+            populateListOfArticles(dirEntryArray, appstate.search);
         });
         stopScanElement.setAttribute('data-listener-added', 'true');
     }
@@ -5006,10 +5009,32 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
             e.preventDefault();
             // Temporarily increase the search window by params.maxSearchResultsSize
             var temporarySearchSize = appstate.search.size + params.maxSearchResultsSize;
+            // If title search only, we should pass that to the new search
+            var isTitleOnly = appstate.search.searchTitleIndex;
             // Rerun the search with the current prefix
-            searchDirEntriesFromPrefix(appstate.search.prefix, temporarySearchSize);
+            searchDirEntriesFromPrefix(appstate.search.prefix, isTitleOnly, temporarySearchSize);
         });
         getMoreResultsElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for full search link
+    var fullSearchElement = document.getElementById('full');
+    if (fullSearchElement && !fullSearchElement.hasAttribute('data-listener-added')) {
+        fullSearchElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, false, appstate.search.size);
+        });
+        fullSearchElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for titleOnly link
+    var titleOnlyElement = document.getElementById('titleOnly');
+    if (titleOnlyElement && !titleOnlyElement.hasAttribute('data-listener-added')) {
+        titleOnlyElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, true, appstate.search.size);
+        });
+        titleOnlyElement.setAttribute('data-listener-added', 'true');
     }
 
     if (stillSearching && reportingSearch.countReport) return;
