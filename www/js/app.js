@@ -224,8 +224,6 @@ function onPointerUp (e) {
 
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
-var searchArticlesFocused = false;
-
 document.getElementById('searchArticles').addEventListener('click', function () {
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
@@ -243,8 +241,6 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     var headerHeight = document.getElementById('top').getBoundingClientRect().height;
     var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
     scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
-    // This flag is set to true in the mousedown event below
-    searchArticlesFocused = false;
 });
 document.getElementById('formArticleSearch').addEventListener('submit', function () {
     document.getElementById('searchArticles').click();
@@ -342,19 +338,16 @@ prefix.addEventListener('focus', function () {
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
-    if (!searchArticlesFocused) {
-        appstate.search.status = 'cancelled';
-    }
     // We need to wait one tick for the activeElement to receive focus
-        setTimeout(function () {
-            if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
-            /^list-group/.test(document.activeElement.className))) {
-                scrollbox.style.height = 0;
-                document.getElementById('articleListWithHeader').style.display = 'none';
-                appstate.tempPrefix = '';
-                uiUtil.clearSpinner();
-            }
-        }, 1);
+    setTimeout(function () {
+        if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
+        /^list-group/.test(document.activeElement.className))) {
+            scrollbox.style.height = 0;
+            document.getElementById('articleListWithHeader').style.display = 'none';
+            appstate.tempPrefix = '';
+            uiUtil.clearSpinner();
+        }
+    }, 1);
 });
 
 // Add keyboard shortcuts
@@ -685,7 +678,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         displayFileSelect();
     }
     // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
-    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.hasItem('useOPFS')) {
         // This will only run first time app is run on Android
         setTimeout(function () {
             uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
@@ -701,11 +694,13 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
                 }
             });
         }, 2000);
-    } else if (!settingsStore.getItem('useOPFS')) {
-        // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
+    } else if (!settingsStore.hasItem('useOPFS')) {
+        // This ensures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
         // app is running for the first time (so we don't keep prompting the user to use the OPFS)
         settingsStore.setItem('useOPFS', false, Infinity);
     }
+    // Since we may have changed the storage type, we should recalculate the max search size
+    uiUtil.dynamicallySetMaxSearchResults();
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -1675,6 +1670,8 @@ function setOPFSUI () {
         btnDeleteOPFSEntry.style.display = 'none';
         btnExportOPFSEntry.style.display = 'none';
     }
+    // Enabling or disabling the OPFS affects the maximum number of search results we should return
+    uiUtil.dynamicallySetMaxSearchResults();
 }
 
 // Set the OPFS UI on app launch
@@ -1940,6 +1937,7 @@ if (window.electronAPI) {
 document.getElementById('libzimSearchType').addEventListener('change', function (e) {
     params.libzimSearchType = e.target.checked ? 'searchWithSnippets' : 'search';
     settingsStore.setItem('libzimSearchType', params.libzimSearchType, Infinity);
+    uiUtil.dynamicallySetMaxSearchResults();
 });
 
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
@@ -4792,12 +4790,12 @@ function listenForSearchKeys () {
  * with a binary search inside the index file)
  * @param {String} prefix The string that must appear at the start of any title searched for
  */
-function searchDirEntriesFromPrefix (prefix) {
+function searchDirEntriesFromPrefix (prefix, size) {
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         // Cancel the old search (zimArchive search object will receive this change)
         appstate.search.status = 'cancelled';
         // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-        appstate.search = { prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize };
+        appstate.search = { prefix: prefix, status: 'init', type: '', size: size || params.maxSearchResultsSize };
         uiUtil.hideActiveContentWarning();
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -4975,23 +4973,49 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     var message;
     if (stillSearching) {
         message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
-        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#">stop</a>' : '');
-    } else if (nbDirEntry >= params.maxSearchResultsSize) {
-        message = 'First ' + params.maxSearchResultsSize + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') + ' found: refine your search.';
+        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#" id="stopScan">stop</a>' : '');
+    } else if (nbDirEntry >= reportingSearch.size) {
+        message = 'First ' + reportingSearch.size + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') +
+        ' found: refine your search.';
     } else if (reportingSearch.status === 'error') {
         message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!';
     } else {
         message = 'Finished. ' + (nbDirEntry || 'No') + ' articles found' +
         (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
     }
-    if (!stillSearching && reportingSearch.scanCount) message += ' [scanned ' + reportingSearch.scanCount + ' titles]';
+    if (!stillSearching && reportingSearch.scanCount) {
+        message += ' [scanned ' + reportingSearch.scanCount + ' titles] ' +
+        '<a href="#" id="getMoreResults">Get more</a>';
+    }
 
     articleListHeaderMessageDiv.innerHTML = message;
-    if (stillSearching && reportingSearch.countReport) return;
 
+    // Add event listener for stopScan link
+    var stopScanElement = document.getElementById('stopScan');
+    if (stopScanElement && !stopScanElement.hasAttribute('data-listener-added')) {
+        stopScanElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            appstate.search.status = 'cancelled';
+        });
+        stopScanElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for getMoreResults link
+    var getMoreResultsElement = document.getElementById('getMoreResults');
+    if (getMoreResultsElement && !getMoreResultsElement.hasAttribute('data-listener-added')) {
+        getMoreResultsElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Temporarily increase the search window by params.maxSearchResultsSize
+            var temporarySearchSize = appstate.search.size + params.maxSearchResultsSize;
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, temporarySearchSize);
+        });
+        getMoreResultsElement.setAttribute('data-listener-added', 'true');
+    }
+
+    if (stillSearching && reportingSearch.countReport) return;
     var articleListDiv = document.getElementById('articleList');
     var articleListDivHtml = '';
-    var listLength = dirEntryArray.length < params.maxSearchResultsSize ? dirEntryArray.length : params.maxSearchResultsSize;
+    var listLength = dirEntryArray.length < reportingSearch.size ? dirEntryArray.length : reportingSearch.size;
     for (var i = 0; i < listLength; i++) {
         var dirEntry = dirEntryArray[i];
         // NB We use encodeURIComponent rather than encodeURI here because we know that any question marks in the title are not querystrings,

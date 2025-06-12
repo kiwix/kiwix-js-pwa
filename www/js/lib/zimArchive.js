@@ -575,7 +575,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
  *
  * @param {Object} search The appstate.search object
  * @param {Array} dirEntries The array of already found Directory Entries
- * @param {Integer} number Optional positive number of search results requested (otherwise params.maxSearchResults will be used)
+ * @param {Integer} number Override number of results requested in search object (used to get remaining results)
  * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search
  */
 ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries, number) {
@@ -583,7 +583,7 @@ ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEnt
     var that = this;
     // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
     // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
-    var resultsNeeded = number || params.maxSearchResultsSize;
+    var resultsNeeded = number || search.size;
     var searchType = params.libzimSearchType || 'search';
     return this.callLibzimWorker({ action: searchType, text: search.prefix, numResults: resultsNeeded }).then(function (returned) {
         if (returned) {

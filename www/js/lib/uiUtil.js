@@ -26,6 +26,7 @@
 /* global webpMachine, params, appstate, Windows */
 
 import util from './util.js';
+import settingsStore from './settingsStore.js';
 
 /**
  * Global variables
@@ -1646,8 +1647,7 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
                     hoverTimeout = null;
                 }
                 // Safety check: ensure the element still has the expected children
-                if (element.children.length < 2) return;
-
+                // if (element.children.length < 2) return;
                 // Always collapse on mouse leave
                 // var header = element.children[0];
                 // var content = element.children[1];
@@ -1656,6 +1656,29 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
             });
         }
     });
+}
+
+/**
+ * Use intelligent search-size calculation based on app type and environment. This is because fulltext search with snippets
+ * is slower than basic fulltext search, and excruciatingly slow on Android if not using the OPFS
+ */
+function dynamicallySetMaxSearchResults () {
+    if (!settingsStore.hasItem('maxSearchResultsSize')) {
+        if (params.libzimSearchType === 'search') {
+            // If the user has set the search type to basic search, we can use a larger number of results
+            params.maxSearchResultsSize = 25;
+        }
+        if (/Android/.test(params.appType)) {
+            if (params.useOPFS) {
+                // Android with OPFS can handle more results: 15 with snippets, 20 with basic search
+                params.maxSearchResultsSize = params.libzimSearchType === 'search' ? 15 : 12;
+            } else {
+                // Android without OPFS needs restricted results and basic search
+                params.maxSearchResultsSize = 10;
+                params.libzimSearchType = settingsStore.getItem('libzimSearchType') || 'search';
+            }
+        }
+    }
 }
 
 /**
@@ -1699,5 +1722,6 @@ export default {
     handleTitleClick: handleTitleClick,
     createSnippetElements: createSnippetElements,
     toggleSnippet: toggleSnippet,
-    attachArticleListEventListeners: attachArticleListEventListeners
+    attachArticleListEventListeners: attachArticleListEventListeners,
+    dynamicallySetMaxSearchResults: dynamicallySetMaxSearchResults
 };
