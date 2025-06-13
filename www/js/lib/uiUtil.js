@@ -1538,6 +1538,7 @@ function createSnippetElements (entriesArray, links, length) {
             // Create snippet container
             var snippetContainer = document.createElement('div');
             snippetContainer.className = 'snippet-container';
+            snippetContainer.tabIndex = 0; // Make it focusable to help with keyboard hiding
 
             // Create and populate snippet header
             var snippetHeader = document.createElement('div');

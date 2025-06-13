@@ -5069,18 +5069,6 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     // Add event listeners to article links
     uiUtil.attachArticleListEventListeners(findDirEntryFromDirEntryIdAndLaunchArticleRead, appstate);
 
-    // // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
-    // // and prevents this event from firing; note that touch also triggers mousedown
-    // document.querySelectorAll('#articleList a').forEach(function (link) {
-    //     link.addEventListener('mousedown', function (e) {
-    //         e.preventDefault();
-    //         // Cancel search immediately
-    //         appstate.search.status = 'cancelled';
-    //         handleTitleClick(e);
-    //         scrollbox.style.height = 0;
-    //         document.getElementById('articleListWithHeader').style.display = 'none';
-    //     });
-    // });
     if (!stillSearching) uiUtil.clearSpinner();
     document.getElementById('articleListWithHeader').style.display = '';
     if (reportingSearch.status === 'error') {
@@ -5090,6 +5078,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         });
     }
 }
+
 /**
  * Handles the click on the title of an article in search results
  * @param {Event} event The click event to handle
