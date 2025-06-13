@@ -1609,6 +1609,8 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
     document.querySelectorAll('#articleList a, .snippet-container').forEach(function (element) {
         element.addEventListener('mousedown', function (e) {
             if (element.classList.contains('snippet-container')) {
+                // Prevents Android keyboard from popping up and covering the article list
+                element.focus();
                 // Handle snippet toggle
                 toggleSnippet(element, e);
             } else {
@@ -1626,7 +1628,7 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
                 if (hoverTimeout) {
                     clearTimeout(hoverTimeout);
                 }
-                // Set a delay before expanding (e.g., 300ms)
+                // Set a delay before expanding (e.g., 400ms)
                 hoverTimeout = setTimeout(function () {
                     // Safety check: ensure the element still has the expected children
                     if (element.children.length < 2) return;

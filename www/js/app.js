@@ -341,13 +341,13 @@ prefix.addEventListener('blur', function () {
     // We need to wait one tick for the activeElement to receive focus
     setTimeout(function () {
         if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
-        /^list-group/.test(document.activeElement.className))) {
+        /^list-group|snippet-container/.test(document.activeElement.className))) {
             scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
             appstate.tempPrefix = '';
             uiUtil.clearSpinner();
         }
-    }, 1);
+    }, 100);
 });
 
 // Add keyboard shortcuts
