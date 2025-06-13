@@ -4987,7 +4987,9 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     }
     if (!stillSearching && reportingSearch.scanCount) {
         message += ' [scanned ' + reportingSearch.scanCount + ' titles] ' +
-        '<a href="#" id="getMoreResults">[ Get more ]</a>' + (appstate.search.searchTitleIndex ? ' <a href="#" id="full">[ full search? ]</a>' : ' <a href="#" id="titleOnly">[ title only? ]</a>');
+        '<a href="#" id="getMoreResults">[ Get more ]</a>' + (/^fulltext/.test(params.searchProvider)
+            ? (appstate.search.searchTitleIndex ? ' <a href="#" id="full">[ full search? ]</a>'
+                : ' <a href="#" id="titleOnly">[ title only? ]</a>') : '');
     }
 
     articleListHeaderMessageDiv.innerHTML = message;
