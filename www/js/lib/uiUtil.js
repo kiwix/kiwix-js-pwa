@@ -1609,6 +1609,12 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
     document.querySelectorAll('#articleList a, .snippet-container').forEach(function (element) {
         element.addEventListener('mousedown', function (e) {
             if (element.classList.contains('snippet-container')) {
+                // Set a flag to prevent hover behavior immediately after manual interaction
+                element.dataset.manuallyInteracted = 'true';
+                // Clear the flag after a short delay
+                setTimeout(function () {
+                    delete element.dataset.manuallyInteracted;
+                }, 500);
                 // Prevents Android keyboard from popping up and covering the article list
                 element.focus();
                 // Handle snippet toggle
@@ -1624,6 +1630,10 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
         if (element.classList.contains('snippet-container')) {
             var hoverTimeout;
             element.addEventListener('mouseenter', function () {
+                // Skip hover behavior if user just manually interacted
+                if (element.dataset.manuallyInteracted === 'true') {
+                    return;
+                }
                 // Clear any existing timeout
                 if (hoverTimeout) {
                     clearTimeout(hoverTimeout);
@@ -1632,6 +1642,8 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
                 hoverTimeout = setTimeout(function () {
                     // Only toggle if the element is not expanded
                     if (element.children[1] && element.children[1].classList.contains('collapsed')) {
+                        // Check if the element has already been manually interacted with
+                        if (element.dataset.manuallyInteracted) return;
                         // Expand the snippet
                         toggleSnippet(element, null);
                     }
