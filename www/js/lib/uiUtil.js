@@ -1630,15 +1630,10 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
                 }
                 // Set a delay before expanding (e.g., 400ms)
                 hoverTimeout = setTimeout(function () {
-                    // Safety check: ensure the element still has the expected children
-                    if (element.children.length < 2) return;
-                    var header = element.children[0];
-                    var content = element.children[1];
-                    var isExpanded = header.getAttribute('aria-expanded') === 'true';
-                    // Only expand if not already expanded
-                    if (!isExpanded) {
-                        content.classList.remove('collapsed');
-                        header.setAttribute('aria-expanded', 'true');
+                    // Only toggle if the element is not expanded
+                    if (element.children[1] && element.children[1].classList.contains('collapsed')) {
+                        // Expand the snippet
+                        toggleSnippet(element, null);
                     }
                 }, 400);
             });
