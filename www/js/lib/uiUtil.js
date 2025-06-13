@@ -1681,7 +1681,7 @@ function dynamicallySetMaxSearchResults () {
         if (/Android/.test(params.appType)) {
             if (params.useOPFS) {
                 // Android with OPFS can handle more results: 15 with snippets, 20 with basic search
-                params.maxSearchResultsSize = params.libzimSearchType === 'search' ? 15 : 12;
+                params.maxSearchResultsSize = params.libzimSearchType === 'search' ? 20 : 15;
             } else {
                 // Android without OPFS needs restricted results and basic search
                 params.maxSearchResultsSize = 10;

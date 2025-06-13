@@ -96,8 +96,8 @@ params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-// Maximum number of article titles to return (range is 5 - 100, default 15), but see intelligent search-size calculation below
-params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 15);
+// Maximum number of article titles to return (range is 5 - 100, default 20), but see intelligent search-size calculation in uiUtils.js
+params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 20);
 params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); // Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); // Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || 'auto'; // Set default to "auto", "desktop" or "mobile"
