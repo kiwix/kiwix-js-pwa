@@ -4732,7 +4732,7 @@ function onKeyUpPrefix (evt) {
         // Don't process anything if it's the same prefix as recently entered (this prevents searching
         // if user is simply using arrow key to correct something typed).
         if (!/^\s/.test(prefix.value) && prefix.value === appstate.tempPrefix) return;
-        if (prefix.value && prefix.value.length > 0 && (prefix.value !== appstate.search.prefix || /^\s/.test(prefix.value))) {
+        if (prefix.value && prefix.value.length > 0) {
             appstate.tempPrefix = prefix.value;
             document.getElementById('searchArticles').click();
         }
@@ -5431,7 +5431,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    console.debug('filterClickEvent fired');
+    // console.debug('filterClickEvent fired');
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Find the closest enclosing A tag (if any)
