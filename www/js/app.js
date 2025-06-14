@@ -224,8 +224,6 @@ function onPointerUp (e) {
 
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
-var searchArticlesFocused = false;
-
 document.getElementById('searchArticles').addEventListener('click', function () {
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
@@ -243,8 +241,6 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     var headerHeight = document.getElementById('top').getBoundingClientRect().height;
     var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
     scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
-    // This flag is set to true in the mousedown event below
-    searchArticlesFocused = false;
 });
 document.getElementById('formArticleSearch').addEventListener('submit', function () {
     document.getElementById('searchArticles').click();
@@ -257,7 +253,6 @@ prefix.addEventListener('keydown', function (e) {
     if (/^Esc/.test(e.key)) {
         // Hide the article list
         e.preventDefault();
-        e.stopPropagation();
         document.getElementById('articleListWithHeader').style.display = 'none';
         document.getElementById('articleContent').focus();
         document.getElementById('mycloseMessage').click(); // This is in case the modal box is showing with an index search
@@ -265,28 +260,35 @@ prefix.addEventListener('keydown', function (e) {
     }
     // Arrow-key selection code adapted from https://stackoverflow.com/a/14747926/9727685
     // IE11 produces "Down" instead of "ArrowDown" and "Up" instead of "ArrowUp"
-    if (/^((Arrow)?Down|(Arrow)?Up|Enter)$/.test(e.key)) {
-        // User pressed Down arrow or Up arrow or Enter
-        e.preventDefault();
-        e.stopPropagation();
+    if (/^((Arrow)?(Down|Up|Left|Right)|Enter)$/.test(e.key)) {
+        // User pressed Down arrow, Up arrow, Left arrow, Right arrow, or Enter
         // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
         keyPressHandled = true;
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
-        // If user presses Enter, read the dirEntry
-        if (/Enter/.test(e.key)) {
-            if (activeElement.classList.contains('hover')) {
+        // If user presses Enter or Right arrow, read the dirEntry or open snippet
+        if (/Enter|Right|Left/.test(e.key)) {
+            if (/Enter/.test(e.key) && activeElement.classList.contains('hover') && !activeElement.classList.contains('snippet-container')) {
                 var dirEntryId = activeElement.getAttribute('dirEntryId');
                 findDirEntryFromDirEntryIdAndLaunchArticleRead(decodeURIComponent(dirEntryId));
-                return;
+            } else if (activeElement.classList.contains('snippet-container')) {
+                e.preventDefault();
+                // Open the snippet container
+                uiUtil.toggleSnippet(activeElement);
             }
+            return;
         }
+        e.preventDefault();
         // If user presses ArrowDown...
-        // (NB selection is limited to five possibilities by regex above)
+        // (NB selection is limited to arrow keys and Enter by regex above)
         if (/Down/.test(e.key)) {
             if (activeElement.classList.contains('hover')) {
                 activeElement.classList.remove('hover');
+                if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
                 activeElement = activeElement.nextElementSibling || activeElement;
+                if (activeElement.classList.contains('snippet-container')) {
+                    activeElement.firstElementChild.classList.add('hover');
+                }
                 var nextElement = activeElement.nextElementSibling || activeElement;
                 if (!uiUtil.isElementInView(window, nextElement, true)) nextElement.scrollIntoView(false);
             }
@@ -294,7 +296,11 @@ prefix.addEventListener('keydown', function (e) {
         // If user presses ArrowUp...
         if (/Up/.test(e.key)) {
             activeElement.classList.remove('hover');
+            if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
             activeElement = activeElement.previousElementSibling || activeElement;
+            if (activeElement.classList.contains('snippet-container')) {
+                activeElement.firstElementChild.classList.add('hover');
+            }
             var previousElement = activeElement.previousElementSibling || activeElement;
             if (!uiUtil.isElementInView(window, previousElement, true)) previousElement.scrollIntoView();
             if (previousElement === activeElement) {
@@ -332,19 +338,16 @@ prefix.addEventListener('focus', function () {
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
-    if (!searchArticlesFocused) {
-        appstate.search.status = 'cancelled';
-    }
     // We need to wait one tick for the activeElement to receive focus
-        setTimeout(function () {
-            if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
-            /^list-group/.test(document.activeElement.className))) {
-                scrollbox.style.height = 0;
-                document.getElementById('articleListWithHeader').style.display = 'none';
-                appstate.tempPrefix = '';
-                uiUtil.clearSpinner();
-            }
-        }, 1);
+    setTimeout(function () {
+        if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
+        /^list-group|snippet-container/.test(document.activeElement.className))) {
+            scrollbox.style.height = 0;
+            document.getElementById('articleListWithHeader').style.display = 'none';
+            appstate.tempPrefix = '';
+            uiUtil.clearSpinner();
+        }
+    }, 100);
 });
 
 // Add keyboard shortcuts
@@ -675,7 +678,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         displayFileSelect();
     }
     // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
-    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.hasItem('useOPFS')) {
         // This will only run first time app is run on Android
         setTimeout(function () {
             uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
@@ -691,11 +694,13 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
                 }
             });
         }, 2000);
-    } else if (!settingsStore.getItem('useOPFS')) {
-        // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
+    } else if (!settingsStore.hasItem('useOPFS')) {
+        // This ensures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
         // app is running for the first time (so we don't keep prompting the user to use the OPFS)
         settingsStore.setItem('useOPFS', false, Infinity);
     }
+    // Since we may have changed the storage type, we should recalculate the max search size
+    uiUtil.dynamicallySetMaxSearchResults();
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -1665,6 +1670,8 @@ function setOPFSUI () {
         btnDeleteOPFSEntry.style.display = 'none';
         btnExportOPFSEntry.style.display = 'none';
     }
+    // Enabling or disabling the OPFS affects the maximum number of search results we should return
+    uiUtil.dynamicallySetMaxSearchResults();
 }
 
 // Set the OPFS UI on app launch
@@ -1927,8 +1934,14 @@ if (window.electronAPI) {
     // Set the Zoom values for the window
     electronAPI.setZoomLimits(1, 3);
 }
+document.getElementById('libzimSearchType').addEventListener('change', function (e) {
+    params.libzimSearchType = e.target.checked ? 'searchWithSnippets' : 'search';
+    settingsStore.setItem('libzimSearchType', params.libzimSearchType, Infinity);
+    uiUtil.dynamicallySetMaxSearchResults();
+});
+
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
-    params.disableDragAndDrop = this.checked;
+    params.disableDragAndDrop = !!this.checked;
     settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);
     uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' +
         '<p>(If you cancel, then the setting will only be applied when you next start the app.)</p>', 'Reload app', true).then(function (result) {
@@ -4776,13 +4789,15 @@ function listenForSearchKeys () {
  * Search the index for DirEntries with title that start with the given prefix (implemented
  * with a binary search inside the index file)
  * @param {String} prefix The string that must appear at the start of any title searched for
+ * @param {Boolean} searchTitleIndex If true, the search will only be done in the title index, otherwise with fulltext index as well
+ * @param {Number} size The number of results to return (default is params.maxSearchResultsSize)
  */
-function searchDirEntriesFromPrefix (prefix) {
+function searchDirEntriesFromPrefix (prefix, searchTitleIndex, size) {
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         // Cancel the old search (zimArchive search object will receive this change)
         appstate.search.status = 'cancelled';
-        // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-        appstate.search = { prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize };
+        // Initiate a new search object and point appstate.search to it (the zimArchive search object will continue to point to the old object)
+        appstate.search = { prefix: prefix, status: 'init', type: '', size: size || params.maxSearchResultsSize, searchTitleIndex: searchTitleIndex || false };
         uiUtil.hideActiveContentWarning();
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -4948,7 +4963,7 @@ function showZIMIndex (start, search) {
 /**
  * Display the list of articles with the given array of DirEntry
  * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
- * @param {Object} reportingSearch The the reporting search object
+ * @param {Object} reportingSearch The reporting search object
  */
 function populateListOfArticles (dirEntryArray, reportingSearch) {
     // Do not allow cancelled searches to report
@@ -4960,23 +4975,74 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     var message;
     if (stillSearching) {
         message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
-        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#">stop</a>' : '');
-    } else if (nbDirEntry >= params.maxSearchResultsSize) {
-        message = 'First ' + params.maxSearchResultsSize + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') + ' found: refine your search.';
+        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#" id="stopScan">stop</a>' : '');
+    } else if (nbDirEntry >= reportingSearch.size) {
+        message = 'First ' + reportingSearch.size + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') +
+        ' found: refine your search.';
     } else if (reportingSearch.status === 'error') {
         message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!';
     } else {
         message = 'Finished. ' + (nbDirEntry || 'No') + ' articles found' +
         (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
     }
-    if (!stillSearching && reportingSearch.scanCount) message += ' [scanned ' + reportingSearch.scanCount + ' titles]';
+    if (!stillSearching && reportingSearch.scanCount) {
+        message += ' [scanned ' + reportingSearch.scanCount + ' titles] ' +
+        '<a href="#" id="getMoreResults">[ Get more ]</a>' + (/^fulltext/.test(params.searchProvider)
+            ? (appstate.search.searchTitleIndex ? ' <a href="#" id="full">[ full search? ]</a>'
+                : ' <a href="#" id="titleOnly">[ title only? ]</a>') : '');
+    }
 
     articleListHeaderMessageDiv.innerHTML = message;
-    if (stillSearching && reportingSearch.countReport) return;
 
+    // Add event listener for stopScan link
+    var stopScanElement = document.getElementById('stopScan');
+    if (stopScanElement && !stopScanElement.hasAttribute('data-listener-added')) {
+        stopScanElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            appstate.search.status = 'complete';
+            populateListOfArticles(dirEntryArray, appstate.search);
+        });
+        stopScanElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for getMoreResults link
+    var getMoreResultsElement = document.getElementById('getMoreResults');
+    if (getMoreResultsElement && !getMoreResultsElement.hasAttribute('data-listener-added')) {
+        getMoreResultsElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Temporarily increase the search window by params.maxSearchResultsSize
+            var temporarySearchSize = appstate.search.size + params.maxSearchResultsSize;
+            // If title search only, we should pass that to the new search
+            var isTitleOnly = appstate.search.searchTitleIndex;
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, isTitleOnly, temporarySearchSize);
+        });
+        getMoreResultsElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for full search link
+    var fullSearchElement = document.getElementById('full');
+    if (fullSearchElement && !fullSearchElement.hasAttribute('data-listener-added')) {
+        fullSearchElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, false, appstate.search.size);
+        });
+        fullSearchElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for titleOnly link
+    var titleOnlyElement = document.getElementById('titleOnly');
+    if (titleOnlyElement && !titleOnlyElement.hasAttribute('data-listener-added')) {
+        titleOnlyElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, true, appstate.search.size);
+        });
+        titleOnlyElement.setAttribute('data-listener-added', 'true');
+    }
+
+    if (stillSearching && reportingSearch.countReport) return;
     var articleListDiv = document.getElementById('articleList');
     var articleListDivHtml = '';
-    var listLength = dirEntryArray.length < params.maxSearchResultsSize ? dirEntryArray.length : params.maxSearchResultsSize;
+    var listLength = dirEntryArray.length < reportingSearch.size ? dirEntryArray.length : reportingSearch.size;
     for (var i = 0; i < listLength; i++) {
         var dirEntry = dirEntryArray[i];
         // NB We use encodeURIComponent rather than encodeURI here because we know that any question marks in the title are not querystrings,
@@ -4986,24 +5052,25 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
         // DEV: Some titles may contain malformed HTML characters like '&lt;i>' for '<i>', so we transform only bold and italics for display
         // @TODO: Remove when [openzim/mwoffliner #1797] is fixed
-        var dirEntryTitle = dirEntry.getTitleOrUrl();
+        var dirEntryTitle = dirEntry.title || dirEntry.getTitleOrUrl();
         dirEntryTitle = dirEntryTitle.replace(/&lt;([ib])>([^&]+)&lt;\/\1>/g, '<$1>$2</$1>');
+        // Make title bold if entry has a snippet
+        if (dirEntry.snippet) {
+            dirEntryTitle = '<strong>' + dirEntryTitle + '</strong>';
+        }
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
             '" class="list-group-item" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
+
+    // Set the innerHTML once
     articleListDiv.innerHTML = articleListDivHtml;
-    // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
-    // and prevents this event from firing; note that touch also triggers mousedown
-    document.querySelectorAll('#articleList a').forEach(function (link) {
-        link.addEventListener('mousedown', function (e) {
-            e.preventDefault();
-            // Cancel search immediately
-            appstate.search.status = 'cancelled';
-            handleTitleClick(e);
-            scrollbox.style.height = 0;
-            document.getElementById('articleListWithHeader').style.display = 'none';
-        });
-    });
+
+    // Now add snippets and event listeners in a single loop
+    var articleLinks = articleListDiv.querySelectorAll('a[dirEntryId]');
+    uiUtil.createSnippetElements(dirEntryArray, articleLinks, listLength);
+    // Add event listeners to article links
+    uiUtil.attachArticleListEventListeners(findDirEntryFromDirEntryIdAndLaunchArticleRead, appstate);
+
     if (!stillSearching) uiUtil.clearSpinner();
     document.getElementById('articleListWithHeader').style.display = '';
     if (reportingSearch.status === 'error') {
@@ -5013,6 +5080,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         });
     }
 }
+
 /**
  * Handles the click on the title of an article in search results
  * @param {Event} event The click event to handle

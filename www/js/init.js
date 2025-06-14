@@ -96,8 +96,8 @@ params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-// Maximum number of article titles to return (range is 5 - 100, default 30)
-params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
+// Maximum number of article titles to return (range is 5 - 100, default 20), but see intelligent search-size calculation in uiUtils.js
+params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 20);
 params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); // Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); // Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || 'auto'; // Set default to "auto", "desktop" or "mobile"
@@ -122,6 +122,7 @@ params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax
 params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['useLibzim'] = getSetting('useLibzim') === true; // Set to true to use libzim for decoding ZIM files (experimental)
+params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippets'; // Sets a value indicating the type of search to use with libzim (currently 'search' or 'searchWithSnippets')
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
@@ -285,8 +286,6 @@ document.getElementById('enableSourceVerificationCheck').checked = getSetting('s
 document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
-document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
-document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
 document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';

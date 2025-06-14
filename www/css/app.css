@@ -7,16 +7,16 @@
  * This file is part of Kiwix.
  * 
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  * 
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -138,16 +138,82 @@ div:not(.panel-success, .alert-message) {
     z-index: 1;
 }
 
-#articleList a:hover, #articleList a.hover, .backgroundLightBlue {
+/* Article list item followed by .snippet-container */
+#articleList a.list-group-item:has(+ .snippet-container) {
+    padding-bottom: 5px;
+}
+
+#articleList a:hover, #articleList a.hover, .snippet-header:hover, .snippet-header.hover, .backgroundLightBlue {
     background: lightblue;
 }
 
-.dark #articleList a:hover, .dark #articleList a.hover {
+.dark #articleList a:hover, .dark #articleList a.hover, .dark .snippet-header:hover, .dark .snippet-header.hover  {
     background: darkslategray;
 }
 
 .dark #articleListWithHeader {
     background: darkslategrey;
+}
+
+.snippet-container {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.snippet-header {
+    cursor: pointer;
+    padding-left: 2em;
+    background-color: #f8f9fa;
+    border-left: 3px solid #dee2e6;
+    font-size: 0.9em;
+    color: slategray;
+    transition: background-color 0.2s ease;
+}
+
+.snippet-indicator {
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+    font-size: 0.8em;
+}
+
+.snippet-header[aria-expanded="true"] .snippet-indicator {
+    transform: rotate(90deg);
+}
+
+.snippet-preview {
+    font-style: italic;
+}
+
+.snippet-content {
+    padding: 0.25em 1em 1em 2em;
+    background-color: #fff;
+    border-left: 3px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    max-height: 200px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.snippet-content.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+    border-top: none;
+}
+
+.dark .snippet-header {
+    background: #222;
+    border: 0;
+    color: lightgray;
+}
+
+.dark .snippet-content {
+    background: #222;
+    border: 0;
+    color: whitesmoke;
 }
 
 #btnHome {
@@ -527,6 +593,7 @@ pre {
 .dark .list-group-item, .modal .dark .close {
     color: lightblue !important;
     background-color: #222;
+    border: 0;
 }
 
 .dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {

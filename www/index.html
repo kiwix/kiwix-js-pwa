@@ -550,8 +550,8 @@
                         your alphabet in Configuration for non-Roman alphabets. You can also show the <b>full URL index</b> by typing <b><i>space /</i></b> (a space followed by forward slash).
                     </p>
                     <p>
-                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration (under 'Other display settings
-                        and search').
+                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration (under
+                        'Navigation, search and other').
                     </p>
                     <p>
                         <i>For the geeks</i>, you can also use <b>full regular expressions</b> enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
@@ -1050,7 +1050,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-info" id="otherSettingsDiv">
-                                    <div class="panel-heading">Other display settings and search</div>
+                                    <div class="panel-heading">Navigation, search and other</div>
                                     <div class="panel-body">
                                         <label class="checkbox" title="Tap three times for both | top | never">
                                             <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck">
@@ -1091,7 +1091,7 @@
                                                     </p>
                                                 </div>
                                                 <div class="col-sm-12">
-                                                    <p><b>Select max number of title search results:</b> (<i>default 30, higher values increase search time</i>)</p>
+                                                    <p><b>Select max number of search results:</b> (<i>higher values increase search time</i>)</p>
                                                 </div>
                                                 <div class="col-sm-10">
                                                     <div class="range">
@@ -1103,6 +1103,11 @@
                                                 </div>
                                             </label>
                                         </div>
+                                        <label class="checkbox" id="libzimSearchTypeCheckBox" data-i18n-tip="configure-display-libzimsearchtype-tip" title="If checked, uses libzim fulltext search with snippet previews if available, otherwise just gets fulltext titles. Hover, click or press enter on keyboard to expand the snippet.">
+                                            <input type="checkbox" name="libzimSearchType" id="libzimSearchType" checked>
+                                            <span class="checkmark"></span>
+                                            <span data-i18n="configure-display-libzimsearchtype"><b>Add snippets to libzim fulltext search</b> (if available)</span>
+                                        </label>
                                         <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Performance/compatibility settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>

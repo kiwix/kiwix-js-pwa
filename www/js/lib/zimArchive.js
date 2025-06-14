@@ -332,7 +332,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
     search.rgxPrefix = null;
     var prefix = search.prefix;
     // Launch a full-text search if possible
-    if (LZ && !search.searchUrlIndex) {
+    if (LZ && params.searchProvider !== 'titleOnly' && !(search.searchUrlIndex || search.searchTitleIndex)) {
         that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
             // If user initiated a new search, cancel this one
             // In particular, do not set the search status back to 'complete'
@@ -566,6 +566,10 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
         };
         return addDirEntries(firstIndex);
     }).then(function (objWithIndex) {
+        // If we have found the requested number of results, we can stop the search
+        if (objWithIndex.dirEntries.length >= search.size) {
+            search.status = 'complete';
+        }
         return callback(objWithIndex.dirEntries, objWithIndex.nextStart);
     });
 };
@@ -575,7 +579,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
  *
  * @param {Object} search The appstate.search object
  * @param {Array} dirEntries The array of already found Directory Entries
- * @param {Integer} number Optional positive number of search results requested (otherwise params.maxSearchResults will be used)
+ * @param {Integer} number Override number of results requested in search object (used to get remaining results)
  * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search
  */
 ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries, number) {
@@ -583,31 +587,49 @@ ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEnt
     var that = this;
     // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
     // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
-    var resultsNeeded = number || params.maxSearchResultsSize;
-    return this.callLibzimWorker({ action: 'search', text: search.prefix, numResults: resultsNeeded }).then(function (results) {
-        if (results) {
+    var resultsNeeded = number || search.size;
+    var searchType = params.libzimSearchType || 'search';
+    return this.callLibzimWorker({ action: searchType, text: search.prefix, numResults: resultsNeeded }).then(function (returned) {
+        if (returned) {
             var dirEntryPaths = [];
             var fullTextPaths = [];
+            var snippets = [];
             // Collect all the found paths for the dirEntries
             for (var i = 0; i < dirEntries.length; i++) {
                 dirEntryPaths.push(dirEntries[i].namespace + '/' + dirEntries[i].url);
             }
             // Collect all the paths for full text search, pruning as we go
             var path;
-            for (var j = 0; j < results.entries.length; j++) {
+            var snippet;
+            for (var j = 0; j < returned.results.length; j++) {
                 search.scanCount++;
-                path = results.entries[j].path;
+                path = returned.results[j].path;
+                snippet = returned.results[j].snippet;
                 // Full-text search result paths are missing the namespace in Type 1 ZIMs, so we add it back
                 path = cns === 'C' ? cns + '/' + path : path;
-                if (~dirEntryPaths.indexOf(path)) continue;
+                // If the path is already in the dirEntries, we do not need to add it again
+                if (~dirEntryPaths.indexOf(path)) {
+                    // Add the snippet to the existing DirEntry
+                    for (var k = 0; k < dirEntries.length; k++) {
+                        if (dirEntries[k].namespace + '/' + dirEntries[k].url === path) {
+                            dirEntries[k].snippet = snippet;
+                            break;
+                        }
+                    }
+                    // We do not need to add it again, so we continue
+                    continue;
+                }
                 fullTextPaths.push(path);
+                snippets.push(snippet);
             }
             var promisesForDirEntries = [];
-            for (var k = 0; k < fullTextPaths.length; k++) {
+            for (let k = 0; k < fullTextPaths.length; k++) {
                 promisesForDirEntries.push(that.getDirEntryByPath(fullTextPaths[k]));
             }
             return Promise.all(promisesForDirEntries).then(function (fullTextDirEntries) {
                 for (var l = 0; l < fullTextDirEntries.length; l++) {
+                    // Add snippet to the new DirEntry
+                    fullTextDirEntries[l].snippet = snippets[l];
                     dirEntries.push(fullTextDirEntries[l]);
                 }
                 return dirEntries;
