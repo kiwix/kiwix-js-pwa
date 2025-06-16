@@ -68,18 +68,24 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.5.8'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.6.63'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
 params['packagedFile'] = getSetting('packagedFile') || ''; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
 params['fileVersion'] = getSetting('fileVersion') || ''; // This will be displayed in the app - optionally include date of ZIM file
-// List of known start pages cached in the FS:
+
+// List of known start pages cached in the FS - ensure these strings are double-URI-encoded, and then store the file itself with single-
+// URI-enoding. This string will be decoded once in the app. E.g. the file name "A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
+// should be stored in the directory as "A/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2" (since we can't store colons in some
+// file systems), and the string "A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2" will be decoded to this
+// before being passed to the Service Worker
 params['cachedStartPages'] = {
-    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
-    wikipedia_en_medicine_maxi: 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
-    // 'mdwiki_en_all_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    wikipedia_en_medicine_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    mdwiki_en_all_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
+
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
@@ -90,8 +96,8 @@ params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-// Maximum number of article titles to return (range is 5 - 100, default 30)
-params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
+// Maximum number of article titles to return (range is 5 - 100, default 20), but see intelligent search-size calculation in uiUtils.js
+params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 20);
 params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); // Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); // Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || 'auto'; // Set default to "auto", "desktop" or "mobile"
@@ -102,10 +108,10 @@ params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : t
 params['cssTheme'] = getSetting('cssTheme') || 'light'; // Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; // Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
 params['displayThemeOrRandomButtons'] = getSetting('displayThemeOrRandomButtons') != null ? getSetting('displayThemeOrRandomButtons') : 'theme'; // theme | random | both
-params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') == true; // Default for the display reset feature that fixes bugs with secondary displays
+params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') === true; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; // Set default to display images from Zim
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; // Makes dataURIs by default instead of BLOB URIs for images
-params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
+params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') === true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
@@ -115,14 +121,15 @@ params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
-params['useLibzim'] = getSetting('useLibzim') == true; // Set to true to use libzim for decoding ZIM files (experimental)
-params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
+params['useLibzim'] = getSetting('useLibzim') === true; // Set to true to use libzim for decoding ZIM files (experimental)
+params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippets'; // Sets a value indicating the type of search to use with libzim (currently 'search' or 'searchWithSnippets')
+params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
-params['disableDragAndDrop'] = getSetting('disableDragAndDrop') == true; // A parameter to disable drag-and-drop
+params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
@@ -221,7 +228,7 @@ if (/UWP/.test(params.appType)) {
         // We need to reload the UWP app in order to get the new pixelRatio due to a bug in the UWP framework
         setSetting('reloadDispatched', true);
         window.location.reload();
-        throw 'So long, and thanks for all the fish!';
+        throw new Error('So long, and thanks for all the fish!');
     } else {
         document.getElementById('resetDisplayOnResize').style.display = 'block';
     }
@@ -253,18 +260,18 @@ document.getElementById('displayHiddenElementsState').textContent = (params.disp
 document.getElementById('openAllSectionsCheck').checked = params.openAllSections;
 document.getElementById('linkToWikimediaImageFileCheck').checked = params.linkToWikimediaImageFile;
 document.getElementById('useOSMCheck').checked = /openstreetmap/.test(params.mapsURI);
-document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark'; // Will be true, or false if light or auto
-document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == 'auto';
-document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == 'auto';
+document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme === 'dark'; // Will be true, or false if light or auto
+document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme === 'auto';
+document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme === 'auto';
 document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
 document.getElementById('cssWikiDarkThemeCheck').checked = /dark|invert/.test(params.cssTheme);
-document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme == 'auto';
-document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme == 'auto';
+document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme === 'auto';
+document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme === 'auto';
 document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
 document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
-document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
-document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme == 'darkReader';
+document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme === 'invert';
+document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme === 'darkReader';
 document.getElementById('triStateThemeRandomBtnCheck').checked = params.displayThemeOrRandomButtons === 'random';
 document.getElementById('triStateThemeRandomBtnCheck').indeterminate = params.displayThemeOrRandomButtons === 'both';
 document.getElementById('triStateThemeRandomBtnCheck').readOnly = params.displayThemeOrRandomButtons === 'both';
@@ -279,8 +286,6 @@ document.getElementById('enableSourceVerificationCheck').checked = getSetting('s
 document.getElementById('useLegacyZimitSupportCheck').checked = params.useLegacyZimitSupport;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
-document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
-document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
 document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
@@ -319,6 +324,8 @@ Array.prototype.slice.call(document.querySelectorAll('input[name=cssInjectionMod
         radio.checked = true;
     }
 });
+// Set the initial value for params.navbarHeight from the computedvalues of #navbar
+params.navbarHeight = parseInt(getComputedStyle(document.getElementById('navbar')).height, 10) || 0;
 
 // Get app type
 function getAppType () {

@@ -7,16 +7,16 @@
  * This file is part of Kiwix.
  * 
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  * 
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -138,16 +138,82 @@ div:not(.panel-success, .alert-message) {
     z-index: 1;
 }
 
-#articleList a:hover, #articleList a.hover, .backgroundLightBlue {
+/* Article list item followed by .snippet-container */
+#articleList a.list-group-item:has(+ .snippet-container) {
+    padding-bottom: 5px;
+}
+
+#articleList a:hover, #articleList a.hover, .snippet-header:hover, .snippet-header.hover, .backgroundLightBlue {
     background: lightblue;
 }
 
-.dark #articleList a:hover, .dark #articleList a.hover {
+.dark #articleList a:hover, .dark #articleList a.hover, .dark .snippet-header:hover, .dark .snippet-header.hover  {
     background: darkslategray;
 }
 
 .dark #articleListWithHeader {
     background: darkslategrey;
+}
+
+.snippet-container {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.snippet-header {
+    cursor: pointer;
+    padding-left: 2em;
+    background-color: #f8f9fa;
+    border-left: 3px solid #dee2e6;
+    font-size: 0.9em;
+    color: slategray;
+    transition: background-color 0.2s ease;
+}
+
+.snippet-indicator {
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+    font-size: 0.8em;
+}
+
+.snippet-header[aria-expanded="true"] .snippet-indicator {
+    transform: rotate(90deg);
+}
+
+.snippet-preview {
+    font-style: italic;
+}
+
+.snippet-content {
+    padding: 0.25em 1em 1em 2em;
+    background-color: #fff;
+    border-left: 3px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    max-height: 200px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.snippet-content.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+    border-top: none;
+}
+
+.dark .snippet-header {
+    background: #222;
+    border: 0;
+    color: lightgray;
+}
+
+.dark .snippet-content {
+    background: #222;
+    border: 0;
+    color: whitesmoke;
 }
 
 #btnHome {
@@ -288,6 +354,7 @@ div:not(.panel-success, .alert-message) {
 
 .navbar {
     min-height: 0px !important;
+    height: 45px;
     left: env(titlebar-area-x, 0);
     top: env(titlebar-area-y, 0);
     width: env(titlebar-area-width, 100%);
@@ -526,6 +593,7 @@ pre {
 .dark .list-group-item, .modal .dark .close {
     color: lightblue !important;
     background-color: #222;
+    border: 0;
 }
 
 .dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {
@@ -713,94 +781,81 @@ pre {
     background-color: #ccc !important;
 }
 
+/* Collapsible features section */
+.collapsible-section {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px 0;
+}
 
-    @media (max-width: 768px) {
-        /*Increase touchability of bottom buttons*/
-        footer .btn-default {
-            font-size: 120% !important;
-        }
+.features-summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    padding: 15px;
+    margin: 0;
+    outline: none;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
 
-        /* Pour réduire la taille du menu en haut */
-        /*.navbar {
-            min-height: 20px !important;
-            margin-bottom: 1px !important;
-        }*/
-        /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
-        /*padding-top: 2px !important;
-        padding-bottom: 1px !important;
-        height: 25px !important;
+.features-summary:hover {
+    background-color: #e9ecef;
+}
+
+.features-summary::-webkit-details-marker {
+    display: none;
+}
+
+.features-summary h3 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.collapse-indicator {
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+
+.collapsible-section[open] .collapse-indicator {
+    transform: rotate(180deg);
+}
+
+.features-content {
+    margin-top: 0;
+    padding: 0 15px 15px;
+}
+
+/* Dark theme support */
+.dark .collapsible-section {
+    border-color: #4a5568;
+}
+
+.dark .features-summary {
+    background-color: #2d3748;
+}
+
+.dark .features-summary:hover {
+    background-color: #374151;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {
+    /*Increase touchability of bottom buttons*/
+    footer .btn-default {
+        font-size: 120% !important;
     }
-
-    .navbar-nav a {
-        padding-bottom: 15px !important;
-    }*/
-
-        /*.navbar-toggle {
-            padding-top: 2px !important;
-            padding-bottom: 2px !important;
-            margin-top: 2px !important;
-            margin-bottom: 0px !important;
-            background-color: lightgray !important;
-        }*/
-        /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
-    .navbar-nav, .navbar-nav > li {
-        padding-top: 2px !important;
-        padding-bottom: 2px !important;
-        margin-top: 2px !important;
-        margin-bottom: 0px !important;
-    } */
-        .navbar-nav {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-        }
-            /*Make sure these align correctly rather than stacking at full width - GK*/
-            .navbar-nav > li > a {
-                /*float: left !important;*/
-                /*Added this to prevent the buttons becoming so small*/
-                padding-top: 15px !important;
-            }
-
-        /*.col-md-offset-1 {
-        padding-left: 5px !important;
-    }
-
-    [role=region] > header {
-        margin-bottom: 10px !important;
-    }*/
-        /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
-    .list-group {
+    .navbar-nav {
+        margin-top: 0 !important;
         margin-bottom: 0 !important;
-    } */
-        /* Pour réduire la taille du champ de recherche 
-    .form-control {
-        height: 28px !important;
-        padding-bottom: 5px !important;
-    } */
-
-        /*.dropdown-menu {
-        font-size: 20px !important;
     }
-
-     Pour réduire la taille des boutons en haut de l'écran 
-    .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
-        font-size: 10px !important;
-    }*/
-        /* Pour réduire la taille des boutons en bas de l'écran 
-    .btn-lg, .btn-group-lg > .btn {
-        padding-top: 1px !important;
-        padding-bottom: 1px !important;
-        font-size: 16px !important;
-    }*/
+    /*Make sure these align correctly rather than stacking at full width - GK*/
+    .navbar-nav > li > a {
+        /*float: left !important;*/
+        /*Added this to prevent the buttons becoming so small*/
+        padding-top: 15px !important;
     }
-
-    @media (max-width: 440px) {
-        /*.btn-primary {
-        font-size: 12px !important;
-    }
-    .input-group-btn {
-        display: inline !important;
-    }
-    #btnHome {
-        float: left;
-    }*/
-    }
+}

@@ -215,6 +215,11 @@ td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="bac
     background-color: #282828 !important;
 }
 
+figcaption {
+  color: lightgray !important;
+  background-color: #282828 !important;
+}
+
   table.wikitable > tr > th, table.wikitable > * > tr > th, div.barbox > table > tbody > tr > th
   {
     background-color: #333;

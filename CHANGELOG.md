@@ -1,5 +1,25 @@
 # Changelog
 
+## Interim release 3.6.63
+
+* ENHANCEMENT: Report current default ZIM style (desktop/mobile) to Configuration
+* UPDATE: Support transforming ActionParse ZIMs to mobile style
+* REGRESSION: Fix code that misplaced hatnotes in ActionParse ZIMs
+
+## Release 3.6.5 / 3.6.6
+
+* ENHANCEMENT: Reduce height of navigation bar
+* ENHANCEMENT: Added support for Wikimedia ZIMs based on new ActionParse API
+* INFO: Added separate Privacy Policy to satisfy store requirements and cover packaged apps
+* FIX: Failure to load some cached landing pages with special characters
+* FIX: Libzim loading and reduce debug messages
+* UPDATE: Cached Open Textbook of Medicine landing page
+* UPDATE: Libzim libraries to v0.8
+* DEV: Accept new ZIMs with minorVersion set to 3
+* DEV: Synchronize Babel versions
+* DEV: Update build script to us Windows PowerShell instead of PS Core (unsupported by Electron Builder)
+* DEV: Add Workflow option to build only nsis-web installer if this has to be regenerated
+
 ## Release 3.5.7 / 3.5.8
 
 * ENHANCEMENT: Added a toolbar button to switch quickly between light and dark themes

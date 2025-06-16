@@ -33,7 +33,7 @@
  * download and install a new copy; we have to hard code this here because it is needed before any other file
  * is cached in APP_CACHE
  */
-const appVersion = '3.5.8';
+const appVersion = '3.6.63';
 
 /**
  * The name of the Cache API cache in which assets defined in regexpCachedContentTypes will be stored
@@ -143,6 +143,7 @@ const precacheFiles = [
     'www/-/mw/mw.PopUpMediaTransform.css',
     'www/-/mw/mw.TMHGalleryHook.js.css',
     'www/-/mw/newstyle_main_page.css',
+    'www/-/mw/skins.vector.styles.css',
     'www/-/mw/style.css',
     'www/-/s/css_modules/content.parsoid.css',
     'www/-/s/css_modules/ext.cite.a11y.css',

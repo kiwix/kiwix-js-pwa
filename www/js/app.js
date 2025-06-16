@@ -224,8 +224,6 @@ function onPointerUp (e) {
 
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
-var searchArticlesFocused = false;
-
 document.getElementById('searchArticles').addEventListener('click', function () {
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
@@ -243,8 +241,6 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     var headerHeight = document.getElementById('top').getBoundingClientRect().height;
     var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
     scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
-    // This flag is set to true in the mousedown event below
-    searchArticlesFocused = false;
 });
 document.getElementById('formArticleSearch').addEventListener('submit', function () {
     document.getElementById('searchArticles').click();
@@ -257,7 +253,6 @@ prefix.addEventListener('keydown', function (e) {
     if (/^Esc/.test(e.key)) {
         // Hide the article list
         e.preventDefault();
-        e.stopPropagation();
         document.getElementById('articleListWithHeader').style.display = 'none';
         document.getElementById('articleContent').focus();
         document.getElementById('mycloseMessage').click(); // This is in case the modal box is showing with an index search
@@ -265,28 +260,35 @@ prefix.addEventListener('keydown', function (e) {
     }
     // Arrow-key selection code adapted from https://stackoverflow.com/a/14747926/9727685
     // IE11 produces "Down" instead of "ArrowDown" and "Up" instead of "ArrowUp"
-    if (/^((Arrow)?Down|(Arrow)?Up|Enter)$/.test(e.key)) {
-        // User pressed Down arrow or Up arrow or Enter
-        e.preventDefault();
-        e.stopPropagation();
+    if (/^((Arrow)?(Down|Up|Left|Right)|Enter)$/.test(e.key)) {
+        // User pressed Down arrow, Up arrow, Left arrow, Right arrow, or Enter
         // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
         keyPressHandled = true;
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
-        // If user presses Enter, read the dirEntry
-        if (/Enter/.test(e.key)) {
-            if (activeElement.classList.contains('hover')) {
+        // If user presses Enter or Right arrow, read the dirEntry or open snippet
+        if (/Enter|Right|Left/.test(e.key)) {
+            if (/Enter/.test(e.key) && activeElement.classList.contains('hover') && !activeElement.classList.contains('snippet-container')) {
                 var dirEntryId = activeElement.getAttribute('dirEntryId');
                 findDirEntryFromDirEntryIdAndLaunchArticleRead(decodeURIComponent(dirEntryId));
-                return;
+            } else if (activeElement.classList.contains('snippet-container')) {
+                e.preventDefault();
+                // Open the snippet container
+                uiUtil.toggleSnippet(activeElement);
             }
+            return;
         }
+        e.preventDefault();
         // If user presses ArrowDown...
-        // (NB selection is limited to five possibilities by regex above)
+        // (NB selection is limited to arrow keys and Enter by regex above)
         if (/Down/.test(e.key)) {
             if (activeElement.classList.contains('hover')) {
                 activeElement.classList.remove('hover');
+                if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
                 activeElement = activeElement.nextElementSibling || activeElement;
+                if (activeElement.classList.contains('snippet-container')) {
+                    activeElement.firstElementChild.classList.add('hover');
+                }
                 var nextElement = activeElement.nextElementSibling || activeElement;
                 if (!uiUtil.isElementInView(window, nextElement, true)) nextElement.scrollIntoView(false);
             }
@@ -294,7 +296,11 @@ prefix.addEventListener('keydown', function (e) {
         // If user presses ArrowUp...
         if (/Up/.test(e.key)) {
             activeElement.classList.remove('hover');
+            if (activeElement.firstElementChild) activeElement.firstElementChild.classList.remove('hover');
             activeElement = activeElement.previousElementSibling || activeElement;
+            if (activeElement.classList.contains('snippet-container')) {
+                activeElement.firstElementChild.classList.add('hover');
+            }
             var previousElement = activeElement.previousElementSibling || activeElement;
             if (!uiUtil.isElementInView(window, previousElement, true)) previousElement.scrollIntoView();
             if (previousElement === activeElement) {
@@ -332,19 +338,16 @@ prefix.addEventListener('focus', function () {
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
-    if (!searchArticlesFocused) {
-        appstate.search.status = 'cancelled';
-    }
     // We need to wait one tick for the activeElement to receive focus
-        setTimeout(function () {
-            if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
-            /^list-group/.test(document.activeElement.className))) {
-                scrollbox.style.height = 0;
-                document.getElementById('articleListWithHeader').style.display = 'none';
-                appstate.tempPrefix = '';
-                uiUtil.clearSpinner();
-            }
-        }, 1);
+    setTimeout(function () {
+        if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
+        /^list-group|snippet-container/.test(document.activeElement.className))) {
+            scrollbox.style.height = 0;
+            document.getElementById('articleListWithHeader').style.display = 'none';
+            appstate.tempPrefix = '';
+            uiUtil.clearSpinner();
+        }
+    }, 100);
 });
 
 // Add keyboard shortcuts
@@ -675,7 +678,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         displayFileSelect();
     }
     // Check if we are in an Android app, and if so, auto-select use of OPFS if there is no set value in settingsStore for useOPFS
-    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.getItem('useOPFS')) {
+    if ((/Android/.test(params.appType) || /Firefox/.test(navigator.userAgent)) && !params.useOPFS && !settingsStore.hasItem('useOPFS')) {
         // This will only run first time app is run on Android
         setTimeout(function () {
             uiUtil.systemAlert('<p>We are switching to the Private File System (OPFS).</p>' +
@@ -691,11 +694,13 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
                 }
             });
         }, 2000);
-    } else if (!settingsStore.getItem('useOPFS')) {
-        // This esnures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
+    } else if (!settingsStore.hasItem('useOPFS')) {
+        // This ensures that there is an explicit setting for useOPFS, which in turn allows us to tell if the
         // app is running for the first time (so we don't keep prompting the user to use the OPFS)
         settingsStore.setItem('useOPFS', false, Infinity);
     }
+    // Since we may have changed the storage type, we should recalculate the max search size
+    uiUtil.dynamicallySetMaxSearchResults();
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -756,6 +761,7 @@ function setRelativeUIFontSize (value) {
     document.getElementById('spinnerVal').innerHTML = value + '%';
     document.getElementById('search-article').style.fontSize = value + '%';
     document.getElementById('relativeUIFontSizeSlider').value = value;
+    document.getElementById('navbar').style.height = params.navbarHeight * (value / 100) + 'px';
     var forms = document.querySelectorAll('.form-control');
     var i;
     for (i = 0; i < forms.length; i++) {
@@ -1664,6 +1670,8 @@ function setOPFSUI () {
         btnDeleteOPFSEntry.style.display = 'none';
         btnExportOPFSEntry.style.display = 'none';
     }
+    // Enabling or disabling the OPFS affects the maximum number of search results we should return
+    uiUtil.dynamicallySetMaxSearchResults();
 }
 
 // Set the OPFS UI on app launch
@@ -1926,8 +1934,14 @@ if (window.electronAPI) {
     // Set the Zoom values for the window
     electronAPI.setZoomLimits(1, 3);
 }
+document.getElementById('libzimSearchType').addEventListener('change', function (e) {
+    params.libzimSearchType = e.target.checked ? 'searchWithSnippets' : 'search';
+    settingsStore.setItem('libzimSearchType', params.libzimSearchType, Infinity);
+    uiUtil.dynamicallySetMaxSearchResults();
+});
+
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
-    params.disableDragAndDrop = this.checked;
+    params.disableDragAndDrop = !!this.checked;
     settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);
     uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' +
         '<p>(If you cancel, then the setting will only be applied when you next start the app.)</p>', 'Reload app', true).then(function (result) {
@@ -2646,7 +2660,6 @@ function removePageMaxWidth () {
     if (!appstate.wikimediaZimLoaded) return;
     // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
     if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
-    var zimType;
     var cssSource;
     var contentElement;
     var docStyle;
@@ -2656,8 +2669,8 @@ function removePageMaxWidth () {
     var body = doc.body;
     // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
-    zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
-    cssSource = params.cssSource === 'auto' ? zimType : params.cssSource;
+    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
+    cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
     for (var i = 0; i < idArray.length; i++) {
         contentElement = doc.getElementById(idArray[i]);
@@ -2679,9 +2692,19 @@ function removePageMaxWidth () {
             updatedCssText = params.removePageMaxWidth ? '100%' : '55.8em';
             docStyle.maxWidth = updatedCssText;
             docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-            if (params.removePageMaxWidth || zimType == 'mobile') docStyle.border = '0';
+            if (params.removePageMaxWidth || appstate.zimThemeType == 'mobile') docStyle.border = '0';
         }
         docStyle.margin = '0 auto';
+    }
+    // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
+    var actionParseRemoveClasses = ['mw-page-container-inner', ''];
+    for (i = 0; i < actionParseRemoveClasses.length; i++) {
+        var mwPageContainer = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        if (mwPageContainer && mwPageContainer.length) {
+            for (var j = 0; j < mwPageContainer.length; j++) {
+                mwPageContainer[j].classList.remove(actionParseRemoveClasses[i]);
+            }
+        }
     }
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
@@ -4325,6 +4348,7 @@ function archiveReadyCallback (archive) {
     // (this only affects Restricted mode)
     appstate.target = 'iframe';
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
+    appstate.zimThemeType = 'desktop';
     appstate.pureMode = false;
     // Reset params.assetsCache in case it was changed below
     params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
@@ -4708,7 +4732,7 @@ function onKeyUpPrefix (evt) {
         // Don't process anything if it's the same prefix as recently entered (this prevents searching
         // if user is simply using arrow key to correct something typed).
         if (!/^\s/.test(prefix.value) && prefix.value === appstate.tempPrefix) return;
-        if (prefix.value && prefix.value.length > 0 && (prefix.value !== appstate.search.prefix || /^\s/.test(prefix.value))) {
+        if (prefix.value && prefix.value.length > 0) {
             appstate.tempPrefix = prefix.value;
             document.getElementById('searchArticles').click();
         }
@@ -4765,13 +4789,15 @@ function listenForSearchKeys () {
  * Search the index for DirEntries with title that start with the given prefix (implemented
  * with a binary search inside the index file)
  * @param {String} prefix The string that must appear at the start of any title searched for
+ * @param {Boolean} searchTitleIndex If true, the search will only be done in the title index, otherwise with fulltext index as well
+ * @param {Number} size The number of results to return (default is params.maxSearchResultsSize)
  */
-function searchDirEntriesFromPrefix (prefix) {
+function searchDirEntriesFromPrefix (prefix, searchTitleIndex, size) {
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         // Cancel the old search (zimArchive search object will receive this change)
         appstate.search.status = 'cancelled';
-        // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-        appstate.search = { prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize };
+        // Initiate a new search object and point appstate.search to it (the zimArchive search object will continue to point to the old object)
+        appstate.search = { prefix: prefix, status: 'init', type: '', size: size || params.maxSearchResultsSize, searchTitleIndex: searchTitleIndex || false };
         uiUtil.hideActiveContentWarning();
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -4937,7 +4963,7 @@ function showZIMIndex (start, search) {
 /**
  * Display the list of articles with the given array of DirEntry
  * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
- * @param {Object} reportingSearch The the reporting search object
+ * @param {Object} reportingSearch The reporting search object
  */
 function populateListOfArticles (dirEntryArray, reportingSearch) {
     // Do not allow cancelled searches to report
@@ -4949,23 +4975,74 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     var message;
     if (stillSearching) {
         message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
-        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#">stop</a>' : '');
-    } else if (nbDirEntry >= params.maxSearchResultsSize) {
-        message = 'First ' + params.maxSearchResultsSize + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') + ' found: refine your search.';
+        (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#" id="stopScan">stop</a>' : '');
+    } else if (nbDirEntry >= reportingSearch.size) {
+        message = 'First ' + reportingSearch.size + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') +
+        ' found: refine your search.';
     } else if (reportingSearch.status === 'error') {
         message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!';
     } else {
         message = 'Finished. ' + (nbDirEntry || 'No') + ' articles found' +
         (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
     }
-    if (!stillSearching && reportingSearch.scanCount) message += ' [scanned ' + reportingSearch.scanCount + ' titles]';
+    if (!stillSearching && reportingSearch.scanCount) {
+        message += ' [scanned ' + reportingSearch.scanCount + ' titles] ' +
+        '<a href="#" id="getMoreResults">[ Get more ]</a>' + (/^fulltext/.test(params.searchProvider)
+            ? (appstate.search.searchTitleIndex ? ' <a href="#" id="full">[ full search? ]</a>'
+                : ' <a href="#" id="titleOnly">[ title only? ]</a>') : '');
+    }
 
     articleListHeaderMessageDiv.innerHTML = message;
-    if (stillSearching && reportingSearch.countReport) return;
 
+    // Add event listener for stopScan link
+    var stopScanElement = document.getElementById('stopScan');
+    if (stopScanElement && !stopScanElement.hasAttribute('data-listener-added')) {
+        stopScanElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            appstate.search.status = 'complete';
+            populateListOfArticles(dirEntryArray, appstate.search);
+        });
+        stopScanElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for getMoreResults link
+    var getMoreResultsElement = document.getElementById('getMoreResults');
+    if (getMoreResultsElement && !getMoreResultsElement.hasAttribute('data-listener-added')) {
+        getMoreResultsElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Temporarily increase the search window by params.maxSearchResultsSize
+            var temporarySearchSize = appstate.search.size + params.maxSearchResultsSize;
+            // If title search only, we should pass that to the new search
+            var isTitleOnly = appstate.search.searchTitleIndex;
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, isTitleOnly, temporarySearchSize);
+        });
+        getMoreResultsElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for full search link
+    var fullSearchElement = document.getElementById('full');
+    if (fullSearchElement && !fullSearchElement.hasAttribute('data-listener-added')) {
+        fullSearchElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, false, appstate.search.size);
+        });
+        fullSearchElement.setAttribute('data-listener-added', 'true');
+    }
+    // Add event listener for titleOnly link
+    var titleOnlyElement = document.getElementById('titleOnly');
+    if (titleOnlyElement && !titleOnlyElement.hasAttribute('data-listener-added')) {
+        titleOnlyElement.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Rerun the search with the current prefix
+            searchDirEntriesFromPrefix(appstate.search.prefix, true, appstate.search.size);
+        });
+        titleOnlyElement.setAttribute('data-listener-added', 'true');
+    }
+
+    if (stillSearching && reportingSearch.countReport) return;
     var articleListDiv = document.getElementById('articleList');
     var articleListDivHtml = '';
-    var listLength = dirEntryArray.length < params.maxSearchResultsSize ? dirEntryArray.length : params.maxSearchResultsSize;
+    var listLength = dirEntryArray.length < reportingSearch.size ? dirEntryArray.length : reportingSearch.size;
     for (var i = 0; i < listLength; i++) {
         var dirEntry = dirEntryArray[i];
         // NB We use encodeURIComponent rather than encodeURI here because we know that any question marks in the title are not querystrings,
@@ -4975,24 +5052,25 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
         // DEV: Some titles may contain malformed HTML characters like '&lt;i>' for '<i>', so we transform only bold and italics for display
         // @TODO: Remove when [openzim/mwoffliner #1797] is fixed
-        var dirEntryTitle = dirEntry.getTitleOrUrl();
+        var dirEntryTitle = dirEntry.title || dirEntry.getTitleOrUrl();
         dirEntryTitle = dirEntryTitle.replace(/&lt;([ib])>([^&]+)&lt;\/\1>/g, '<$1>$2</$1>');
+        // Make title bold if entry has a snippet
+        if (dirEntry.snippet) {
+            dirEntryTitle = '<strong>' + dirEntryTitle + '</strong>';
+        }
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
             '" class="list-group-item" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
+
+    // Set the innerHTML once
     articleListDiv.innerHTML = articleListDivHtml;
-    // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
-    // and prevents this event from firing; note that touch also triggers mousedown
-    document.querySelectorAll('#articleList a').forEach(function (link) {
-        link.addEventListener('mousedown', function (e) {
-            e.preventDefault();
-            // Cancel search immediately
-            appstate.search.status = 'cancelled';
-            handleTitleClick(e);
-            scrollbox.style.height = 0;
-            document.getElementById('articleListWithHeader').style.display = 'none';
-        });
-    });
+
+    // Now add snippets and event listeners in a single loop
+    var articleLinks = articleListDiv.querySelectorAll('a[dirEntryId]');
+    uiUtil.createSnippetElements(dirEntryArray, articleLinks, listLength);
+    // Add event listeners to article links
+    uiUtil.attachArticleListEventListeners(findDirEntryFromDirEntryIdAndLaunchArticleRead, appstate);
+
     if (!stillSearching) uiUtil.clearSpinner();
     document.getElementById('articleListWithHeader').style.display = '';
     if (reportingSearch.status === 'error') {
@@ -5002,6 +5080,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         });
     }
 }
+
 /**
  * Handles the click on the title of an article in search results
  * @param {Event} event The click event to handle
@@ -5219,7 +5298,7 @@ function readArticle (dirEntry) {
             htmlContent = -1;
             // @TODO: Why are we double-encoding here????? Clearly we double-decode somewhere...
             // var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
-            var encURL = encodeURI(encodeURI(params.cachedStartPages[zimName]));
+            var encURL = params.cachedStartPages[zimName];
             uiUtil.XHR(encURL, 'text', function (responseTxt, status) {
                 htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                 if (htmlContent) {
@@ -5354,7 +5433,7 @@ function articleLoader (entry, mimeType) {
 
 // Add event listener to iframe window to check for links to external resources
 function filterClickEvent (event) {
-    console.debug('filterClickEvent fired');
+    // console.debug('filterClickEvent fired');
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Find the closest enclosing A tag (if any)
@@ -5426,7 +5505,7 @@ var unhideArticleTries = 12; // Set up a repeasting loop 12 times (= 6 seconds m
 
 // Function to unhide a hidden article
 var unhideArticleContainer = function () {
-    console.debug('Unhiding article container...');
+    // console.debug('Unhiding article container...');
     if (articleWindow.document) {
         articleWindow.document.bgcolor = '';
         if (appstate.target === 'iframe') iframe.style.display = '';
@@ -5449,7 +5528,7 @@ var unhideArticleContainer = function () {
 
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
-    console.debug('Checking if article loaded... ' + loaded);
+    // console.debug('Checking if article loaded... ' + loaded);
     if (loaded) {
         // Last-ditch attempt to unhide
         unhideArticleContainer();
@@ -5461,10 +5540,10 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = doc;
-    var mimeType = dirEntry.getMimetype();
+    var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
-        console.debug('HTML appears to be available...');
+        // console.debug('HTML appears to be available...');
         if (params.rememberLastPage) {
             params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         } else {
@@ -5479,7 +5558,7 @@ var articleLoadedSW = function (dirEntry, container) {
     }
     var docBody = doc ? doc.body : null;
     if (docBody && docBody.innerHTML) { // docBody must contain contents, otherwise we haven't loaded an article yet
-        console.debug('We appear to have a document body with HTML...');
+        // console.debug('We appear to have a document body with HTML...');
         // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
@@ -5533,7 +5612,7 @@ var articleLoadedSW = function (dirEntry, container) {
                 unhideArticleContainer();
                 // Check that the contents of docBody aren't empty and that the unhiding worked
                 if (unhideArticleTries < 1 || docBody.innerHTML && docBody.style.display === 'block') {
-                    console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
+                    // console.debug('Attempt ' + (12 - unhideArticleTries) + ' to unhide article container...');
                     clearInterval(intervalId);
                 }
             }, 500);
@@ -5551,7 +5630,8 @@ var articleLoadedSW = function (dirEntry, container) {
             }
             anchorParameter = '';
         }
-        if (dirEntry) uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
+        var title = params.useLibzim ? dirEntry.url : dirEntry.getTitleOrUrl();
+        if (dirEntry) uiUtil.makeReturnLink(title);
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
             popovers.attachKiwixPopoverCss(doc, darkTheme);
@@ -5562,7 +5642,7 @@ var articleLoadedSW = function (dirEntry, container) {
         loaded = false;
         unhideArticleTries--;
         // Try again...
-        console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
+        // console.debug('Attempt ' + (12 - unhideArticleTries) + ' to process loaded article...');
         setTimeout(articleLoadedSW, 250, dirEntry, container);
     }
 
@@ -6241,8 +6321,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Put site.js in the correct position
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
-            // Add missing title to WikiMedia articles for post June 2023 scrapes
-            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
+            // Add missing title to WikiMedia articles for post June 2023 scrapes, also post-June 2025
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header|first-heading)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
             // Remove hard-coded image widths for new mobile-html endpoint ZIMs
             htmlArticle = htmlArticle.replace(/(<div\s+class=['"]thumb\stright['"][^<]+?<div\s+class=['"]thumbinner['"]\s+style=['"])width:\s*642px([^<]+?<img\s[^>]+?width=)[^>]+?height=['"][^'"]+?['"]/ig, '$1$2"320px"');
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
@@ -6252,7 +6332,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
                 for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                        var summary = m2.replace(/(?:<div\s+class=["']pcs-edit[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                        var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
                         return '<details ' + m1 + '>' + summary + '</details>';
                     });
                     // We can stop iterating if all sections are consumed
@@ -6279,26 +6359,27 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(noexcerpt[1], '');
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
         }
-        // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-        var hatnote;
-        var hatnotes = [];
-        do {
-            hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
-            if (hatnote && hatnote.length) {
-                // Ensure the next matching hatnote is under h1
-                if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
-                    htmlArticle = htmlArticle.replace(hatnote[0], '');
-                    hatnotes.push(hatnote[0]);
-                } else {
-                    break;
+        if (appstate.zimThemeType === 'mobile') {
+            // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+            var hatnote;
+            var hatnotes = [];
+            do {
+                hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
+                if (hatnote && hatnote.length) {
+                    // Ensure the next matching hatnote is under h1
+                    if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
+                        htmlArticle = htmlArticle.replace(hatnote[0], '');
+                        hatnotes.push(hatnote[0]);
+                    } else {
+                        break;
+                    }
                 }
+            } while (hatnote.length);
+            // Ensure we replace them in the right order
+            for (i = hatnotes.length; i--;) {
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
             }
-        } while (hatnote.length);
-        // Ensure we replace them in the right order
-        for (i = hatnotes.length; i--;) {
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
         }
-
         // Remove white background colour (causes flashes in dark mode)
         htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
         htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
@@ -6486,11 +6567,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     // Extract CSS URLs from given array of links
     function getBLOB (arr) {
         var testCSS = arr.join();
-        zimType = /-\/s\/style\.css/i.test(testCSS) ? 'desktop' : zimType;
+        zimType = /-\/s\/style\.css|vector/i.test(testCSS) ? 'desktop' : zimType;
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? 'desktop-stx' : zimType; // Support stackexchange
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
         zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
+        // Report ZIM style to config #zimstyle
+        document.getElementById('zimtype').innerHTML = 'current ZIM style: <b>' + zimType + '</b>';
         if (/minerva|inserted.style|pcs\.css/i.test(testCSS) && (cssCache || zimType != cssSource)) {
             // Substitute ridiculously long style name TODO: move this code to transformStyles
             for (var i = arr.length; i--;) { // TODO: move to transfromStyles

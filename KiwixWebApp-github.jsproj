@@ -152,6 +152,7 @@
     <Content Include="www\-\mw\mw.TMHGalleryHook.js.css" />
     <Content Include="www\-\mw\newstyle_main_page.css" />
     <Content Include="www\-\mw\style.css" />
+    <Content Include="www\-\mw\skins.vector.styles.css" />
     <Content Include="www\-\style.css" />
     <Content Include="www\-\s\css_modules\mediawiki.action.view.redirectPage.css" />
     <Content Include="www\-\s\css_modules\minerva.css" />

@@ -133,13 +133,16 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
       if ($winonly -eq "appx") {
         "[Only building the appx package because -winonly appx was specified]"
         if ($skipsigning -or $buildstorerelease) {
-          npx electron-builder build  --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
+          "Building unsigned appx package..."
+          powershell.exe -Command "npx electron-builder build  --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist"
         } else {
-          npx electron-builder --win appx --projectDir dist
+          # There is a bug in electron-builder that prevents discovery of the appx signing certificate if running in PS Core
+          # So we need to run the command in Windows PowerShell. See electron-userland/electron-builder#7729 and #8055
+          powershell.exe -Command "npx electron-builder --win appx --projectDir dist"
         }
       } else {
         if ($skipsigning -or $buildstorerelease) {
-          npx electron-builder build  --config ../scripts/electronBuilder.cjs --win --publish never --projectDir dist
+          powershell.exe -Command "npx electron-builder build  --config ../scripts/electronBuilder.cjs --win --publish never --projectDir dist"
         } else {
           npm run dist-win
         }
