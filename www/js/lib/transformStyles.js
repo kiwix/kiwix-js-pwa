@@ -114,6 +114,7 @@ function filterCSS (zl, zim, cc, cs, i) {
             zl = /\/mobile_main_page\.css/.test(zl) ? '-/mw/newstyle_main_page.css' : zl;
             zl = /\/content\.parsoid\.css/.test(zl) ? '-/s/css_modules/content.parsoid.css' : zl;
             zl = /skins\.vector\.styles\.css/.test(zl) ? '-/mw/skins.vector.styles.css' : zl;
+            zl = /\.\/mw\//.test(zl) ? zl.replace(/\.\/mw\//, '-/mw/') : zl; // Replace "./mw/" with "-/mw/"
             zl = /\/sotoki\.css/.test(zl) ? 'C/static/css/sotoki.css' : zl;
             // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
             zl = zl.replace(/.+(bootstrap[^/]*?\.css)/i, 'css/$1');
