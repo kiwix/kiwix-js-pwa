@@ -1,10 +1,18 @@
 # Changelog
 
-## Interim release 3.6.63
+## Interim release 3.6.66
 
+* FEATURE: Add snippets to fulltext search
+* ENHANCEMENT: Improve keyboard navigability of search results
 * ENHANCEMENT: Report current default ZIM style (desktop/mobile) to Configuration
 * UPDATE: Support transforming ActionParse ZIMs to mobile style
+* REGRESSION: Fixed bug that prevented some pages with equations from showing in nopic ZIMs
+* FIX: Bug that prevented searching for the same string twice in a row
+* FIX: Fixes to regular dark style
+* FIX: Unhandled exaception when popover icons are not found
 * REGRESSION: Fix code that misplaced hatnotes in ActionParse ZIMs
+* DEV: Make features section clickable
+* DEV: Various security updates
 
 ## Release 3.6.5 / 3.6.6
 
