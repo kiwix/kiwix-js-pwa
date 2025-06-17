@@ -102,6 +102,7 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.6</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>For updates since v3.6.6, please see the <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG<img alt="external link" src="I/s/Icon_External_Link.png"></a>.</li>
                                 <li>Added support for Wikimedia ZIMs based on new ActionParse API</li>
                                 <li>Support transforming ActionParse ZIMs to mobile style</li>
                                 <li>Current default ZIM style (desktop/mobile) reported to Configuration</li>
@@ -561,19 +562,19 @@
                     </p>
                     <h3 id="fullTextSearch">Full-text search</h3>
                     <p>
-                        Some versions of this app (PWA and Electron-based) support <b>full-text search <i>if your ZIM has a full-text index</i></b>. The API panel in Configuration will tell you
-                        whether the loaded ZIM and app support full-text search. A full-text search will be launched automatically after the title search if the latter didn't return the maximum number
-                        of results you have set in Configuration (default is 30). Users of iOS will need to be on iOS 15+ for full-text search to work (if you are on an earlier version, we recommend
-                        you disable use of libzim WASM/ASM in Expert settings -> Troubleshooting and development).
+                        Some versions of this app (PWA and Electron-based) support <b>full-text search <i>if your ZIM has a full-text index</i></b>, as well as the display of snippets for items in the full-text
+                        index. The API panel in Configuration will tell you whether the loaded ZIM and app support full-text search. A full-text search will be launched automatically after the title search
+                        if the latter didn't return the maximum number of results you have set in Configuration (default is 20 on desktop, lower on mobile). Users of iOS will need to be on iOS 15+ for
+                        full-text search to work (if you are on an earlier version, we recommend you disable use of libzim WASM/ASM in Expert settings -> Troubleshooting and development).
                     </p>
                     <p>
-                        Full-text results are displayed <i>after</i> any matching title search results. Full-text search results can be considerably slower than title search with very large ZIM archives.
-                        If you see the search result you want, you can click on it without having to wait for the full-text results.
+                        Full-text results and snippets are displayed <i>after</i> any matching title search results. Full-text search results can be considerably slower than title search with very large ZIM archives.
+                        If you see the search result you want, you can click on it without having to wait for the full-text results. You can navigate the search results with your keyboard as well as by tapping or
+                        clicking on them. Snippets will open automatically if you hover over their summary entry, or you can tap the snippet header to open and close.
                     </p>
                     <p id="Android">
-                        If you are using the <b>PWA on Android</b>, please note that full-text search is only enabled by default for archives in the Origin Private File System. This is because conventional
-                        file access on most Android versions is far too slow, but it is much faster in the OPFS. If you want to enable it in all cases, open the 'Troubleshooting and development' section in
-                        Configuration and select 'WASM' from the dropdown next to 'Force use of libzim W/ASM'.
+                        If you are using the <b>PWA on Android</b>, please note that search with snippets is only enabled by default for archives in the Origin Private File System. This is because conventional
+                        file access on most Android versions is far too slow, but it is much faster in the OPFS. You can override default settings in Configuration.
                     </p>
                     <h3 id="removeNavbars" data-i18n="about-remove-navbars">Removing navigation bars</h3>
                     <p data-i18n="about-remove-navbars-para1">
