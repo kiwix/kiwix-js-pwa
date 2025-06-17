@@ -48,12 +48,12 @@ jobs:
       - name: Build app with src bundle
         if: github.event.inputs.target == 'ghpages' || github.event_name == 'push'
         run: |
-          npm ci
+          npm install
           npm run build-src
       - name: Build app with production bundle (src bundle also provided)
         if: github.event.inputs.target == 'docker' || github.event_name == 'release'
         run: |
-          npm ci
+          npm install
           npm run build
           echo "After deployment the production app will be available at https://pwa.kiwix.org"
       - name: Build docker image and push
