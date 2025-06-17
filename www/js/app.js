@@ -6443,7 +6443,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
     // Replace all TeX SVGs with MathJax scripts
     if (params.useMathJax) {
-        // Deal with any newer MathML blocksº
+        // Deal with any newer MathML blocks
         htmlArticle = htmlArticle.replace(/(<math\b[^>]+alttext=(["']))((?:[^\s\S](?!\2))+)(\2(?:[^<]|<(?!\/math))+(?:[^<]|<(?!img))+)<img\b[^>]+?class=["'][^"']*?mwe-math-fallback-image[^>]+>/ig,
         function (_p0, p1, _p2, math, p4) {
             // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
