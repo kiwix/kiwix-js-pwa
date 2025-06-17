@@ -2669,7 +2669,6 @@ function removePageMaxWidth () {
     var body = doc.body;
     // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
-    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
     cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
     for (var i = 0; i < idArray.length; i++) {
@@ -6224,6 +6223,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     cache.setArticle(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function () {});
     params.htmlArticle = htmlArticle;
 
+    // Get the page theme type (desktop / mobile)
+    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(htmlArticle) ? 'mobile' : 'desktop';
+    appstate.zimThemeType = /<link\b[^>]+(?:-\/s\/style\.css|vector)/i.test(htmlArticle) ? 'desktop' : appstate.zimThemeType;
+
     // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
     // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
     // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
@@ -6567,10 +6570,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     // Extract CSS URLs from given array of links
     function getBLOB (arr) {
         var testCSS = arr.join();
-        zimType = /-\/s\/style\.css|vector/i.test(testCSS) ? 'desktop' : zimType;
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? 'desktop-stx' : zimType; // Support stackexchange
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
         zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
+        zimType = /-\/s\/style\.css|vector/i.test(testCSS) ? 'desktop' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
         // Report ZIM style to config #zimstyle
         document.getElementById('zimtype').innerHTML = 'current ZIM style: <b>' + zimType + '</b>';
