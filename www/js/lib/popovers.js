@@ -467,6 +467,12 @@ function addEventListenersToPopoverIcons (anchor, popover, doc) {
     }
     const closeIcon = doc.getElementById('popcloseicon');
     const breakoutIcon = doc.getElementById('popbreakouticon');
+    // If the icons are not found, do not add event listeners
+    if (!closeIcon || !breakoutIcon) {
+        console.warn('Popover icons not found in the document');
+        return;
+    }
+    // Add the popoverisloading property to the popover so that it can be removed
     // Register mousedown event (should work in all contexts)
     closeIcon.addEventListener('mousedown', function () {
         closePopover(popover);
