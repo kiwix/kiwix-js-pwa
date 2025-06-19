@@ -6302,11 +6302,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs and troublesome JS in mobile-html endpoint ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|wikimedia|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
-            // @TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
-            htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, '<a href="$1.html">$2</a>');
-            htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, '<$1$2>');
-            // @TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
-            htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, '$1');
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, '');
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
