@@ -564,6 +564,8 @@ function clearFindInArticle () {
 document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
+        // Hide the search bar
+        document.getElementById('navbar').style.height = params.navbarHeight * (params.relativeUIFontSize / 100) + 'px';
         setTab();
         // Return sections to original state
         openAllSections();
@@ -571,6 +573,8 @@ document.getElementById('findText').addEventListener('click', function () {
         checkToolbar();
         return;
     }
+    // Set the height of the navbar to accommodate the search bar
+    document.getElementById('navbar').style.height = params.navbarHeight + 35 * (params.relativeUIFontSize / 100) + 'px';
     var findInArticle = null;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     if (appstate.isReplayWorkerAvailable) {
