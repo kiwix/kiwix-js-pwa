@@ -565,7 +565,7 @@ document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
         // Hide the search bar
-        document.getElementById('navbar').style.height = params.navbarHeight * (params.relativeUIFontSize / 100) + 'px';
+        setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
         setTab();
         // Return sections to original state
         openAllSections();
@@ -574,7 +574,7 @@ document.getElementById('findText').addEventListener('click', function () {
         return;
     }
     // Set the height of the navbar to accommodate the search bar
-    document.getElementById('navbar').style.height = params.navbarHeight + 35 * (params.relativeUIFontSize / 100) + 'px';
+    setNavbarHeight(params.navbarHeight + 35, params.relativeUIFontSize);
     var findInArticle = null;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     if (appstate.isReplayWorkerAvailable) {
@@ -760,12 +760,18 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
     setRelativeUIFontSize(this.value);
 });
 
+// Helper function to calculate navbar height
+function setNavbarHeight(height, relativeUIFontSize) {
+    const navbar = document.getElementById('navbar');
+    navbar.style.height = height * (relativeUIFontSize / 100) + 'px';
+}
+
 function setRelativeUIFontSize (value) {
     value = ~~value;
     document.getElementById('spinnerVal').innerHTML = value + '%';
     document.getElementById('search-article').style.fontSize = value + '%';
     document.getElementById('relativeUIFontSizeSlider').value = value;
-    document.getElementById('navbar').style.height = params.navbarHeight * (value / 100) + 'px';
+    setNavbarHeight(params.navbarHeight, value);
     var forms = document.querySelectorAll('.form-control');
     var i;
     for (i = 0; i < forms.length; i++) {
