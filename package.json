@@ -166,7 +166,7 @@
     "@vitejs/plugin-legacy": "^6.0.2",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "del-cli": "^5.0.0",
-    "electron": "29.3.1",
+    "electron": "29.3.3",
     "electron-builder": "^24.13.3",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
