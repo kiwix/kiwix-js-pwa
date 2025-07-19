@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.6.67
+## Release 3.6.7 / 3.6.8
 
 * FEATURE: Add snippets to fulltext search
 * ENHANCEMENT: Improve keyboard navigability of search results
@@ -13,8 +13,10 @@
 * FIX: Bug that prevented searching for the same string twice in a row
 * FIX: Fixes to regular dark style
 * FIX: Unhandled exaception when popover icons are not found
+* FIX: Issue with display of gallery images in Wikipedia files
 * DEV: Make features section clickable
 * DEV: Various security updates
+* DEV: Updated Electron to 29.3.3
 
 ## Release 3.6.5 / 3.6.6
 
