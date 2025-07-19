@@ -2708,13 +2708,28 @@ function removePageMaxWidth () {
     // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
     var actionParseRemoveClasses = ['mw-page-container-inner', ''];
     for (i = 0; i < actionParseRemoveClasses.length; i++) {
-        var mwPageContainer = doc.getElementsByClassName(actionParseRemoveClasses[i]);
-        if (mwPageContainer && mwPageContainer.length) {
-            for (var j = 0; j < mwPageContainer.length; j++) {
-                mwPageContainer[j].classList.remove(actionParseRemoveClasses[i]);
+        var mwPageContainerClasses = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        if (mwPageContainerClasses && mwPageContainerClasses.length) {
+            for (var j = 0; j < mwPageContainerClasses.length; j++) {
+                mwPageContainerClasses[j].classList.remove(actionParseRemoveClasses[i]);
             }
         }
     }
+    // Ensure .mw-body is displayed with block instead of grid
+    var mwBody = doc.getElementsByClassName('mw-body');
+    if (mwBody && mwBody.length) {
+        for (i = 0; i < mwBody.length; i++) {
+            mwBody[i].style.display = 'block';
+        }
+    }
+    // Remove max-width from .mw-page-container
+    var mwPageContainer = doc.getElementsByClassName('mw-page-container');
+    if (mwPageContainer && mwPageContainer.length) {
+        for (i = 0; i < mwPageContainer.length; i++) {
+            mwPageContainer[i].style.setProperty('max-width', 'none', 'important');
+        }
+    }
+    // Remove padding from body if it is an article list home page
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
     }
