@@ -564,6 +564,8 @@ function clearFindInArticle () {
 document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
+        // Hide the search bar
+        setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
         setTab();
         // Return sections to original state
         openAllSections();
@@ -571,6 +573,8 @@ document.getElementById('findText').addEventListener('click', function () {
         checkToolbar();
         return;
     }
+    // Set the height of the navbar to accommodate the search bar
+    setNavbarHeight(params.navbarHeight + 35, params.relativeUIFontSize);
     var findInArticle = null;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     if (appstate.isReplayWorkerAvailable) {
@@ -756,12 +760,18 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
     setRelativeUIFontSize(this.value);
 });
 
+// Helper function to calculate navbar height
+function setNavbarHeight(height, relativeUIFontSize) {
+    const navbar = document.getElementById('navbar');
+    navbar.style.height = height * (relativeUIFontSize / 100) + 'px';
+}
+
 function setRelativeUIFontSize (value) {
     value = ~~value;
     document.getElementById('spinnerVal').innerHTML = value + '%';
     document.getElementById('search-article').style.fontSize = value + '%';
     document.getElementById('relativeUIFontSizeSlider').value = value;
-    document.getElementById('navbar').style.height = params.navbarHeight * (value / 100) + 'px';
+    setNavbarHeight(params.navbarHeight, value);
     var forms = document.querySelectorAll('.form-control');
     var i;
     for (i = 0; i < forms.length; i++) {
@@ -2669,7 +2679,6 @@ function removePageMaxWidth () {
     var body = doc.body;
     // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
-    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? 'mobile' : 'desktop';
     cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
     for (var i = 0; i < idArray.length; i++) {
@@ -2699,13 +2708,28 @@ function removePageMaxWidth () {
     // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
     var actionParseRemoveClasses = ['mw-page-container-inner', ''];
     for (i = 0; i < actionParseRemoveClasses.length; i++) {
-        var mwPageContainer = doc.getElementsByClassName(actionParseRemoveClasses[i]);
-        if (mwPageContainer && mwPageContainer.length) {
-            for (var j = 0; j < mwPageContainer.length; j++) {
-                mwPageContainer[j].classList.remove(actionParseRemoveClasses[i]);
+        var mwPageContainerClasses = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        if (mwPageContainerClasses && mwPageContainerClasses.length) {
+            for (var j = 0; j < mwPageContainerClasses.length; j++) {
+                mwPageContainerClasses[j].classList.remove(actionParseRemoveClasses[i]);
             }
         }
     }
+    // Ensure .mw-body is displayed with block instead of grid
+    var mwBody = doc.getElementsByClassName('mw-body');
+    if (mwBody && mwBody.length) {
+        for (i = 0; i < mwBody.length; i++) {
+            mwBody[i].style.display = 'block';
+        }
+    }
+    // Remove max-width from .mw-page-container
+    var mwPageContainer = doc.getElementsByClassName('mw-page-container');
+    if (mwPageContainer && mwPageContainer.length) {
+        for (i = 0; i < mwPageContainer.length; i++) {
+            mwPageContainer[i].style.setProperty('max-width', 'none', 'important');
+        }
+    }
+    // Remove padding from body if it is an article list home page
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
     }
@@ -6224,6 +6248,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     cache.setArticle(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function () {});
     params.htmlArticle = htmlArticle;
 
+    // Get the page theme type (desktop / mobile)
+    appstate.zimThemeType = /<link\b[^>]+(?:minerva|mobile)/i.test(htmlArticle) ? 'mobile' : 'desktop';
+    appstate.zimThemeType = /<link\b[^>]+(?:-\/s\/style\.css|vector)/i.test(htmlArticle) ? 'desktop' : appstate.zimThemeType;
+
     // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
     // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
     // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
@@ -6299,11 +6327,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs and troublesome JS in mobile-html endpoint ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|wikimedia|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
-            // @TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
-            htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, '<a href="$1.html">$2</a>');
-            htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, '<$1$2>');
-            // @TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
-            htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, '$1');
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, '');
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
@@ -6439,17 +6462,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     // }
 
     // Replace all TeX SVGs with MathJax scripts
-    if (params.useMathJax) {
-        // Deal with any newer MathML blocks
-        htmlArticle = htmlArticle.replace(/(<math\b[^>]+alttext=(["']))((?:[^"']|[\s\S](?!\2))+?)(\2(?:[^<]|<(?!\/math))+(?:[^<]|<(?!img))+)<img\b[^>]+?class=["'][^"']*?mwe-math-fallback-image[^>]+>/ig,
-        function (_p0, p1, _p2, math, p4) {
-            // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-            math = math.replace(/&amp;/g, '&');
-            // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
-            math = math.replace(/mbox{/g, 'fbox{');
-            return p1 + math + p4 + '<script type="math/tex">' + math + '</script>';
-        });
-        // Older math blocks
+    if (params.useMathJax && appstate.wikimediaZimLoaded) {
+        // Make any Wikimedia MathJax compatible with KaTeX
         htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig,
         function (p0, p1, math) {
             // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
@@ -6567,10 +6581,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     // Extract CSS URLs from given array of links
     function getBLOB (arr) {
         var testCSS = arr.join();
-        zimType = /-\/s\/style\.css|vector/i.test(testCSS) ? 'desktop' : zimType;
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? 'desktop-stx' : zimType; // Support stackexchange
         zimType = /gutenberg\.css/i.test(testCSS) ? 'desktop-gtb' : zimType; // Support Gutenberg
         zimType = /minerva|mobile/i.test(testCSS) ? 'mobile' : zimType;
+        zimType = /-\/s\/style\.css|vector/i.test(testCSS) ? 'desktop' : zimType;
         cssSource = cssSource == 'auto' ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
         // Report ZIM style to config #zimstyle
         document.getElementById('zimtype').innerHTML = 'current ZIM style: <b>' + zimType + '</b>';

@@ -1,10 +1,22 @@
 # Changelog
 
-## Interim release 3.6.63
+## Release 3.6.7 / 3.6.8
 
+* FEATURE: Add snippets to fulltext search
+* ENHANCEMENT: Improve keyboard navigability of search results
 * ENHANCEMENT: Report current default ZIM style (desktop/mobile) to Configuration
 * UPDATE: Support transforming ActionParse ZIMs to mobile style
+* REGRESSION: Fix find in article bar not showing
+* REGRESSION: Fix missing text on landing pages with ActionParse ZIMs
+* REGRESSION: Fix bug that prevented some pages with equations from showing in nopic ZIMs
 * REGRESSION: Fix code that misplaced hatnotes in ActionParse ZIMs
+* FIX: Bug that prevented searching for the same string twice in a row
+* FIX: Fixes to regular dark style
+* FIX: Unhandled exaception when popover icons are not found
+* FIX: Issue with display of gallery images in Wikipedia files
+* DEV: Make features section clickable
+* DEV: Various security updates
+* DEV: Updated Electron to 29.3.3
 
 ## Release 3.6.5 / 3.6.6
 
