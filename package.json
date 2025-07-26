@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "3.6.8-E",
+  "version": "3.6.8",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -13,7 +13,7 @@
       "buildResources": "../electron_icons"
     },
     "win": {
-      "certificateSha1": "82B88B62A6F87FBA62B2C933D747E52EDBF0F7F6",
+      "certificateSha1": "e33d961d35fb3161f7db607342868bb51ae05de3",
       "signingHashAlgorithms": [
         "sha256"
       ],
