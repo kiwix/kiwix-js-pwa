@@ -1003,12 +1003,12 @@ a.issues_button {
 }
 
 .mw-body-content {
-    counter-reset: mw-numbered-ext-link
+    counter-reset: mw-numbered-ext-link mw-Ref;
 }
 
-    .mw-body-content a[rel~='mw:ExtLink']:empty:after {
+    .mw-body-content a[rel~='mw:ExtLink']:empty:after, .mw-body-content .mw-ref a:after {
         content: '[' counter(mw-numbered-ext-link) ']';
-        counter-increment: mw-numbered-ext-link
+        counter-increment: mw-numbered-ext-link mw-Ref;
     }
 
 .mw-body h3, .mw-body h2 {
