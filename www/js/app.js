@@ -6355,8 +6355,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
             // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
-            if (!params.isLandingPage) {
-                // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
+            // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
+            if (!params.isLandingPage && appstate.zimThemeType === 'mobile' && /<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+                // We have to loop because regex only matches innermost <section>...</section>
                 for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
                         var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
