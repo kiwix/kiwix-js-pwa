@@ -6355,8 +6355,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
             // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
-            if (!params.isLandingPage) {
-                // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
+            // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
+            if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') && /<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+                // We have to loop because regex only matches innermost <section>...</section>
                 for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
                         var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
@@ -6380,12 +6381,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
         htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
 
-        // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-        var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
-        if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
-            htmlArticle = htmlArticle.replace(noexcerpt[1], '');
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
-        }
         if (appstate.zimThemeType === 'mobile') {
             // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
             var hatnote;
@@ -6405,6 +6400,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Ensure we replace them in the right order
             for (i = hatnotes.length; i--;) {
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+            }
+            // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
+            if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
+                htmlArticle = htmlArticle.replace(noexcerpt[1], '');
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
             }
         }
         // Remove white background colour (causes flashes in dark mode)
