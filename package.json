@@ -13,11 +13,13 @@
       "buildResources": "../electron_icons"
     },
     "win": {
-      "certificateSha1": "82B88B62A6F87FBA62B2C933D747E52EDBF0F7F6",
-      "signingHashAlgorithms": [
-        "sha256"
-      ],
-      "rfc3161TimeStampServer": "http://ts.ssl.com",
+        "signtoolOptions": {
+          "certificateSha1": "e33d961d35fb3161f7db607342868bb51ae05de3",
+          "signingHashAlgorithms": [
+            "sha256"
+          ],
+          "rfc3161TimeStampServer": "http://ts.ssl.com"
+        },
       "asar": "true",
       "extraResources": {
         "from": "archives",
@@ -166,8 +168,8 @@
     "@vitejs/plugin-legacy": "^6.0.2",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "del-cli": "^5.0.0",
-    "electron": "29.3.3",
-    "electron-builder": "^24.13.3",
+    "electron": "29.3.1",
+    "electron-builder": "^26.0.18",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
@@ -182,7 +184,7 @@
     "core-js": "3.30.2",
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
-    "electron-updater": "^6.2.1",
+    "electron-updater": "^6.6.7",
     "express": "^4.21.0",
     "jquery": "^3.7.1"
   }

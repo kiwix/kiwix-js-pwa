@@ -3736,8 +3736,12 @@ function setLocalArchiveFromArchiveList (archive) {
                                 console.error(err);
                             });
                         } else {
-                            uiUtil.systemAlert('We could not find the location of the file ' + archive +
-                                '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
+                            // If we are here, it means that the user has not selected a file or folder
+                            // or else that a user gesture is needed to access the file system (this happens with recent versions of Electron)
+                            if (!window.fs) {
+                                uiUtil.systemAlert('We could not find the location of the file ' + archive +
+                                    '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
+                            }
                             if (document.getElementById('configuration').style.display === 'none') {
                                 document.getElementById('btnConfigure').click();
                             }
@@ -4511,7 +4515,7 @@ function archiveReadyCallback (archive) {
         // Check if source of the zim file can be trusted and that it is not a packaged archive
         if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile &&
           // And it's not an Electron-accessed file inside the app's package
-          !(window.electronAPI && archive.file._files[0].path.indexOf(electronAPI.__dirname.replace(/[\\/]+(?:app\.asar)?$/, '') + '/' + params.archivePath) === 0)) {
+          !(window.electronAPI && archive.file._files[0].path && archive.file._files[0].path.indexOf(electronAPI.__dirname.replace(/[\\/]+(?:app\.asar)?$/, '') + '/' + params.archivePath) === 0)) {
             verifyLoadedArchive(archive).then(function () {
                 displayArchive();
             });
