@@ -7401,6 +7401,15 @@ function setupTableOfContents () {
     var tableOfContents = new uiUtil.ToC(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
 
+    if(headings.length <= 1) {
+        var dropupElement = document.getElementById('dropup');
+        dropupElement.classList.remove('btn-default');
+        dropupElement.style.pointerEvents = 'none';        
+        dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b>';
+        document.getElementById('ToCList').style.visibility = 'hidden';
+        return;
+    }
+
     dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + 'px';
     var dropupHtml = '';
     headings.forEach(function (heading) {
