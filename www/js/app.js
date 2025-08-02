@@ -7408,6 +7408,12 @@ function setupTableOfContents () {
         dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b>';
         document.getElementById('ToCList').style.visibility = 'hidden';
         return;
+    }else {        
+        var dropupElement = document.getElementById('dropup');
+        dropupElement.classList.add('btn-default');
+        dropupElement.style.pointerEvents = 'auto';        
+        dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b><span class="caret"></span>';
+        document.getElementById('ToCList').style.visibility = 'visible';
     }
 
     dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + 'px';
