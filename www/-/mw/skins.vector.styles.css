@@ -293,6 +293,21 @@ figure[typeof~='mw:File/Thumb'] > figcaption:empty {
     vertical-align: text-bottom
 }
 
+summary.section-heading {
+    display: list-item !important;
+    cursor: pointer;
+}
+
+.section-heading > h1,
+.section-heading > h2,
+.section-heading > h3,
+.section-heading > h4,
+.section-heading > h5,
+.section-heading > h6 {
+    display: inline;
+    border: none;
+}
+
 @media screen {
     div.thumbinner {
         border: 1px solid var(--border-color-subtle,#c8ccd1);

@@ -178,15 +178,17 @@ function toMobileCSS (html, zim, cc, cs, css) {
                         // We already deleted the table above
                         html = '';
                         // First try to move the lead paragraph
+                        /* NOTE CODE BELOW CAUSES HATNOTES TO GET SWAPPED TOO, so we will only use the simple swap method instead
                         html = temphtml.replace(/(<div\s+[^>]*?\bid\s*=\s*["']mw-content-text\s*[^>]*>\s*)/i, '$1\r\n' + paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + '\r\n');
                         if (html) { // Looks like we succeeded so clean up
                             html = html.replace(paras[g], '');
                             html = html.replace('<!-- @@@kiwixmarker@@@ -->', infobox[0]);
                         } else {
-                            // So there was no match, let's try just swapping para and infobox
-                            html = temphtml.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + '\r\n' + infobox[0]);
-                            html = html.replace('<!-- @@@kiwixmarker@@@ -->', '');
-                        }
+                        */
+                        // So there was no match, let's try just swapping para and infobox
+                        html = temphtml.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + '\r\n' + infobox[0]);
+                        html = html.replace('<!-- @@@kiwixmarker@@@ -->', '');
+                        // }  // End of commented else block
                     }
                 }
             }
