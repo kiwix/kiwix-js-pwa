@@ -1,5 +1,12 @@
 # Changelog
 
+## Interim release 3.6.85
+
+* FIX: Opening and closing of Wikipedia sections in ActionParse ZIMs (when transformed to mobile style)
+* REGRESSION: Fixed bug with persistent file system permissions in Electron app
+* FIX: Typo in configuration
+* DEV: Bump Electron builder to 26.0.18
+
 ## Release 3.6.7 / 3.6.8
 
 * FEATURE: Add snippets to fulltext search
