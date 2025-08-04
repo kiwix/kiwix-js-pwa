@@ -761,7 +761,7 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
 });
 
 // Helper function to calculate navbar height
-function setNavbarHeight(height, relativeUIFontSize) {
+function setNavbarHeight (height, relativeUIFontSize) {
     const navbar = document.getElementById('navbar');
     navbar.style.height = height * (relativeUIFontSize / 100) + 'px';
 }
@@ -5610,6 +5610,13 @@ var articleLoadedSW = function (dirEntry, container) {
         removePageMaxWidth();
         setupHeadings();
         listenForNavigationKeys();
+        // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
+        if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
+            // Override the display: none rule for reference link text
+            var style = doc.createElement('style');
+            style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
+            doc.head.appendChild(style);
+        }
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
             // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
@@ -6838,6 +6845,14 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
             }
             if (!params.isLandingPage) openAllSections();
+            // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
+            var doc = articleWindow.document;
+            if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
+                // Override the display: none rule for reference link text
+                var style = doc.createElement('style');
+                style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
+                doc.head.appendChild(style);
+            }
 
             parseAnchorsJQuery(dirEntry);
             loadCSSJQuery();
