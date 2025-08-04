@@ -1,8 +1,9 @@
 # Changelog
 
-## Interim release 3.6.85
+## Interim release 3.6.86
 
 * FIX: Opening and closing of Wikipedia sections in ActionParse ZIMs (when transformed to mobile style)
+* FIX: Bug that showed footnote refs as [0] in ActionParse desktop-style ZIMs transformed to mobile style via Config option
 * REGRESSION: Fixed bug with persistent file system permissions in Electron app
 * FIX: Typo in configuration
 * DEV: Bump Electron builder to 26.0.18
