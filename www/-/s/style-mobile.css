@@ -608,11 +608,11 @@ sub {
         content: '[' counter(mw-Ref,symbols(cyclic 'first' 'second' 'last!')) ']'
     }
 
-    /* .mw-ref a:after {
+    .mw-ref a:after {
         content: '[' counter(mw-Ref,decimal) ']'
-    } */
+    }
 
-x-thereisnoelementwiththisname:after {
+x-thereisnoelementwiththisname:after, span.mw-reflink-text {
     display: none
 }
 
