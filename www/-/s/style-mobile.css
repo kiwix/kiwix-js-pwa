@@ -3291,11 +3291,11 @@ sub, sup {
 
 @media all and (min-width:720px) {
     table.infobox, table.sistersitebox {
-        margin: 0.5em 0 1em 35px !important;
+        margin: 0.5em 0 1em 35px;
         max-width: 320px;
-        width: auto !important;
-        float: right !important;
-        clear: right !important;
+        width: auto;
+        float: right;
+        clear: right;
         z-index: 1;
     }
 
@@ -3845,7 +3845,7 @@ div.bandeau-section {
 
     table.infobox_v2, .infobox_v3 {
         clear: right;
-        float: right !important;
+        float: right;
         margin: 0 0 0.5em 1em
     }
 }
@@ -5550,8 +5550,8 @@ h3 .mw-headline {
 
     .qb.qbRight, .infobox, .infobox_v2, .infobox_v3, .qbRightDiv {
         clear: right;
-        float: right !important;
-        margin: 0 0 0.5em 1em !important;
+        float: right;
+        margin: 0 0 0.5em 1em;
         max-width: 320px;
     }
 }
