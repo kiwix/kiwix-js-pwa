@@ -5610,13 +5610,26 @@ var articleLoadedSW = function (dirEntry, container) {
         removePageMaxWidth();
         setupHeadings();
         listenForNavigationKeys();
-        // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
-        if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
-            // Override the display: none rule for reference link text
-            var style = doc.createElement('style');
-            style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
-            doc.head.appendChild(style);
+        if (appstate.wikimediaZimLoaded && !appstate.pureMode) {
+            // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
+            if (params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
+                // Override the display: none rule for reference link text
+                var style = doc.createElement('style');
+                style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
+                doc.head.appendChild(style);
+            }
+            // Fix hardcoded language direction
+            var contentText = doc.getElementById('mw-content-text');
+            var langDirection = contentText ? contentText.style ? contentText.style.direction : '' : '';
+            if (langDirection) {
+                doc.documentElement.setAttribute('dir', langDirection);
+                var contentContainer = doc.querySelector('.mw-content-container');
+                if (contentContainer) {
+                    contentContainer.style.direction = langDirection;
+                }
+            }
         }
+
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
             // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
@@ -6845,13 +6858,25 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
             }
             if (!params.isLandingPage) openAllSections();
-            // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
-            var doc = articleWindow.document;
-            if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
-                // Override the display: none rule for reference link text
-                var style = doc.createElement('style');
-                style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
-                doc.head.appendChild(style);
+            if (appstate.wikimediaZimLoaded && !appstate.pureMode) {
+                var doc = articleWindow.document;
+                // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
+                if (params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
+                    // Override the display: none rule for reference link text
+                    var style = doc.createElement('style');
+                    style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
+                    doc.head.appendChild(style);
+                }
+                // Fix hardcoded language direction
+                var contentText = doc.getElementById('mw-content-text');
+                var langDirection = contentText ? contentText.style ? contentText.style.direction : '' : '';
+                if (langDirection) {
+                    doc.documentElement.setAttribute('dir', langDirection);
+                    var contentContainer = doc.querySelector('.mw-content-container');
+                    if (contentContainer) {
+                        contentContainer.style.direction = langDirection;
+                    }
+                }
             }
 
             parseAnchorsJQuery(dirEntry);
