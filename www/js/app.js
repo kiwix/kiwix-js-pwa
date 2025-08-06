@@ -5560,7 +5560,7 @@ var unhideArticleContainer = function () {
  * @param {Document} doc The document to apply fixes to
  */
 function applyWikimediaZimFixes (doc) {
-    if (appstate.wikimediaZimLoaded && !appstate.pureMode) {
+    if (appstate.wikimediaZimLoaded && params.cssCache) {
         // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
         if (params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
             // Override the display: none rule for reference link text
