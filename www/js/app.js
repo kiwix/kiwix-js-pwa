@@ -6360,11 +6360,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs and troublesome JS in mobile-html endpoint ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|wikimedia|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
-            // Remove erroneous content frequently on front page
-            htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, '');
-            htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
-            // Remove landing page scripts that don't work in SW mode
-            htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
+            // Hide title on landing pages
+            if (params.isLandingPage) {
+                htmlArticle = htmlArticle.replace(/<h1\b(?:[^<]|<(?!<\/h1>))+?<\/h1>/i, '');
+                htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
+                // Remove landing page scripts that don't work in SW mode
+                htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
+            }
             // Remove wm_mobile_override script that intercepts all clicks and causes CORS errors
             htmlArticle = htmlArticle.replace(/<script\b[^>]+wm_mobile_override_script\.js[^<]*<\/script>/i, '');
             // Edit sidebar style to make it an infobox
