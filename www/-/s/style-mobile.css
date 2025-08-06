@@ -368,9 +368,9 @@ sub {
 }
 
 .content table {
-    float: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important
+    float: none important;
+    margin-left: 0 important;
+    margin-right: 0 important
 }
 
     .content table.infobox {
@@ -3028,32 +3028,6 @@ sub, sup {
 .content .tmbox, .content .ambox, .content #coordinates, .content .navbox, .content .vertical-navbox, .content .topicon, .content .metadata {
     display: none !important
 }
-
-.content table {
-    float: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important
-}
-
-    .content table.infobox {
-        font-size: 90%;
-        position: relative;
-        border: 0;
-        margin-bottom: 2em;
-        text-align: left;
-        background-color: #f8f9fa
-    }
-
-        .content table.infobox th, .content table.infobox td {
-            vertical-align: top;
-            border: 0;
-            border-bottom: 1px solid #dddddd;
-            padding: 0.2em
-        }
-
-        .content table.infobox tr:last-child th, .content table.infobox tr:last-child td {
-            border: 0
-        }
 
 #filetoc, .mw-editsection {
     display: none
