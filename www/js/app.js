@@ -5630,7 +5630,13 @@ var articleLoadedSW = function (dirEntry, container) {
         if (appstate.selectedArchive.zimType === 'open') {
             // Set relative font size + Stackexchange-family multiplier
             setArticleZoom(params.relativeFontSize);
-            if (!params.isLandingPage) openAllSections();
+            // Only manipulate sections if we are not on a landing page
+            if (!params.isLandingPage) {
+                // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
+                if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
+                    openAllSections();
+                }
+            }
         }
         checkToolbar();
         // Set page width according to user preference
@@ -6868,8 +6874,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     }
                 }
             }
-            if (!params.isLandingPage) openAllSections();
-            applyWikimediaZimFixes(articleWindow.document);
+            var doc = articleWindow.document;
+            // Only manipulate sections if we are not on a landing page
+            if (!params.isLandingPage) {
+                // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
+                if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
+                    openAllSections();
+                }
+            }
+            applyWikimediaZimFixes(doc);
 
             parseAnchorsJQuery(dirEntry);
             loadCSSJQuery();
