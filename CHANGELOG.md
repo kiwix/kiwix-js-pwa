@@ -125,7 +125,7 @@
 * FIX: Horizontal line cutting into some images with locally cached Wikipedia styles
 * FIX: Handling of custom protocols and URI schemata in ServiceWorker mode
 * FIX: Ensure popover is always at top of z-index
-* FIX: Issues selecting and remembering the UI language in multi-lingual TED ZIMs
+* FIX: Issues selecting and remembering the UI language in multilingual TED ZIMs
 * UPDATE: Title tip info about Origin Private File System
 * WORKAROUND: Patch rogue HTML entities appearing in dirEntry titles
 
@@ -284,7 +284,7 @@
 
 * FEATURE: Rework file system access and support Origin Private File System (OPFS)
 * ENHANCEMENT: Autoload and display of all archives in OPFS on app launch, no permission prompts!
-* ENHANCEMENT: Last selected archive (and optionally article) auto-loaded on app launch if in OPFS
+* ENHANCEMENT: Last selected archive (and optionally article) autoloaded on app launch if in OPFS
 * ENHANCEMENT: Import existing archives from anywhere on device into the OPFS easily with file picker
 * ENHANCEMENT: New file management facility for deleting, and (in some contexts) exporting OPFS archives
 * ENHANCEMENT: Option to download archives directly into the OPFS, without downloading first to user-visible FS
@@ -614,7 +614,7 @@
 * DEV: Provided instructions on how to split a ZIM archive using WSL
 * DEV: The NWJS app is now built via CI (including nightly)
 * FIX: App now (optionally) remembers the last viewed article for split ZIM archives
-* FIX: Electron and UWP apps now auto-load split ZIM archives
+* FIX: Electron and UWP apps now autoload split ZIM archives
 * FIX: Failure to recognize landing page when retrieved from history or cache
 
 ## Release 1.9.3
@@ -651,7 +651,7 @@
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-12`
 * ENHANCEMENT: Assets cache and app cache are now separated, so assets persist after update
 * ENHANCEMENT: New persistent caching of ZIM assets that are not provided in file system singinficantly improves performance
-* ENHANCEMENT: Automatically choose best available caching technology: Cache API, IndexedDB, Local Storage or memory
+* ENHANCEMENT: Automatically choose the best available caching technology: Cache API, IndexedDB, Local Storage or memory
 * ENHANCEMENT: New Cache API info panel in Configuration, and option to stop using and empty the cache
 * FIX: Regression whereby blue image placeholders were not shown in jQuery mode when user turns off image display
 * FIX: Bug whereby upgrade alert was triggered by caches from other apps on the same domain
@@ -1153,7 +1153,7 @@
 
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
 * ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
-* FIX: Added icon indicating that a link is to an external web site
+* FIX: Added icon indicating that a link is to an external website
 * ENHANCEMENT: Inject footnote backlinks if the ZIM doesn't have any
 * ENHANCEMENT: Support ZIMs that have subdirectories (Stackexchange family ZIMs)
 * FIX: Bugs in mobile to desktop style transformation

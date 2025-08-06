@@ -17,7 +17,7 @@ different build, then follow the instructions below. _Uninstall any previous ins
 
 ## Windows 10/11 Tablet / PC
 
-Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
+Starting in Windows 10 version 2004, **sideloading is enabled by default**, and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration, as does sideloading unsigned packages.
 
 * **Simple procedure**: Just try launching your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
@@ -58,7 +58,7 @@ frequently downloaded via BitTorrent.
 
 If you plan to store a large ZIM file > 4GB on an SD card or other drive formatted as **FAT32** (most are not), then you may need to use a programme like (on Windows)
 [File Splitter and Joiner](http://www.fastfilejoiner.com/), or (on Linux) `split` (see below), to split the file into 4GiB-1 chunks. Chunks must be exactly 4,294,967,295 bytes
-**or any number less than this**. You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.).
+**or any number less than this**. You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.
 
 On both Linux and Windows 11 WSL (Windows Subsystem for Linux), you can use the `split` command in a Terminal. Open a Terminal / launch WSL, and type
 `split --bytes=4000M wikipedia_en_all_maxi_2021-12.zim wikipedia_en_all_maxi_2021-12.zim` (adapt the name of the ZIM archive accordingly),

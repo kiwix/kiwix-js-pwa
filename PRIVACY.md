@@ -37,7 +37,7 @@ The Kiwix PWA server, like any server, retains access logs for security reasons,
 causes the container to be rebuilt (usually once per month, but may be longer).
 
 **If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut
-down your Internet access (Data or WiFi) before using the application.**
+down your Internet access (Data or Wi-Fi) before using the application.**
 
 Additionally, if you obtained this app from a vendor store (including extensions), then the Store operator may track your
 usage of the app (e.g. download, install, uninstall, date and number/duration of sessions) for the purpose of providing

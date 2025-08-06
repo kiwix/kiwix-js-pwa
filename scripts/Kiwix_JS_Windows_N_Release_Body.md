@@ -20,7 +20,7 @@ There is no installation required: the app is fully portable. Simply unzip it in
 
 * Do not attempt to run the 64bit build on a 32bit machine; if in doubt, use a 32bit (ia32) build (this works on both machine types);
 * Use the links above, or expand "Assets" below, download the zipped build that you require (not the source code) and unzip its contents to any folder, or to a flash drive / thumb drive;
-* Either double click on one of the shortcuts `Start Kiwix JS Windows`, or open the `kiwix_js_windows-<<base_tag>>-...` folder and double click on `nw.exe`. If one of the shortcuts doesn't work, try the other one.
+* Either double click on one of the shortcuts `Start Kiwix JS Windows`, or open the `kiwix_js_windows-<<base_tag>>-...` folder and double-click on `nw.exe`. If one of the shortcuts doesn't work, try the other one.
 
 ### Release Notes
 

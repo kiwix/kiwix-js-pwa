@@ -50,12 +50,12 @@ handy dropdown that allows you to choose your language and your theme, and then 
 If you really want full English Wikipedia with images, then we strongly recommend you use the open-source app
 [qBittorrent](https://www.qbittorrent.org/) to download it on a PC with plenty of disk space. First install qBittorrent. Then, when you
 select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
-download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
+download and open the torrent file. This small file will open in qBittorrent, and you'll be asked where you want to save the archive you
 want to download. It's much easier than it sounds!
 
 ## What about Zimit (Web Archive) format?
 
-Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
+Zimit is a service that allows any website to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
 you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full support for
 Zimit-based archives as of v.2.8.5 using the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html), and already support
 the forthcoming Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
@@ -218,7 +218,7 @@ such as fonts. We block these with a Content Security Policy injected into artic
 has a CSP, ours may be overwritten. Note that scripts only run if you enable Service Worker mode in Configuration.
 
 **If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut
-down your Internet access (Data or WiFi) before using the application.**
+down your Internet access (Data or Wi-Fi) before using the application.**
 
 Additionally, if you obtained this app from a vendor store (including extensions), then the Store operator may track your
 usage of the app (e.g. download, install, uninstall, date and number/duration of sessions) for the purpose of providing

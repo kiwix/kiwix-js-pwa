@@ -13,7 +13,7 @@ KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the we
 
  * **Fast:** KaTeX renders its math synchronously and doesn't need to reflow the page. See how it compares to a competitor in [this speed test](https://www.intmath.com/cg5/katex-mathjax-comparison.php).
  * **Print quality:** KaTeX's layout is based on Donald Knuth's TeX, the gold standard for math typesetting.
- * **Self contained:** KaTeX has no dependencies and can easily be bundled with your website resources.
+ * **Self-contained:** KaTeX has no dependencies and can easily be bundled with your website resources.
  * **Server side rendering:** KaTeX produces the same output regardless of browser or environment, so you can pre-render expressions using Node.js and send them as plain HTML.
 
 KaTeX is compatible with all major browsers, including Chrome, Safari, Firefox, Opera, Edge, and IE 11.

@@ -32,6 +32,6 @@ can drag-and-drop the whole set into the app.
 ## File Handling
 
 In **Chromium browsers**, if you install the app, it can also take advantage of [File handling](Demo-FileHandling.md). Together, these APIs provide
-a near-native experience..
+a near-native experience.
 
 See also: [&ensp;[PWA Installation demo](Install-PWA.md)&ensp;]  [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
