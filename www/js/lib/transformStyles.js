@@ -150,12 +150,8 @@ function toMobileCSS (html, zim, cc, cs, css) {
         }
         if (zim === 'desktop') {
             var infobox = [];
-            if (/<table\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
-                infobox = util.matchOuter(html, '<table\\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</table>', 'i');
-            } else {
-                if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
-                    infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</div>', 'i');
-                }
+            if (/<(?:table|div)\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
+                infobox = util.matchOuter(html, '<(?:table|div)\\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</(?:table|div)>', 'i');
             }
             if (infobox.length) {
                 var temphtml = html.replace(infobox[0], '<!-- @@@kiwixmarker@@@ -->');
@@ -164,7 +160,7 @@ function toMobileCSS (html, zim, cc, cs, css) {
                 if (paras.length) {
                     for (var g = 0; g < 3; g++) {
                         // Check if the paragraph is a proper sentence, i.e. contains at least 50 non-HTML-delimetered non-full-stop characters, followed by a punctuation character
-                        if (paras[g] && /[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<[^>]*>/g, ''))) { matched = true; break; }
+                        if (paras[g] && /[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<style[^<]+<\/style>/g, '').replace(/<[^>]+>/g, ''))) { matched = true; break; }
                     }
                     if (matched) {
                         // If there are navboxes below the infobox, hide them in mobile view
@@ -177,16 +173,16 @@ function toMobileCSS (html, zim, cc, cs, css) {
                         infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*navbox))(?:([^>]+?)style\s*=\s*["'])(?:([^"']*?)display\s*:[^;"']*[;"'])?/ig, '$1$2style="display:none;$3');
                         // We already deleted the table above
                         html = '';
-                        // First try to move the lead paragraph
+                        // First try to move the lede paragraph
                         /* NOTE CODE BELOW CAUSES HATNOTES TO GET SWAPPED TOO, so we will only use the simple swap method instead
-                        html = temphtml.replace(/(<div\s+[^>]*?\bid\s*=\s*["']mw-content-text\s*[^>]*>\s*)/i, '$1\r\n' + paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + '\r\n');
+                        html = temphtml.replace(/(<div\s+[^>]*?\bid\s*=\s*["']mw-content-text\s*[^>]*>\s*)/i, '$1\r\n' + paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lede" ') + '\r\n');
                         if (html) { // Looks like we succeeded so clean up
                             html = html.replace(paras[g], '');
                             html = html.replace('<!-- @@@kiwixmarker@@@ -->', infobox[0]);
                         } else {
                         */
                         // So there was no match, let's try just swapping para and infobox
-                        html = temphtml.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + '\r\n' + infobox[0]);
+                        html = temphtml.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lede" ') + '\r\n' + infobox[0]);
                         html = html.replace('<!-- @@@kiwixmarker@@@ -->', '');
                         // }  // End of commented else block
                     }
@@ -211,7 +207,7 @@ function toDesktopCSS (html, zim, cc, cs, css) {
     }
     if (cc || (zim === 'mobile')) { // If user requested cached styles OR the ZIM does not contain desktop styles
         console.log(zim === 'mobile' ? 'Transforming display style to desktop...' : 'Optimizing cached styles for desktop display...');
-        // If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
+        // If it's in mobile position, move info-box above lede paragraph like on Wikipedia desktop
         if (zim === 'mobile') {
             // Attempt to match div-style infobox first
             var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:infobox[^-]|vertical-navbox|qbRight|wv-quickbar)[^>]*>', '</div>', 'i');

@@ -5554,6 +5554,33 @@ var unhideArticleContainer = function () {
     }
 }
 
+/**
+ * Applies fixes for Wikimedia ZIMs, including reference marker display fixes
+ * and language direction corrections for mobile transformed content
+ * @param {Document} doc The document to apply fixes to
+ */
+function applyWikimediaZimFixes (doc) {
+    if (appstate.wikimediaZimLoaded && !appstate.pureMode) {
+        // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
+        if (params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
+            // Override the display: none rule for reference link text
+            var style = doc.createElement('style');
+            style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
+            doc.head.appendChild(style);
+        }
+        // Fix hardcoded language direction
+        var contentText = doc.getElementById('mw-content-text');
+        var langDirection = contentText ? contentText.style ? contentText.style.direction : '' : '';
+        if (langDirection) {
+            doc.documentElement.setAttribute('dir', langDirection);
+            var contentContainer = doc.querySelector('.mw-content-container');
+            if (contentContainer) {
+                contentContainer.style.direction = langDirection;
+            }
+        }
+    }
+}
+
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
     // console.debug('Checking if article loaded... ' + loaded);
@@ -5610,13 +5637,8 @@ var articleLoadedSW = function (dirEntry, container) {
         removePageMaxWidth();
         setupHeadings();
         listenForNavigationKeys();
-        // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
-        if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
-            // Override the display: none rule for reference link text
-            var style = doc.createElement('style');
-            style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
-            doc.head.appendChild(style);
-        }
+        applyWikimediaZimFixes(doc);
+
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
             // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
@@ -6845,14 +6867,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
             }
             if (!params.isLandingPage) openAllSections();
-            // Fix reference marker display issues in ActionParse ZIMs transformed to mobile
-            var doc = articleWindow.document;
-            if (appstate.wikimediaZimLoaded && params.cssSource === 'mobile' && /skins.vector.styles.css/.test(doc.head.innerHTML)) {
-                // Override the display: none rule for reference link text
-                var style = doc.createElement('style');
-                style.textContent = 'span.mw-reflink-text { display: inline !important;}.mw-ref a:after { display: none !important; }';
-                doc.head.appendChild(style);
-            }
+            applyWikimediaZimFixes(articleWindow.document);
 
             parseAnchorsJQuery(dirEntry);
             loadCSSJQuery();

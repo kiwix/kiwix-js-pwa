@@ -1497,10 +1497,6 @@ summary.section-heading {
         color: var(--color-base,#202122)
     }
 
-    .mw-body,.parsoid-body {
-        direction: ltr
-    }
-
     .mw-body .firstHeading {
         word-wrap: break-word;
         margin-bottom: 0
@@ -2711,7 +2707,6 @@ summary.section-heading {
     }
 
     .mw-footer {
-        direction: ltr;
         border-top: 1px solid var(--border-color-base,#a2a9b1);
         padding: 0.75em 0
     }
