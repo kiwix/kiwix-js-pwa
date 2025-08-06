@@ -77,7 +77,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ### Known Issues
 
-* **Opening/closing headers**: In the latest Wikipedia ZIMs, opening and closing of headers in articles is currently broken.
+* **Opening/closing headers**: In the latest Wikipedia ZIMs, opening and closing of headers is now, by design, only enabled if you transform the style to mobile in Configuration -> Display Style (mobile, desktop).
 * **Printing**: In Electron apps, no preview is available prior to printing: we recommend you print to PDF first and then print the PDF, or use the PWA instead for printing (which has print preview). Before printing, ensure all sections you want to print are open (if you closed them). It is not possible to print Zimit-based articles in Firefox.
 * **There are various issues with the NWJS app** - we recommend you use the Electron app instead (except on Windowx XP):
   - PDFs in Zimit-based archives are blocked from viewing in the NWJS app.

@@ -296,6 +296,7 @@
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#security">Security</a></li>
                         <li><a href="#themes">Themes (dark and light)</a></li>
+                        <li><a href="#styles">Style transformations (desktop, mobile) and collapsible sections</a></li>
                         <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
@@ -330,20 +331,18 @@
                     <p>
                         Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
                         different archives, and works with almost all of them, depending on the capabilities of your browser or framework. There is now full support for
-                        <a href="https://download.kiwix.org/zim/zimit/" target="_blank">Zimit archives</a>, including preliminary support for next-generation Zimit v2.
+                        <a href="https://download.kiwix.org/zim/zimit/" target="_blank">Zimit archives</a>, including support for Zimit v2.
                         For more information on Zimit and how to make your own ZIM archives, see <a href="https://youzim.it/" target="_blank">youzim.it</a>.
-                        Zimit classic archives usually work best in browsers/frameworks that support Service Worker mode (see below).
                     </p>
                     <p>
                         You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
-                        <a href="#searchSyntax">Title search</a>). <b><i>There is experimental support for full-text search in the PWA and Electron apps (for ZIM archives that
-                        include a full-text index). Please note that UWP and NWJS apps are not yet supported.</i></b>
+                        <a href="#searchSyntax">Title search</a>). <b><i>There is support for full-text search in the PWA and Electron apps (for ZIM archives that
+                        include a full-text index).</i></b>
                     </p>
                     <p>
-                        On some Wikipedia and Wikivoyage (English and German) pages you will see map pins: <img src="img/icons/map_marker-30px.png" width="18px" />. By default, on
-                        Windows 10/11, you can tap this icon to open the <b>Windows Maps app</b> at the selected location. In the UWP and PWA versions of this app, this will work
-                        offline if you have downloaded the map for the relevant country or region in the Windows Settings for <b>Offline Maps</b>. If you are not using Windows, then
-                        in Configuration, you can change this action so that the pin opens an <b>online</b> OpenStreetMap centred on the map pin instead. 
+                        On some Wikipedia and Wikivoyage pages you will see map pins: <img src="img/icons/map_marker-30px.png" width="18px" />. This will open a map
+                        centered on the pin location in <b>online</b> Open Street Maps (if you have an Internet connection). The Windows 11 offline Maps app has unfortunately
+                        been deprecated, so this is the only way to view maps in the app currently.
                     </p>
                     <h3 id="addingArchives">Usage</h3>
                     <h4>Step 1: Download some content</h4>
@@ -458,6 +457,13 @@
                     <p>
                         To toggle between basic light and dark modes, use the <span class="glyphicon glyphicon-adjust"></span> button in the top toolbar. For more fine-grained control over themes, including selecting specific dark themes, use the options in the <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page under "Display settings".
                     </p>
+                    <h3 id="styles">Style transformations (desktop, mobile) and collapsible sections</h3>
+                    <p>
+                        The options in configuration to transform Wikimedia ZIMs from desktop to mobile style and vice versa attempt to mimic standard desktop and mobile styles for Wikimedia content.
+                        Please note that the latest ZIMs (ActionParse ZIMs with the Vector skin) are in desktop style by default, and in this style sections such as headers in articles are not collapsible.
+                        If you wish to have collapsible headers, please select the option "Use Wikimedia mobile style" in Configuration (under Display style). You may also set the option to collapse all
+                        sections by default, which is useful for browsing large articles on narrow screens.
+                    </p>
                     <h3 id="filehandling">File handling and File System access</h3>
                     <p>
                         This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
@@ -469,7 +475,7 @@
                     <p>
                         Chromium desktop browsers support <a href="https://developer.chrome.com/blog/persistent-permissions-for-the-file-system-access-api" target="_blank">Persistent Permissions</a>
                         and the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA. Persistent Permissions are
-                        available in Chrome, Edge, and other Chromium browsers as of version 122: the secon or third time you open a file or folder, you will be asked if you wish to grant
+                        available in Chrome, Edge, and other Chromium browsers as of version 122: the second or third time you open a file or folder, you will be asked if you wish to grant
                         persistent permission. The File Handling API allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer,
                         it will open in the app. The first time you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can
                         change your choice in the browser settings. Each time you launch a ZIM, it will open in a separate instance of the app, allowing you to browse multiple ZIMs at the
@@ -477,8 +483,9 @@
                     </p>
                     <h4 id="OPFS">Origin Private File System</h4>
                     <p>
-                        In some modern browsers, you will see the option "<b>Use Private File System</b>" under the File and Folder selectors. If you tick this option,
-                        then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
+                        In some modern browsers, you will see the option "<b>Use Private File System</b>" under the File and Folder selectors. On Android, this is the default storage mode (as it is
+                        much, much faster). If you select this option, then the app will request an
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
                         (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select more than one archive to store in the OPFS,
                         including all the parts of a split ZIM file (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in
                         the file list. If you drag-and-drop a file into the app while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
@@ -1145,7 +1152,7 @@
                                         <label class="checkbox">
                                             <input type="checkbox" name="openAllSections" id="openAllSectionsCheck">
                                             <span class="checkmark"></span>
-                                            <b>Open all headings</b> (<i>for WikiMedia ZIMs</i>: sets the state of collapsible headings on article load)
+                                            <b>Open all headings</b> (<i>for WikiMedia ZIMs</i>: sets the state of collapsible headings in mobile style only)
                                         </label>
                                     </div> 
                                 </div>
