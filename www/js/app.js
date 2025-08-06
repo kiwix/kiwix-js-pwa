@@ -7398,17 +7398,19 @@ dropup.addEventListener('click', function () {
 function setupTableOfContents () {
     var iframe = document.getElementById('articleContent');
     var innerDoc = iframe.contentDocument;
+    // Create a table of contents object and get all headings from the document
     var tableOfContents = new uiUtil.ToC(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
 
-    if(headings.length <= 1) {
+    // If there are no headings, hide the dropup element and return
+    if (headings.length <= 1) {
         var dropupElement = document.getElementById('dropup');
         dropupElement.classList.remove('btn-default');
         dropupElement.style.pointerEvents = 'none';        
         dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b>';
         document.getElementById('ToCList').style.visibility = 'hidden';
         return;
-    }else {        
+    } else {
         var dropupElement = document.getElementById('dropup');
         dropupElement.classList.add('btn-default');
         dropupElement.style.pointerEvents = 'auto';        
