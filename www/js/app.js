@@ -2623,7 +2623,8 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             // If the user has selected desktop style, we should ensure all sections are opened by default
             document.getElementById('openAllSectionsCheck').click();
         }
-        params.themeChanged = true;
+        // We have to reload the article to respect user's choice
+        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
     });
 });
 document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
