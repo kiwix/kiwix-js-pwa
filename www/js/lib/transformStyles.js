@@ -150,12 +150,8 @@ function toMobileCSS (html, zim, cc, cs, css) {
         }
         if (zim === 'desktop') {
             var infobox = [];
-            if (/<table\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
-                infobox = util.matchOuter(html, '<table\\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</table>', 'i');
-            } else {
-                if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
-                    infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</div>', 'i');
-                }
+            if (/<(?:table|div)\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)/i.test(html)) {
+                infobox = util.matchOuter(html, '<(?:table|div)\\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</(?:table|div)>', 'i');
             }
             if (infobox.length) {
                 var temphtml = html.replace(infobox[0], '<!-- @@@kiwixmarker@@@ -->');
