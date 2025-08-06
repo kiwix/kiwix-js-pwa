@@ -1,11 +1,15 @@
 # Changelog
 
-## Interim release 3.6.86
+## Interim release 3.6.9
 
 * FIX: Opening and closing of Wikipedia sections in ActionParse ZIMs (when transformed to mobile style)
 * FIX: Bug that showed footnote refs as [0] in ActionParse desktop-style ZIMs transformed to mobile style via Config option
-* REGRESSION: Fixed bug with persistent file system permissions in Electron app
+* FIX: Misplaced and misaligned titles in right-to-left languages for ActionParse Wikimedia ZIMs
+* FIX: Added missing external link SVG for locally cacched Vector stylesheet
 * FIX: Typo in configuration
+* INFO: Updated documentation of features
+* REGRESSION: Removed title showing on Wikimedia landing pages
+* REGRESSION: Fixed bug with persistent file system permissions in Electron app
 * DEV: Bump Electron builder to 26.0.18
 
 ## Release 3.6.7 / 3.6.8
