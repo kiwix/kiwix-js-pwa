@@ -1,15 +1,18 @@
 # Changelog
 
-## Interim release 3.6.9
+## Release 3.7.0 / 3.7.1
 
-* FIX: Opening and closing of Wikipedia sections in ActionParse ZIMs (when transformed to mobile style)
+* ENHANCEMENT: Disable Table of Contents dropup if there are less than two headings in article
+* ENHANCEMENT: Reload current article when switching between desktop and mobile styles
+* FIX: Collapsing of Wikipedia sections in ActionParse ZIMs (when transformed to mobile style)
+* FIX: Do not close Wikipedia sections when a desktop ZIM is loaded and not transformed to mobile style
 * FIX: Bug that showed footnote refs as [0] in ActionParse desktop-style ZIMs transformed to mobile style via Config option
 * FIX: Misplaced and misaligned titles in right-to-left languages for ActionParse Wikimedia ZIMs
-* FIX: Added missing external link SVG for locally cacched Vector stylesheet
+* FIX: Add missing external link SVG for locally cacched Vector stylesheet
 * FIX: Typo in configuration
-* INFO: Updated documentation of features
-* REGRESSION: Removed title showing on Wikimedia landing pages
-* REGRESSION: Fixed bug with persistent file system permissions in Electron app
+* INFO: Update documentation of features
+* REGRESSION: Remove title showing on Wikimedia landing pages
+* REGRESSION: Fix bug with persistent file system permissions in Electron app
 * DEV: Bump Electron builder to 26.0.18
 
 ## Release 3.6.7 / 3.6.8
