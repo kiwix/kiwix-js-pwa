@@ -7450,17 +7450,16 @@ function setupTableOfContents () {
     var headings = tableOfContents.getHeadingObjects();
 
     // If there are no headings, hide the dropup element and return
+    var dropupElement = document.getElementById('dropup');
     if (headings.length <= 1) {
-        var dropupElement = document.getElementById('dropup');
         dropupElement.classList.remove('btn-default');
-        dropupElement.style.pointerEvents = 'none';        
+        dropupElement.style.pointerEvents = 'none';
         dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b>';
         document.getElementById('ToCList').style.visibility = 'hidden';
         return;
     } else {
-        var dropupElement = document.getElementById('dropup');
         dropupElement.classList.add('btn-default');
-        dropupElement.style.pointerEvents = 'auto';        
+        dropupElement.style.pointerEvents = 'auto';
         dropupElement.innerHTML = '<b>&nbsp;ToC&nbsp;</b><span class="caret"></span>';
         document.getElementById('ToCList').style.visibility = 'visible';
     }
