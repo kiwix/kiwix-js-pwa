@@ -302,9 +302,11 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         $INPUT_SIGN = !$CRON_LAUNCHED -and [System.Convert]::ToBoolean($Env:INPUT_SIGN)
         $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
-        if ($ORIGINAL_ELECTRON_VERSION -ne '') {
+        if (![string]::IsNullOrEmpty($ORIGINAL_ELECTRON_VERSION)) {
           echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
           (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
+        } else {
+          echo "Using Electron version defined in package.json"
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
