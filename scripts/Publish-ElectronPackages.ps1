@@ -33,13 +33,30 @@ if ($CRON_LAUNCHED) {
 }
 
 if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
-    $Packages = $(ls dist/bld/NWJS/*.*)
+    if (Test-Path "dist/bld/NWJS") {
+        $Packages = @(Get-ChildItem dist/bld/NWJS/*.*)
+    } else {
+        Write-Warning "NWJS build directory not found: dist/bld/NWJS"
+        $Packages = @()
+    }
 } elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version (Electron)
-    $Packages = $(ls dist/bld/Electron/*Win7*.*)
+    if (Test-Path "dist/bld/Electron") {
+        $Packages = @(Get-ChildItem dist/bld/Electron/*Win7*.*)
+    } else {
+        Write-Warning "Electron build directory not found: dist/bld/Electron"
+        $Packages = @()
+    }
 } else {
-    $Packages = $(ls dist/bld/Electron/*.*)
-    $Packages += $(ls dist/bld/Electron/nsis-web/*.exe)
-    $Packages += $(ls dist/bld/Electron/nsis-web/*.nsis.7z)
+    $Packages = @()
+    if (Test-Path "dist/bld/Electron") {
+        $Packages += @(Get-ChildItem dist/bld/Electron/*.*)
+        if (Test-Path "dist/bld/Electron/nsis-web") {
+            $Packages += @(Get-ChildItem dist/bld/Electron/nsis-web/*.exe)
+            $Packages += @(Get-ChildItem dist/bld/Electron/nsis-web/*.nsis.7z)
+        }
+    } else {
+        Write-Warning "Electron build directory not found: dist/bld/Electron"
+    }
 }
 if ($test) {
     $Packages = @($test)
