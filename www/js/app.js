@@ -6394,15 +6394,27 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
             // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
-            if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') && /<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+            if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') &&
+                (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle) || /<div class=["']mw-heading["'][^>]*>/i.test(htmlArticle))) {
                 // We have to loop because regex only matches innermost <section>...</section>
-                for (i = 5; i--;) {
-                    htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                        var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
-                        return '<details ' + m1 + '>' + summary + '</details>';
-                    });
-                    // We can stop iterating if all sections are consumed
-                    if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                if (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+                    for (i = 5; i--;) {
+                        htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
+                            var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                            return '<details ' + m1 + '>' + summary + '</details>';
+                        });
+                        // We can stop iterating if all sections are consumed
+                        if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                    }
+                } else {
+                    // We're dealing with an ActionParse ZIM that doesn't have section tags, so we convert the divs with mw-heading class
+                    for (i = 5; i--;) {
+                        htmlArticle = htmlArticle.replace(/<div class=["']mw-heading["'][^>]*>(?:(?=([^<]+))\1|<(?!section\b[^>]*>))*?<h([2-9])\b[^>]*>(?:[^<]|<(?!\/h[2-9]>))*?<\/h\3>(?:<\/div>)?/ig, function (m0, m1, m2) {
+                            return '<details class="collapsible-section"><summary class="section-heading collapsible-heading">' + m1 + '</summary>';
+                        });
+                        // We can stop iterating if all sections are consumed
+                        if (!/<div class=["']mw-heading["'][^>]*>/i.test(htmlArticle)) break;
+                    }
                 }
             }
         } else if (appstate.wikimediaZimLoaded && params.openAllSections) {
