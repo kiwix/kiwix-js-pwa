@@ -264,6 +264,10 @@ prefix.addEventListener('keydown', function (e) {
         // User pressed Down arrow, Up arrow, Left arrow, Right arrow, or Enter
         // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
         keyPressHandled = true;
+         if (/Enter/.test(e.key)) {
+            // Don't refresh the page if Enter is pressed even before any search results are selected
+            e.preventDefault();
+        }
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
         // If user presses Enter or Right arrow, read the dirEntry or open snippet
@@ -276,6 +280,7 @@ prefix.addEventListener('keydown', function (e) {
                 // Open the snippet container
                 uiUtil.toggleSnippet(activeElement);
             }
+            // Allow left/right arrow keys to move around in search text box when not opening snippet
             return;
         }
         e.preventDefault();
@@ -5087,8 +5092,12 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         if (dirEntry.snippet) {
             dirEntryTitle = '<strong>' + dirEntryTitle + '</strong>';
         }
+        let classAttribute = 'list-group-item';
+        if (i === 0) {
+            classAttribute += ' hover';
+        }
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-            '" class="list-group-item" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
+            '" class="' + classAttribute + '" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
 
     // Set the innerHTML once
