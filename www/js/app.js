@@ -6395,7 +6395,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
             // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
             if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') &&
-                (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle) || /<div class=["']mw-heading["'][^>]*>/i.test(htmlArticle))) {
+                (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle) || /<div\sclass=["']mw-heading[^>]*>/i.test(htmlArticle))) {
                 // We have to loop because regex only matches innermost <section>...</section>
                 if (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
                     for (i = 5; i--;) {
@@ -6408,13 +6408,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     }
                 } else {
                     // We're dealing with an ActionParse ZIM that doesn't have section tags, so we convert the divs with mw-heading class
-                    for (i = 5; i--;) {
-                        htmlArticle = htmlArticle.replace(/<div class=["']mw-heading["'][^>]*>(?:(?=([^<]+))\1|<(?!section\b[^>]*>))*?<h([2-9])\b[^>]*>(?:[^<]|<(?!\/h[2-9]>))*?<\/h\3>(?:<\/div>)?/ig, function (m0, m1, m2) {
-                            return '<details class="collapsible-section"><summary class="section-heading collapsible-heading">' + m1 + '</summary>';
-                        });
-                        // We can stop iterating if all sections are consumed
-                        if (!/<div class=["']mw-heading["'][^>]*>/i.test(htmlArticle)) break;
-                    }
+                    // for (i = 5; i--;) {
+                    //     htmlArticle = htmlArticle.replace(/<div class=["']mw-heading["'][^>]*>(?:(?=([^<]+))\1|<(?!section\b[^>]*>))*?<h([2-9])\b[^>]*>(?:[^<]|<(?!\/h[2-9]>))*?<\/h\3>(?:<\/div>)?/ig, function (m0, m1, m2) {
+                    //         return '<details class="collapsible-section"><summary class="section-heading collapsible-heading">' + m1 + '</summary>';
+                    //     });
+                    //     // We can stop iterating if all sections are consumed
+                    //     if (!/<div class=["']mw-heading["'][^>]*>/i.test(htmlArticle)) break;
+                    // }
+                    htmlArticle = htmlArticle.replace(/<div class=["']mw-heading[^>]*>\s*(<h([2-9])[^<]+<\/h\2>)(\s*<\/div>)((?:[^<]|<(?!div class=['"]mw-heading|\/div><!--htdig_noindex))+)/ig,
+                        '<details><summary class="section-heading collapsible-heading">$1</summary>$4\r\n</details>\r\n');
                 }
             }
         } else if (appstate.wikimediaZimLoaded && params.openAllSections) {
