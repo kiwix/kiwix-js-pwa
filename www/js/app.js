@@ -464,7 +464,7 @@ function printIntercept () {
     btnContinue.disabled = false;
     btnContinue.innerHTML = 'Continue';
     var printModalContent = document.getElementById('print-modal-content');
-    openAllSections(true);
+    openOrCloseAllSections(true);
     printModalContent.classList.remove('dark');
     var determinedTheme = params.cssUITheme;
     determinedTheme = determinedTheme === 'auto' ? cssUIThemeGetOrSet('auto', true) : determinedTheme;
@@ -573,7 +573,7 @@ document.getElementById('findText').addEventListener('click', function () {
         setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
         setTab();
         // Return sections to original state
-        openAllSections();
+        openOrCloseAllSections();
         // Return params.hideToolbars to its original state
         checkToolbar();
         return;
@@ -595,7 +595,7 @@ document.getElementById('findText').addEventListener('click', function () {
     checkToolbar();
     findInArticle.focus();
     // We need to open all sections to search
-    openAllSections(true);
+    openOrCloseAllSections(true);
     localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
     findInArticle.addEventListener('keyup', function (e) {
@@ -2750,7 +2750,7 @@ document.getElementById('openAllSectionsCheck').addEventListener('click', functi
             goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
             return;
         }
-        openAllSections();
+        openOrCloseAllSections();
     }
 });
 document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
@@ -5644,7 +5644,7 @@ var articleLoadedSW = function (dirEntry, container) {
             if (!params.isLandingPage) {
                 // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
                 if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openAllSections();
+                    openOrCloseAllSections();
                 }
             }
         }
@@ -6896,7 +6896,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (!params.isLandingPage) {
                 // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
                 if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openAllSections();
+                    openOrCloseAllSections();
                 }
             }
             applyWikimediaZimFixes(doc);
@@ -6961,6 +6961,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
           !(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
             setTimeout(function () {
                 if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
+                    // Do nothing if user selected auto and we're displaying mobile style
+                    if (params.displayHiddenBlockElements === 'auto' && appstate.zimThemeType !== 'mobile' && params.cssSource !== 'desktop') return;
                     displayHiddenBlockElements(articleWindow, articleDocument);
                 }
             }, 1200);
@@ -7503,7 +7505,7 @@ function setupTableOfContents () {
             var sectionEle = innerDoc.getElementById(this.dataset.headingId);
             var csec = util.closest(sectionEle, 'details, section');
             csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
-            openAllSections(true, csec);
+            openOrCloseAllSections(true, csec);
             // Scroll to element
             sectionEle.scrollIntoView();
             // Scrolling up then down ensures that the toolbars show according to user settings
@@ -7523,7 +7525,7 @@ function setupTableOfContents () {
  * @param {Node} node An optional node within which elements will be opened or closed (this will normally be a details element)
  */
 // Sets state of collapsible sections
-function openAllSections (override, node) {
+function openOrCloseAllSections (override, node) {
     var open = override === false ? false : override || params.openAllSections;
     var container = node || articleDocument;
     if (container) {
@@ -7576,7 +7578,7 @@ function setupHeadings () {
             var detailsEl = util.closest(that, 'details, section');
             if (detailsEl) {
                 var toggle = !detailsEl.hasAttribute('open');
-                openAllSections(toggle, detailsEl);
+                openOrCloseAllSections(toggle, detailsEl);
             }
         });
     }
