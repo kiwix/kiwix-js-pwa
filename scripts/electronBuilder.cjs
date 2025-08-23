@@ -7,7 +7,8 @@ const baseConfig = packageJson.build;
 const unsignedConfig = {
     ...baseConfig,
     win: {
-        ...baseConfig.win
+        ...baseConfig.win,
+        signAndEditExecutable: false
     },
     // Remove top-level configs related to signing
     cscLink: undefined,
