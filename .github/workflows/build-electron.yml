@@ -277,6 +277,9 @@ jobs:
         if ($INPUT_SIGN) {
           npm run dist-win-nsis
         } else {
+          echo "********************"
+          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+          echo "********************"
           npm run dist-win-nsis-skipsigning
         }
         echo "Renaming Windows 7+ executable"
@@ -324,6 +327,9 @@ jobs:
             npm run publish
           }
         } else {
+          echo "********************"
+          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+          echo "********************"
           npm run build-skipsigning
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
