@@ -2665,7 +2665,7 @@ document.getElementById('displayHiddenBlockElementsCheck').addEventListener('cli
             document.getElementById('manipulateImagesCheck').click();
         }
         if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
-            message += (message ? '\n\n' : '') + 'Please note that hidden elements are not displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
+            message += (message ? '\n\n' : '') + 'Please note that hidden elements are no-longer displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
         }
         if (message) uiUtil.systemAlert(message);
     }
@@ -2754,7 +2754,7 @@ document.getElementById('openAllSectionsCheck').addEventListener('click', functi
     settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
     if (appstate.selectedArchive) {
         if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
-            var message = 'Please note that hidden elements are not displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
+            var message = 'Please note that hidden elements are no-longer displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
             uiUtil.systemAlert(message);
         }
         if (params.contentInjectionMode === 'serviceworker') {
