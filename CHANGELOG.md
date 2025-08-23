@@ -1,5 +1,12 @@
 # Changelog
 
+# Interim release 3.7.11
+
+* REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
+* FIX: Enter key selects first search result
+* DEV: More intelligent file detection in Electron script
+* DEV: Security update for tmp module
+
 ## Release 3.7.0 / 3.7.1
 
 * ENHANCEMENT: Disable Table of Contents dropup if there are less than two headings in article
