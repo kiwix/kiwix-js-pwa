@@ -2629,7 +2629,9 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             document.getElementById('openAllSectionsCheck').click();
         }
         // We have to reload the article to respect user's choice
-        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
+            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        }
     });
 });
 document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
@@ -2660,13 +2662,19 @@ document.getElementById('displayHiddenBlockElementsCheck').addEventListener('cli
             message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in *Wikimedia* ZIMs, please switch to Desktop style (above), where they are shown by default.';
         }
         if (!params.displayHiddenBlockElements && params.manipulateImages) {
-            message += 'We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.';
             document.getElementById('manipulateImagesCheck').click();
+        }
+        if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
+            message += (message ? '\n\n' : '') + 'Please note that hidden elements are not displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
         }
         if (message) uiUtil.systemAlert(message);
     }
-    // Forces page reload
-    params.themeChanged = true;
+    // We have to reload the article to respect user's choice
+    if (params.lastPageVisit) {
+        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+    } else {
+        params.themeChanged = true;
+    }
 });
 
 /**
@@ -2745,9 +2753,15 @@ document.getElementById('openAllSectionsCheck').addEventListener('click', functi
     params.openAllSections = this.checked;
     settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
     if (appstate.selectedArchive) {
+        if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
+            var message = 'Please note that hidden elements are not displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
+            uiUtil.systemAlert(message);
+        }
         if (params.contentInjectionMode === 'serviceworker') {
             // We have to reload the article to respect user's choice
-            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
+                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            }
             return;
         }
         openOrCloseAllSections();
@@ -6961,8 +6975,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
           !(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
             setTimeout(function () {
                 if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
-                    // Do nothing if user selected auto and we're displaying mobile style
-                    if (params.displayHiddenBlockElements === 'auto' && appstate.zimThemeType !== 'mobile' && params.cssSource !== 'desktop') return;
+                    // Do nothing if user selected auto and we're displaying mobile style and all sections are closed
+                    if (params.displayHiddenBlockElements === 'auto' && appstate.zimThemeType !== 'mobile' && params.cssSource !== 'desktop' && !params.openAllSections) return;
                     displayHiddenBlockElements(articleWindow, articleDocument);
                 }
             }, 1200);
@@ -7433,9 +7447,9 @@ function displayHiddenBlockElements (win, doc) {
             if (!params.noHiddenElementsWarning) {
                 var message;
                 if (!appstate.wikimediaZimLoaded) {
-                    message = '<p>The way the <i>Display hidden block elements setting</i> works has changed! Because it is currently set ' +
-                    'to <b>always</b>, it will now apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
-                    '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. The new auto setting allows the ' +
+                    message = '<p>The <i>Display hidden block elements setting</i> is currently set ' +
+                    'to <b>always</b>, so it will apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
+                    '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. This setting allows the ' +
                     'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                     'setting to <b>never</b>.</p>';
                 }
@@ -7526,6 +7540,7 @@ function setupTableOfContents () {
  */
 // Sets state of collapsible sections
 function openOrCloseAllSections (override, node) {
+    if (!appstate.wikimediaZimLoaded) return;
     var open = override === false ? false : override || params.openAllSections;
     var container = node || articleDocument;
     if (container) {
