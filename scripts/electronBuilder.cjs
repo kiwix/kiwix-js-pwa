@@ -8,6 +8,8 @@ const unsignedConfig = {
     ...baseConfig,
     win: {
         ...baseConfig.win
+        // Unfortunately, this option doesn't do anything (August 2025)
+        // signAndEditExecutable: false
     },
     // Remove top-level configs related to signing
     cscLink: undefined,
@@ -15,9 +17,11 @@ const unsignedConfig = {
 };
 
 // Remove properties if they exist
+// NB Values below are deprecated but may still be present in some configs
 delete unsignedConfig.win.certificateSha1;
 delete unsignedConfig.win.signingHashAlgorithms;
 delete unsignedConfig.win.rfc3161TimeStampServer;
 delete unsignedConfig.win.sign;
-
+// This is the new key that needs to be removed
+delete unsignedConfig.win.signtoolOptions;
 module.exports = unsignedConfig;

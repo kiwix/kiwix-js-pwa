@@ -277,6 +277,9 @@ jobs:
         if ($INPUT_SIGN) {
           npm run dist-win-nsis
         } else {
+          echo "********************"
+          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+          echo "********************"
           npm run dist-win-nsis-skipsigning
         }
         echo "Renaming Windows 7+ executable"
@@ -316,10 +319,6 @@ jobs:
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        # echo "Configuring and loading esigner..."
-        # ${{ env.INSTALL_DIR }}/eSignerCKATool.exe config -mode product -user "${{ env.ESIGNER_USERNAME }}" -pass "${{ env.ESIGNER_PASSWORD }}" -totp "${{ env.ESIGNER_TOTP_SECRET }}" -key "${{ env.MASTER_KEY_FILE }}" -r
-        # ${{ env.INSTALL_DIR }}/eSignerCKATool.exe unload
-        # ${{ env.INSTALL_DIR }}/eSignerCKATool.exe load
         echo "Building Windows packages..."
         if ($INPUT_SIGN) {
           if ($Env:NSISWEB_ONLY -eq 'true') {
@@ -328,6 +327,9 @@ jobs:
             npm run publish
           }
         } else {
+          echo "********************"
+          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+          echo "********************"
           npm run build-skipsigning
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
@@ -356,6 +358,7 @@ jobs:
         if ($Env:REF_NAME -eq "main") {
           ./scripts/Publish-ElectronPackages.ps1 -portableonly
         } else {
+          echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
           ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
         }
     - name: Archive build artefacts
