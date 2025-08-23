@@ -358,6 +358,7 @@ jobs:
         if ($Env:REF_NAME -eq "main") {
           ./scripts/Publish-ElectronPackages.ps1 -portableonly
         } else {
+          echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
           ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
         }
     - name: Archive build artefacts
