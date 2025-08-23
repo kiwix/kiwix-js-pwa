@@ -464,7 +464,7 @@ function printIntercept () {
     btnContinue.disabled = false;
     btnContinue.innerHTML = 'Continue';
     var printModalContent = document.getElementById('print-modal-content');
-    openAllSections(true);
+    openOrCloseAllSections(true);
     printModalContent.classList.remove('dark');
     var determinedTheme = params.cssUITheme;
     determinedTheme = determinedTheme === 'auto' ? cssUIThemeGetOrSet('auto', true) : determinedTheme;
@@ -573,7 +573,7 @@ document.getElementById('findText').addEventListener('click', function () {
         setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
         setTab();
         // Return sections to original state
-        openAllSections();
+        openOrCloseAllSections();
         // Return params.hideToolbars to its original state
         checkToolbar();
         return;
@@ -595,7 +595,7 @@ document.getElementById('findText').addEventListener('click', function () {
     checkToolbar();
     findInArticle.focus();
     // We need to open all sections to search
-    openAllSections(true);
+    openOrCloseAllSections(true);
     localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
     findInArticle.addEventListener('keyup', function (e) {
@@ -2629,7 +2629,9 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             document.getElementById('openAllSectionsCheck').click();
         }
         // We have to reload the article to respect user's choice
-        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
+            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        }
     });
 });
 document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
@@ -2660,13 +2662,19 @@ document.getElementById('displayHiddenBlockElementsCheck').addEventListener('cli
             message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in *Wikimedia* ZIMs, please switch to Desktop style (above), where they are shown by default.';
         }
         if (!params.displayHiddenBlockElements && params.manipulateImages) {
-            message += 'We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.';
             document.getElementById('manipulateImagesCheck').click();
+        }
+        if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
+            message += (message ? '\n\n' : '') + 'Please note that hidden elements are no-longer displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
         }
         if (message) uiUtil.systemAlert(message);
     }
-    // Forces page reload
-    params.themeChanged = true;
+    // We have to reload the article to respect user's choice
+    if (params.lastPageVisit) {
+        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+    } else {
+        params.themeChanged = true;
+    }
 });
 
 /**
@@ -2745,12 +2753,18 @@ document.getElementById('openAllSectionsCheck').addEventListener('click', functi
     params.openAllSections = this.checked;
     settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
     if (appstate.selectedArchive) {
+        if (!params.openAllSections && params.displayHiddenBlockElements === 'auto' && appstate.wikimediaZimLoaded) {
+            var message = 'Please note that hidden elements are no-longer displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
+            uiUtil.systemAlert(message);
+        }
         if (params.contentInjectionMode === 'serviceworker') {
             // We have to reload the article to respect user's choice
-            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
+                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            }
             return;
         }
-        openAllSections();
+        openOrCloseAllSections();
     }
 });
 document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
@@ -5644,7 +5658,7 @@ var articleLoadedSW = function (dirEntry, container) {
             if (!params.isLandingPage) {
                 // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
                 if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openAllSections();
+                    openOrCloseAllSections();
                 }
             }
         }
@@ -6403,15 +6417,22 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
             // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
-            if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') && /<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+            if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') &&
+                (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle) || /<div\sclass=["']mw-heading[^>]*>/i.test(htmlArticle))) {
                 // We have to loop because regex only matches innermost <section>...</section>
-                for (i = 5; i--;) {
-                    htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                        var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
-                        return '<details ' + m1 + '>' + summary + '</details>';
-                    });
-                    // We can stop iterating if all sections are consumed
-                    if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                if (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) {
+                    for (i = 5; i--;) {
+                        htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
+                            var summary = m2.replace(/(?:<div\s+class=["'](?:pcs-edit|mw-heading)[^>]+>)?(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)(?:<\/div>)?/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                            return '<details ' + m1 + '>' + summary + '</details>';
+                        });
+                        // We can stop iterating if all sections are consumed
+                        if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                    }
+                } else {
+                    // We're dealing with an ActionParse ZIM that doesn't have section tags, so we convert the divs with mw-heading class to details-summary
+                    htmlArticle = htmlArticle.replace(/<div class=["']mw-heading[^>]*>\s*(<h([2-9])[^<]+<\/h\2>)(\s*<\/div>)((?:[^<]|<(?!div class=['"]mw-heading|\/div>\s*<!--htdig_noindex))+)/ig,
+                        '<details><summary class="section-heading collapsible-heading">$1</summary>$4\r\n</details>\r\n');
                 }
             }
         } else if (appstate.wikimediaZimLoaded && params.openAllSections) {
@@ -6889,7 +6910,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (!params.isLandingPage) {
                 // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
                 if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openAllSections();
+                    openOrCloseAllSections();
                 }
             }
             applyWikimediaZimFixes(doc);
@@ -6954,6 +6975,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
           !(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
             setTimeout(function () {
                 if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
+                    // Do nothing if user selected auto and we're displaying mobile style and all sections are closed
+                    if (params.displayHiddenBlockElements === 'auto' && appstate.zimThemeType !== 'mobile' && params.cssSource !== 'desktop' && !params.openAllSections) return;
                     displayHiddenBlockElements(articleWindow, articleDocument);
                 }
             }, 1200);
@@ -7424,9 +7447,9 @@ function displayHiddenBlockElements (win, doc) {
             if (!params.noHiddenElementsWarning) {
                 var message;
                 if (!appstate.wikimediaZimLoaded) {
-                    message = '<p>The way the <i>Display hidden block elements setting</i> works has changed! Because it is currently set ' +
-                    'to <b>always</b>, it will now apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
-                    '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. The new auto setting allows the ' +
+                    message = '<p>The <i>Display hidden block elements setting</i> is currently set ' +
+                    'to <b>always</b>, so it will apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
+                    '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. This setting allows the ' +
                     'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                     'setting to <b>never</b>.</p>';
                 }
@@ -7496,7 +7519,7 @@ function setupTableOfContents () {
             var sectionEle = innerDoc.getElementById(this.dataset.headingId);
             var csec = util.closest(sectionEle, 'details, section');
             csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
-            openAllSections(true, csec);
+            openOrCloseAllSections(true, csec);
             // Scroll to element
             sectionEle.scrollIntoView();
             // Scrolling up then down ensures that the toolbars show according to user settings
@@ -7516,7 +7539,8 @@ function setupTableOfContents () {
  * @param {Node} node An optional node within which elements will be opened or closed (this will normally be a details element)
  */
 // Sets state of collapsible sections
-function openAllSections (override, node) {
+function openOrCloseAllSections (override, node) {
+    if (!appstate.wikimediaZimLoaded) return;
     var open = override === false ? false : override || params.openAllSections;
     var container = node || articleDocument;
     if (container) {
@@ -7569,7 +7593,7 @@ function setupHeadings () {
             var detailsEl = util.closest(that, 'details, section');
             if (detailsEl) {
                 var toggle = !detailsEl.hasAttribute('open');
-                openAllSections(toggle, detailsEl);
+                openOrCloseAllSections(toggle, detailsEl);
             }
         });
     }
