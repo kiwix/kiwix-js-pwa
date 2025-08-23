@@ -2691,7 +2691,7 @@ function removePageMaxWidth () {
     var doc = articleWindow.document;
     if (!doc || !doc.head || !doc.body) return;
     var body = doc.body;
-    // Remove max-width: 100ex; from the element's style attribute (in new ZIMs from mobile html enpoint)
+    // Remove max-width: 100ex; from the element's style attribute (in ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
     cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
