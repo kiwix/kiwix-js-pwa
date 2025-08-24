@@ -6425,6 +6425,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<img\s[^>]+(?:min-width:\s*|width=['"]))(\d+px)([^>]+>\s*<div\b[^>]+style=['"])/ig, '$1$2$3max-width: $2; ');
             // Remove reference to unusued pcs scripts (onBodyStart and onBodyEnd) in mobile-html endpoint ZIMs (causes unhandled type error)
             htmlArticle = htmlArticle.replace(/<script[^>]*>[^<]*pcs\.c1\.Page\.onBody[^<]+<\/script>\s*/ig, '');
+            // Remove hardcoded width of 1em in table.infobox
+            htmlArticle = htmlArticle.replace(/(<table\s[^>]*class=["']infobox[^>]+?style=["'][^"']*width:\s*)1(em;?)([^"']*?["'])/i, '$116$2$3');
             // Convert section tags to details tags if we're not on the landing page and if the ZIM style is mobile
             if (!params.isLandingPage && (appstate.zimThemeType === 'mobile' || params.cssSource === 'mobile') &&
                 (/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle) || /<div\sclass=["']mw-heading[^>]*>/i.test(htmlArticle))) {
