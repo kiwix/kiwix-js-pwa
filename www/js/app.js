@@ -2684,17 +2684,16 @@ function removePageMaxWidth () {
     if (!appstate.wikimediaZimLoaded) return;
     // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
     if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
-    var cssSource;
-    var contentElement;
-    var docStyle;
-    var updatedCssText;
-    var doc = articleWindow.document;
+    let contentElement;
+    let docStyle;
+    let updatedCssText;
+    const doc = articleWindow.document;
     if (!doc || !doc.head || !doc.body) return;
-    var body = doc.body;
+    const body = doc.body;
     // Remove max-width: 100ex; from the element's style attribute (in ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
-    cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
-    var idArray = ['content', 'bodyContent'];
+    const cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
+    const idArray = ['content', 'bodyContent'];
     let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0em';
     let paddingAdded = false;
     const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
@@ -2703,7 +2702,7 @@ function removePageMaxWidth () {
         : '95%';
     let maxWidthSet;
     // Ajust max-width and padding from .mw-page-container
-    var mwPageContainer = doc.querySelector('.mw-page-container');
+    const mwPageContainer = doc.querySelector('.mw-page-container');
     if (mwPageContainer) {
         if (!maxWidthSet) {
             mwPageContainer.style.setProperty('max-width', maxWidth, 'important');
@@ -2718,7 +2717,7 @@ function removePageMaxWidth () {
             paddingAdded = true;
         }
     }
-    for (var i = 0; i < idArray.length; i++) {
+    for (let i = 0; i < idArray.length; i++) {
         contentElement = doc.getElementById(idArray[i]);
         if (!contentElement) continue;
         docStyle = contentElement.style;
@@ -2739,17 +2738,17 @@ function removePageMaxWidth () {
         maxWidthSet = true;
     }
     // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
-    var actionParseRemoveClasses = ['mw-page-container-inner', ''];
+    const actionParseRemoveClasses = ['mw-page-container-inner', ''];
     for (i = 0; i < actionParseRemoveClasses.length; i++) {
-        var mwPageContainerClasses = doc.getElementsByClassName(actionParseRemoveClasses[i]);
+        const mwPageContainerClasses = doc.getElementsByClassName(actionParseRemoveClasses[i]);
         if (mwPageContainerClasses && mwPageContainerClasses.length) {
-            for (var j = 0; j < mwPageContainerClasses.length; j++) {
+            for (let j = 0; j < mwPageContainerClasses.length; j++) {
                 mwPageContainerClasses[j].classList.remove(actionParseRemoveClasses[i]);
             }
         }
     }
     // Ensure .mw-body is displayed with block instead of grid
-    var mwBody = doc.querySelector('.mw-body');
+    const mwBody = doc.querySelector('.mw-body');
     if (mwBody) {
         mwBody.style.display = 'block';
         if (params.removePageMaxWidth) mwBody.style.padding = 0;
