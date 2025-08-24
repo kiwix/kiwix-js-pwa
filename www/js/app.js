@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
@@ -2749,11 +2749,10 @@ function removePageMaxWidth () {
         }
     }
     // Ensure .mw-body is displayed with block instead of grid
-    var mwBody = doc.getElementsByClassName('mw-body');
-    if (mwBody && mwBody.length) {
-        for (i = 0; i < mwBody.length; i++) {
-            mwBody[i].style.display = 'block';
-        }
+    var mwBody = doc.querySelector('.mw-body');
+    if (mwBody) {
+        mwBody.style.display = 'block';
+        if (params.removePageMaxWidth) mwBody.style.padding = 0;
     }
     // Remove padding from body if it is an article list home page
     if (doc.body && doc.body.classList.contains('article-list-home')) {
