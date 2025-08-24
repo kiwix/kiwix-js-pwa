@@ -30,6 +30,14 @@ input {
     line-height: normal
 }
 
+details {
+    margin-top: 1em;
+}
+
+summary {
+    margin-bottom: 0.5em;
+}
+
 ul {
     list-style: none
 }
@@ -311,6 +319,10 @@ code {
 
 pre {
     padding: 1em
+}
+
+.reflist {
+    margin-left: 1em;
 }
 
 .mw-ref, sup {
