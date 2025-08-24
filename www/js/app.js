@@ -2698,7 +2698,7 @@ function removePageMaxWidth () {
     let paddingAdded = false;
     const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
         : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '92%'
-        : window.innerWidth < 480 ? '98%' : '95%';
+        : window.innerWidth < 640 ? '98%' : '95%';
     let maxWidthSet;
     // Ajust max-width and padding from .mw-page-container
     const mwPageContainer = doc.querySelector('.mw-page-container');
