@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
