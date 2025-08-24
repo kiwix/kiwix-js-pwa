@@ -2695,29 +2695,48 @@ function removePageMaxWidth () {
     if (body.style) body.style.maxWidth = '';
     cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     var idArray = ['content', 'bodyContent'];
+    let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0em';
+    let paddingAdded = false;
+    const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
+        : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '92%'
+        // /android/i.test(params.appType) ? '98%' :
+        : '95%';
+    let maxWidthSet;
+    // Ajust max-width and padding from .mw-page-container
+    var mwPageContainer = doc.querySelector('.mw-page-container');
+    if (mwPageContainer) {
+        if (!maxWidthSet) {
+            mwPageContainer.style.setProperty('max-width', maxWidth, 'important');
+            maxWidthSet = true;
+            if (cssSource === 'desktop') {
+                mwPageContainer.style.border = '1px solid darkgrey';
+            }
+        }
+        if (params.removePageMaxWidth) {
+            padding = paddingAdded ? '0' : padding;
+            mwPageContainer.style.setProperty('padding', padding);
+            paddingAdded = true;
+        }
+    }
     for (var i = 0; i < idArray.length; i++) {
         contentElement = doc.getElementById(idArray[i]);
         if (!contentElement) continue;
         docStyle = contentElement.style;
         if (!docStyle) continue;
         if (contentElement.className === 'mw-body') {
-            docStyle.padding = '1em';
-            docStyle.border = '1px solid #a7d7f9';
+            docStyle.padding = params.removePageMaxWidth ? params.paddingAdded ? '0' : padding : '1em';
+            paddingAdded = true;
+            if (cssSource === 'desktop' && !mwPageContainer) {
+                docStyle.border = '1px solid darkgrey';
+            }
         }
-        if (params.removePageMaxWidth === 'auto') {
-            updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '94%'
-                // /android/i.test(params.appType) ? '98%' :
-                : '55.8em';
-            docStyle.maxWidth = updatedCssText;
-            docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-            docStyle.border = '0';
-        } else {
-            updatedCssText = params.removePageMaxWidth ? '100%' : '55.8em';
-            docStyle.maxWidth = updatedCssText;
-            docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-            if (params.removePageMaxWidth || appstate.zimThemeType == 'mobile') docStyle.border = '0';
-        }
+
+        updatedCssText = maxWidthSet && params.removePageMaxWidth ? '100%' : maxWidth;
+        docStyle.maxWidth = updatedCssText;
+        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
+        if (params.removePageMaxWidth || cssSource == 'mobile') docStyle.border = '0';
         docStyle.margin = '0 auto';
+        maxWidthSet = true;
     }
     // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
     var actionParseRemoveClasses = ['mw-page-container-inner', ''];
@@ -2734,13 +2753,6 @@ function removePageMaxWidth () {
     if (mwBody && mwBody.length) {
         for (i = 0; i < mwBody.length; i++) {
             mwBody[i].style.display = 'block';
-        }
-    }
-    // Remove max-width from .mw-page-container
-    var mwPageContainer = doc.getElementsByClassName('mw-page-container');
-    if (mwPageContainer && mwPageContainer.length) {
-        for (i = 0; i < mwPageContainer.length; i++) {
-            mwPageContainer[i].style.setProperty('max-width', 'none', 'important');
         }
     }
     // Remove padding from body if it is an article list home page
