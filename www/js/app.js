@@ -2694,12 +2694,11 @@ function removePageMaxWidth () {
     if (body.style) body.style.maxWidth = '';
     const cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     const idArray = ['content', 'bodyContent'];
-    let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0em';
+    let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0';
     let paddingAdded = false;
     const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
         : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '92%'
-        // /android/i.test(params.appType) ? '98%' :
-        : '95%';
+        : window.innerWidth < 480 ? '98%' : '95%';
     let maxWidthSet;
     // Ajust max-width and padding from .mw-page-container
     const mwPageContainer = doc.querySelector('.mw-page-container');
