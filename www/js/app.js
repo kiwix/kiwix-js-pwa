@@ -2685,7 +2685,6 @@ function removePageMaxWidth () {
     // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
     if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
     let contentElement;
-    let docStyle;
     let updatedCssText;
     const doc = articleWindow.document;
     if (!doc || !doc.head || !doc.body) return;
@@ -2693,12 +2692,14 @@ function removePageMaxWidth () {
     // Remove max-width: 100ex; from the element's style attribute (in ZIMs from mobile html enpoint)
     if (body.style) body.style.maxWidth = '';
     const cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
-    const idArray = ['content', 'bodyContent'];
     let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0';
     let paddingAdded = false;
     const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
-        : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '92%'
-        : window.innerWidth < 640 ? '98%' : '95%';
+        // If set to 'always' we just use max comfortable width
+        : params.removePageMaxWidth === true ? window.innerWidth < 640 ? '98%' : '96%'
+        // Otherwise we use more responsive settings
+        : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '94%'
+        : window.innerWidth < 640 ? '98%' : '96%';
     let maxWidthSet;
     // Ajust max-width and padding from .mw-page-container
     const mwPageContainer = doc.querySelector('.mw-page-container');
@@ -2716,24 +2717,24 @@ function removePageMaxWidth () {
             paddingAdded = true;
         }
     }
-    for (let i = 0; i < idArray.length; i++) {
-        contentElement = doc.getElementById(idArray[i]);
+    const contentIdList = ['content', 'bodyContent'];
+    for (let i = 0; i < contentIdList.length; i++) {
+        contentElement = doc.getElementById(contentIdList[i]);
         if (!contentElement) continue;
-        docStyle = contentElement.style;
-        if (!docStyle) continue;
+        if (!contentElement.style) continue;
         if (contentElement.className === 'mw-body') {
-            docStyle.padding = params.removePageMaxWidth ? params.paddingAdded ? '0' : padding : '1em';
+            contentElement.style.padding = params.removePageMaxWidth ? paddingAdded ? '0' : padding : '1em';
             paddingAdded = true;
             if (cssSource === 'desktop' && !mwPageContainer) {
-                docStyle.border = '1px solid darkgrey';
+                contentElement.style.border = '1px solid darkgrey';
             }
         }
 
         updatedCssText = maxWidthSet && params.removePageMaxWidth ? '100%' : maxWidth;
-        docStyle.maxWidth = updatedCssText;
-        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-        if (params.removePageMaxWidth || cssSource == 'mobile') docStyle.border = '0';
-        docStyle.margin = '0 auto';
+        contentElement.style.maxWidth = updatedCssText;
+        contentElement.style.cssText = contentElement.style.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
+        if (params.removePageMaxWidth || cssSource == 'mobile') contentElement.style.border = '0';
+        contentElement.style.margin = '0 auto';
         maxWidthSet = true;
     }
     // Remove class key "mw-page-container-inner" from any element with that class (for actionparse ZIMs)
@@ -2750,7 +2751,6 @@ function removePageMaxWidth () {
     const mwBody = doc.querySelector('.mw-body');
     if (mwBody) {
         mwBody.style.display = 'block';
-        if (params.removePageMaxWidth) mwBody.style.padding = 0;
     }
     // Remove padding from body if it is an article list home page
     if (doc.body && doc.body.classList.contains('article-list-home')) {
