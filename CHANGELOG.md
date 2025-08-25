@@ -1,9 +1,12 @@
 # Changelog
 
-# Interim release 3.7.11
+# Interim release 3.7.12
 
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
+* FIX: Adapt remove max pagewidth restriction to ActionParse ZIMs
+* FIX: Restricted width of Wikimedia articles on mobile screen sizes
 * FIX: Enter key selects first search result
+* FIX: Display of some ultra-wide infoboxes in RTL Wikipedia ZIMs
 * DEV: More intelligent file detection in Electron script
 * DEV: Security update for tmp module
 
