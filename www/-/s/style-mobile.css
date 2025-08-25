@@ -30,6 +30,14 @@ input {
     line-height: normal
 }
 
+details {
+    margin-top: 1em;
+}
+
+summary {
+    margin-bottom: 0.5em;
+}
+
 ul {
     list-style: none
 }
@@ -311,6 +319,10 @@ code {
 
 pre {
     padding: 1em
+}
+
+.reflist {
+    margin-left: 1em;
 }
 
 .mw-ref, sup {
@@ -1061,7 +1073,7 @@ li.gallerybox {
 
 ul.gallery, li.gallerybox {
     zoom: 1;
-    *display: inline
+    display: inline
 }
 
 ul.gallery {
@@ -1267,11 +1279,12 @@ ul.mw-gallery-slideshow li.gallerycarousel {
         margin: 0
     }
 
-        ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper p, ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper p, ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper p {
-            text-overflow: clip;
-            white-space: normal;
-            overflow: visible
-        }
+    ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper p, ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper p, ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper p {
+        text-overflow: clip;
+        white-space: normal;
+        overflow: visible;
+    }
+
 }
 
 .mw-parser-output {
@@ -1333,18 +1346,18 @@ figure[typeof*='mw:Image'], figure[typeof*='mw:Video'], figure[typeof*='mw:Audio
         display: none
     }
 
-figure[typeof~='mw:Image/Thumb'], figure[typeof~='mw:Video/Thumb'], figure[typeof~='mw:Audio/Thumb'], figure[typeof~='mw:Image/Frame'], figure[typeof~='mw:Video/Frame'], figure[typeof~='mw:Audio/Frame'] {
-    display: table;
-    text-align: center;
-    border: 1px solid #c8ccd1;
-    border-collapse: separate;
-    border-spacing: 3px;
-    background-color: #f8f9fa;
-    width: 1px;
-    margin: 0.5em 0 1.3em 1.4em;
-    clear: right;
-    float: right
-}
+    figure[typeof~='mw:Image/Thumb'], figure[typeof~='mw:Video/Thumb'], figure[typeof~='mw:Audio/Thumb'], figure[typeof~='mw:Image/Frame'], figure[typeof~='mw:Video/Frame'], figure[typeof~='mw:Audio/Frame'] {
+        display: table;
+        text-align: center;
+        border: 1px solid #c8ccd1;
+        border-collapse: separate;
+        border-spacing: 3px;
+        background-color: #f8f9fa;
+        width: 1px;
+        margin: 0.5em 0 1.3em 1.4em;
+        clear: right;
+        float: right
+    }
 
     figure[typeof~='mw:Image/Thumb'].mw-halign-center, figure[typeof~='mw:Video/Thumb'].mw-halign-center, figure[typeof~='mw:Audio/Thumb'].mw-halign-center, figure[typeof~='mw:Image/Frame'].mw-halign-center, figure[typeof~='mw:Video/Frame'].mw-halign-center, figure[typeof~='mw:Audio/Frame'].mw-halign-center {
         border-collapse: separate
@@ -1381,6 +1394,13 @@ figure[typeof*='mw:Image/Thumb'] > a:after, figure[typeof*='mw:Video/Thumb'] > a
     float: left;
     background-image: url(/w/resources/src/mediawiki.skinning/images/magnify-clip-rtl.png?a9fb3);
     background-image: linear-gradient(transparent,transparent),url(/w/resources/src/mediawiki.skinning/images/magnify-clip-rtl.svg?96de0)
+}
+
+.mw-content-rtl table.infobox, .mw-content-rtl table.sistersitebox {
+    float: left;
+    clear: left;
+    max-width: 99% !important;
+    text-align: right !important;
 }
 
 .mw-image-border > *:first-child > img, .mw-image-border > *:first-child > video {
@@ -1578,7 +1598,7 @@ li.gallerybox {
 
 ul.gallery, li.gallerybox {
     zoom: 1;
-    *display: inline
+    display: inline
 }
 
 ul.gallery {

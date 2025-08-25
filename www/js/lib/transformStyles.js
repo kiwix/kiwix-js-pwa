@@ -164,13 +164,13 @@ function toMobileCSS (html, zim, cc, cs, css) {
                     }
                     if (matched) {
                         // If there are navboxes below the infobox, hide them in mobile view
-                        temphtml = temphtml.replace(/(<div\b(?=[^>]+navbox))(?:([^>]+?)style\s*=\s*["']([^"']+)["'])?/ig, '$1$2style="display:none;$3"');
+                        // temphtml = temphtml.replace(/(<div\b(?=[^>]+navbox))(?:([^>]+?)style\s*=\s*["']([^"']+)["'])?/ig, '$1$2style="display:none;$3"');
                         // Ensure mobile styling in infobox
                         infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*(?:mw-stack|infobox|navbox)))([^>]+?style\s*=\s*["'])(?:([^"']*?)margin\s*:[^;"']*[;"'])?/ig, '$1$2margin:0 auto;$3');
                         // Clear any fixed width but set it to max-width
                         infobox[0] = infobox[0].replace(/^(<(?:table|div)\b[^>]+?;\s*width\s*:\s*)([^;"']+)/i, '$1auto;max-width:$2');
                         // Hide any navboxes inside the infobox
-                        infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*navbox))(?:([^>]+?)style\s*=\s*["'])(?:([^"']*?)display\s*:[^;"']*[;"'])?/ig, '$1$2style="display:none;$3');
+                        // infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*navbox))(?:([^>]+?)style\s*=\s*["'])(?:([^"']*?)display\s*:[^;"']*[;"'])?/ig, '$1$2style="display:none;$3');
                         // We already deleted the table above
                         html = '';
                         // First try to move the lede paragraph
