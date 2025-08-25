@@ -2696,10 +2696,10 @@ function removePageMaxWidth () {
     let paddingAdded = false;
     const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
         // If set to 'always' we just use max comfortable width
-        : params.removePageMaxWidth === true ? window.innerWidth < 640 ? '98%' : '96%'
+        : params.removePageMaxWidth === true ? window.innerWidth < 640 ? '97%' : '96%'
         // Otherwise we use more responsive settings
-        : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '94%'
-        : window.innerWidth < 640 ? '98%' : '96%';
+        : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '95%'
+        : window.innerWidth < 640 ? '97%' : '96%';
     let maxWidthSet;
     // Ajust max-width and padding from .mw-page-container
     const mwPageContainer = doc.querySelector('.mw-page-container');
