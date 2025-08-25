@@ -27,7 +27,6 @@ $suggested_build = ''
 $app_tag = ''
 if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   $app_tag = $matches[1]
-  $suggested_build = 'dev-' + $app_tag
 } else {
   "*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
   exit
@@ -60,9 +59,31 @@ if ($machine_name -eq "") {
     $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
     $dryrun = -Not ( $dryrun_check -imatch 'n' )
     If ($dryrun) {
-      "[DRYRUN]: Initiating dry run..."
+      "[DRYRUN]: Initiating dry run...`n"
     }
   }
+}
+
+if ($target -eq "") {
+  $target = Read-Host "Which implementation (ghpages or docker) do you wish to update? Enter to accept suggested [ghpages]"
+}
+
+if (-Not $target) {
+  $target = "ghpages"
+}
+
+# If the target doesn't match "docker" or "ghpages", then show an error and exit
+if ($target -ne "docker" -and $target -ne "ghpages") {
+  ""
+  Write-Warning "Target must be either 'docker' or 'ghpages'."
+  ""
+  exit
+}
+
+
+if ($machine_name -eq "") {
+  # If target is ghpages, use 'dev-' as suggested prefix; if it is docker, use 'interim-'
+  $suggested_build = $target -eq "ghpages" ? 'dev-' + $app_tag : 'interim-' + $app_tag
 
   $machine_name = Read-Host "`nGive the name to use for the docker build, or Enter to accept suggested name [$suggested_build]"
   
@@ -77,22 +98,6 @@ if ($machine_name -eq "") {
     ""
     Write-Warning $warning_message
   }
-}
-
-if ($target -eq "") {
-  $target = Read-Host "`nWhich implementation (ghpages or docker) do you wish to update? Enter to accept suggested [ghpages]"
-}
-
-if (-Not $target) {
-  $target = "ghpages"
-}
-
-# If the target doesn't match "docker" or "ghpages", then show an error and exit
-if ($target -ne "docker" -and $target -ne "ghpages") {
-  ""
-  Write-Warning "Target must be either 'docker' or 'ghpages'."
-  ""
-  exit
 }
 
 if ($branch_name -eq "") {
