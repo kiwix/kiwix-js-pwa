@@ -267,6 +267,14 @@ prefix.addEventListener('keydown', function (e) {
          if (/Enter/.test(e.key)) {
             // Don't refresh the page if Enter is pressed even before any search results are selected
             e.preventDefault();
+            // Auto-select first search result if none selected yet
+            if (!document.querySelector('#articleList .hover')) {
+                var firstElement = document.querySelector('#articleList a');
+                if (firstElement) {
+                    firstElement.classList.add('hover');
+                    if (firstElement.firstElementChild) firstElement.firstElementChild.classList.add('hover');
+                }
+            }
         }
         var activeElement = document.querySelector('#articleList .hover') || document.querySelector('#articleList a');
         if (!activeElement) return;
@@ -5115,12 +5123,8 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
         if (dirEntry.snippet) {
             dirEntryTitle = '<strong>' + dirEntryTitle + '</strong>';
         }
-        let classAttribute = 'list-group-item';
-        if (i === 0) {
-            classAttribute += ' hover';
-        }
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-            '" class="' + classAttribute + '" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
+            '" class="list-group-item"" role="option">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntryTitle) + '</a>';
     }
 
     // Set the innerHTML once
