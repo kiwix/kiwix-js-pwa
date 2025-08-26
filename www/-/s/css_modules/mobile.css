@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Custom style meant to match the design of mwoffliner mobile version to the mobile version of wikipedia
  */
 /*.mw-body-content {
@@ -29,26 +29,50 @@ table.infobox th, table.infobox td { /*Added GK*/
     border-bottom: solid 1px #eaecf0;
     font-family: 'Linux Libertine','Georgia','Times',serif;
 }
+
 .mw-body h1 {
-    font-size: 42px;
-    font-family: 'Linux Libertine','Georgia','Times',serif; /* GK added */
+    border-bottom: 0 solid #eaecf0;
+    padding-top: 0.3em !important;
+    font-family: 'Linux Libertine','Georgia','Times',serif;
 }
 .mw-body h2 {
-    font-size: 24px;
+    border-bottom: 0 solid #eaecf0;
 }
 .mw-body h3 {
     border-bottom: 0 solid #eaecf0;
-    font-size: 19px;
     font-weight: bold;
 }
 .mw-body h4 {
     border-bottom: 0 solid #eaecf0;
-    font-size: 16px;
 }
+
+/* Remove unwanted line under heading in mobile style */
+.vector-page-titlebar::after {
+    height: 0px !important;
+}
+
 h1[tabindex="0"].collapsible-heading > .indicator {
   display: none; /* hide the "v" icon for the main title */
 }
-@media all and (min-width: 720px) {
+
+@media all and (max-width:479px) {
+    body:not(.skin-minerva) .mw-parser-output .infobox {
+        width: 100% !important;
+        max-width: 99% !important;
+    }
+
+    body:not(.skin-minerva) .mw-parser-output .infobox th {
+        width: 50%;
+    }
+}
+
+@media all and (min-width:480px) {
+ body:not(.skin-minerva) .mw-parser-output .infobox {
+        max-width: 320px !important;
+    }
+}
+
+@media all and (min-width: 680px) {
     .client-js .collapsible-heading .indicator {
         display: none !important; /* this is to hide to "v" icone next to titles in desktop */
     }
@@ -57,7 +81,7 @@ h1[tabindex="0"].collapsible-heading > .indicator {
         margin-left: 10px;
     }
 }
-@media all and (max-width: 720px) {
+@media all and (max-width: 679px) {
     .mw-stack, .infobox, .vertical-navbox {
         float: none !important;
     }

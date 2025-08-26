@@ -6446,7 +6446,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     }
                 } else {
                     // We're dealing with an ActionParse ZIM that doesn't have section tags, so we convert the divs with mw-heading class to details-summary
-                    htmlArticle = htmlArticle.replace(/<div class=["']mw-heading[^>]*>\s*(<h([2-9])[^<]+<\/h\2>)(\s*<\/div>)((?:[^<]|<(?!div class=['"]mw-heading|\/div>\s*<!--htdig_noindex))+)/ig,
+                    htmlArticle = htmlArticle.replace(/<div class=["']mw-heading[^>]*>\s*(<h([2-9])(?:[^<]|<(?!\/h\2))+?<\/h\2>)(\s*<\/div>)((?:[^<]|<(?!div class=['"]mw-heading|\/div>\s*<!--htdig_noindex))+)/ig,
                         '<details><summary class="section-heading collapsible-heading">$1</summary>$4\r\n</details>\r\n');
                 }
             }

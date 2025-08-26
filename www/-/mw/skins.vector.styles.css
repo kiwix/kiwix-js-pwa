@@ -1,4 +1,4 @@
-﻿/* start https://en.wikipedia.org/w/load.php?lang=en&modules=skins.vector.styles&only=styles&skin=vector-2022 */
+/* start https://en.wikipedia.org/w/load.php?lang=en&modules=skins.vector.styles&only=styles&skin=vector-2022 */
 @media (prefers-reduced-motion:reduce) {
     *,::before,::after {
         animation-delay: -0.01ms !important;
@@ -525,7 +525,7 @@ summary.section-heading {
         display: none
     }
 
-    @media all and (max-width: calc(640px - 1px)) {
+    @media all and (max-width: calc(480px)) {
         .mw-parser-output {
         }
 
