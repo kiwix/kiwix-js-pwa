@@ -6401,8 +6401,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|wikimedia|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
             // Hide title on landing pages
             if (params.isLandingPage) {
-                htmlArticle = htmlArticle.replace(/<h1\b(?:[^<]|<(?!<\/h1>))+?<\/h1>/i, '');
+                // Remove the main title if it contains kiwix or popo
+                htmlArticle = htmlArticle.replace(/<h1\b(?:[^<]|<(?!<\/h1>))+?(kiwix|popo)(?:[^<]|<(?!<\/h1>))+?<\/h1>\s?/i, '');
+                // Remove any User:Popo spans
                 htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
+                // Remove any initial div containing user:.*kiwix
+                htmlArticle = htmlArticle.replace(/<div\b(?:[^<]|<(?!div|\/div>))+?user:[^<]*kiwix(?:[^<]|<(?!\/div>))+?<\/div>/i, '');
                 // Remove landing page scripts that don't work in SW mode
                 htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
             }
