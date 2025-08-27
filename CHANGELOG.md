@@ -1,15 +1,16 @@
 # Changelog
 
-# Interim release 3.7.14
+# Interim release 3.7.15
 
+* ENHANECEMENT: Enter key selects first search result
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
-* FIX: Adapt remove max pagewidth restriction to ActionParse ZIMs
-* FIX: Do not preselect first item in search results
+* REGRESSION: Do not preselect first item in search results
+* FIX: Better converstion of headings to details-summary style
+* FIX: Adapt remove max page width restriction to ActionParse ZIMs
 * FIX: Restricted width of Wikimedia articles on mobile screen sizes
-* FIX: Enter key selects first search result
 * FIX: Display of some ultra-wide infoboxes in RTL Wikipedia ZIMs
 * FIX: Size of regular infoboxes with Wikipedia articles converted to mobile style
-* FIX: Better converstion of headings to details-summary style
+* FIX: Ensure consistent page reloading after a theme change
 * FIX: Hide unwanted content on Wikipedia landing page
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
