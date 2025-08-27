@@ -1881,6 +1881,20 @@ document.getElementById('cssCacheModeCheck').addEventListener('change', function
     params.cssCache = this.checked;
     settingsStore.setItem('cssCache', params.cssCache, Infinity);
     params.themeChanged = true;
+    // If we've disabled CSS caching, we need to set cssSource to use the default ZIM style
+    if (!params.cssCache && params.cssSource !== 'auto') {
+        uiUtil.systemAlert('Please note that disabling use of locally cached stylesheets requires setting use of the default ZIM style!',
+            'Warning', true).then(function (rtn) {
+            if (rtn) {
+                document.getElementById('cssModeAutoRadio').click();
+            } else {
+                params.cssCache = true;
+                document.getElementById('cssCacheModeCheck').checked = params.cssCache;
+                settingsStore.setItem('cssCache', params.cssCache, Infinity);
+                params.themeChanged = false;
+            }
+});
+    }
 });
 document.getElementById('navButtonsPosCheck').addEventListener('change', function (e) {
     params.navButtonsPos = e.target.checked ? 'top' : 'bottom';
@@ -2630,8 +2644,10 @@ document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change',
 });
 document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (element) {
     element.addEventListener('click', function () {
+        const originalCssSource = params.cssSource;
         params.cssSource = this.value;
         settingsStore.setItem('cssSource', params.cssSource, Infinity);
+        const confirmFn = function () {
         if (params.cssSource === 'desktop' && !params.openAllSections) {
             // If the user has selected desktop style, we should ensure all sections are opened by default
             document.getElementById('openAllSectionsCheck').click();
@@ -2639,6 +2655,26 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
         // We have to reload the article to respect user's choice
         if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
             goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        }
+        }
+        if (!params.cssCache && params.cssSource !== 'auto') {
+            uiUtil.systemAlert('Please note that transforming the ZIM style requires use of locally cached stylesheets!',
+                'Warning', true).then(function (rtn) {
+                    if (rtn) {
+                        document.getElementById('cssCacheModeCheck').click();
+                    } else {
+                        params.cssSource = originalCssSource;
+                        Array.prototype.slice.call(document.querySelectorAll('input[name=cssInjectionMode]')).forEach(function (radio) {
+                            radio.checked = false;
+                            if (radio.value === params.cssSource) {
+                                radio.checked = true;
+                            }
+    });
+                    }
+                    confirmFn();
+});
+        } else {
+            confirmFn();
         }
     });
 });
