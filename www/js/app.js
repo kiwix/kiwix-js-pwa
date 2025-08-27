@@ -872,6 +872,15 @@ if (!params.webkitdirectory) {
 }
 
 function setTab (activeBtn) {
+    if (params.themeChanged) {
+        params.themeChanged = false;
+        // If we are changing theme, we need to reload the last page
+        if (params.lastPageVisit) {
+            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        } else {
+            goToMainArticle();
+        }
+    }
     // Highlight the selected section in the navbar
     setActiveBtn(activeBtn);
     clearFindInArticle();
@@ -947,10 +956,6 @@ function setTab (activeBtn) {
     document.getElementById('articleListWithHeader').style.display = 'none';
     prefix.value = '';
     document.getElementById('welcomeText').style.display = 'none';
-    if (params.themeChanged) {
-        params.themeChanged = null;
-        goToMainArticle();
-    }
     if (params.beforeinstallpromptFired) {
         var divInstall1 = document.getElementById('divInstall1');
         if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {
@@ -1138,13 +1143,6 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
     // If Configuration is already displayed, we are "unclicking" the button...
     if (config.style.display !== 'none') {
         setTab();
-        if (params.themeChanged) {
-            params.themeChanged = false;
-            var archiveName = appstate.selectedArchive ? appstate.selectedArchive.file.name : null;
-            if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
-                goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
-            }
-        }
     } else {
         document.querySelectorAll('.alert').forEach(function (el) {
             el.style.display = 'none';
@@ -1881,6 +1879,20 @@ document.getElementById('cssCacheModeCheck').addEventListener('change', function
     params.cssCache = this.checked;
     settingsStore.setItem('cssCache', params.cssCache, Infinity);
     params.themeChanged = true;
+    // If we've disabled CSS caching, we need to set cssSource to use the default ZIM style
+    if (!params.cssCache && params.cssSource !== 'auto') {
+        uiUtil.systemAlert('Use of ZIM-provided Wikimedia stylesheets will reset the ZIM style (mobile, desktop) to the default.',
+            'Warning!', true).then(function (rtn) {
+            if (rtn) {
+                document.getElementById('cssModeAutoRadio').click();
+            } else {
+                params.cssCache = true;
+                document.getElementById('cssCacheModeCheck').checked = params.cssCache;
+                settingsStore.setItem('cssCache', params.cssCache, Infinity);
+                params.themeChanged = false;
+            }
+        });
+    }
 });
 document.getElementById('navButtonsPosCheck').addEventListener('change', function (e) {
     params.navButtonsPos = e.target.checked ? 'top' : 'bottom';
@@ -2630,15 +2642,36 @@ document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change',
 });
 document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (element) {
     element.addEventListener('click', function () {
+        const originalCssSource = params.cssSource;
         params.cssSource = this.value;
         settingsStore.setItem('cssSource', params.cssSource, Infinity);
-        if (params.cssSource === 'desktop' && !params.openAllSections) {
-            // If the user has selected desktop style, we should ensure all sections are opened by default
-            document.getElementById('openAllSectionsCheck').click();
+        const confirmFn = function () {
+            if (params.cssSource === 'desktop' && !params.openAllSections) {
+                // If the user has selected desktop style, we should ensure all sections are opened by default
+                document.getElementById('openAllSectionsCheck').click();
+            }
+            // We have to reload the article to respect user's choice
+            params.themeChanged = true;
+            setTab();
         }
-        // We have to reload the article to respect user's choice
-        if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
-            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+        if (!params.cssCache && params.cssSource !== 'auto') {
+            uiUtil.systemAlert('Transforming the ZIM style requires the use of locally cached Wikimedia stylesheets, so we need to enable these.',
+                'Warning!', true).then(function (rtn) {
+                    if (rtn) {
+                        document.getElementById('cssCacheModeCheck').click();
+                    } else {
+                        params.cssSource = originalCssSource;
+                        Array.prototype.slice.call(document.querySelectorAll('input[name=cssInjectionMode]')).forEach(function (radio) {
+                            radio.checked = false;
+                            if (radio.value === params.cssSource) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                    confirmFn();
+                });
+        } else {
+            confirmFn();
         }
     });
 });
@@ -2678,18 +2711,14 @@ document.getElementById('displayHiddenBlockElementsCheck').addEventListener('cli
         if (message) uiUtil.systemAlert(message);
     }
     // We have to reload the article to respect user's choice
-    if (params.lastPageVisit) {
-        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-    } else {
-        params.themeChanged = true;
-    }
+    params.themeChanged = true;
 });
 
 /**
  * Removes the WikiMedia max-page-width restrictions using DOM methods on the articleWindow
  */
 function removePageMaxWidth () {
-    if (!appstate.wikimediaZimLoaded) return;
+    if (!appstate.wikimediaZimLoaded || !params.removePageMaxWidth) return;
     // Note that the UWP app has no access to the content of opened windows, so we can't access the DOM of the articleWindow
     if (/UWP/.test(params.appType) && appstate.target !== 'iframe') return;
     let contentElement;
@@ -2702,9 +2731,9 @@ function removePageMaxWidth () {
     const cssSource = params.cssSource === 'auto' ? appstate.zimThemeType : params.cssSource;
     let padding = (window.innerWidth > 1012 && params.removePageMaxWidth === 'auto') ? '1em' : cssSource === 'desktop' ? '1em' : '0';
     let paddingAdded = false;
-    const maxWidth = !params.removePageMaxWidth ? window.innerWidth > 1012 ? window.innerWidth - 220 + 'px' : '55.8em'
-        // If set to 'always' we just use max comfortable width
-        : params.removePageMaxWidth === true ? window.innerWidth < 640 ? '97%' : '96%'
+    const maxWidth =
+        // If removePageMaxWidth is set to 'always' we just use max comfortable width
+        params.removePageMaxWidth === true ? window.innerWidth < 640 ? '97%' : '96%'
         // Otherwise we use more responsive settings
         : cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '95%'
         : window.innerWidth < 640 ? '97%' : '96%';
@@ -2716,14 +2745,12 @@ function removePageMaxWidth () {
             mwPageContainer.style.setProperty('max-width', maxWidth, 'important');
             maxWidthSet = true;
             if (cssSource === 'desktop') {
-                mwPageContainer.style.border = '1px solid darkgrey';
+                mwPageContainer.style.border = '1px solid lightgrey';
             }
         }
-        if (params.removePageMaxWidth) {
-            padding = paddingAdded ? '0' : padding;
-            mwPageContainer.style.setProperty('padding', padding);
-            paddingAdded = true;
-        }
+        padding = paddingAdded ? '0' : padding;
+        mwPageContainer.style.setProperty('padding', padding);
+        paddingAdded = true;
     }
     const contentIdList = ['content', 'bodyContent'];
     for (let i = 0; i < contentIdList.length; i++) {
@@ -2731,17 +2758,16 @@ function removePageMaxWidth () {
         if (!contentElement) continue;
         if (!contentElement.style) continue;
         if (contentElement.className === 'mw-body') {
-            contentElement.style.padding = params.removePageMaxWidth ? paddingAdded ? '0' : padding : '1em';
+            contentElement.style.padding = paddingAdded ? '0' : padding;
             paddingAdded = true;
             if (cssSource === 'desktop' && !mwPageContainer) {
-                contentElement.style.border = '1px solid darkgrey';
+                contentElement.style.border = '1px solid lightgrey';
             }
         }
-
-        updatedCssText = maxWidthSet && params.removePageMaxWidth ? '100%' : maxWidth;
+        updatedCssText = maxWidthSet ? '100%' : maxWidth;
         contentElement.style.maxWidth = updatedCssText;
         contentElement.style.cssText = contentElement.style.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-        if (params.removePageMaxWidth || cssSource == 'mobile') contentElement.style.border = '0';
+        if (cssSource == 'mobile') contentElement.style.border = '0';
         contentElement.style.margin = '0 auto';
         maxWidthSet = true;
     }
@@ -2774,14 +2800,7 @@ document.getElementById('openAllSectionsCheck').addEventListener('click', functi
             var message = 'Please note that hidden elements are no-longer displayed in auto mode if "Open all headings" is disabled. Either enable "Open all headings" or set "Display hidden block elements" to "always" if you want to see these anyway.';
             uiUtil.systemAlert(message);
         }
-        if (params.contentInjectionMode === 'serviceworker') {
-            // We have to reload the article to respect user's choice
-            if (appstate.wikimediaZimLoaded && params.lastPageVisit) {
-                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-            }
-            return;
-        }
-        openOrCloseAllSections();
+        params.themeChanged = true;
     }
 });
 document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
@@ -3338,8 +3357,6 @@ function launchUWPServiceWorker () {
         // Commented line below causes crash if there are too many archives
         // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
         uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-        // DEV: Line below causes crash when switching to SW mode in UWP app!
-        // uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
         uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
         uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
         // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
@@ -4522,7 +4539,7 @@ function archiveReadyCallback (archive) {
                 document.getElementById('rescanStorage').style.display = 'block';
             }
             document.getElementById('usage').style.display = 'none';
-            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+            if (~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
                 var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
                 goToArticle(lastPage);
             } else {
@@ -4724,19 +4741,9 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
 }
 
 // Set up the event listener for return to article links
-var linkListener = function () {
-    setTab();
-    if (params.themeChanged) {
-        params.themeChanged = false;
-        if (history.state !== null) {
-            var thisURL = decodeURIComponent(history.state.title);
-            goToArticle(thisURL);
-        }
-    }
-};
 var returnDivs = document.getElementsByClassName('returntoArticle');
 for (i = 0; i < returnDivs.length; i++) {
-    returnDivs[i].addEventListener('click', linkListener);
+    returnDivs[i].addEventListener('click', setTab);
 }
 
 /**
@@ -5424,9 +5431,9 @@ function readArticle (dirEntry) {
                     // }
                 }
             };
-            if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
+            if (params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
             // If we have the HTML of the last loaded page, use it to save lookups
-            if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
+            if (dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                 if (!params.lastPageHTML) {
                     // DEV: Timout is needed here to allow time for cache capability to be tested before calling it
                     // otherwise the app will return only a memory capibility for apps that use indexedDB
@@ -5636,14 +5643,10 @@ var articleLoadedSW = function (dirEntry, container) {
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
         // console.debug('HTML appears to be available...');
-        if (params.rememberLastPage) {
-            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
-        } else {
-            params.lastPageVisit = '';
-        }
+        params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
-        settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+        settingsStore.setItem('lastPageVisit', (params.rememberLastPage ? params.lastPageVisit : ''), Infinity);
         // Set or clear the ZIM store of last page
         var lastPage = params.rememberLastPage ? dirEntry.namespace + '/' + dirEntry.url : '';
         settingsStore.setItem(appstate.selectedArchive.file.name, lastPage, Infinity);
@@ -6320,7 +6323,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
     // Store for fast retrieval
     params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive.file.name;
-    if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+    settingsStore.setItem('lastPageVisit', (params.rememberLastPage ? params.lastPageVisit : ''), Infinity);
     cache.setArticle(appstate.selectedArchive.file.name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function () {});
     params.htmlArticle = htmlArticle;
 
