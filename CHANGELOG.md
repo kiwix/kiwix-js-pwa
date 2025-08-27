@@ -3,6 +3,7 @@
 # Interim release 3.7.15
 
 * ENHANECEMENT: Enter key selects first search result
+* ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
 * REGRESSION: Do not preselect first item in search results
 * FIX: Better converstion of headings to details-summary style
