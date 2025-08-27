@@ -1881,7 +1881,7 @@ document.getElementById('cssCacheModeCheck').addEventListener('change', function
     params.themeChanged = true;
     // If we've disabled CSS caching, we need to set cssSource to use the default ZIM style
     if (!params.cssCache && params.cssSource !== 'auto') {
-        uiUtil.systemAlert('Please note that use of ZIM-provided Wikimedia stylesheets will reset the ZIM style (mobile, desktop) to the default.',
+        uiUtil.systemAlert('Use of ZIM-provided Wikimedia stylesheets will reset the ZIM style (mobile, desktop) to the default.',
             'Warning!', true).then(function (rtn) {
             if (rtn) {
                 document.getElementById('cssModeAutoRadio').click();
@@ -2655,8 +2655,8 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             setTab();
         }
         if (!params.cssCache && params.cssSource !== 'auto') {
-            uiUtil.systemAlert('Please note that transforming the ZIM style requires use of locally cached stylesheets!',
-                'Warning', true).then(function (rtn) {
+            uiUtil.systemAlert('Transforming the ZIM style requires the use of locally cached Wikimedia stylesheets, so we need to enable these.',
+                'Warning!', true).then(function (rtn) {
                     if (rtn) {
                         document.getElementById('cssCacheModeCheck').click();
                     } else {
