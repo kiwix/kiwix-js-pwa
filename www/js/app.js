@@ -2682,7 +2682,7 @@ document.getElementById('removePageMaxWidthCheck').addEventListener('click', fun
     params.removePageMaxWidth = this.indeterminate ? 'auto' : this.checked;
     document.getElementById('pageMaxWidthState').textContent = (params.removePageMaxWidth == 'auto' ? 'auto' : params.removePageMaxWidth ? 'always' : 'never');
     settingsStore.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
-    removePageMaxWidth();
+    params.themeChanged = true;
 });
 document.getElementById('displayHiddenBlockElementsCheck').addEventListener('click', function () {
     if (this.readOnly) this.checked = this.readOnly = false;
