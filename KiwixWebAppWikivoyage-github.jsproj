@@ -57,7 +57,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
   <PropertyGroup>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
     <DefaultLanguage>en-GB</DefaultLanguage>
@@ -71,7 +71,7 @@
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikivoyage_en_all_maxi_2025-05.zim" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2025-08.zim" />
     <Content Include="archives\README.md" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />
