@@ -4,7 +4,8 @@
 
 * FEATURE: Add snippets to fulltext search
 * UPDATE: Support transforming ActionParse ZIMs to mobile style
-* ENHANECEMENT: Enter key selects first search result
+* UPDATE:  Packaged archive updated to `wikivoyage_en_all_maxi_2025-08`
+* ENHANCEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * ENHANCEMENT: Disable Table of Contents dropup if there are less than two headings in article
 * ENHANCEMENT: Reload current article when switching between desktop and mobile styles
