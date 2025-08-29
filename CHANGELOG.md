@@ -13,6 +13,7 @@
 * FIX: Size of regular infoboxes with Wikipedia articles converted to mobile style
 * FIX: Ensure consistent page reloading after a theme change
 * FIX: Hide unwanted content on Wikipedia landing page
+* FIX: Display of some dark_mode_safe svg images and equivalent in dark theme
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
 * DEV: Security update for tmp module
