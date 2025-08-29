@@ -166,9 +166,9 @@ if ($electronbuild -eq "local" -and (-not $portableonly) -and $winAppx -and ($sk
   if (-Not $dryrun) {
     mkdir $appxBundleDir
     mv $winAppx $appxBundleDir
-    & "C:\Program Files (x86)\Windows Kits\10\bin\x64\makeappx.exe" bundle /d $appxBundleDir /p $winAppxbundle  
+    & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe" bundle /d $appxBundleDir /p $winAppxbundle  
   } else {
-    "[DRYRUN]: & 'C:\Program Files (x86)\Windows Kits\10\bin\x64\makeappx.exe' bundle /d $appxBundleDir /p $winAppxbundle"
+    "[DRYRUN]: & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe' bundle /d $appxBundleDir /p $winAppxbundle"
   }
 }
 # Build portable app if not in cloud
