@@ -1954,7 +1954,7 @@ if (window.electronAPI) {
         // Ensure the port is a number and the value matches a permitted value
         var proposedPort = parseInt(e.target.value);
         if (proposedPort !== e.target.value && (proposedPort < 1024 || proposedPort > 65535)) {
-            e.target.value = params.expressPort || 3000;
+            e.target.value = params.expressPort || 3002;
             setTimeout(function () {
                 uiUtil.systemAlert('Please enter a valid port number between 1024 and 65535!');
             }, 250);
@@ -2495,7 +2495,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
 
 function setExpressServerUI (value) {
     // See main.cjs for default values
-    params.expressPort = value || 3000;
+    params.expressPort = value || 3002;
     document.getElementById('expressPortInput').value = params.expressPort;
     document.getElementById('expressPortInputDiv').style.display = 'block';
     console.log('Express port was reported as ' + params.expressPort);
