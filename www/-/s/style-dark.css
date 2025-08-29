@@ -415,6 +415,11 @@ img[data-kiwixsrc*=".svg"][height="16"], img[data-kiwixsrc*=".svg"][height="17"]
     background-color: transparent !important;
 }
 
+.dark_mode_safe img, figure img[data-kiwixsrc*=".svg"], figure img[src*=".svg"] {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+}
+
 .oo-ui-icon-bell {
     opacity: 0.7 !important;
 }
