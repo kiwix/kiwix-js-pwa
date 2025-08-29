@@ -6409,7 +6409,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Hide title on landing pages
             if (params.isLandingPage) {
                 // Remove the main title if it contains kiwix or popo
-                htmlArticle = htmlArticle.replace(/<h1\b(?:[^<]|<(?!<\/h1>))+?(kiwix|popo)(?:[^<]|<(?!<\/h1>))+?<\/h1>\s?/i, '');
+                htmlArticle = htmlArticle.replace(/<h1\s(?:[^<]|<(?!\/h1>))+?(?:kiwix|popo)(?:[^<]|<(?!\/h1>))+?<\/h1>\s?/i, '');
                 // Remove any User:Popo spans
                 htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
                 // Remove any initial div containing user:.*kiwix
