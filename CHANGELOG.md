@@ -1,12 +1,13 @@
 # Changelog
 
-# Interim release 3.7.15
+# Interim release 3.7.4
 
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
 * REGRESSION: Do not preselect first item in search results
-* FIX: Better converstion of headings to details-summary style
+* REGRESSION: Fix catastrophic backtrcking in cleanup regex
+* FIX: Better conversion of headings to details-summary style
 * FIX: Adapt remove max page width restriction to ActionParse ZIMs
 * FIX: Restricted width of Wikimedia articles on mobile screen sizes
 * FIX: Display of some ultra-wide infoboxes in RTL Wikipedia ZIMs
@@ -14,6 +15,7 @@
 * FIX: Ensure consistent page reloading after a theme change
 * FIX: Hide unwanted content on Wikipedia landing page
 * FIX: Display of some dark_mode_safe svg images and equivalent in dark theme
+* FIX: Repair override Wikivoyage landing page
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
 * DEV: Security update for tmp module
