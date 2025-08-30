@@ -8,6 +8,19 @@
 const regexpInstalledFromMicrosoftStore = /_mc3511b08yc0e/;
 console.log('[Preload] App directory: ' + __dirname);
 console.log('[Preload] Is app installed from Microsoft Store? ' + (process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname) ? 'Yes' : 'No'));
+
+// Function to check APPX/MSIX - defined here for logging
+const isAppxOrMSIX = function() {
+    return !!(
+        process.windowsStore ||
+        process.env.LOCALAPPDATA && process.env.LOCALAPPDATA.includes('Packages') ||
+        __dirname.includes('WindowsApps') ||
+        __dirname.includes('Packages') ||
+        process.env.ProgramW6432 && process.env.ProgramW6432.includes('WindowsApps')
+    );
+};
+
+console.log('[Preload] Is app running as APPX/MSIX? ' + (isAppxOrMSIX() ? 'Yes' : 'No'));
 console.log('[Preload] Window location: ' + window.location.pathname + '\nStore publisher hash: ' + regexpInstalledFromMicrosoftStore);
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
@@ -43,6 +56,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         webFrame.setVisualZoomLevelLimits(min, max);
     },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
+    isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,
     on: function (event, callback) {
         ipcRenderer.on(event, function (_, data1, data2) {
