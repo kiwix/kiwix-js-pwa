@@ -5,7 +5,7 @@ if (!$skipsigning -and !$buildstorerelease) {
   $Env:INPUT_SIGN = $true
   if (!$Env:SIGNTOOL_PATH) {
     # We need to use a newer version of singtool than that provided in electron-builder
-    $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+    $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
   }
 } else {
   $Env:INPUT_SIGN = $false
