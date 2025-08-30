@@ -1074,10 +1074,12 @@ if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.ap
     updateCheck.style.display = 'none'; // ... hide the update check link
     if (params.isUWPStoreApp) console.debug('Hiding update check link because this is a UWP Store app.');
 }
+params.isAppxOrMSIX = window.electronAPI && window.electronAPI.isAppxOrMSIX;
 // Function to check for updates from GitHub
 function checkUpdateServer () {
     if (!params.allowInternetAccess || params.upgradeNeeded) {
-        console.warn('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.' : 'the user has not allowed Internet access.'));
+        console.warn('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.'
+            : 'the user has not allowed Internet access.'));
         return;
     }
     // If it's plain HTML5 (not Electron/NWJS or UWP), don't check for updates
@@ -1090,11 +1092,12 @@ function checkUpdateServer () {
         var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
             : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
                 : 'electron';
-        if (baseApp === 'electron' && isUpdateableElectronVersion) {
+        if (baseApp === 'electron' && isUpdateableElectronVersion && !params.isAppxOrMSIX) {
             console.log('Launching Electron auto-updater...');
             electronAPI.checkForUpdates();
         } else {
-            console.log('Auto-update: ' + (isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
+            console.log('Auto-update: ' + (params.isAppxOrMSIX ? 'APPX/MSIX packages cannot be'
+              : isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
               : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
         }
     }
