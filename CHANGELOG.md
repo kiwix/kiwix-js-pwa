@@ -20,7 +20,7 @@
 * REGRESSION: Fix missing text on landing pages with ActionParse ZIMs
 * REGRESSION: Fix bug that prevented some pages with equations from showing in nopic ZIMs
 * REGRESSION: Fix code that misplaced hatnotes in ActionParse ZIMs
-* FIX: Better converstion of headings to details-summary style
+* FIX: Better convertion of headings to details-summary style
 * FIX: Adapt remove max page width restriction to ActionParse ZIMs
 * FIX: Restricted width of Wikimedia articles on mobile screen sizes
 * FIX: Display of some ultra-wide infoboxes in RTL Wikipedia ZIMs
@@ -32,11 +32,11 @@
 * FIX: Do not close Wikipedia sections when a desktop ZIM is loaded and not transformed to mobile style
 * FIX: Bug that showed footnote refs as [0] in ActionParse desktop-style ZIMs transformed to mobile style via Config option
 * FIX: Misplaced and misaligned titles in right-to-left languages for ActionParse Wikimedia ZIMs
-* FIX: Add missing external link SVG for locally cacched Vector stylesheet
+* FIX: Add missing external link SVG for locally cached Vector stylesheet
 * FIX: Typo in configuration
 * FIX: Bug that prevented searching for the same string twice in a row
 * FIX: Fixes to regular dark style
-* FIX: Unhandled exaception when popover icons are not found
+* FIX: Unhandled exception when popover icons are not found
 * FIX: Issue with display of gallery images in Wikipedia files
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
