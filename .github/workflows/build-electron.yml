@@ -157,6 +157,83 @@ jobs:
           dist/bld/Electron/*.deb
           dist/bld/Electron/*.rpm      
 
+  Release_macOS:
+    if: github.event.inputs.win11only != 'true'
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    - name: Install dependencies
+      run: npm install
+    - name: Rewrite app version number and file name
+      run: |
+        chmod +x ./scripts/rewrite_app_version_number.sh
+        ./scripts/rewrite_app_version_number.sh
+        # Replace -app in archive name for Electron apps
+        sed -i -E 's/(mdwiki[^-]+)-app_/\1_/g' ./www/js/init.js
+    - name: Build production code
+      run: npm run build-min
+    - name: Download archive if needed
+      run: |
+        echo "Changing to the dist directory"
+        cd dist && pwd
+        # Get archive name
+        packagedFile=$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E "s/^.+'([^']+\.zim)'.+/\1/")
+        # If packagedFile doesn't match a zim file, we don't need to download anything, so exit
+        if [[ ! $packagedFile =~ \.zim$ ]]; then
+          echo -e "\nNo zim file to download.\n"
+          exit 0
+        fi
+        # If file doesn't exist in FS, download it
+        if [ ! -f "archives/$packagedFile" ]; then
+          # Generalize the name if cron_launched and download it
+          if [[ $CRON_LAUNCHED = true ]]; then
+            packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+            echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
+            wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
+          else
+            flavour=$(sed -E 's/^([^_]+)_.+$/\1/' <<<"$packagedFile")
+            if [[ $flavour = "mdwiki" ]]; then
+              flavour='other'
+            fi
+            echo -e "\nDownloading https://mirror.download.kiwix.org/zim/$flavour/$packagedFile"
+            wget -nv "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -O "archives/$packagedFile"
+          fi
+        fi
+        ls archives
+        if [ -f "archives/$packagedFile" ]; then
+          echo -e "\nFile $packagedFile now available in 'archives'.\n"
+        else
+          echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
+          exit 1
+        fi
+    - name: Build macOS packages
+      env: 
+        USE_HARD_LINKS: false
+      run: |
+        echo "Installing dependencies in dist"
+        cd dist && npm install && cd ..
+        echo "Building macOS packages for ref_name=$REF_NAME..."
+        if [[ $REF_NAME = "main" ]]; then
+          npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
+        else
+          npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
+        fi
+    - name: Upload packages to Kiwix
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
+      run: |
+        echo "$SSH_KEY" > ./scripts/ssh_key
+        chmod 600 ./scripts/ssh_key
+        chmod +x ./scripts/publish_macos_packages_to_kiwix.sh
+        ./scripts/publish_macos_packages_to_kiwix.sh
+    - name: Archive build artefacts
+      if: github.event.inputs.target == 'artefacts'
+      uses: actions/upload-artifact@v4
+      with:
+        name: kiwix-js-electron_macos
+        path: |
+          dist/bld/Electron/*.zip
+
   Release_Windows:
     runs-on: windows-latest
     env: 
