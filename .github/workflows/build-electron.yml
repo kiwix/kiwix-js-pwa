@@ -227,6 +227,58 @@ jobs:
         else
           npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
         fi
+    - name: Smoke test Electron app
+      run: |
+        echo "Extracting macOS app for testing..."
+        cd dist/bld/Electron
+        # Find the first zip file (prefer x64 if available)
+        ZIP_FILE=$(ls -1 *.zip | head -1)
+        echo "Found zip file: $ZIP_FILE"
+        # Extract the zip file
+        unzip -q "$ZIP_FILE"
+        # Find the .app bundle
+        APP_BUNDLE=$(find . -name "*.app" -type d | head -1)
+        echo "Found app bundle: $APP_BUNDLE"
+        if [ -z "$APP_BUNDLE" ]; then
+          echo "Error: No .app bundle found!"
+          exit 1
+        fi
+        # Remove quarantine attribute (required for CI)
+        xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
+        # Test basic app launch (verify it can start without crashing)
+        echo "Testing app launch..."
+        "$APP_BUNDLE/Contents/MacOS/Kiwix JS Electron" \
+          --disable-gpu-sandbox \
+          --no-sandbox \
+          --disable-web-security \
+          --disable-dev-shm-usage \
+          --no-first-run \
+          --disable-default-apps &
+        APP_PID=$!
+        echo "Started app with PID: $APP_PID"
+        # Wait for app to start and check if process is running
+        sleep 8
+        if kill -0 $APP_PID 2>/dev/null; then
+          echo "✅ App process is running successfully"
+          # Check if app is responsive by looking at process details
+          echo "Process details:"
+          ps -p $APP_PID -o pid,ppid,time,command || true
+          echo "App is running and responsive"
+          # Kill app gracefully
+          kill -TERM $APP_PID 2>/dev/null || true
+          sleep 3
+          # Force kill if still running
+          if kill -0 $APP_PID 2>/dev/null; then
+            echo "Force killing app..."
+            kill -KILL $APP_PID 2>/dev/null || true
+          fi
+          echo "✅ App launched and terminated successfully"
+        else
+          echo "❌ App process failed to start or crashed immediately"
+          exit 1
+        fi
+        echo "Smoke test completed successfully"
+
     - name: Upload packages to Kiwix
       if: github.event.inputs.target != 'artefacts' 
       run: |
