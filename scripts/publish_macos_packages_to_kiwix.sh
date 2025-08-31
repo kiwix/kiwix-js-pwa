@@ -28,10 +28,16 @@ for file in ./dist/bld/Electron/* ; do
         filename=$(sed 's/-darwin-arm64/-macos-arm64/' <<<"$filename")
         filename=$(sed 's/-mac\.zip/-macos.zip/' <<<"$filename")
         if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then 
-            # Delete release number other than SHA if there is a SHA for nightly builds
-            filename=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
-            # Add date to filename
-            filename=$(sed -E "s/[^_]+(\.[^.]+)$/$CURRENT_DATE\1/" <<<"$filename")
+            # For nightly builds, create a standardized filename with date
+            # Extract architecture if present (arm64 or x64)
+            arch=""
+            if [[ "$filename" =~ arm64 ]]; then
+                arch="_arm64"
+            elif [[ "$filename" =~ x64 ]]; then
+                arch="_x64"
+            fi
+            # Create nightly filename format: kiwix-js-electron_macos[_arch]_YYYY-MM-DD.zip
+            filename="kiwix-js-electron_macos${arch}_${CURRENT_DATE}.zip"
         fi
         echo "Renaming $file to $filename"
         # Put it all together
