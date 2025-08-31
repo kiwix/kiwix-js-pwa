@@ -177,8 +177,8 @@ jobs:
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
         ./scripts/rewrite_app_version_number.sh
-        # Replace -app in archive name for Electron apps
-        sed -i -E 's/(mdwiki[^-]+)-app_/\1_/g' ./www/js/init.js
+        # Replace -app in archive name for Electron apps (BSD sed syntax for macOS)
+        sed -i '' -E 's/(mdwiki[^-]+)-app_/\1_/g' ./www/js/init.js
     - name: Build production code
       run: npm run build-min
     - name: Download archive if needed
