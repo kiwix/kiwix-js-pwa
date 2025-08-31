@@ -149,7 +149,7 @@ jobs:
           npx electron-builder --linux AppImage:ia32 --projectDir dist
         fi
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
+      if: github.event.inputs.target != 'artefacts' 
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
