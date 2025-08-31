@@ -45,6 +45,14 @@ on:
           - true
           - false
         default: 'false'
+      macosonly:
+        description: Do you wish to build only for macOS (primarily for testing)?
+        type: choice
+        required: false
+        options:
+          - true
+          - false
+        default: 'false'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
@@ -63,7 +71,7 @@ env:
 jobs:
 
   Release_Linux:
-    if: github.event.inputs.win11only != 'true'
+    if: github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -235,6 +243,7 @@ jobs:
           dist/bld/Electron/*.zip
 
   Release_Windows:
+    if: github.event.inputs.macosonly != 'true'
     runs-on: windows-latest
     env: 
       SIGNTOOL_PATH: "C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x86/signtool.exe"
@@ -451,7 +460,7 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z     
 
   Release_NWJS:
-    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true'
+    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4      
