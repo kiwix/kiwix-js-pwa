@@ -16,7 +16,7 @@ for file in ./dist/bld/Electron/* ; do
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
         filename=$(sed -E 's/[^/]+\///g' <<<"$file")
         # Convert spaces to underscores and standardize naming
-        filename=$(sed 's/\s/_/g' <<<"$filename")
+        filename=$(sed 's/[[:space:]]/_/g' <<<"$filename")
         # Remove unneeded elements and standardize format
         filename=$(sed -E 's/_E([_.])/\1/' <<<"$filename")
         # Convert to all lowercase
