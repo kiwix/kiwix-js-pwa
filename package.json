@@ -54,6 +54,26 @@
         }
       ]
     },
+    "mac": {
+      "asar": "true",
+      "extraResources": {
+        "from": "archives",
+        "to": "archives"
+      },
+      "publish": [
+        "github"
+      ],
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.education"
+    },
     "linux": {
       "asar": "true",
       "extraResources": {
