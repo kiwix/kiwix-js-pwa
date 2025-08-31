@@ -2791,7 +2791,7 @@ function removePageMaxWidth () {
     }
     // Remove padding from body if it is an article list home page
     if (doc.body && doc.body.classList.contains('article-list-home')) {
-        doc.body.style.padding = '2em';
+        doc.body.style.padding = '0';
     }
 }
 
