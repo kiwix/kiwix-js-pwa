@@ -19,8 +19,8 @@ for file in ./dist/bld/Electron/* ; do
         filename=$(sed 's/[[:space:]]/_/g' <<<"$filename")
         # Remove unneeded elements and standardize format
         filename=$(sed -E 's/_E([_.])/\1/' <<<"$filename")
-        # Convert to all lowercase
-        filename="${filename,,}"
+        # Convert to all lowercase (compatible with older bash)
+        filename=$(echo "$filename" | tr '[:upper:]' '[:lower:]')
         # Restore hyphens in app name
         filename=$(sed 's/kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
         # Handle architecture naming for macOS
