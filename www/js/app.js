@@ -5590,13 +5590,15 @@ var unhideArticleContainer = function () {
             iframe.style.height = 'auto';
             resizeIFrame();
             // Scroll down and up to kickstart lazy loading which might not happen if brower has been slow to display the content
-            if (!(/zimit/.test(params.zimType) || appstate.pureMode)) {
-                articleWindow.scrollBy(0, 5);
-                setTimeout(function () {
-                    articleWindow.scrollBy(0, -5);
-                    unhideArticleTries = 12; // Reset counter
-                }, 250);
-            }
+            setTimeout(function () {
+                if (!(/zimit/.test(params.zimType) || appstate.pureMode)) {
+                    articleWindow.scrollBy(0, 5);
+                    setTimeout(function () {
+                        articleWindow.scrollBy(0, -5);
+                        unhideArticleTries = 12; // Reset counter
+                    }, 250);
+                }
+            }, 100);
         }
     }
 }
