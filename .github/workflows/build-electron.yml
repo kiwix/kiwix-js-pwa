@@ -247,7 +247,17 @@ jobs:
         xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
         # Test basic app launch (verify it can start without crashing)
         echo "Testing app launch..."
-        "$APP_BUNDLE/Contents/MacOS/Kiwix JS Electron" \
+        # Determine the executable name based on the app bundle name
+        APP_NAME=$(basename "$APP_BUNDLE" .app)
+        EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+        echo "Using executable: $EXECUTABLE_PATH"
+        # Verify executable exists
+        if [ ! -f "$EXECUTABLE_PATH" ]; then
+          echo "Error: Executable not found at $EXECUTABLE_PATH"
+          ls -la "$APP_BUNDLE/Contents/MacOS/"
+          exit 1
+        fi
+        "$EXECUTABLE_PATH" \
           --disable-gpu-sandbox \
           --no-sandbox \
           --disable-web-security \
