@@ -44,10 +44,19 @@ fi
 # If Version matches a release pattern, then set the appVersion in the files to be published
 if [[ $VERSION =~ ^[0-9.]+ ]]; then
   echo "Rewriting appVersion in service-worker.js and init.js to $VERSION ..."
-  sed -i -E "s/appVersion\s*=\s*[^;]+/appVersion = '$VERSION'/" ./service-worker.js
-  sed -i -E "s/params..appVersion[^=]+?=\s*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
   CUSTOM_VERSION=$(sed -E 's/-(WikiMed|Wikivoyage)//' <<<"$VERSION")
   CUSTOM_VERSION=$(sed -E 's/^([^-]+)(-[0-9a-z]{7})?.*/\1\2-E/' <<<"$VERSION")
   echo "Rewriting version in package.json to $CUSTOM_VERSION"
-  sed -i -E 's/"version":\s*"[^"]+"/"version": "'$CUSTOM_VERSION'"/' ./package.json
+  # Check if sed supports GNU-style -i flag (Linux) or requires backup extension (BSD/macOS)
+  if sed --version >/dev/null 2>&1; then
+    # GNU sed (Linux) - supports -i without extension
+    sed -i -E "s/appVersion\s*=\s*[^;]+/appVersion = '$VERSION'/" ./service-worker.js
+    sed -i -E "s/params..appVersion[^=]+?=\s*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
+    sed -i -E 's/"version":\s*"[^"]+"/"version": "'$CUSTOM_VERSION'"/' ./package.json
+  else
+    # BSD sed (macOS, FreeBSD, etc.) - requires backup extension
+    sed -i '' -E "s/appVersion[[:space:]]*=[[:space:]]*[^;]+/appVersion = '$VERSION'/" ./service-worker.js
+    sed -i '' -E "s/params\[.appVersion.\][[:space:]]*=[[:space:]]*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
+    sed -i '' -E 's/"version":[[:space:]]*"[^"]+"/"version": "'$CUSTOM_VERSION'"/' ./package.json
+  fi
 fi
