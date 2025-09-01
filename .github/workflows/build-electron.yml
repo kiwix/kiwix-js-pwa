@@ -149,7 +149,7 @@ jobs:
           npx electron-builder --linux AppImage:ia32 --projectDir dist
         fi
     - name: Upload packages to Kiwix
-      if: github.event.inputs.target != 'artefacts' 
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -290,7 +290,7 @@ jobs:
         echo "Smoke test completed successfully"
 
     - name: Upload packages to Kiwix
-      if: github.event.inputs.target != 'artefacts' 
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -506,8 +506,8 @@ jobs:
         if ($Env:REF_NAME -eq "main") {
           ./scripts/Publish-ElectronPackages.ps1 -portableonly
         } else {
-          echo "DEV: Note that this is a manual test build from branch $Env:REF_NAME"
-          ./scripts/Publish-ElectronPackages.ps1 -portableonly
+          echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
+          ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
