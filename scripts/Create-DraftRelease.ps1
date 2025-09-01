@@ -36,7 +36,7 @@ function Get-ReleaseHelp {
     To build the base app, check out main before running this script. To build the WikiMed or Wikivoyage
     apps, check out the appropriate branch before running this script and add -WikiMed or -Wikivoyage to
     the end of tag_name. To build Linux apps locally, the script will use Windows Subsystem for Linux.
-    MacOS is not currently supported by this repository, but it is supported by electron-builder. 
+    MacOS is supported via GitHub Actions, and is supported by electron-builder if running on a Mac.
     
     To create a release on GitHub, you must ensure that your GitHub token is available in a file named
     'github_token' in the same folder or set the variable `$GITHUB_TOKEN to the token. To build the
@@ -209,8 +209,8 @@ if ($tag_name -cmatch 'E\+N') {
 }
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
-  $release_title = "Kiwix JS Linux/Windows $base_tag"
-  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Linux/Windows) $base_tag" }
+  $release_title = "Kiwix JS Linux/Windows/macOS $base_tag"
+  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Linux/Windows/macOS) $base_tag" }
   $release_tag_name = $tag_name -creplace '\+E', ''
 }
 if ($tag_name -match '\+E\+N') {
@@ -226,7 +226,7 @@ if ($base_tag -match '[EN]$') {
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
   }
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Linux/Windows) " + '$1')
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Linux/Windows/macOS) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 # Get package name

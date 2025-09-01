@@ -4,7 +4,7 @@ Kiwix is an offline browser of archival content from Wikipedia, Project Gutenber
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218414297-a087c014-fe79-4a3d-a60a-87690732dc91.png)
 
-To use this app, download your choice of free content in-app from the Download Library on the Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE).
+To use this app, download your choice of free content in-app from the Download Library on the Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows, Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE), and experimentally on macOS.
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -63,8 +63,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
   + **_Debian/Ubuntu_**: download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt-get update` followed by `chmod a+x ./kiwix-js-electron*.deb`, then `sudo apt install ./kiwix-js-electron*.deb`. To run the app from the command line, rather than from its installed icon, simply type `kiwix-js-electron` in terminal. On **Debian**, if you receive the error `libgbm.so.1: cannot open shared object file`, please run `sudo apt install libgbm-dev`. On older versions of Debian, you may have to add `--no-sandbox` to the command line when running the app, i.e. `kiwix-js-electron --no-sandbox`. When you want to update, just install the new version, and it will install over the old version.
   + **_Fedora_**: download the correct `.rpm` package. You should be able to install it by opening the File manager, locating the package, and double-clicking it. Alternatively, open a terminal and `cd` to the directory with the package, and then type `sudo rpm --install ./kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). After install, you should find Kiwix JS Electron in your app list, and you can launch it from there. To upgrade, locate the newly downloaded package in terminal and type `sudo rpm --upgrade ./kiwix.js.electron-*.rpm` (ensure you specify the correct package number in place of `*` if you have more than one). If you find the app is stuck looking for an old sample package after upgrade, please just press the Reset button next to the version number at the top of Configuration.
   + **_OpenSUSE_**: download the correct `.rpm` package. You may get a better installation experience if you first install Chrome or another Chromium browser, as the Electron app has the same dependencies as Chrome. Then open a Terminal with superuser privileges, navigate to the directory containing the `.rpm` package, and type `zypper install  kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). If you are informed about missing dependencies, try "Solution 2: break kiwix-js-electron... by ignoring some of its dependencies'. You will also be warned that the app is not signed. You can ignore this, if you trust this repository. See above for commandline switches in older versions of OpenSUSE.
-* **For macOS builds**: Download the correct ZIP file for your Mac architecture (Apple Silicon or Intel). Extract the ZIP file to any location
-  (e.g., Desktop or Applications folder). **These builds are unsigned and require additional steps to run**:
+* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon or Intel). Extract the ZIP file to any location (e.g., Desktop or Applications folder). **These builds are unsigned and require additional steps to run**:
     1. **Extract** the application (`Kiwix JS Electron.app`) from the downloaded ZIP archive
     2. **Open Terminal** (Applications > Utilities > Terminal)  
     3. **Remove quarantine flag** by running:
@@ -78,8 +77,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + **Intel Macs**: Use the x64 version
     + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3" (Apple Silicon) or "Intel" in the processor information
   + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
-
-* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs.
+* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs.  _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, and install the PWA from Configuration._
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 

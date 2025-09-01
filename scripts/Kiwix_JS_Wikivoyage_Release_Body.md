@@ -4,7 +4,7 @@ Wikiovyage by Kiwix is an offline travel guide featuring more than 33,000 destin
 
 ![Wikivoyage_refresh](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/c7c45ba6-169f-4e2e-95d7-aa5343ac3461)
 
-These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html) and download the latest Wikivoyage archive from within the app.
+These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows, Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE), and experimentally on macOS. The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html) and download the latest Wikivoyage archive from within the app.
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -33,6 +33,11 @@ Please choose the correct version:
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
 
+* **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
+  - **Portable (Electron)** - *experimental*
+    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 10.15+ Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-x64.zip)
+
 ## Installation Instructions - Electron
 
 * For the Windows Web installer, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in yourshortcut menu. When you want to update the app, just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, then use the standalone installer.
@@ -46,6 +51,21 @@ Please choose the correct version:
   + **_Debian/Ubuntu_**: download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt-get update` followed by `chmod a+x ./kiwix-js-wikivoyage*.deb`, then `sudo apt install ./kiwix-js-wikivoyage*.deb`. To run the app from the command line, rather than from its installed icon, simply type `kiwix-js-wikivoyage` in terminal. On **Debian**, if you receive the error `libgbm.so.1: cannot open shared object file`, please run `sudo apt install libgbm-dev`. On older versions of Debian, you may have to add `--no-sandbox` to the command line when running the app, i.e. `kiwix-js-wikivoyage --no-sandbox`. When you want to update, just install the new version, and it will install over the old version.
   + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikivoyage` and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
 * Windows portable version: If you get a Windows Smartscreen notification on first launch, follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe) which is digitally signed.
+* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon or Intel). Extract the ZIP file to any location (e.g., Desktop or Applications folder). **These builds are unsigned and require additional steps to run**:
+    1. **Extract** the application (`Wikivoyage by Kiwix.app`) from the downloaded ZIP archive
+    2. **Open Terminal** (Applications > Utilities > Terminal)  
+    3. **Remove quarantine flag** by running:
+       ```bash
+       xattr -d com.apple.quarantine /path/to/Wikivoyage\ by\ Kiwix.app
+       ```
+       *(Replace `/path/to/` with the actual location where you extracted the app)*
+    4. **Launch** the app by double-clicking it - it should now open normally
+  + **Architecture Selection:**
+    + **Apple Silicon Macs** (M1/M2/M3): Use the ARM64 version for optimal performance
+    + **Intel Macs**: Use the x64 version
+    + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3" (Apple Silicon) or "Intel" in the processor information
+  + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
+* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, install the PWA from Configuration, and then download the Wikivoyage archive in-app._
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
