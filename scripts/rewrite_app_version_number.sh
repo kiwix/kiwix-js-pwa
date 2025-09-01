@@ -56,7 +56,7 @@ if [[ $VERSION =~ ^[0-9.]+ ]]; then
   else
     # BSD sed (macOS, FreeBSD, etc.) - requires backup extension
     sed -i '' -E "s/appVersion\s*=\s*[^;]+/appVersion = '$VERSION'/" ./service-worker.js
-    sed -i '' -E "s/params..appVersion[^=]+?=\s*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
+    sed -i '' -E "s/params\[.appVersion.\][[:space:]]*=[[:space:]]*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
     sed -i '' -E 's/"version":\s*"[^"]+"/"version": "'$CUSTOM_VERSION'"/' ./package.json
   fi
 fi
