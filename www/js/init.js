@@ -75,15 +75,15 @@ params['archivePath'] = 'archives'; // The directory containing the packaged arc
 params['fileVersion'] = getSetting('fileVersion') || ''; // This will be displayed in the app - optionally include date of ZIM file
 
 // List of known start pages cached in the FS - ensure these strings are double-URI-encoded, and then store the file itself with single-
-// URI-enoding. This string will be decoded once in the app. E.g. the file name "A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
-// should be stored in the directory as "A/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2" (since we can't store colons in some
-// file systems), and the string "A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2" will be decoded to this
+// URI-enoding. This string will be decoded once in the app. E.g. the file name "C/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
+// should be stored in the directory as "C/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2" (since we can't store colons in some
+// file systems), and the string "C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2" will be decoded to this
 // before being passed to the Service Worker
 params['cachedStartPages'] = {
-    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
-    wikipedia_en_medicine_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
-    mdwiki_en_all_maxi: 'A/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
-    wikivoyage_en_all_maxi: 'A/Main_Page'
+    'wikipedia_en_medicine-app_maxi': 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    wikipedia_en_medicine_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    mdwiki_en_all_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    wikivoyage_en_all_maxi: 'C/Main_Page'
 };
 
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
