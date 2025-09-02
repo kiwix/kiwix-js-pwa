@@ -9,6 +9,7 @@
 * REGRESSION: Do not preselect first item in search results
 * REGRESSION: Fix catastrophic backtrcking in cleanup regex
 * INFO: Add instructions for installing macOS packages
+* UPDATE: Open Textbook of Medicine landing page
 * FIX: Better conversion of headings to details-summary style
 * FIX: Adapt remove max page width restriction to ActionParse ZIMs
 * FIX: Restricted width of Wikimedia articles on mobile screen sizes
