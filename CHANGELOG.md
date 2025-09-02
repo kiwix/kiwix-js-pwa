@@ -1,23 +1,30 @@
 # Changelog
 
-# Interim release 3.7.4
+# Interim release 3.7.6
 
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
+* ENHANCEMENT: Add experimental macOS packages
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
 * REGRESSION: Do not preselect first item in search results
 * REGRESSION: Fix catastrophic backtrcking in cleanup regex
+* INFO: Add instructions for installing macOS packages
 * FIX: Better conversion of headings to details-summary style
 * FIX: Adapt remove max page width restriction to ActionParse ZIMs
 * FIX: Restricted width of Wikimedia articles on mobile screen sizes
+* FIX: Improve display of graphical landing pages
 * FIX: Display of some ultra-wide infoboxes in RTL Wikipedia ZIMs
 * FIX: Size of regular infoboxes with Wikipedia articles converted to mobile style
 * FIX: Ensure consistent page reloading after a theme change
 * FIX: Hide unwanted content on Wikipedia landing page
 * FIX: Display of some dark_mode_safe svg images and equivalent in dark theme
 * FIX: Repair override Wikivoyage landing page
+* FIX: Do not attempt to autoupdate appx or MSIX packages
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
+* DEV: Update location of signtool.exe
+* DEV: Add smoke test for macOS app
+* DEV: Make build scripts compatible with BSD
 * DEV: Security update for tmp module
 
 ## Release 3.7.0 / 3.7.1
