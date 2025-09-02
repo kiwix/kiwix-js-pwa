@@ -156,10 +156,10 @@
     <Content Include="www\-\style.css" />
     <Content Include="www\-\s\css_modules\mediawiki.action.view.redirectPage.css" />
     <Content Include="www\-\s\css_modules\minerva.css" />
-    <Content Include="www\A\Main_Page" />
-    <Content Include="www\A\Wikipedia%253AWikiProject_Medicine\Open_Textbook_of_Medicine2" />
+    <Content Include="www\C\Main_Page" />
     <Content Include="www\C\static\css\sotoki.css" />
     <Content Include="www\C\static\img\external-link-ltr-icon.svg" />
+    <Content Include="www\C\Wikipedia%253AWikiProject_Medicine\Open_Textbook_of_Medicine2" />
     <Content Include="www\img\icons\favicon-16x16.png" />
     <Content Include="www\img\icons\favicon-192x192.png" />
     <Content Include="www\img\icons\favicon-32x32.png" />
@@ -340,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="www\-\static\bootstrap\" />
+    <Folder Include="www\A\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
