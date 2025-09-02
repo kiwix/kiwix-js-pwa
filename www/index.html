@@ -2,8 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-
-    <title>Kiwix JS PWA</title>
+    <title>Kiwix JS WikiMed</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
@@ -74,20 +73,21 @@
         <div class="modal-dialog modal-full">
             <div id="modalTheme" class="modal-content dark">
                 <div id="largeModal" class="modal-body">
-                    <button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <button id="mymodalCloseBtn" style="display: none;" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <div id="mymodalVariableContent">
                         <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
-
                         <h2 style="font-size:32px;margin-top:10px;">
-                            Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
+                            Welcome to&nbsp;WikiMed!
                         </h2>
                         <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
                         <h3>Please read this important information</h3>
                         <div class="disclaimer">
+                            <p>DISCLAIMER: The medical information in this app comes from Wikipedia and MDwiki, and is provided by volunteers.</p>
+                            <p><strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong></p>
                             <p>
-                                <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                                download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
-                                <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                                Use the information in this app as a guide for <em>research and education only</em>. By using this
+                                application, you explicitly agree that you will not hold Kiwix, Wikipedia, MDwiki or anyone else
+                                responsible for your use or misuse of the information it contains.
                             </p>
                         </div>
                         <p id="noPackagedZIM" style="padding-top:10px;">
@@ -96,75 +96,92 @@
                             <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
                         </p>
                         <p>
-                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                            WikiMed Offline Medical Wikipedia is <b>free</b> and <b>open source</b>. If you like it,
+                            please leave a positive review. Constructive feedback and help with
                             improving the app are very welcome: see About section.
                         </p>
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>[3.7.4] Make enter key select first search result</li>
-                                <li>[3.7.4] Prevent user selecting contradictory settings for page style</li>
-                                <li>[3.7.6] Add experimental macOS packages and instructions</li>
-                                <li>[3.7.4] Restore opening and closing of headers for ActionParse ZIMs converted to mobile style</li>
-                                <li>[3.7.4] Do not preselect first item in search results</li>
-                                <li>[3.7.4] Fix catastrophic backtracking in cleanup process</li>
-                                <li>[3.7.4] Better conversion of headings to details-summary style</li>
-                                <li>[3.7.4] Adapt remove max pagewidth restriction to ActionParse ZIMs</li>
-                                <li>[3.7.4] Fix restricted width of Wikimedia articles on mobile screen sizes</li>
-                                <li>[3.7.4] Fix display of some ultra-wide infoboxes in RTL Wikipedia ZIMs</li>
-                                <li>[3.7.4] Fix size of regular infoboxes with Wikipedia articles converted to mobile style</li>
-                                <li>[3.7.4] Ensure consistent page reloading after a theme change</li>
-                                <li>[3.7.4] Hide unwanted content on Wikipedia landing page</li>
-                                <li>[3.7.4] Fix display of some dark_mode_safe svg images and equivalent in dark theme</li>
-                                <li>Disable Table of Contents dropup if fewer than two headings in article</li>
-                                <li>Reload current article when switching between desktop and mobile styles</li>
-                                <li>Fix collapsing of Wikipedia sections when transformed to mobile style</li>
-                                <li>Do not close Wikipedia sections when a desktop ZIM is loaded and not transformed to mobile style</li>
-                                <li>Fix misplaced and misaligned titles in RTL languages for ActionParse Wikimedia ZIMs</li>
-                                <li>Add missing external link SVG for locally cached Vector stylesheet</li>
-                                <li>Update documentation of features</li>
-                                <li>Removed title erroneously showing on Wikimedia landing pages</li>
-                                <li>Fix bug that showed footnote refs as [0] in desktop-style ZIMs transformed to mobile via Config option</li>
-                                <li>Fix bug with persistent file system permissions in Electron app (pending new release)</li>
+                                <li>Updated medical content to August 2025 Wikipedia archive</li>
+                                <li>Enhanced full-text search with text snippets and improved keyboard navigation</li>
+                                <li>Added experimental macOS app packages with installation instructions</li>
+                                <li>Reduced navigation bar height for cleaner interface</li>
+                                <li>Table of Contents only appears when articles have multiple headings</li>
+                                <li>Enter key now selects the first search result</li>
+                                <li>Improved page reloading when switching between desktop and mobile styles</li>
+                                <li>Better support for collapsible section headers in mobile view</li>
+                                <li>Enhanced dark theme support with improved image display</li>
+                                <li>Fixed display issues with infoboxes in right-to-left languages</li>
+                                <li>Improved page width handling on mobile devices</li>
+                                <li>Support transforming ActionParse ZIMs to mobile style and opening-closing sections</li>
+                                <li>Fixed footnote numbering in converted article layouts</li>
+                                <li>Resolved file system permission issues in desktop app</li>
+                                <li>Fixed missing text problems on some landing pages</li>
+                                <li>Improved find-in-article functionality</li>
+                                <li>Better handling of equations in no-picture archives</li>
+                                <li>Enhanced support for newer Wikipedia ActionParse archives</li>
+                            </ul>
+                            <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-WikiMed/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
+                        </div>
+                        <div id="features">
+                            <h3>Features in Version 3.x</h3>
+                            <ul style="padding-left:15px;">
+                                <li>App now prompts user to switch to OPFS on Android and Firefox Desktop</li>
+                                <li>App now uses OPFS Persistent Storage on Firefox for greatly increased Storage quota</li>
+                                <li>Prevent accidental app reload if an archive is loaded</li>
+                                <li>Disabled reload protection if app has persistent access to storage via FSA API</li>
+                                <li>Prominent "Download now" button in library if OPFS is enabled</li>
+                                <li>Better styling for popovers in dark mode</li>
+                                <li>If main Kiwix download server is inaccessible, app now provides a list of mirrors</li>
+                                <li>Popovers now take into account the zoom factor on latest browsers with new support for `zoom`</li>
+                                <li>PWA can now update without user having to exit the app (with user gesture or automatically in Electron)</li>
+                                <li>If user hasn't dismissed the splashscreen then it is shown again after a refresh</li>
+                                <li>When printing, the zoom level of the article is temporarily reset for more predictable results</li>
+                                <li>Handle navigation correctly in new DevDoc ZIMs</li>
+                                <li>Search now takes into account any article zoom level</li>
+                                <li>Fix build of Win7 32bit app with wrong Electron version and block autoupdate</li>
+                                <li>Reset options are now in separate module to avoid circular dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
                         <div id="features">
                             <details class="collapsible-section">
                                 <summary class="features-summary">
-                                    <h3>Features in Version 3.x</h3>
+                            <h3>Features in Version 3.x</h3>
                                     <span class="collapse-indicator">▼</span>
                                 </summary>
                                 <div class="features-content">
-                                    <ul style="padding-left:15px;">
-                                        <li>Support for all known ZIM types from Wikipedia 0.5 to Zimit v2</li>
-                                        <li>Huge range of supported browsers and frameworks</li>
-                                        <li>Full-text searching of ZIM contents using <a href="https://github.com/openzim/javascript-libzim" target="_blank" rel="noopener">javascript-libzim</a></li>
-                                        <li>Cutting-edge Origin Private File System support with best-available fallbacks</li>
-                                        <li>Built-in DarkReader support for nearly all ZIM types</li>
-                                        <li>Display article previews in popovers for Wikimedia archives</li>
-                                        <li>Use multiple ZIM archives simultaneously with File Handling API</li>
-                                        <li>ZIM content is loaded in a secure sandbox for your protection</li>
-                                        <li>Download ZIM archives in-app and display download progress</li>
-                                        <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
-                                        <li>Open a new browsable tab or window</li>
-                                        <li>In-page searching and highlighting</li>
-                                        <li>Title and URL search with wildcards .* or regexes</li>
-                                        <li>Alphabetical index of all articles in archive (type space in search field)</li>
-                                        <li>Find assets by URL in ZIM archive by prefixing namespace (or type space + / in search)</li>
-                                        <li>Printing articles (with optional filtering for Wikipedia articles)</li>
-                                        <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
-                                        <li>Download and save content from ZIM</li>
-                                        <li>Support full-screen and orientation lock in most browsers and frameworks</li>
-                                    </ul>
+                            <ul style="padding-left:15px;">
+                                <li>Support for all known ZIM types from Wikipedia 0.5 to Zimit v2</li>
+                                <li>Huge range of supported browsers and frameworks</li>
+                                <li>Full-text searching of ZIM contents using <a href="https://github.com/openzim/javascript-libzim" target="_blank" rel="noopener">javascript-libzim</a></li>
+                                <li>Cutting-edge Origin Private File System support with best-available fallbacks</li>
+                                <li>Built-in DarkReader support for nearly all ZIM types</li>
+                                <li>Display article previews in popovers for Wikimedia archives</li>
+                                <li>Use multiple ZIM archives simultaneously with File Handling API</li>
+                                <li>ZIM content is loaded in a secure sandbox for your protection</li>
+                                <li>Download ZIM archives in-app and display download progress</li>
+                                <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
+                                <li>Open a new browsable tab or window</li>
+                                <li>In-page searching and highlighting</li>
+                                <li>Title and URL search with wildcards .* or regexes</li>
+                                <li>Alphabetical index of all articles in archive (type space in search field)</li>
+                                <li>Find assets by URL in ZIM archive by prefixing namespace (or type space + / in search)</li>
+                                <li>Printing articles (with optional filtering for Wikipedia articles)</li>
+                                <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
+                                <li>Download and save content from ZIM</li>
+                                <li>Support full-screen and orientation lock in most browsers and frameworks</li>
+                            </ul>
                                 </div>
                             </details>
                         </div>
-                    </div>
+                </div>
                 </div>
                 <div class="modal-footer">
                     <div id="extraModalFooterContent"></div>
-                    <button id="mycloseMessage" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                    <button id="mycloseMessage" class="btn btn-primary" type="button" data-dismiss="modal">I Agree*</button>
+                    <p>* Please read the Disclaimer above. If you do not agree, please uninstall this app.</p>
                 </div>
             </div>
         </div>
@@ -256,7 +273,7 @@
                                 <span class="input-group">
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img alt="Kiwix icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img alt="WikiMed icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikimed-blue-32.png" /></a>
                                         <!--button -->
                                         <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                                         <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
@@ -290,15 +307,15 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <div class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <h2>
-                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
-                        Kiwix JS <span class="identity">Windows</span>
+                        <img id="kiwixIconAbout" src="img/icons/wikimed-90.png" alt="WikiMed icon" />
+                        WikiMed by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
+                        Offline Medical Wikipedia <small>(Kiwix JS version <span class="version"></span>)</small>
                     </h3>
                     <p class="packagedInfo" style="display: none">Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
-                        <li><a href="#addingArchives">Adding archives and languages</a></li>
+                        <li><a href="#addingArchives">Adding archives (in other languages)</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#security">Security</a></li>
                         <li><a href="#themes">Themes (dark and light)</a></li>
@@ -317,12 +334,23 @@
                         <li>Official site : <a href="https://www.kiwix.org/" target="_blank" rel="noopener">https://www.kiwix.org/</a><img src="I/s/Icon_External_Link.png" /></li>
                     </ul>
                     <div class="disclaimer">
+                        <p>DISCLAIMER: The medical information in this app comes from Wikipedia, and is provided by volunteers.</p>
+                        <p><strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong></p>
                         <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                            download a new archive periodically. Information in official archives is free, open source and provided by volunteers.<br>
-                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                            Use the information in this app as a guide for <em>research and education only</em>. By using this
+                            application, you explicitly agree that you will not hold Kiwix, Wikipedia or anyone else responsible for your use or
+                            misuse of the information it contains.
                         </p>
                     </div>
+                    <p style="padding-top:10px;">
+                        As well as WikiMed in English, you can download one or more WikiMed archives (called ZIM archives) in
+                        other languages from the Kiwix website: see the instructions below. There are also two sister apps in
+                        the Store: <a href="https://www.microsoft.com/store/p/wikivoyage-by-kiwix/9n5sb90q4jbj" target="_blank">
+                            Wikivoyage by Kiwix
+                        </a>, and <a href="https://www.microsoft.com/store/p/kiwix-js/9p8slz4j979j"
+                                     target="_blank">Kiwix JS</a>. Wikivoyage is an offline travel guide, and with Kiwix JS,
+                        you can have full offline Wikipedia, Wiktionary and many other sources.
+                    </p>
                     <br>
                     <p>
                         Kiwix aspires to make the world's knowledge available to everyone for free. If your Internet access is expensive, slow, unreliable, insecure or censored,
@@ -335,30 +363,24 @@
                         encyclopaedia even if you are undertaking a long plane journey, hiking, and travelling or living in areas with weak or non-existent Internet access.
                     </p>
                     <p>
-                        Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
-                        different archives, and works with almost all of them, depending on the capabilities of your browser or framework. There is now full support for
-                        <a href="https://download.kiwix.org/zim/zimit/" target="_blank">Zimit archives</a>, including support for Zimit v2.
-                        For more information on Zimit and how to make your own ZIM archives, see <a href="https://youzim.it/" target="_blank">youzim.it</a>.
-                    </p>
-                    <p>
                         You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
                         <a href="#searchSyntax">Title search</a>). <b><i>There is support for full-text search in the PWA and Electron apps (for ZIM archives that
                         include a full-text index).</i></b>
                     </p>
-                    <p>
-                        On some Wikipedia and Wikivoyage pages you will see map pins: <img src="img/icons/map_marker-30px.png" width="18px" />. This will open a map
-                        centered on the pin location in <b>online</b> Open Street Maps (if you have an Internet connection). The Windows 11 offline Maps app has unfortunately
-                        been deprecated, so this is the only way to view maps in the app currently.
-                    </p>
-                    <h3 id="addingArchives">Usage</h3>
+                    <h3 id="addingArchives">Adding WikiMed archives in other languages</h3>
                     <h4>Step 1: Download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page,
-                        and the app will provide instructions according to the type of file you download. Alternatively, visit
-                        <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> or
-                        <a href="https://library.kiwix.org" target="_blank">https://library.kiwix.org</a> using a regular computer. To use all the features of ZIM archives
-                        that have dynamic content (e.g. PhET), the needs to be running in PWA/ServiceWorker mode (see Performance/compatibility settings in
-                        configuration), which is available in modern browsers (on iOS devices it is only available in Safari).
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to
+                        <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a>
+                        and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the
+                        <b>Open library</b> button. Locate your WikiMed ZIM file, and instructions will be provided to download
+                        the file on your device.
+                        Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">
+                            http://download.kiwix.org/zim/
+                        </a> using a regular computer. <strong>This app is optimized for WikiMed archives only</strong>.
+                        If you wish to use regularly other archive types with this app, you should instead obtain our sister app,
+                        <a href="https://www.microsoft.com/store/p/kiwix-js/9p8slz4j979j" target="_blank">Kiwix JS</a> from the
+                        Store and keep this as a dedicated WikiMed app.
                     </p>
                     <h4>Step 2: Copy the content onto your device</h4>
                     <p>
@@ -391,7 +413,7 @@
                     <div id="logFeatures"></div>
                     <h3 id="privacy">Privacy policy</h3>
                     <p>
-                        When installed, Kiwix JS <span class="identity">Windows</span> works offline, and does not collect or record any of your personal data. It
+                        WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
                         only remembers your browsing history for the duration of a session (for the purpose of returning to previously
                         viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
                     </p>
