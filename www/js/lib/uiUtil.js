@@ -1583,6 +1583,9 @@ function toggleSnippet (ele, ev) {
     if (ev) {
         ev.preventDefault();
         ev.stopPropagation(); // Prevent triggering the article link
+        // Set a flag to indicate that a snippet was just interacted with
+        // This prevents the search results from being hidden by the blur event
+        appstate.snippetInteractionFlag = true;
     }
     var header = ele.children[0]; // Snippet header
     var content = ele.children[1]; // Snippet content

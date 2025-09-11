@@ -353,6 +353,11 @@ prefix.addEventListener('focus', function () {
 prefix.addEventListener('blur', function () {
     // We need to wait one tick for the activeElement to receive focus
     setTimeout(function () {
+        // Check if a snippet was just interacted with
+        if (appstate.snippetInteractionFlag) {
+            appstate.snippetInteractionFlag = false;
+            return; // Don't hide the search results
+        }
         var activeElement = document.activeElement;
         var shouldKeepOpen = false;
         // Check if activeElement ID matches our criteria
