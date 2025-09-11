@@ -353,8 +353,22 @@ prefix.addEventListener('focus', function () {
 prefix.addEventListener('blur', function () {
     // We need to wait one tick for the activeElement to receive focus
     setTimeout(function () {
-        if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
-        /^list-group|snippet-container/.test(document.activeElement.className))) {
+        var activeElement = document.activeElement;
+        var shouldKeepOpen = false;
+        // Check if activeElement ID matches our criteria
+        if (activeElement && /^articleList|searchSyntaxLink/.test(activeElement.id)) {
+            shouldKeepOpen = true;
+        }
+        // Check if activeElement or any of its parents has the required className
+        var element = activeElement;
+        while (element && !shouldKeepOpen) {
+            if (element.className && /^list-group|snippet-container/.test(element.className)) {
+                shouldKeepOpen = true;
+                break;
+            }
+            element = element.parentElement;
+        }
+        if (!shouldKeepOpen) {
             scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
             appstate.tempPrefix = '';
