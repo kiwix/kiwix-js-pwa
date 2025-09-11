@@ -6,6 +6,9 @@
 // A regular expression that matches the hash of the Kiwix publisher on the Microsoft Store (CN=0A5438F5-EEA6-4300-9B77-E45BBD148885)
 // If the app is installed from the Store rather than from the signed GitHub release, we need to disable update checking
 const regexpInstalledFromMicrosoftStore = /_mc3511b08yc0e/;
+// Print Electron version
+console.log('[Preload] Electron version: ' + process.versions.electron);
+// Print app directory and whether installed from Microsoft Store
 console.log('[Preload] App directory: ' + __dirname);
 console.log('[Preload] Is app installed from Microsoft Store? ' + (process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname) ? 'Yes' : 'No'));
 
@@ -21,13 +24,14 @@ const isAppxOrMSIX = function() {
 };
 
 console.log('[Preload] Is app running as APPX/MSIX? ' + (isAppxOrMSIX() ? 'Yes' : 'No'));
-console.log('[Preload] Window location: ' + window.location.pathname + '\nStore publisher hash: ' + regexpInstalledFromMicrosoftStore);
+console.log('[Preload] Window location: ' + window.location.pathname);
+console.log('[Preload] Store publisher hash: ' + regexpInstalledFromMicrosoftStore);
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
 const { ipcRenderer, contextBridge, webFrame } = require('electron');
 const { open, read, close, stat, readdir } = require('fs');
 
-console.log('Inserting required Electron functions into DOM...');
+console.log('[Preload] Inserting required Electron functions into DOM...');
 
 // DEV: FOR ELECTRON ^12 DO IT THIS WAY:
 contextBridge.exposeInMainWorld('fs', {
@@ -52,7 +56,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.send('open-external', url);
     },
     setZoomLimits: function (min, max) {
-        console.log('Setting zoom limits to ' + min + ' and ' + max);
+        console.log('[Preload] Setting zoom limits to ' + min + ' and ' + max);
         webFrame.setVisualZoomLevelLimits(min, max);
     },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
