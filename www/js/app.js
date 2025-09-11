@@ -5643,7 +5643,7 @@ var articleLoadedSW = function (dirEntry, container) {
     articleWindow = container.contentWindow || container;
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
-    articleDocument = doc;
+    articleDocument = articleWindow.document.documentElement;
     var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
@@ -7608,7 +7608,7 @@ function processSection (open, node) {
 
 // Attach listeners to headers to open-close following sections
 function setupHeadings () {
-    var headings = document.getElementById('articleContent').querySelectorAll('h2, h3, h4, h5');
+    var headings = articleDocument.querySelectorAll('h2, h3, h4, h5');
     for (var i = headings.length; i--;) {
         // Prevent heading from being selected when user clicks on it
         headings[i].style.userSelect = 'none';
