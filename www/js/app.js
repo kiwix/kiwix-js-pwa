@@ -351,10 +351,17 @@ prefix.addEventListener('focus', function () {
 });
 // Hide the search results if user moves out of prefix field
 prefix.addEventListener('blur', function () {
+    console.log('🔍 Prefix blur event fired');
     // We need to wait one tick for the activeElement to receive focus
     setTimeout(function () {
+        console.log('🔍 Blur timeout executing, flag:', appstate.snippetInteractionFlag);
+        console.log('🔍 Active element:', document.activeElement);
+        console.log('🔍 Active element tagName:', document.activeElement ? document.activeElement.tagName : 'null');
+        console.log('🔍 Active element id:', document.activeElement ? document.activeElement.id : 'null');
+        console.log('🔍 Active element className:', document.activeElement ? document.activeElement.className : 'null');
         // Check if a snippet was just interacted with
         if (appstate.snippetInteractionFlag) {
+            console.log('🔍 Flag is true, keeping search results open');
             appstate.snippetInteractionFlag = false;
             return; // Don't hide the search results
         }
@@ -362,22 +369,28 @@ prefix.addEventListener('blur', function () {
         var shouldKeepOpen = false;
         // Check if activeElement ID matches our criteria
         if (activeElement && /^articleList|searchSyntaxLink/.test(activeElement.id)) {
+            console.log('🔍 Active element ID matches criteria, keeping open');
             shouldKeepOpen = true;
         }
         // Check if activeElement or any of its parents has the required className
         var element = activeElement;
         while (element && !shouldKeepOpen) {
+            console.log('🔍 Checking element:', element.tagName, element.className);
             if (element.className && /^list-group|snippet-container/.test(element.className)) {
+                console.log('🔍 Found matching parent element, keeping open');
                 shouldKeepOpen = true;
                 break;
             }
             element = element.parentElement;
         }
         if (!shouldKeepOpen) {
+            console.log('🔍 No reason to keep open, hiding search results');
             scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
             appstate.tempPrefix = '';
             uiUtil.clearSpinner();
+        } else {
+            console.log('🔍 Keeping search results open');
         }
     }, 100);
 });

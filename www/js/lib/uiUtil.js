@@ -1580,7 +1580,9 @@ function createSnippetElements (entriesArray, links, length) {
  * @param {Event} ev The event to handle or null if called programmatically
 */
 function toggleSnippet (ele, ev) {
+    console.log('🎯 toggleSnippet called, event:', ev ? 'real event' : 'programmatic');
     if (ev) {
+        console.log('🎯 Setting snippetInteractionFlag to true');
         ev.preventDefault();
         ev.stopPropagation(); // Prevent triggering the article link
         // Set a flag to indicate that a snippet was just interacted with
@@ -1612,12 +1614,25 @@ function attachArticleListEventListeners (findDirEntryCallback, appstate) {
     document.querySelectorAll('#articleList a, .snippet-container').forEach(function (element) {
         element.addEventListener('mousedown', function (e) {
             if (element.classList.contains('snippet-container')) {
+                console.log('🎯 Snippet container mousedown event');
                 // Set a flag to prevent hover behavior immediately after manual interaction
                 element.dataset.manuallyInteracted = 'true';
                 // Clear the flag after a short delay
                 setTimeout(function () {
                     delete element.dataset.manuallyInteracted;
                 }, 500);
+                // Set the flag before any potential blur event
+                appstate.snippetInteractionFlag = true;
+                console.log('🎯 Set snippetInteractionFlag in mousedown');
+                // Alternative approach: temporarily refocus the prefix to prevent blur
+                // This might help on Android where activeElement behavior is different
+                // var prefixElement = document.getElementById('prefix');
+                // if (prefixElement) {
+                //     setTimeout(function () {
+                //         prefixElement.focus();
+                //         console.log('🎯 Refocused prefix element');
+                //     }, 10);
+                // }
                 // Prevents Android keyboard from popping up and covering the article list
                 element.focus();
                 // Handle snippet toggle
