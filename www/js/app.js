@@ -131,7 +131,9 @@ function resizeIFrame (reload) {
     // Re-enable top-level scrolling
     var configuration = document.getElementById('configuration');
     var about = document.getElementById('about');
-    if (configuration.style.display === 'none' && about.style.display === 'none' && prefix !== document.activeElement) {
+    if (configuration.style.display === 'none' && about.style.display === 'none' &&
+        // Don't collapse the scrollbox if user is interacting with search
+        prefix !== document.activeElement && !appstate.snippetInteractionFlag) {
         scrollbox.style.height = 0;
     } else {
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -353,27 +355,13 @@ prefix.addEventListener('focus', function () {
 prefix.addEventListener('blur', function () {
     // We need to wait one tick for the activeElement to receive focus
     setTimeout(function () {
-        // Check if a snippet was just interacted with
+         // Check if a snippet was just interacted with
         if (appstate.snippetInteractionFlag) {
             appstate.snippetInteractionFlag = false;
             return; // Don't hide the search results
         }
-        var activeElement = document.activeElement;
-        var shouldKeepOpen = false;
-        // Check if activeElement ID matches our criteria
-        if (activeElement && /^articleList|searchSyntaxLink/.test(activeElement.id)) {
-            shouldKeepOpen = true;
-        }
-        // Check if activeElement or any of its parents has the required className
-        var element = activeElement;
-        while (element && !shouldKeepOpen) {
-            if (element.className && /^list-group|snippet-container/.test(element.className)) {
-                shouldKeepOpen = true;
-                break;
-            }
-            element = element.parentElement;
-        }
-        if (!shouldKeepOpen) {
+        if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id) ||
+        /^list-group|snippet-container/.test(document.activeElement.className))) {
             scrollbox.style.height = 0;
             document.getElementById('articleListWithHeader').style.display = 'none';
             appstate.tempPrefix = '';
