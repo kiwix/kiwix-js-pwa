@@ -13,7 +13,7 @@ console.log('[Preload] App directory: ' + __dirname);
 console.log('[Preload] Is app installed from Microsoft Store? ' + (process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname) ? 'Yes' : 'No'));
 
 // Function to check APPX/MSIX - defined here for logging
-const isAppxOrMSIX = function() {
+const isAppxOrMSIX = function () {
     return !!(
         process.windowsStore ||
         process.env.LOCALAPPDATA && process.env.LOCALAPPDATA.includes('Packages') ||
