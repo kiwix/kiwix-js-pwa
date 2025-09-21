@@ -278,17 +278,19 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 
+    let permissionPathGranted = null;
     // Set up filesystem permission check handler (for PERSISTENT/STORED permissions)
     session.defaultSession.setPermissionCheckHandler((webContents, permission, origin, details) => {
-        console.log('\nPermission check received:');
-        console.log('  Permission type:', permission);
-        console.log('  Origin:', origin);
         if (permission === 'fileSystem') {
-            console.log('  -> Granting PERSISTENT filesystem permission\n');
+            if (details.filePath && permissionPathGranted !== details.filePath) {
+                console.log('\nPermission check received:');
+                console.log('  Permission type:', permission);
+                console.log('  Origin:', origin);
+                console.log('  Details:', JSON.stringify(details, null, 2).replace(/\n/g, '\n      '));
+                console.log('  -> Granting PERSISTENT filesystem permission\n');
+                permissionPathGranted = details.filePath;
+            }
             return true; // Note: return value, not callback
-        } else {
-            console.log('  -> Denying permission (not filesystem)\n');
-            return false;
         }
     });
 });
