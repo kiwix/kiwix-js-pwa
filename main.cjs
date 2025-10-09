@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, dialog, ipcMain, BrowserWindow, shell } = require('electron');
+const { app, dialog, ipcMain, BrowserWindow, shell, session } = require('electron');
 const express = require('express');
 const Store = require('electron-store');
 const path = require('path');
@@ -276,6 +276,22 @@ app.whenReady().then(() => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+
+    let permissionPathGranted = null;
+    // Set up filesystem permission check handler (for PERSISTENT/STORED permissions)
+    session.defaultSession.setPermissionCheckHandler((webContents, permission, origin, details) => {
+        if (permission === 'fileSystem') {
+            if (details.filePath && permissionPathGranted !== details.filePath) {
+                console.log('\nPermission check received:');
+                console.log('  Permission type:', permission);
+                console.log('  Origin:', origin);
+                console.log('  Details:', JSON.stringify(details, null, 2).replace(/\n/g, '\n      '));
+                console.log('  -> Granting PERSISTENT filesystem permission\n');
+                permissionPathGranted = details.filePath;
+            }
+            return true; // Note: return value, not callback
+        }
     });
 });
 
