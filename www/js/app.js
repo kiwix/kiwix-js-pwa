@@ -978,8 +978,8 @@ function setTab (activeBtn) {
             divInstall1.style.display = 'none';
         }
     }
-    // Check for upgrade of PWA
-    if (activeBtn === 'btnConfigure') checkPWAUpdate();
+    // Check for upgrade of PWA - DEV: this causes the app to reload if a PWA update is waiting, which can end in a boot loop
+    // if (activeBtn === 'btnConfigure') checkPWAUpdate();
     // Resize iframe
     setTimeout(resizeIFrame, 100);
 }
