@@ -1,13 +1,15 @@
 # Changelog
 
-# Interim release 3.7.6
+# Interim release 3.7.61
 
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * ENHANCEMENT: Add experimental macOS packages
+* ENHANCEMENT: Allow upgrade to latest Electron by providing new persistent FS permissions handler
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
 * REGRESSION: Do not preselect first item in search results
 * REGRESSION: Fix catastrophic backtrcking in cleanup regex
+* REGRESSION: Fix display of gallery images in Wikimedia ZIMs when transformed to mobile style
 * INFO: Add instructions for installing macOS packages
 * UPDATE: Open Textbook of Medicine landing page
 * FIX: Better conversion of headings to details-summary style
@@ -21,12 +23,16 @@
 * FIX: Display of some dark_mode_safe svg images and equivalent in dark theme
 * FIX: Repair override Wikivoyage landing page
 * FIX: Do not attempt to autoupdate appx or MSIX packages
+* FIX: Incorrect hiding of search results when user is interacting with snippets
+* FIX: Prevent Fetch request timeout for style file
 * DEV: More intelligent file detection in Electron script
 * DEV: Improvements to PWA publishing script with sensible options preselected
 * DEV: Update location of signtool.exe
 * DEV: Add smoke test for macOS app
 * DEV: Make build scripts compatible with BSD
 * DEV: Security update for tmp module
+* DEV: Print Electron version during preload
+* DEV: Fix inconsistent value of articleDocument
 
 ## Release 3.7.0 / 3.7.1
 
