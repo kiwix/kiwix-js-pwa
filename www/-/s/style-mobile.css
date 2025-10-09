@@ -1127,7 +1127,9 @@ ul.mw-gallery-nolines li.gallerybox div.gallerytext {
 
 ul.mw-gallery-packed li.gallerybox div.thumb, ul.mw-gallery-packed-overlay li.gallerybox div.thumb, ul.mw-gallery-packed-hover li.gallerybox div.thumb {
     background-color: transparent;
-    border: 0
+    border: 0;
+    text-align: center;
+    display: inline-block;
 }
 
     ul.mw-gallery-packed li.gallerybox div.thumb img, ul.mw-gallery-packed-overlay li.gallerybox div.thumb img, ul.mw-gallery-packed-hover li.gallerybox div.thumb img {
@@ -1645,16 +1647,12 @@ div.gallerytext {
 
 ul.mw-gallery-nolines li.gallerybox div.thumb {
     background-color: transparent;
-    border: 0
+    border: 0;
+    display: inline-block;
 }
 
 ul.mw-gallery-nolines li.gallerybox div.gallerytext {
     text-align: center
-}
-
-ul.mw-gallery-packed li.gallerybox div.thumb, ul.mw-gallery-packed-overlay li.gallerybox div.thumb, ul.mw-gallery-packed-hover li.gallerybox div.thumb {
-    background-color: transparent;
-    border: 0
 }
 
     ul.mw-gallery-packed li.gallerybox div.thumb img, ul.mw-gallery-packed-overlay li.gallerybox div.thumb img, ul.mw-gallery-packed-hover li.gallerybox div.thumb img {
