@@ -1065,14 +1065,13 @@ function showUpgradeReady (ver, type, url) {
             alertBoxPersistent.style.display = 'none';
         });
         if (type === 'load') {
-            if (!/Electron/.test(params.appType)) {
+            if (!params.autoUpdatePWA) {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
                     reboot();
                 });
             } else {
-                // In the Electron app, we will only have this banner with type 'load' if the app has just upgraded
-                // so we should reload the app immediately
+                // If user has allowed auto-update, just reboot
                 reboot();
             }
         }
