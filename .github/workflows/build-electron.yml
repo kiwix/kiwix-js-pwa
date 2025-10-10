@@ -223,13 +223,15 @@ jobs:
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
         echo "Original Electron version: $ORIGINAL_ELECTRON_VERSION"
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" >> $GITHUB_ENV
-        echo "Changing Electron version to 26.6.10 (last to support macOS 10.13+) in ./package.json"
+        echo "Changing Electron version to exactly 26.6.10 (last to support macOS 10.13+) in ./package.json"
         sed -i '' -E 's/("electron":\s*)"[^"]+"/\1"26.6.10"/' ./package.json
+        echo "Verifying package.json has exact version (no ^ or ~):"
+        grep '"electron":' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
-        echo "Removing old Electron and installing 26.6.10 in root and dist"
-        npm uninstall electron && npm install electron@26.6.10 --save-dev
-        cd dist && npm install electron@26.6.10 --save-dev && cd ..
+        echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
+        npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
+        cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
         echo "Verifying installed Electron version..."
         npx electron --version
         echo "Building macOS packages for High Sierra/Mojave..."
@@ -266,7 +268,7 @@ jobs:
         npx electron --version
         echo "Dist Electron version:"
         cd dist && npx electron --version && cd ..
-        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
+        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"[\^~]?([0-9.]+)".*/\1/')
         ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
         echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
