@@ -6,8 +6,7 @@
 * ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
-* ENHANCEMENT: Add experimental macOS packages
-* ENHANCEMENT: Allow upgrade to latest Electron by providing new persistent FS permissions handler
+* ENHANCEMENT: Provide new persistent FS permissions handler (allows upgrade to latest Electron)
 * REGRESSION: Restore opening and closing of headers for ActionParse ZIMs converted to mobile style
 * REGRESSION: Do not preselect first item in search results
 * REGRESSION: Fix catastrophic backtrcking in cleanup regex
@@ -35,6 +34,7 @@
 * DEV: Security update for tmp module
 * DEV: Print Electron version during preload
 * DEV: Fix inconsistent value of articleDocument
+* DEV: Upgrade Electron to v38.2.2
 
 ## Release 3.7.0 / 3.7.1
 
