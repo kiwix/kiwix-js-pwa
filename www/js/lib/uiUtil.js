@@ -1064,8 +1064,8 @@ function showUpgradeReady (ver, type, url) {
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
-        if (/load|display/.test(type)) {
-            if (!params.autoUpdatePWA || type === 'display') {
+        if (/load|deploy/.test(type)) {
+            if (!params.autoUpdatePWA || type === 'deploy') {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
                     reboot();

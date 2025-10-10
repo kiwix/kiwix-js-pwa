@@ -1022,7 +1022,7 @@ function checkPWAUpdate (noreload) {
                 var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
                 // We should check if user has allowed immediate update of PWA
                 loadOrInstall = params.autoUpdatePWA ? 'load' : loadOrInstall;
-                if (noreload) loadOrInstall = 'display';
+                if (noreload) loadOrInstall = 'deploy';
                 params.upgradeNeeded = true;
                 uiUtil.showUpgradeReady(version, loadOrInstall);
             });
