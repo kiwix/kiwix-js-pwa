@@ -231,9 +231,16 @@ jobs:
       env:
         USE_HARD_LINKS: false
       run: |
-        echo "Changing Electron version to v26.6.10 (last to support macOS 10.13+) in ./dist/package.json"
-        sed -i '' -E 's/("electron":\s")[^"]+/\126.6.10/' ./dist/package.json
-        echo "Installing dependencies in dist with older Electron version"
+        # Save the original Electron version
+        ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
+        echo "Original Electron version: $ORIGINAL_ELECTRON_VERSION"
+        echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" >> $GITHUB_ENV
+        echo "Changing Electron version to v26.6.10 (last to support macOS 10.13+) in ./package.json"
+        sed -i '' -E 's/("electron":\s")[^"]+/\126.6.10/' ./package.json
+        echo "Copying the package.json to dist"
+        cp ./package.json ./dist/package.json
+        echo "Installing dependencies in root and dist"
+        npm install
         cd dist && npm install && cd ..
         echo "Building macOS packages for High Sierra/Mojave..."
         if [[ $REF_NAME = "main" ]]; then
@@ -256,6 +263,9 @@ jobs:
           fi
         done
         cd ../../..
+        echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
+        sed -i '' -E "s/(\"electron\":\s\")[^\"]+/\1$ORIGINAL_ELECTRON_VERSION/" ./package.json
+        cp ./package.json ./dist/package.json
     - name: Smoke test Electron app
       run: |
         echo "Extracting macOS app for testing..."
