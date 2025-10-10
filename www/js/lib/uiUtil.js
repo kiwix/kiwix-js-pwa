@@ -1055,7 +1055,7 @@ function showUpgradeReady (ver, type, url) {
     if (type === 'progress') {
         persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
     } else {
-        const reloadLink = (type === 'load'
+        const reloadLink = (/load|deploy/.test(type)
             ? ', or <a href="#" id="reloadNowLink" style="color:white;text-decoration:underline;">reload now</a>'
             : '') + '.)';
         persistentMessage.innerHTML = 'Version ' + ver +
