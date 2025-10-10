@@ -236,9 +236,9 @@ jobs:
         npx electron --version
         echo "Building macOS packages for High Sierra/Mojave..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 --projectDir dist
+          npx electron-builder --mac zip:x64 --publish never --projectDir dist
         else
-          npx electron-builder --mac zip:x64 --projectDir dist
+          npx electron-builder --mac zip:x64 --publish never --projectDir dist
         fi
         echo "Renaming High Sierra package..."
         cd dist/bld/Electron
@@ -252,6 +252,8 @@ jobs:
             fi
           fi
         done
+        # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
+        # rm -f *.blockmap
         cd ../../..
         echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
         sed -i '' -E "s/\"electron\"[[:space:]]*:[[:space:]]*\"[^\"]+\"/\"electron\": \"$ORIGINAL_ELECTRON_VERSION\"/" ./package.json
@@ -283,10 +285,26 @@ jobs:
         echo "✓ Electron versions verified successfully"
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
+          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
         else
-          npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
+          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
         fi
+        echo "Renaming modern macOS x64 package to avoid conflicts..."
+        cd dist/bld/Electron
+        for file in *.zip; do
+          if [[ -f "$file" ]] && [[ "$file" =~ -mac\.zip$ ]] && [[ ! "$file" =~ -arm64-mac\.zip$ ]]; then
+            # This is the x64 modern build, rename it to indicate architecture
+            newname="${file/-mac.zip/-x64-mac.zip}"
+            mv "$file" "$newname"
+            echo "Renamed modern x64 build: $file -> $newname"
+            if [[ -f "${file}.blockmap" ]]; then
+              mv "${file}.blockmap" "${newname}.blockmap"
+            fi
+          fi
+        done
+        # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
+        # rm -f *.blockmap
+        cd ../../..
     - name: Smoke test Electron app
       run: |
         echo "Extracting macOS app for testing..."
@@ -349,6 +367,11 @@ jobs:
         fi
         echo "Smoke test completed successfully"
 
+    - name: Publish packages to GitHub
+      if: github.event.inputs.target != 'artefacts'
+      run: |
+        chmod +x ./scripts/publish_macos_packages_to_github.sh
+        ./scripts/publish_macos_packages_to_github.sh
     - name: Upload packages to Kiwix
       if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
       run: |
