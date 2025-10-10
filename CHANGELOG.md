@@ -1,7 +1,8 @@
 # Changelog
 
-# Interim release 3.7.61
+# Interim release 3.7.62
 
+* ENHANCEMENT: PWA now auto-updates when new version is detected (can be turned off)
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * ENHANCEMENT: Add experimental macOS packages
