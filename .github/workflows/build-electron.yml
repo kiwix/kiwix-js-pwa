@@ -235,13 +235,19 @@ jobs:
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
         echo "Original Electron version: $ORIGINAL_ELECTRON_VERSION"
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" >> $GITHUB_ENV
-        echo "Changing Electron version to v26.6.10 (last to support macOS 10.13+) in ./package.json"
-        sed -i '' -E 's/("electron":\s")[^"]+/\126.6.10/' ./package.json
+        echo "Changing Electron version to 26.6.10 (last to support macOS 10.13+) in ./package.json"
+        sed -i '' -E 's/("electron":\s*)"[^"]+"/\1"26.6.10"/' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
-        echo "Installing dependencies in root and dist"
-        npm install
-        cd dist && npm install && cd ..
+        echo "Removing and reinstalling electron package in root and dist to force version change"
+        npm uninstall electron
+        npm install electron@26.6.10 --save-dev
+        cd dist
+        npm uninstall electron
+        npm install electron@26.6.10 --save-dev
+        cd ..
+        echo "Verifying installed Electron version..."
+        npx electron --version
         echo "Building macOS packages for High Sierra/Mojave..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --mac zip:x64 --projectDir dist
@@ -264,7 +270,7 @@ jobs:
         done
         cd ../../..
         echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
-        sed -i '' -E "s/(\"electron\":\s\")[^\"]+/\1$ORIGINAL_ELECTRON_VERSION/" ./package.json
+        sed -i '' -E "s/(\"electron\":\s*\")[^\"]+/\1$ORIGINAL_ELECTRON_VERSION/" ./package.json
         cp ./package.json ./dist/package.json
     - name: Smoke test Electron app
       run: |
