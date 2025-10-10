@@ -227,9 +227,9 @@ jobs:
         sed -i '' -E 's/("electron":\s*)"[^"]+"/\1"26.6.10"/' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
-        echo "Installing dependencies with Electron 26.6.10 in root and dist"
-        npm install
-        cd dist && npm install && cd ..
+        echo "Removing old Electron and installing 26.6.10 in root and dist"
+        npm uninstall electron && npm install electron@26.6.10 --save-dev
+        cd dist && npm install electron@26.6.10 --save-dev && cd ..
         echo "Verifying installed Electron version..."
         npx electron --version
         echo "Building macOS packages for High Sierra/Mojave..."
@@ -258,9 +258,8 @@ jobs:
         USE_HARD_LINKS: false
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
-        cp ./package.json ./dist/package.json
-        npm install
-        cd dist && npm install && cd ..
+        npm uninstall electron && npm install
+        cd dist && npm uninstall electron && npm install && cd ..
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
