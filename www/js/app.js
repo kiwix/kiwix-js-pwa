@@ -979,7 +979,7 @@ function setTab (activeBtn) {
         }
     }
     // Check for upgrade of PWA
-    if (activeBtn === 'btnConfigure') checkPWAUpdate();
+    if (activeBtn === 'btnConfigure') checkPWAUpdate(true);
     // Resize iframe
     setTimeout(resizeIFrame, 100);
 }
@@ -1008,7 +1008,7 @@ function setDynamicIcons (btn) {
 }
 
 // Check if a PWA update is available
-function checkPWAUpdate () {
+function checkPWAUpdate (noreload) {
     if (!params.upgradeNeeded && /PWA/.test(params.appType)) {
         caches.keys().then(function (keyList) {
             var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
@@ -1020,6 +1020,9 @@ function checkPWAUpdate () {
                 // If we get here, then there is a kiwix cache key that does not match our version, i.e. a PWA-in-waiting
                 var version = key.replace(cachePrefix, '');
                 var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
+                // We should check if user has allowed immediate update of PWA
+                loadOrInstall = params.autoUpdatePWA ? 'load' : loadOrInstall;
+                if (noreload) loadOrInstall = 'deploy';
                 params.upgradeNeeded = true;
                 uiUtil.showUpgradeReady(version, loadOrInstall);
             });
@@ -2000,6 +2003,10 @@ document.getElementById('enableSourceVerificationCheck').style.display = params.
 document.getElementById('enableSourceVerificationCheck').addEventListener('change', function () {
     params.sourceVerification = this.checked;
     settingsStore.setItem('sourceVerification', this.checked, Infinity);
+});
+document.getElementById('autoUpdatePWACheck').addEventListener('change', function () {
+    params.autoUpdatePWA = this.checked;
+    settingsStore.setItem('autoUpdatePWA', params.autoUpdatePWA, Infinity);
 });
 document.getElementById('hideActiveContentWarningCheck').addEventListener('change', function () {
     params.hideActiveContentWarning = this.checked;

@@ -137,6 +137,7 @@ params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines
 params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
 params['sourceVerification'] = params.contentInjectionMode === 'serviceworker' ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false; // Sets a boolean indicating weather a user trusts the source of zim files
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
+params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
@@ -294,6 +295,7 @@ document.getElementById('openExternalLinksInNewTabsCheck').checked = params.open
 document.getElementById('showPopoverPreviewsCheck').checked = params.showPopoverPreviews;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
+document.getElementById('autoUpdatePWACheck').checked = params.autoUpdatePWA;
 if (params.debugLibzimASM === 'disable') document.getElementById('debugLibzimASMDrop').style.color = 'red';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false

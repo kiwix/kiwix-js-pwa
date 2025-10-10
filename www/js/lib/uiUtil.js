@@ -1035,7 +1035,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
 /**
  * Shows that an upgrade is ready to install
  * @param {String} ver The version of the upgrade
- * @param {String} type Either 'load', 'install', 'download' or 'progress' according to the type of upgrade
+ * @param {String} type Either 'load', 'install', 'download', 'display' or 'progress' according to the type of upgrade
  * @param {String} url An optional download URL
  */
 function showUpgradeReady (ver, type, url) {
@@ -1055,7 +1055,7 @@ function showUpgradeReady (ver, type, url) {
     if (type === 'progress') {
         persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
     } else {
-        const reloadLink = (type === 'load'
+        const reloadLink = (/load|deploy/.test(type)
             ? ', or <a href="#" id="reloadNowLink" style="color:white;text-decoration:underline;">reload now</a>'
             : '') + '.)';
         persistentMessage.innerHTML = 'Version ' + ver +
@@ -1064,15 +1064,14 @@ function showUpgradeReady (ver, type, url) {
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
-        if (type === 'load') {
-            if (!/Electron/.test(params.appType)) {
+        if (/load|deploy/.test(type)) {
+            if (!params.autoUpdatePWA || type === 'deploy') {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
                     reboot();
                 });
             } else {
-                // In the Electron app, we will only have this banner with type 'load' if the app has just upgraded
-                // so we should reload the app immediately
+                // If user has allowed auto-update, just reboot
                 reboot();
             }
         }
