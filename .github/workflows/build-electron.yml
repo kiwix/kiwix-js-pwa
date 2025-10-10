@@ -219,12 +219,12 @@ jobs:
       env:
         USE_HARD_LINKS: false
       run: |
-        # Save the original Electron version
-        ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
+        # Save the original Electron version (just the version string, no quotes)
+        ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/')
         echo "Original Electron version: $ORIGINAL_ELECTRON_VERSION"
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" >> $GITHUB_ENV
         echo "Changing Electron version to exactly 26.6.10 (last to support macOS 10.13+) in ./package.json"
-        sed -i '' -E 's/("electron":\s*)"[^"]+"/\1"26.6.10"/' ./package.json
+        sed -i '' -E 's/"electron"[[:space:]]*:[[:space:]]*"[^"]+"/"electron": "26.6.10"/' ./package.json
         echo "Verifying package.json has exact version (no ^ or ~):"
         grep '"electron":' ./package.json
         echo "Copying the package.json to dist"
@@ -254,7 +254,9 @@ jobs:
         done
         cd ../../..
         echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
-        sed -i '' -E "s/(\"electron\":\s*\")[^\"]+/\1$ORIGINAL_ELECTRON_VERSION/" ./package.json
+        sed -i '' -E "s/\"electron\"[[:space:]]*:[[:space:]]*\"[^\"]+\"/\"electron\": \"$ORIGINAL_ELECTRON_VERSION\"/" ./package.json
+        echo "Verifying restoration:"
+        grep '"electron":' ./package.json
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
@@ -268,7 +270,7 @@ jobs:
         npx electron --version
         echo "Dist Electron version:"
         cd dist && npx electron --version && cd ..
-        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"[\^~]?([0-9.]+)".*/\1/')
+        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/' | sed -E 's/^[\^~]//')
         ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
         echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
