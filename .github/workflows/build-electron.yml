@@ -258,6 +258,7 @@ jobs:
         USE_HARD_LINKS: false
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
+        cp ./package.json ./dist/package.json
         npm uninstall electron && npm install
         cd dist && npm uninstall electron && npm install && cd ..
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
