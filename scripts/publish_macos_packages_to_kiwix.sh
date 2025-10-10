@@ -30,31 +30,34 @@ for file in ./dist/bld/Electron/* ; do
             arch=""
             if [[ "$filename" =~ arm64 ]]; then
                 arch="_arm64"
-            elif [[ "$filename" =~ x64 ]]; then
-                arch="_x64"
             elif [[ "$filename" =~ highsierra ]]; then
                 # High Sierra builds are x64 architecture
                 arch="_x64_highsierra"
+            else
+                # Modern x64 build (default but should be explicit)
+                arch="_x64"
             fi
-            # Create nightly filename format: kiwix-js-electron_macos[_arch]_YYYY-MM-DD.zip
+            # Create nightly filename format: kiwix-js-electron_macos_arch_YYYY-MM-DD.zip
             filename="kiwix-js-electron_macos${arch}_${CURRENT_DATE}.zip"
         else
-            # For release builds, follow the existing convention with version at end
-            # Pattern: kiwix-js-electron_[ARCH_]VERSION.zip
+            # For release builds, follow convention with platform and version clearly identified
+            # Pattern: kiwix-js-electron_macos_[ARCH_]VERSION.zip
             # Extract version number (e.g., "3.7.62")
             version=$(echo "$filename" | sed -E 's/.*-([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
             
-            # Determine architecture/variant prefix
-            arch_prefix=""
+            # Determine architecture/variant suffix
+            arch_suffix=""
             if [[ "$filename" =~ arm64 ]]; then
-                arch_prefix="arm64_"
+                arch_suffix="_arm64"
             elif [[ "$filename" =~ highsierra ]]; then
-                arch_prefix="highsierra_"
+                arch_suffix="_highsierra"
+            else
+                # Modern x64 build
+                arch_suffix="_x64"
             fi
-            # For x64 modern builds (no arm64, no highsierra), no prefix
             
-            # Construct final filename: kiwix-js-electron_[arch_]version.zip
-            filename="kiwix-js-electron_${arch_prefix}${version}.zip"
+            # Construct final filename: kiwix-js-electron_macos_arch_version.zip
+            filename="kiwix-js-electron_macos${arch_suffix}_${version}.zip"
         fi
         echo "Renaming $file to $filename"
         # Put it all together
