@@ -215,8 +215,8 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
-    - name: Build macOS packages
-      env: 
+    - name: Build macOS packages (modern)
+      env:
         USE_HARD_LINKS: false
       run: |
         echo "Installing dependencies in dist"
@@ -227,6 +227,35 @@ jobs:
         else
           npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
         fi
+    - name: Build macOS packages (High Sierra/Mojave compatible)
+      env:
+        USE_HARD_LINKS: false
+      run: |
+        echo "Changing Electron version to v26.6.10 (last to support macOS 10.13+) in ./dist/package.json"
+        sed -i '' -E 's/("electron":\s")[^"]+/\126.6.10/' ./dist/package.json
+        echo "Installing dependencies in dist with older Electron version"
+        cd dist && npm install && cd ..
+        echo "Building macOS packages for High Sierra/Mojave..."
+        if [[ $REF_NAME = "main" ]]; then
+          npx electron-builder --mac zip:x64 --projectDir dist
+        else
+          npx electron-builder --mac zip:x64 --projectDir dist
+        fi
+        echo "Renaming packages to indicate High Sierra/Mojave compatibility..."
+        cd dist/bld/Electron
+        for file in *.zip; do
+          if [[ -f "$file" ]] && [[ "$file" =~ -mac\.zip$ ]] && [[ ! "$file" =~ -HighSierra ]]; then
+            # Extract base name and add HighSierra suffix
+            newname="${file/.zip/-HighSierra.zip}"
+            mv "$file" "$newname"
+            echo "Renamed $file to $newname"
+            # Also rename blockmap if it exists
+            if [[ -f "${file}.blockmap" ]]; then
+              mv "${file}.blockmap" "${newname}.blockmap"
+            fi
+          fi
+        done
+        cd ../../..
     - name: Smoke test Electron app
       run: |
         echo "Extracting macOS app for testing..."

@@ -26,7 +26,12 @@ for file in ./dist/bld/Electron/* ; do
         # Handle architecture naming for macOS
         filename=$(sed 's/-darwin-x64/-macos-x64/' <<<"$filename")
         filename=$(sed 's/-darwin-arm64/-macos-arm64/' <<<"$filename")
-        filename=$(sed 's/-mac\.zip/-macos.zip/' <<<"$filename")
+        # Handle High Sierra suffix before general mac.zip replacement
+        if [[ "$filename" =~ -highsierra ]]; then
+            filename=$(sed 's/-mac-highsierra\.zip/-macos-highsierra.zip/' <<<"$filename")
+        else
+            filename=$(sed 's/-mac\.zip/-macos.zip/' <<<"$filename")
+        fi
         if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then 
             # For nightly builds, create a standardized filename with date
             # Extract architecture if present (arm64 or x64)
