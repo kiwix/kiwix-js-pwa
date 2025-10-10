@@ -102,36 +102,18 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>[3.7.62] PWA now auto-updates when new version is detected (can be turned off)</li>
-                                <li>[3.7.62] Added macOS support for Apple Silicon, Intel Macs, and older systems (High Sierra/Mojave)</li>
-                                <li>[3.7.6] Make enter key select first search result</li>
-                                <li>[3.7.61] Enter key now selects first search result</li>
-                                <li>[3.7.6] Prevent user selecting contradictory settings for page style</li>
-                                <li>[3.7.6] Add experimental macOS packages and instructions</li>
-                                <li>[3.7.6] Restore opening and closing of headers for ActionParse ZIMs converted to mobile style</li>
-                                <li>[3.7.6] Do not preselect first item in search results</li>
-                                <li>[3.7.6] Fix catastrophic backtracking in cleanup process</li>
-                                <li>[3.7.61] Fix display of gallery images in Wikimedia ZIMs when transformed to mobile style</li>
-                                <li>[3.7.6] Update Open Textbook of Medicine landing page</li>
-                                <li>[3.7.6] Better conversion of headings to details-summary style</li>
-                                <li>[3.7.6] Adapt remove max pagewidth restriction to ActionParse ZIMs</li>
-                                <li>[3.7.6] Fix restricted width of Wikimedia articles on mobile screen sizes</li>
-                                <li>[3.7.6] Fix display of some ultra-wide infoboxes in RTL Wikipedia ZIMs</li>
-                                <li>[3.7.6] Fix size of regular infoboxes with Wikipedia articles converted to mobile style</li>
-                                <li>[3.7.6] Ensure consistent page reloading after a theme change</li>
-                                <li>[3.7.6] Hide unwanted content on Wikipedia landing page</li>
-                                <li>[3.7.6] Fix display of some dark_mode_safe svg images and equivalent in dark theme</li>
-                                <li>[3.7.61] Fix incorrect hiding of search results when user is interacting with snippets</li>
-                                <li>Disable Table of Contents dropup if fewer than two headings in article</li>
-                                <li>Reload current article when switching between desktop and mobile styles</li>
-                                <li>Fix collapsing of Wikipedia sections when transformed to mobile style</li>
-                                <li>Do not close Wikipedia sections when a desktop ZIM is loaded and not transformed to mobile style</li>
-                                <li>Fix misplaced and misaligned titles in RTL languages for ActionParse Wikimedia ZIMs</li>
-                                <li>Add missing external link SVG for locally cached Vector stylesheet</li>
-                                <li>Update documentation of features</li>
-                                <li>Removed title erroneously showing on Wikimedia landing pages</li>
-                                <li>Fix bug that showed footnote refs as [0] in desktop-style ZIMs transformed to mobile via Config option</li>
-                                <li>Fix bug with persistent file system permissions in Electron app (pending new release)</li>
+                                <li>PWA now auto-updates immediately when new version is detected (can be turned off)</li>
+                                <li>Added Electron-based macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)</li>
+                                <li>Enter key now selects first search result</li>
+                                <li>Prevent user selecting contradictory settings for page style</li>
+                                <li>Better conversion of headings to collapsible sections for ActionParse ZIMs</li>
+                                <li>Fixed display of gallery images in Wikimedia ZIMs when transformed to mobile style</li>
+                                <li>Fixed restricted width of Wikimedia articles on mobile screen sizes</li>
+                                <li>Fixed display of some ultra-wide infoboxes in RTL Wikipedia ZIMs</li>
+                                <li>Fixed size of regular infoboxes with Wikipedia articles converted to mobile style</li>
+                                <li>Fixed display of some dark_mode_safe svg images in dark theme</li>
+                                <li>Fixed incorrect hiding of search results when user is interacting with snippets</li>
+                                <li>Do not attempt to auto-update appx or MSIX packages</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

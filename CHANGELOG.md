@@ -1,6 +1,6 @@
 # Changelog
 
-# Interim release 3.7.62
+# Release 3.7.7 / 3.7.8
 
 * ENHANCEMENT: PWA now auto-updates when new version is detected (can be turned off)
 * ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)
