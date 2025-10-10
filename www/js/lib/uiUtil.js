@@ -1035,7 +1035,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
 /**
  * Shows that an upgrade is ready to install
  * @param {String} ver The version of the upgrade
- * @param {String} type Either 'load', 'install', 'download' or 'progress' according to the type of upgrade
+ * @param {String} type Either 'load', 'install', 'download', 'display' or 'progress' according to the type of upgrade
  * @param {String} url An optional download URL
  */
 function showUpgradeReady (ver, type, url) {
@@ -1064,8 +1064,8 @@ function showUpgradeReady (ver, type, url) {
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
-        if (type === 'load') {
-            if (!params.autoUpdatePWA) {
+        if (/load|display/.test(type)) {
+            if (!params.autoUpdatePWA || type === 'display') {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
                     reboot();

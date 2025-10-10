@@ -978,8 +978,8 @@ function setTab (activeBtn) {
             divInstall1.style.display = 'none';
         }
     }
-    // Check for upgrade of PWA - DEV: this causes the app to reload if a PWA update is waiting, which can end in a boot loop
-    // if (activeBtn === 'btnConfigure') checkPWAUpdate();
+    // Check for upgrade of PWA
+    if (activeBtn === 'btnConfigure') checkPWAUpdate(true);
     // Resize iframe
     setTimeout(resizeIFrame, 100);
 }
@@ -1008,7 +1008,7 @@ function setDynamicIcons (btn) {
 }
 
 // Check if a PWA update is available
-function checkPWAUpdate () {
+function checkPWAUpdate (noreload) {
     if (!params.upgradeNeeded && /PWA/.test(params.appType)) {
         caches.keys().then(function (keyList) {
             var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
@@ -1022,6 +1022,7 @@ function checkPWAUpdate () {
                 var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
                 // We should check if user has allowed immediate update of PWA
                 loadOrInstall = params.autoUpdatePWA ? 'load' : loadOrInstall;
+                if (noreload) loadOrInstall = 'display';
                 params.upgradeNeeded = true;
                 uiUtil.showUpgradeReady(version, loadOrInstall);
             });
