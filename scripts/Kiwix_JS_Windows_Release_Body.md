@@ -46,6 +46,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
   - **Portable (Electron)** - *experimental*
     + macOS 10.15+ Apple Silicon (M1/M2/M3): [Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.zip) - *recommended for Apple Silicon Macs*
     + macOS 10.15+ Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-x64.zip)
+    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-mac-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-mac-HighSierra.zip)
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 
@@ -63,15 +64,19 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
   + **_Debian/Ubuntu_**: download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt-get update` followed by `chmod a+x ./kiwix-js-electron*.deb`, then `sudo apt install ./kiwix-js-electron*.deb`. To run the app from the command line, rather than from its installed icon, simply type `kiwix-js-electron` in terminal. On **Debian**, if you receive the error `libgbm.so.1: cannot open shared object file`, please run `sudo apt install libgbm-dev`. On older versions of Debian, you may have to add `--no-sandbox` to the command line when running the app, i.e. `kiwix-js-electron --no-sandbox`. When you want to update, just install the new version, and it will install over the old version.
   + **_Fedora_**: download the correct `.rpm` package. You should be able to install it by opening the File manager, locating the package, and double-clicking it. Alternatively, open a terminal and `cd` to the directory with the package, and then type `sudo rpm --install ./kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). After install, you should find Kiwix JS Electron in your app list, and you can launch it from there. To upgrade, locate the newly downloaded package in terminal and type `sudo rpm --upgrade ./kiwix.js.electron-*.rpm` (ensure you specify the correct package number in place of `*` if you have more than one). If you find the app is stuck looking for an old sample package after upgrade, please just press the Reset button next to the version number at the top of Configuration.
   + **_OpenSUSE_**: download the correct `.rpm` package. You may get a better installation experience if you first install Chrome or another Chromium browser, as the Electron app has the same dependencies as Chrome. Then open a Terminal with superuser privileges, navigate to the directory containing the `.rpm` package, and type `zypper install  kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). If you are informed about missing dependencies, try "Solution 2: break kiwix-js-electron... by ignoring some of its dependencies'. You will also be warned that the app is not signed. You can ignore this, if you trust this repository. See above for commandline switches in older versions of OpenSUSE.
-* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon or Intel). Extract the ZIP file to any location (e.g., Desktop or Applications folder). **These builds are unsigned and require additional steps to run**:
-    1. **Extract** the application (`Kiwix JS Electron.app`) from the downloaded ZIP archive
-    2. **Open Terminal** (Applications > Utilities > Terminal)  
-    3. **Remove quarantine flag** by running:
+* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon, Intel, or High Sierra/Mojave). **Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it.** **These builds are unsigned and require additional steps to run**:
+    1. **Remove quarantine flag from ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
+       - Open Terminal (Applications > Utilities > Terminal)
+       - Run the following command:
        ```bash
-       xattr -d com.apple.quarantine /path/to/Kiwix\ JS\ Electron.app
+       xattr -d com.apple.quarantine ~/Downloads/Kiwix-JS-Electron-*.zip
        ```
-       *(Replace `/path/to/` with the actual location where you extracted the app)*
-    4. **Launch** the app by double-clicking it - it should now open normally
+       - Then extract the ZIP file by double-clicking it
+    2. **Safari users**: The app (`Kiwix JS Electron.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag:
+       ```bash
+       xattr -d com.apple.quarantine ~/Downloads/Kiwix\ JS\ Electron.app
+       ```
+    3. **Launch** the app by double-clicking it - it should now open normally
   + **Architecture Selection:**
     + **Apple Silicon Macs** (M1/M2/M3): Use the ARM64 version for optimal performance
     + **Intel Macs**: Use the x64 version
