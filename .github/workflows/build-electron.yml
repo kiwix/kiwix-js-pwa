@@ -264,7 +264,7 @@ jobs:
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
         npm install
-        cd dist && npm uninstall electron && npm install electron && cd ..
+        cd dist && npm uninstall electron && npm install electron --save-dev && cd ..
         echo "Verifying Electron versions before building..."
         echo "Checking package.json electron entry:"
         grep '"electron":' ./package.json
