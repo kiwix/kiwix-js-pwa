@@ -260,7 +260,20 @@ jobs:
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
         npm install
-        cd dist && npm install && cd ..
+        cd dist && npm uninstall electron && npm install && cd ..
+        echo "Verifying Electron versions before building..."
+        echo "Root Electron version:"
+        npx electron --version
+        echo "Dist Electron version:"
+        cd dist && npx electron --version && cd ..
+        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"\s*:\s*"([^"]+)".*/\1/')
+        ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
+        echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
+        if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
+          echo "ERROR: Electron version mismatch! Expected $EXPECTED_VERSION but got $ACTUAL_VERSION"
+          exit 1
+        fi
+        echo "✓ Electron versions verified successfully"
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --mac zip:x64 zip:arm64 --projectDir dist
