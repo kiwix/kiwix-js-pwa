@@ -266,11 +266,14 @@ jobs:
         npm uninstall electron && npm install
         cd dist && npm uninstall electron && npm install electron && cd ..
         echo "Verifying Electron versions before building..."
+        echo "Checking package.json electron entry:"
+        grep '"electron":' ./package.json
         echo "Root Electron version:"
         npx electron --version
         echo "Dist Electron version:"
         cd dist && npx electron --version && cd ..
         EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/' | sed -E 's/^[\^~]//')
+        echo "DEBUG: Extracted EXPECTED_VERSION='$EXPECTED_VERSION'"
         ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
         echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
