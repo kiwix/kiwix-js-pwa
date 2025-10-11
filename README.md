@@ -11,8 +11,8 @@ There are hundreds of multilingual archives to choose from, on many different to
 offline knowledge!** 
 
 Part of the [Kiwix family](https://kiwix.org/), this app is available either as an offline-capable, [installable Progressive Web App](#universal-progressive-web-app)
-(PWA), for almost all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see
-**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline PWA.
+(PWA), for almost all modern browsers and devices, or else as app packages for various Windows, Linux and macOS operating systems: see
+**[Kiwix JS Linux/Windows/macOS](https://kiwix.github.io/kiwix-js-pwa/app)**. For **iOS** and **Android**, use the offline PWA.
 
 We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** (a complete medical
 encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikivoyage)** (a complete travel guide) in
@@ -87,7 +87,8 @@ try switching the app to Restricted mode (see Content injection mode in Configur
 
 * As an application implemented with the following frameworks:
 
-  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
+  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows, macOS): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
+    + Builds available for ia32, x86, x64, ARM64, M1/M2/M3
   + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://apps.microsoft.com/detail/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
@@ -119,7 +120,7 @@ the app, please star this Repostiory (see top)!
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32bit and 64bit) are available from
+Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 and legacy High Sierra/Mojave) are available from
 [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be
 buggy and change rapidly. Additionally, nightly Windows binaries are **unsigned**.
