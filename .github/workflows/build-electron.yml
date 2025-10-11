@@ -244,7 +244,7 @@ jobs:
         cd dist/bld/Electron
         for file in *.zip; do
           if [[ -f "$file" ]] && [[ "$file" =~ -mac\.zip$ ]]; then
-            newname="${file/-mac.zip/-mac-HighSierra.zip}"
+            newname="${file/-mac.zip/-macOS-HighSierra.zip}"
             mv "$file" "$newname"
             echo "Renamed High Sierra build: $file -> $newname"
             if [[ -f "${file}.blockmap" ]]; then
@@ -289,16 +289,25 @@ jobs:
         else
           npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
         fi
-        echo "Renaming modern macOS x64 package to avoid conflicts..."
+        echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
-          if [[ -f "$file" ]] && [[ "$file" =~ -mac\.zip$ ]] && [[ ! "$file" =~ -arm64-mac\.zip$ ]]; then
-            # This is the x64 modern build, rename it to indicate architecture
-            newname="${file/-mac.zip/-x64-mac.zip}"
-            mv "$file" "$newname"
-            echo "Renamed modern x64 build: $file -> $newname"
-            if [[ -f "${file}.blockmap" ]]; then
-              mv "${file}.blockmap" "${newname}.blockmap"
+          if [[ -f "$file" ]]; then
+            newname=""
+            if [[ "$file" =~ -arm64-mac\.zip$ ]]; then
+              # Rename the ARM64 build
+              newname="${file/-arm64-mac.zip/-macOS-arm64.zip}"
+            elif [[ "$file" =~ -mac\.zip$ ]]; then
+              # This is the x64 modern build, rename it to indicate architecture
+              newname="${file/-mac.zip/-macOS-x64.zip}"
+            fi
+            
+            if [[ -n "$newname" ]]; then
+              mv "$file" "$newname"
+              echo "Renamed build: $file -> $newname"
+              if [[ -f "${file}.blockmap" ]]; then
+                mv "${file}.blockmap" "${newname}.blockmap"
+              fi
             fi
           fi
         done

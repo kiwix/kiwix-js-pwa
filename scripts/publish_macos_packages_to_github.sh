@@ -27,11 +27,18 @@ fi
 
 echo "Found draft release. Upload URL: $upload_url"
 
-# Upload all zip files from dist/bld/Electron
-for file in ./dist/bld/Electron/*.zip; do
+# Upload all zip and blockmap files from dist/bld/Electron
+for file in ./dist/bld/Electron/*.{zip,blockmap}; do
   if [[ -f "$file" ]]; then
     # Extract filename and convert spaces to hyphens
     filename=$(basename "$file" | sed 's/ /-/g')
+
+    # Determine content type based on file extension
+    if [[ "$file" =~ \.zip$ ]]; then
+      content_type="application/zip"
+    else
+      content_type="application/octet-stream"
+    fi
 
     echo ""
     echo "Uploading $filename to GitHub..."
@@ -51,7 +58,7 @@ for file in ./dist/bld/Electron/*.zip; do
     # Upload the file
     response=$(curl -X POST \
       -H "Authorization: token $GITHUB_TOKEN" \
-      -H "Content-Type: application/zip" \
+      -H "Content-Type: $content_type" \
       --data-binary @"$file" \
       "${upload_url}?name=${filename}")
 
