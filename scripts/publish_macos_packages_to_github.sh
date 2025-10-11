@@ -27,8 +27,8 @@ fi
 
 echo "Found draft release. Upload URL: $upload_url"
 
-# Upload all zip and blockmap files from dist/bld/Electron
-for file in ./dist/bld/Electron/*.{zip,blockmap}; do
+# Upload all zip, blockmap, and yml files from dist/bld/Electron
+for file in ./dist/bld/Electron/*.{zip,blockmap} ./dist/bld/Electron/latest-mac*.yml; do
   if [[ -f "$file" ]]; then
     # Extract filename and convert spaces to hyphens
     filename=$(basename "$file" | sed 's/ /-/g')
@@ -36,6 +36,8 @@ for file in ./dist/bld/Electron/*.{zip,blockmap}; do
     # Determine content type based on file extension
     if [[ "$file" =~ \.zip$ ]]; then
       content_type="application/zip"
+    elif [[ "$file" =~ \.yml$ ]]; then
+      content_type="application/x-yaml"
     else
       content_type="application/octet-stream"
     fi
