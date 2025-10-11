@@ -6,8 +6,13 @@
  * that each try to upload their own latest.yml file
  */
 
-const https = require('https');
-const { execSync } = require('child_process');
+import https from 'https';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Get environment variables
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -20,10 +25,12 @@ if (!GITHUB_TOKEN) {
     process.exit(0);
 }
 
+// Read package.json
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
+
 // Calculate the tag name (same logic as workflow)
 let tagName;
 if (!INPUT_VERSION) {
-    const packageJson = require('../package.json');
     tagName = `v${packageJson.version}`;
 } else {
     tagName = INPUT_VERSION;
@@ -39,7 +46,6 @@ if (!CRON_LAUNCHED && INPUT_TARGET !== 'nightly') {
 console.log(`Looking for draft release with tag: ${tagName}`);
 
 // Get repository from package.json
-const packageJson = require('../package.json');
 const repoUrl = packageJson.repository;
 const repoMatch = repoUrl.match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
 
@@ -73,6 +79,12 @@ https.get(options, (res) => {
     });
 
     res.on('end', () => {
+        if (res.statusCode !== 200) {
+            console.error(`GitHub API returned status ${res.statusCode}`);
+            console.error(data);
+            process.exit(1);
+        }
+
         try {
             const releases = JSON.parse(data);
             const draftRelease = releases.find(r => r.draft && r.tag_name === tagName);
