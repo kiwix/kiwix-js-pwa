@@ -44,9 +44,9 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 10.15+ Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-x64.zip)
-    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-mac-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-mac-HighSierra.zip)
+    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Kiwix-JS-Electron-<<numeric_tag>>-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 10.15+ Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-macOS-x64.zip)
+    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-macOS-HighSierra.zip)
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 
