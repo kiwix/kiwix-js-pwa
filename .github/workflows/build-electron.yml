@@ -399,11 +399,45 @@ jobs:
   Release_Windows:
     if: github.event.inputs.macosonly != 'true'
     runs-on: windows-latest
-    env: 
-      SIGNTOOL_PATH: "C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x86/signtool.exe"
     steps:
-    - uses: actions/checkout@v4   
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
+    - name: Find and set signtool.exe path
+      if: github.event.inputs.sign == 'true'
+      shell: powershell
+      run: |
+        # Find the latest available Windows SDK version with signtool
+        $sdkPath = "C:\Program Files (x86)\Windows Kits\10\bin"
+        if (Test-Path $sdkPath) {
+          $latestSdk = Get-ChildItem $sdkPath -Directory |
+            Where-Object { $_.Name -match '^\d+\.\d+\.\d+\.\d+$' } |
+            Sort-Object Name -Descending |
+            Select-Object -First 1
+
+          if ($latestSdk) {
+            $signtoolPath = Join-Path $latestSdk.FullName "x86\signtool.exe"
+            if (Test-Path $signtoolPath) {
+              echo "Found signtool at: $signtoolPath"
+              echo "SIGNTOOL_PATH=$signtoolPath" >> $env:GITHUB_ENV
+            } else {
+              # Try x64 version
+              $signtoolPath = Join-Path $latestSdk.FullName "x64\signtool.exe"
+              if (Test-Path $signtoolPath) {
+                echo "Found signtool at: $signtoolPath"
+                echo "SIGNTOOL_PATH=$signtoolPath" >> $env:GITHUB_ENV
+              } else {
+                echo "ERROR: signtool.exe not found in SDK version $($latestSdk.Name)"
+                exit 1
+              }
+            }
+          } else {
+            echo "ERROR: No Windows SDK found at $sdkPath"
+            exit 1
+          }
+        } else {
+          echo "ERROR: Windows SDK path does not exist: $sdkPath"
+          exit 1
+        }
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
