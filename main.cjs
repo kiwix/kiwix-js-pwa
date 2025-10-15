@@ -229,7 +229,7 @@ app.whenReady().then(() => {
     const whitelistedRootFiles = [
         'service-worker.js',
         'manifest.json',
-        'package.json'
+        'replayWorker.js'
     ];
 
     whitelistedRootFiles.forEach(file => {
@@ -240,7 +240,8 @@ app.whenReady().then(() => {
 
     // In development mode, serve node_modules for dependencies (e.g., jQuery)
     // Production builds bundle these dependencies, so this is only needed in dev
-    const isDevelopment = fs.existsSync(path.join(__dirname, 'node_modules'));
+    // We detect dev mode by checking if app.js exists (production uses bundle.min.js)
+    const isDevelopment = fs.existsSync(path.join(__dirname, 'www/js/app.js'));
     if (isDevelopment) {
         console.log('Development mode detected: serving node_modules');
         server.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
