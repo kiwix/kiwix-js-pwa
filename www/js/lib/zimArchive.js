@@ -716,7 +716,7 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
             callback(dirEntry, html);
             return;
         }
-        if (/\bx?html\b/i.test(mimetype)) {
+        if (/\bx?html\b/i.test(mimetype) && params.zimType === 'zimit') {
             // If the data were encoded with a different mimtype, here is how to change it
             // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
             // encoding = encoding ? encoding[1] : '';
