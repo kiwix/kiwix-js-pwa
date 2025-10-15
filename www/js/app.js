@@ -4849,8 +4849,10 @@ function listenForNavigationKeys () {
     articleWindow.addEventListener('keydown', listener);
 }
 
+// Listen to iframe key presses for in-page search
 function listenForSearchKeys () {
-    // Listen to iframe key presses for in-page search
+    if (!articleWindow) return;
+    // We may have a replay_iframe inside articleWindow if we are using the ReplayWorker
     var iframeContentWindow = articleWindow;
     if (appstate.isReplayWorkerAvailable) {
         var replayIframe = articleWindow.document.getElementById('replay_iframe');
@@ -4858,18 +4860,25 @@ function listenForSearchKeys () {
             iframeContentWindow = replayIframe.contentWindow;
         }
     }
+    // Set up key listeners for find in article
     iframeContentWindow.addEventListener('keyup', function (e) {
-        // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-        if ((e.ctrlKey || e.altKey) && e.which == 70) {
+        // Alt-F (and Alt-Shift-F) for search in article, also patches Ctrl-F and Ctrl-Shift-F for apps that do not have access to browser search
+        if ((e.ctrlKey || e.altKey || e.metaKey) && e.key.toLowerCase() === 'f') {
             document.getElementById('findText').click();
         }
     });
     iframeContentWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
-        if (e.ctrlKey && e.which == 80) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
             e.stopPropagation();
             e.preventDefault();
             printIntercept();
+        }
+        // Focus the prefix if user types a / (but not in an input field)
+        if (e.key == '/' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
         }
     }, true);
 }
@@ -5677,10 +5686,12 @@ var articleLoadedSW = function (dirEntry, container) {
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
-        // Deflect drag-and-drop of ZIM file on the iframe to Config
-        if (!params.disableDragAndDrop && appstate.target === 'iframe') {
-            docBody.addEventListener('dragover', handleIframeDragover);
-            docBody.addEventListener('drop', handleIframeDrop);
+        if (appstate.target === 'iframe') {
+            // Deflect drag-and-drop of ZIM file on the iframe to Config
+            if (!params.disableDragAndDrop) {
+                docBody.addEventListener('dragover', handleIframeDragover);
+                docBody.addEventListener('drop', handleIframeDrop);
+            }
             setupTableOfContents();
             listenForSearchKeys();
         }
