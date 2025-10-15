@@ -5,8 +5,8 @@ const Store = require('electron-store');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
+const fs = require('fs');
 // const https = require('https');
-// const fs = require('fs');
 
 const store = new Store();
 
@@ -225,8 +225,29 @@ app.whenReady().then(() => {
         next();
     });
 
-    // Serve static files from the www directory
-    server.use(express.static(path.join(__dirname, '/')));
+    // Whitelist specific root files that are needed by the app
+    const whitelistedRootFiles = [
+        'service-worker.js',
+        'manifest.json',
+        'package.json'
+    ];
+
+    whitelistedRootFiles.forEach(file => {
+        server.get(`/${file}`, (_req, res) => {
+            res.sendFile(path.join(__dirname, file));
+        });
+    });
+
+    // In development mode, serve node_modules for dependencies (e.g., jQuery)
+    // Production builds bundle these dependencies, so this is only needed in dev
+    const isDevelopment = fs.existsSync(path.join(__dirname, 'node_modules'));
+    if (isDevelopment) {
+        console.log('Development mode detected: serving node_modules');
+        server.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+    }
+
+    // Serve static files from the www directory only
+    server.use('/www', express.static(path.join(__dirname, 'www')));
 
     // Function to start the Express server and check for port availability
     const startServer = (port) => {
@@ -237,8 +258,8 @@ app.whenReady().then(() => {
             app.quit();
             return;
         }
-        expressServer = server.listen(port, () => {
-            console.log(`Server running on port ${port}`);
+        expressServer = server.listen(port, '127.0.0.1', () => {
+            console.log(`Server running on port ${port} (localhost only)`);
             // Create the new window
             createWindow();
             registerListeners();
