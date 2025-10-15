@@ -370,24 +370,9 @@ prefix.addEventListener('blur', function () {
     }, 100);
 });
 
-// Add keyboard shortcuts
-window.addEventListener('keyup', function (e) {
-    // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-    if ((e.ctrlKey || e.altKey) && e.key === 'F') {
-        document.getElementById('findText').click();
-    }
-});
+listenForSearchAndPrintKeys(window);
 
-window.addEventListener('keydown', function (e) {
-    // Ctrl-P to patch printing support, so iframe gets printed
-    if (e.ctrlKey && e.key === 'P') {
-        e.stopPropagation();
-        e.preventDefault();
-        printIntercept();
-    }
-}, true);
-
-// Set up listeners for print dialogues
+// Handle listeners for print dialogue
 function printArticle (doc) {
     uiUtil.printCustomElements(doc);
     uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
@@ -4849,25 +4834,23 @@ function listenForNavigationKeys () {
     articleWindow.addEventListener('keydown', listener);
 }
 
-// Listen to iframe key presses for in-page search
-function listenForSearchKeys () {
-    if (!articleWindow) return;
+// Listen to key presses for in-page search and print
+function listenForSearchAndPrintKeys (controlWindow) {
     // We may have a replay_iframe inside articleWindow if we are using the ReplayWorker
-    var iframeContentWindow = articleWindow;
     if (appstate.isReplayWorkerAvailable) {
         var replayIframe = articleWindow.document.getElementById('replay_iframe');
         if (replayIframe) {
-            iframeContentWindow = replayIframe.contentWindow;
+            controlWindow = replayIframe.contentWindow;
         }
     }
     // Set up key listeners for find in article
-    iframeContentWindow.addEventListener('keyup', function (e) {
+    controlWindow.addEventListener('keyup', function (e) {
         // Alt-F (and Alt-Shift-F) for search in article, also patches Ctrl-F and Ctrl-Shift-F for apps that do not have access to browser search
         if ((e.ctrlKey || e.altKey || e.metaKey) && e.key.toLowerCase() === 'f') {
             document.getElementById('findText').click();
         }
     });
-    iframeContentWindow.addEventListener('keydown', function (e) {
+    controlWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
             e.stopPropagation();
@@ -5693,7 +5676,7 @@ var articleLoadedSW = function (dirEntry, container) {
                 docBody.addEventListener('drop', handleIframeDrop);
             }
             setupTableOfContents();
-            listenForSearchKeys();
+            listenForSearchAndPrintKeys(articleWindow);
         }
         // Note that switchCSSTheme() requires access to params.lastPageVisit
         if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
@@ -6905,7 +6888,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     docBody.addEventListener('dragover', handleIframeDragover);
                     docBody.addEventListener('drop', handleIframeDrop);
                 }
-                listenForSearchKeys();
+                listenForSearchAndPrintKeys(articleWindow);
                 // Trap clicks in the iframe to restore Fullscreen mode
                 if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 setupTableOfContents();
