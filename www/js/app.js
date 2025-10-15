@@ -553,6 +553,7 @@ function printIntercept () {
 
 // Establish some variables with global scope
 var localSearch = {};
+var timeoutFIAKeyup = null;
 
 function clearFindInArticle () {
     if (document.getElementById('row2').style.display === 'none') return;
@@ -566,6 +567,73 @@ function clearFindInArticle () {
     document.getElementById('findText').classList.remove('active');
 }
 
+// Helper function to perform the actual search with debouncing
+function findInArticleInitiate (val) {
+    // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough)
+    // if no value has been entered (clears highlighting if user deletes all values in search field)
+    if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
+        localSearch.scrollFrom = 0;
+        localSearch.lastScrollValue = val;
+        localSearch.setMatchType('open');
+        // Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
+        if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
+        localSearch.apply(val);
+        if (val.length) {
+            var fullTotal = localSearch.countFullMatches(val);
+            var partialTotal = localSearch.countPartialMatches();
+            fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+            document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
+            document.getElementById('partial').innerHTML = 'Partial: ' + partialTotal;
+            // Auto-scroll: TODO - consider making this an option
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        } else {
+            document.getElementById('matches').innerHTML = 'Full: 0';
+            document.getElementById('partial').innerHTML = 'Partial: 0';
+        }
+    }
+}
+
+// Helper function to debounce keyup events
+function findInArticleKeyup (val) {
+    // Use a timeout, so that very quick typing does not cause a lot of overhead
+    if (timeoutFIAKeyup) {
+        window.clearTimeout(timeoutFIAKeyup);
+    }
+    timeoutFIAKeyup = window.setTimeout(function () {
+        findInArticleInitiate(val);
+    }, 500);
+}
+
+// Set up the keyup event listener for the search input (attached once)
+var findInArticle = document.getElementById('findInArticle');
+findInArticle.addEventListener('keyup', function (e) {
+    // If user pressed Alt-F or Ctrl-F, exit
+    if ((e.altKey || e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') return;
+    var val = this.value;
+    // If user pressed enter / return key
+    if (val && (e.key === 'Enter' || e.keyCode === 13)) {
+        if (localSearch.scrollToFullMatch) {
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        }
+        return;
+    }
+    // If value hasn't changed, exit
+    if (localSearch.lastScrollValue && val === localSearch.lastScrollValue) return;
+    findInArticleKeyup(val);
+});
+
+// Set up event delegation for the scrollLink (which is dynamically created)
+document.getElementById('matches').addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'scrollLink') {
+        e.preventDefault();
+        var val = findInArticle.value;
+        if (localSearch.scrollToFullMatch && val) {
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        }
+    }
+});
+
+// Set up the click event listener for the findText button
 document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
@@ -580,7 +648,6 @@ document.getElementById('findText').addEventListener('click', function () {
     }
     // Set the height of the navbar to accommodate the search bar
     setNavbarHeight(params.navbarHeight + 35, params.relativeUIFontSize);
-    var findInArticle = null;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     if (appstate.isReplayWorkerAvailable) {
         innerDocument = innerDocument ? innerDocument.getElementById('replay_iframe').contentDocument : null;
@@ -588,7 +655,6 @@ document.getElementById('findText').addEventListener('click', function () {
     innerDocument = innerDocument ? innerDocument.body : null;
     if (!innerDocument || innerDocument.innerHTML.length < 10) return;
     setTab('findText');
-    findInArticle = document.getElementById('findInArticle');
     searchDiv.style.display = 'block';
     // Show the toolbar
     params.hideToolbars = false;
@@ -596,57 +662,8 @@ document.getElementById('findText').addEventListener('click', function () {
     findInArticle.focus();
     // We need to open all sections to search
     openOrCloseAllSections(true);
-    localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
-    findInArticle.addEventListener('keyup', function (e) {
-        // If user pressed Alt-F or Ctrl-F, exit
-        if ((e.altKey || e.ctrlKey) && e.key === 'F') return;
-        var val = this.value;
-        // If user pressed enter / return key
-        if (val && (e.key === 'Enter' || e.keyCode === 13)) {
-            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-            return;
-        }
-        // If value hasn't changed, exit
-        if (val === localSearch.lastScrollValue) return;
-        findInArticleKeyup(val);
-    });
-    var findInArticleKeyup = function (val) {
-        // Use a timeout, so that very quick typing does not cause a lot of overhead
-        if (window.timeoutFIAKeyup) {
-            window.clearTimeout(window.timeoutFIAKeyup);
-        }
-        window.timeoutFIAKeyup = window.setTimeout(function () {
-            findInArticleInitiate(val);
-        }, 500);
-    };
-    var findInArticleInitiate = function (val) {
-        // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough)
-        // if no value has been entered (clears highlighting if user deletes all values in search field)
-        if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
-            localSearch.scrollFrom = 0;
-            localSearch.lastScrollValue = val;
-            localSearch.setMatchType('open');
-            // Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
-            if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
-            localSearch.apply(val);
-            if (val.length) {
-                var fullTotal = localSearch.countFullMatches(val);
-                var partialTotal = localSearch.countPartialMatches();
-                fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
-                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
-                document.getElementById('partial').innerHTML = 'Partial: ' + partialTotal;
-                document.getElementById('scrollLink').addEventListener('click', function () {
-                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                });
-                // Auto-scroll: TODO - consider making this an option
-                localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-            } else {
-                document.getElementById('matches').innerHTML = 'Full: 0';
-                document.getElementById('partial').innerHTML = 'Partial: 0';
-            }
-        }
-    };
+    localSearch = new util.Hilitor(innerDocument);
 });
 
 document.getElementById('btnRandomArticle').addEventListener('click', function () {
