@@ -482,8 +482,8 @@ function printIntercept () {
     }
     if (params.contentInjectionMode === 'serviceworker') {
         // Re-establish lastPageVisit because it is not always set, for example with dynamic loads, in SW mode
-        params.lastPageVisit = articleDocument.location.href.replace(/^.+\/([^/]+\.[zZ][iI][mM]\w?\w?)\/([CA]\/.*$)/, function (m0, zimName, zimURL) {
-            return decodeURI(zimURL) + '@kiwixKey@' + decodeURI(zimName);
+        params.lastPageVisit = articleWindow.location.href.replace(/^.+\/([^/]+\.[zZ][iI][mM]\w?\w?)\/([CA]\/.*$)/, function (m0, zimName, zimURL) {
+            return decodeURIComponent(zimURL) + '@kiwixKey@' + decodeURIComponent(zimName);
         });
     }
     var printDesktopCheck = document.getElementById('printDesktopCheck').checked;
