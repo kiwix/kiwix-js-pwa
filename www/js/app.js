@@ -4877,6 +4877,7 @@ function listenForSearchAndPrintKeys (controlWindow) {
         // Focus the prefix if user types a / (but not in an input field)
         if (e.key == '/' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
+            uiUtil.showSlidingUIElements();
             prefix.focus();
             prefix.setSelectionRange(prefix.value.length, prefix.value.length);
         }
