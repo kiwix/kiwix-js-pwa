@@ -4866,6 +4866,14 @@ function listenForSearchAndPrintKeys (controlWindow) {
         if ((e.ctrlKey || e.altKey || e.metaKey) && e.key.toLowerCase() === 'f') {
             document.getElementById('findText').click();
         }
+        // Ctrl-L / Alt-D / Cmd-L for search bar (address bar analogy) - only fires if browser doesn't handle it (e.g., in PWA/Electron mode)
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') || (e.altKey && e.key.toLowerCase() === 'd')) {
+            if (!/(input|textarea)/i.test(e.target.tagName)) {
+                uiUtil.showSlidingUIElements();
+                prefix.focus();
+                prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+            }
+        }
     });
     controlWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
@@ -4876,6 +4884,20 @@ function listenForSearchAndPrintKeys (controlWindow) {
         }
         // Focus the prefix if user types a / (but not in an input field)
         if (e.key == '/' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            uiUtil.showSlidingUIElements();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+        }
+        // Ctrl-K / Cmd-K for search bar (modern app convention)
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !/(input|textarea)/i.test(e.target.tagName)) {
+            e.preventDefault();
+            uiUtil.showSlidingUIElements();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+        }
+        // Home key for search bar (semantic "start here")
+        if (e.key === 'Home' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
             uiUtil.showSlidingUIElements();
             prefix.focus();
