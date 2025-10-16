@@ -377,7 +377,7 @@ jobs:
         echo "Smoke test completed successfully"
 
     - name: Publish packages to GitHub
-      if: github.event.inputs.target != 'artefacts'
+      if: github.event.inputs.target == 'release'
       run: |
         chmod +x ./scripts/publish_macos_packages_to_github.sh
         ./scripts/publish_macos_packages_to_github.sh
