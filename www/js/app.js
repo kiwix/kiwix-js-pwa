@@ -4878,13 +4878,15 @@ function listenForSearchAndPrintKeys (controlWindow) {
     controlWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-            e.stopPropagation();
             e.preventDefault();
+            e.stopPropagation();
             printIntercept();
         }
-        // Focus the prefix if user types a / (but not in an input field)
-        if (e.key == '/' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
+        // Focus the prefix if user types a / (but not in an input or other selectable field)
+        if (e.key == '/' && !e.ctrlKey && !e.metaKey && !/(input|textarea|select)/i.test(e.target.tagName) &&
+        !e.target.isContentEditable && e.target.getAttribute('role') !== 'textbox') {
             e.preventDefault();
+            e.stopPropagation();
             uiUtil.showSlidingUIElements();
             prefix.focus();
             prefix.setSelectionRange(prefix.value.length, prefix.value.length);
@@ -4892,13 +4894,16 @@ function listenForSearchAndPrintKeys (controlWindow) {
         // Ctrl-K / Cmd-K for search bar (modern app convention)
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !/(input|textarea)/i.test(e.target.tagName)) {
             e.preventDefault();
+            e.stopPropagation();
             uiUtil.showSlidingUIElements();
             prefix.focus();
             prefix.setSelectionRange(prefix.value.length, prefix.value.length);
         }
         // Home key for search bar (semantic "start here")
-        if (e.key === 'Home' && !/(input|textarea)/i.test(e.target.tagName) && !e.ctrlKey && !e.metaKey) {
+        if (e.key === 'Home' && !e.ctrlKey && !e.metaKey && !/(input|textarea|select)/i.test(e.target.tagName) &&
+        !e.target.isContentEditable && e.target.getAttribute('role') !== 'textbox') {
             e.preventDefault();
+            e.stopPropagation();
             uiUtil.showSlidingUIElements();
             prefix.focus();
             prefix.setSelectionRange(prefix.value.length, prefix.value.length);
