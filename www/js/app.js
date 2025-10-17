@@ -370,24 +370,9 @@ prefix.addEventListener('blur', function () {
     }, 100);
 });
 
-// Add keyboard shortcuts
-window.addEventListener('keyup', function (e) {
-    // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-    if ((e.ctrlKey || e.altKey) && e.key === 'F') {
-        document.getElementById('findText').click();
-    }
-});
+listenForSearchAndPrintKeys(window);
 
-window.addEventListener('keydown', function (e) {
-    // Ctrl-P to patch printing support, so iframe gets printed
-    if (e.ctrlKey && e.key === 'P') {
-        e.stopPropagation();
-        e.preventDefault();
-        printIntercept();
-    }
-}, true);
-
-// Set up listeners for print dialogues
+// Handle listeners for print dialogue
 function printArticle (doc) {
     uiUtil.printCustomElements(doc);
     uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
@@ -568,6 +553,7 @@ function printIntercept () {
 
 // Establish some variables with global scope
 var localSearch = {};
+var timeoutFIAKeyup = null;
 
 function clearFindInArticle () {
     if (document.getElementById('row2').style.display === 'none') return;
@@ -581,6 +567,73 @@ function clearFindInArticle () {
     document.getElementById('findText').classList.remove('active');
 }
 
+// Helper function to perform the actual search with debouncing
+function findInArticleInitiate (val) {
+    // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough)
+    // if no value has been entered (clears highlighting if user deletes all values in search field)
+    if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
+        localSearch.scrollFrom = 0;
+        localSearch.lastScrollValue = val;
+        localSearch.setMatchType('open');
+        // Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
+        if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
+        localSearch.apply(val);
+        if (val.length) {
+            var fullTotal = localSearch.countFullMatches(val);
+            var partialTotal = localSearch.countPartialMatches();
+            fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+            document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
+            document.getElementById('partial').innerHTML = 'Partial: ' + partialTotal;
+            // Auto-scroll: TODO - consider making this an option
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        } else {
+            document.getElementById('matches').innerHTML = 'Full: 0';
+            document.getElementById('partial').innerHTML = 'Partial: 0';
+        }
+    }
+}
+
+// Helper function to debounce keyup events
+function findInArticleKeyup (val) {
+    // Use a timeout, so that very quick typing does not cause a lot of overhead
+    if (timeoutFIAKeyup) {
+        window.clearTimeout(timeoutFIAKeyup);
+    }
+    timeoutFIAKeyup = window.setTimeout(function () {
+        findInArticleInitiate(val);
+    }, 500);
+}
+
+// Set up the keyup event listener for the search input (attached once)
+var findInArticle = document.getElementById('findInArticle');
+findInArticle.addEventListener('keyup', function (e) {
+    // If user pressed Alt-F or Ctrl-F, exit
+    if ((e.altKey || e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') return;
+    var val = this.value;
+    // If user pressed enter / return key
+    if (val && (e.key === 'Enter' || e.keyCode === 13)) {
+        if (localSearch.scrollToFullMatch) {
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        }
+        return;
+    }
+    // If value hasn't changed, exit
+    if (localSearch.lastScrollValue && val === localSearch.lastScrollValue) return;
+    findInArticleKeyup(val);
+});
+
+// Set up event delegation for the scrollLink (which is dynamically created)
+document.getElementById('matches').addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'scrollLink') {
+        e.preventDefault();
+        var val = findInArticle.value;
+        if (localSearch.scrollToFullMatch && val) {
+            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+        }
+    }
+});
+
+// Set up the click event listener for the findText button
 document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
@@ -595,7 +648,6 @@ document.getElementById('findText').addEventListener('click', function () {
     }
     // Set the height of the navbar to accommodate the search bar
     setNavbarHeight(params.navbarHeight + 35, params.relativeUIFontSize);
-    var findInArticle = null;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     if (appstate.isReplayWorkerAvailable) {
         innerDocument = innerDocument ? innerDocument.getElementById('replay_iframe').contentDocument : null;
@@ -603,7 +655,6 @@ document.getElementById('findText').addEventListener('click', function () {
     innerDocument = innerDocument ? innerDocument.body : null;
     if (!innerDocument || innerDocument.innerHTML.length < 10) return;
     setTab('findText');
-    findInArticle = document.getElementById('findInArticle');
     searchDiv.style.display = 'block';
     // Show the toolbar
     params.hideToolbars = false;
@@ -611,57 +662,8 @@ document.getElementById('findText').addEventListener('click', function () {
     findInArticle.focus();
     // We need to open all sections to search
     openOrCloseAllSections(true);
-    localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
-    findInArticle.addEventListener('keyup', function (e) {
-        // If user pressed Alt-F or Ctrl-F, exit
-        if ((e.altKey || e.ctrlKey) && e.key === 'F') return;
-        var val = this.value;
-        // If user pressed enter / return key
-        if (val && (e.key === 'Enter' || e.keyCode === 13)) {
-            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-            return;
-        }
-        // If value hasn't changed, exit
-        if (val === localSearch.lastScrollValue) return;
-        findInArticleKeyup(val);
-    });
-    var findInArticleKeyup = function (val) {
-        // Use a timeout, so that very quick typing does not cause a lot of overhead
-        if (window.timeoutFIAKeyup) {
-            window.clearTimeout(window.timeoutFIAKeyup);
-        }
-        window.timeoutFIAKeyup = window.setTimeout(function () {
-            findInArticleInitiate(val);
-        }, 500);
-    };
-    var findInArticleInitiate = function (val) {
-        // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough)
-        // if no value has been entered (clears highlighting if user deletes all values in search field)
-        if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
-            localSearch.scrollFrom = 0;
-            localSearch.lastScrollValue = val;
-            localSearch.setMatchType('open');
-            // Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
-            if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
-            localSearch.apply(val);
-            if (val.length) {
-                var fullTotal = localSearch.countFullMatches(val);
-                var partialTotal = localSearch.countPartialMatches();
-                fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
-                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
-                document.getElementById('partial').innerHTML = 'Partial: ' + partialTotal;
-                document.getElementById('scrollLink').addEventListener('click', function () {
-                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                });
-                // Auto-scroll: TODO - consider making this an option
-                localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-            } else {
-                document.getElementById('matches').innerHTML = 'Full: 0';
-                document.getElementById('partial').innerHTML = 'Partial: 0';
-            }
-        }
-    };
+    localSearch = new util.Hilitor(innerDocument);
 });
 
 document.getElementById('btnRandomArticle').addEventListener('click', function () {
@@ -4849,27 +4851,62 @@ function listenForNavigationKeys () {
     articleWindow.addEventListener('keydown', listener);
 }
 
-function listenForSearchKeys () {
-    // Listen to iframe key presses for in-page search
-    var iframeContentWindow = articleWindow;
+// Listen to key presses for in-page search and print
+function listenForSearchAndPrintKeys (controlWindow) {
+    // We may have a replay_iframe inside articleWindow if we are using the ReplayWorker
     if (appstate.isReplayWorkerAvailable) {
         var replayIframe = articleWindow.document.getElementById('replay_iframe');
         if (replayIframe) {
-            iframeContentWindow = replayIframe.contentWindow;
+            controlWindow = replayIframe.contentWindow;
         }
     }
-    iframeContentWindow.addEventListener('keyup', function (e) {
-        // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-        if ((e.ctrlKey || e.altKey) && e.which == 70) {
+    // Set up key listeners for find in article
+    controlWindow.addEventListener('keyup', function (e) {
+        // Alt-F (and Alt-Shift-F) for search in article, also patches Ctrl-F and Ctrl-Shift-F for apps that do not have access to browser search
+        if ((e.ctrlKey || e.altKey || e.metaKey) && e.key.toLowerCase() === 'f') {
             document.getElementById('findText').click();
         }
+        // Ctrl-L / Alt-D / Cmd-L for search bar (address bar analogy) - only fires if browser doesn't handle it (e.g., in PWA/Electron mode)
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') || (e.altKey && e.key.toLowerCase() === 'd')) {
+            if (!/(input|textarea)/i.test(e.target.tagName)) {
+                uiUtil.showSlidingUIElements();
+                prefix.focus();
+                prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+            }
+        }
     });
-    iframeContentWindow.addEventListener('keydown', function (e) {
+    controlWindow.addEventListener('keydown', function (e) {
         // Ctrl-P to patch printing support, so iframe gets printed
-        if (e.ctrlKey && e.which == 80) {
-            e.stopPropagation();
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
+            e.stopPropagation();
             printIntercept();
+        }
+        // Focus the prefix if user types a / (but not in an input or other selectable field)
+        if (e.key == '/' && !e.ctrlKey && !e.metaKey && !/(input|textarea|select)/i.test(e.target.tagName) &&
+        !e.target.isContentEditable && e.target.getAttribute('role') !== 'textbox') {
+            e.preventDefault();
+            e.stopPropagation();
+            uiUtil.showSlidingUIElements();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+        }
+        // Ctrl-K / Cmd-K for search bar (modern app convention)
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && !/(input|textarea)/i.test(e.target.tagName)) {
+            e.preventDefault();
+            e.stopPropagation();
+            uiUtil.showSlidingUIElements();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
+        }
+        // Home key for search bar (semantic "start here")
+        if (e.key === 'Home' && !e.ctrlKey && !e.metaKey && !/(input|textarea|select)/i.test(e.target.tagName) &&
+        !e.target.isContentEditable && e.target.getAttribute('role') !== 'textbox') {
+            e.preventDefault();
+            e.stopPropagation();
+            uiUtil.showSlidingUIElements();
+            prefix.focus();
+            prefix.setSelectionRange(prefix.value.length, prefix.value.length);
         }
     }, true);
 }
@@ -5677,12 +5714,14 @@ var articleLoadedSW = function (dirEntry, container) {
         articleWindow.onclick = filterClickEvent;
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
-        // Deflect drag-and-drop of ZIM file on the iframe to Config
-        if (!params.disableDragAndDrop && appstate.target === 'iframe') {
-            docBody.addEventListener('dragover', handleIframeDragover);
-            docBody.addEventListener('drop', handleIframeDrop);
+        if (appstate.target === 'iframe') {
+            // Deflect drag-and-drop of ZIM file on the iframe to Config
+            if (!params.disableDragAndDrop) {
+                docBody.addEventListener('dragover', handleIframeDragover);
+                docBody.addEventListener('drop', handleIframeDrop);
+            }
             setupTableOfContents();
-            listenForSearchKeys();
+            listenForSearchAndPrintKeys(articleWindow);
         }
         // Note that switchCSSTheme() requires access to params.lastPageVisit
         if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
@@ -6894,7 +6933,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     docBody.addEventListener('dragover', handleIframeDragover);
                     docBody.addEventListener('drop', handleIframeDrop);
                 }
-                listenForSearchKeys();
+                listenForSearchAndPrintKeys(articleWindow);
                 // Trap clicks in the iframe to restore Fullscreen mode
                 if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 setupTableOfContents();

@@ -252,6 +252,7 @@
                                         <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search [.*] or space key..."
+                                        title="Press /, Home, or Ctrl/Cmd+K to focus search"
                                         class="form-control" style="z-index: 0; width: 99.5%" autocomplete="off" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
@@ -526,6 +527,11 @@
                     <p>
                         All versions of this app support basic <b>title search</b>, which is very fast and matches the <b>start</b> of an article title. Some versions
                         may also support <b>full-text searching</b> (<a href="#fullTextSearch">see below</a>).
+                    </p>
+                    <p>
+                        <i>You can quickly access the search bar using keyboard shortcuts</i>: press the <b>Home</b> key, the <b>/</b> key (forward slash), <b>Ctrl+K</b> (or <b>Cmd+K</b> on Mac) 
+                        to focus the search field from anywhere in the app. In PWA or Electron contexts, you can also use the traditional browser address bar shortcuts <b>Ctrl+L</b>
+                        (or <b>Cmd+L</b>) and <b>Alt+D</b>.
                     </p>
                     <p>
                         With title search, if you search for 'France' you will get 'France (country)', 'France (disambiguation)', 'France (film)', etc. This kind of search
