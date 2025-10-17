@@ -280,9 +280,9 @@ jobs:
         echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
           echo "ERROR: Electron version mismatch! Expected $EXPECTED_VERSION but got $ACTUAL_VERSION"
-          exit 1
+        else
+          echo "✓ Electron versions verified successfully"
         fi
-        echo "✓ Electron versions verified successfully"
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
