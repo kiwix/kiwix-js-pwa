@@ -189,7 +189,7 @@
     "@vitejs/plugin-legacy": "^6.0.2",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "del-cli": "^5.0.0",
-    "electron": "38.2.2",
+    "electron": "38.3.0",
     "electron-builder": "^26.0.18",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
