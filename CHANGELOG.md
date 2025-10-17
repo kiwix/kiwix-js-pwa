@@ -1,6 +1,14 @@
 # Changelog
 
-# Release 3.7.7 / 3.7.8
+## Interim release 3.7.83
+
+* ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search 
+* REGRESSION: Fixed broken printing support
+* FIX: Accidental processing of certain openZIM articles by the Zimit redirect algorithm
+* DEV: Fix broken macOS workflow in nightlies
+* DEV: Bump Electron to 38.3.0
+
+## Release 3.7.7 / 3.7.8
 
 * ENHANCEMENT: PWA now auto-updates when new version is detected (can be turned off)
 * ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)
