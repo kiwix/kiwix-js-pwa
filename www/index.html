@@ -300,6 +300,7 @@
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
                         <li><a href="#windows">Window and tab management</a></li>
                         <li><a href="browsers">Browser support</a></li>
+                        <li><a href="#expressServer">Express server (Electron app)</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -670,6 +671,45 @@
                         <li>Edge Legacy &lt;= 17 (Restricted mode only, no offline use of PWA)</li>
                         <li>Firefox 45-59 (some versions require you to switch manually to Restricted mode)</li>
                         <li>Chromium 49-58 (some versions only run in Restricted mode)</li>
+                    </ul>
+                    <h3 id="expressServer">Express server (Electron app)</h3>
+                    <p>
+                        When running in the Electron framework, this app includes a built-in Express server that allows you to access the app
+                        from any browser on your local device or network. The server hosts the app's code, and you can then select and access
+                        your own ZIM archives through the browser interface. This is useful for when you want to serve the app to other devices
+                        on a closed network that does not have external Internet access.
+                    </p>
+                    <p>
+                        <b>To access from another browser on the same device:</b>
+                    </p>
+                    <ol>
+                        <li>On the Home tab, the app displays a localhost link (e.g., http://localhost:3000)</li>
+                        <li>Open any browser on the same device and navigate to this address</li>
+                        <li>You can then select your ZIM archives in the browser as normal</li>
+                    </ol>
+                    <p>
+                        <b>To access from another device on your local network:</b>
+                    </p>
+                    <ol>
+                        <li>On the Home tab, check the <b>"Allow external network access"</b> option (this session only)</li>
+                        <li>Your Firewall may prompt you to allow network access - approve this to enable external connections</li>
+                        <li>The app will display links showing the local IP address where you can access it (e.g., http://192.168.1.100:3000)</li>
+                        <li>On another device on the same network, open a web browser and navigate to the displayed address</li>
+                        <li>You can then select your ZIM archives in the browser (they need to be accessible from that device)</li>
+                        <li>To access ZIM archives stored on the host device, share them via a network file share so they can be selected from the remote browser</li>
+                    </ol>
+                    <p>
+                        You can customize the port number in Configuration &gt; Expert Settings. The default port is 3000.
+                    </p>
+                    <p>
+                        <b>Important notes:</b>
+                    </p>
+                    <ul>
+                        <li>Because access from other devices is over HTTP (not HTTPS), the app will run in <a href="#modes">Restricted mode</a>
+                            (see below) when accessed from a browser (this is not the case if using localhost)</li>
+                        <li>Only enable external network access when you trust all devices on your local network</li>
+                        <li>The server only allows connections from your local network (private IP ranges), not from the public internet</li>
+                        <li>External access is disabled by default for security and only applies to the current session</li>
                     </ul>
                     <h3 id="modes">Technical information</h3>
                     <p>
