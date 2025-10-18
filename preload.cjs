@@ -59,6 +59,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
         console.log('[Preload] Setting zoom limits to ' + min + ' and ' + max);
         webFrame.setVisualZoomLevelLimits(min, max);
     },
+    toggleExternalAccess: function (enable) {
+        return ipcRenderer.invoke('toggle-external-access', enable);
+    },
+    getExternalAccessState: function () {
+        return ipcRenderer.invoke('get-external-access-state');
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,
