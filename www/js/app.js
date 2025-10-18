@@ -1981,6 +1981,80 @@ if (window.electronAPI) {
     });
     // Set the Zoom values for the window
     electronAPI.setZoomLimits(1, 3);
+
+    // External access toggle handler
+    var externalAccessCheckbox = document.getElementById('externalAccessCheckbox');
+    var externalAccessStatus = document.getElementById('externalAccessStatus');
+
+    // Get initial state when app loads
+    electronAPI.getExternalAccessState().then(function (result) {
+        externalAccessCheckbox.checked = result.enabled;
+        console.log('Initial external access binding:', result.binding);
+        setExpressServerUI(params.expressPort, result.localIP);
+        updateExternalAccessStatus(result.binding);
+    });
+
+    // Handle checkbox toggle
+    externalAccessCheckbox.addEventListener('change', function (e) {
+        var enable = e.target.checked;
+
+        if (enable) {
+            // Show warning before enabling external access
+            var warningMessage = '<p>⚠️ Warning⚠️</p>' +
+            '<p>You are about to allow other devices on your network to access this app!</p>' +
+            '<p>Only enable this on trusted networks (home/office). Never enable on public WiFi or unsecured hotspots.' +
+            'This feature will automatically turn OFF when you restart the app.</p>' +
+            '<p>Are you sure you want to continue?</p>';
+
+            uiUtil.systemAlert(warningMessage, 'Enable External Access?', true, 'Cancel', 'Continue')
+                .then(function (confirmed) {
+                    if (confirmed) {
+                        // User confirmed - proceed with enabling
+                        performToggle(true, e);
+                    } else {
+                        // User cancelled - revert checkbox
+                        e.target.checked = false;
+                    }
+                });
+        } else {
+            // Disabling doesn't need confirmation
+            performToggle(false, e);
+        }
+    });
+
+    // Helper function to perform the actual toggle
+    function performToggle (enable, event) {
+        electronAPI.toggleExternalAccess(enable).then(function (result) {
+            if (result.success) {
+                console.log('External access toggled. New binding:', result.binding);
+                var appAccessURI = 'http://' + (result.localIP || 'localhost') + ':' + params.expressPort;
+                setExpressServerUI(params.expressPort, result.localIP);
+                updateExternalAccessStatus(result.binding);
+                var message = enable
+                    ? 'External access enabled. Other devices on your network can now access this app at ' + appAccessURI
+                    : 'External access disabled. App is now only accessible from localhost.';
+                setTimeout(function () {
+                    uiUtil.systemAlert(message);
+                }, 250);
+            } else {
+                event.target.checked = !enable; // Revert checkbox on error
+            }
+        }).catch(function (err) {
+            console.error('Error toggling external access:', err);
+            event.target.checked = !enable; // Revert checkbox on error
+        });
+    }
+
+    // Helper function to update status text
+    function updateExternalAccessStatus (binding) {
+        // if (binding === '0.0.0.0') {
+        //     externalAccessStatus.textContent = 'Server is bound to 0.0.0.0 (all network interfaces)';
+        //     externalAccessStatus.style.color = '#856404';
+        // } else {
+        //     externalAccessStatus.textContent = 'Server is bound to 127.0.0.1 (localhost only)';
+        //     externalAccessStatus.style.color = '#28a745';
+        // }
+    }
 }
 document.getElementById('libzimSearchType').addEventListener('change', function (e) {
     params.libzimSearchType = e.target.checked ? 'searchWithSnippets' : 'search';
@@ -2510,21 +2584,65 @@ function cssUIThemeGetOrSet (value, getOnly) {
     return value;
 }
 
-function setExpressServerUI (value) {
+function setExpressServerUI (port, ipaddress) {
     // See main.cjs for default values
-    params.expressPort = value || 3000;
+    params.expressPort = port || 3000;
+    params.expressIPaddress = ipaddress || 'localhost';
     document.getElementById('expressPortInput').value = params.expressPort;
     document.getElementById('expressPortInputDiv').style.display = 'block';
-    console.log('Express port was reported as ' + params.expressPort);
+
     // Only encourage opening in browser if we are not in a packaged app
     if (!params.packagedFile) {
         var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
         openAppInBrowserSpan.style.display = 'inline';
-        var openAppInBrowserLink = document.getElementById('openAppInBrowserLink');
-        openAppInBrowserLink.innerHTML = 'http://localhost:' + params.expressPort + '/';
-        openAppInBrowserLink.addEventListener('click', function () {
-            electronAPI.openExternal('http://localhost:' + params.expressPort + '/www/index.html');
-        });
+        var openAppInBrowserLinksDiv = document.getElementById('openAppInBrowserLinks');
+
+        // Clear existing links
+        openAppInBrowserLinksDiv.innerHTML = '';
+
+        var localhostURI = 'http://localhost:' + params.expressPort;
+
+        if (ipaddress && ipaddress !== 'localhost') {
+            // External access enabled - show both localhost and LAN address
+            var lanURI = 'http://' + params.expressIPaddress + ':' + params.expressPort;
+
+            console.log('App URIs: ' + localhostURI + ' (local), ' + lanURI + ' (LAN)');
+
+            // Create localhost link
+            var localhostLink = document.createElement('a');
+            localhostLink.href = '#';
+            localhostLink.textContent = localhostURI + ' (from this PC)';
+            localhostLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                electronAPI.openExternal(localhostURI + '/www/index.html');
+            });
+
+            // Create LAN link
+            var lanLink = document.createElement('a');
+            lanLink.href = '#';
+            lanLink.textContent = lanURI + ' (from other devices)';
+            lanLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                electronAPI.openExternal(lanURI + '/www/index.html');
+            });
+
+            openAppInBrowserLinksDiv.appendChild(localhostLink);
+            openAppInBrowserLinksDiv.appendChild(document.createElement('br'));
+            openAppInBrowserLinksDiv.appendChild(lanLink);
+        } else {
+            // Localhost only - show single link
+            console.log('App URI: ' + localhostURI);
+
+            var link = document.createElement('a');
+            link.href = '#';
+            link.textContent = localhostURI;
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                electronAPI.openExternal(localhostURI + '/www/index.html');
+            });
+
+            openAppInBrowserLinksDiv.appendChild(link);
+        }
     }
 }
 
