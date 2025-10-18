@@ -1,16 +1,17 @@
 ﻿[CmdletBinding()]
 param (
     [switch]$only32bit = $false,
-    [switch]$usesdk = $false
+    [switch]$usesdk = $false,
+    [ValidateSet("win-ia32", "win-x64", "win-xp")]
+    [string[]]$builds = @("win-ia32", "win-xp")
 )
-$builds = @("win-x64", "win-xp")
-if (-Not $only32bit) {
-    $builds += "win-x64"
-    "Caller requested 32bit and 64bit build"
-} else {
+if ($only32bit) {
+    $builds = @("win-ia32", "win-xp")
     "Caller requested only32bit build"
+} else {
+    "Building for platforms: $($builds -join ', ')"
 }
-$version10 = "0.87.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version10 = "0.104.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
 $appBuild = "3.7.83-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
 # Check that the dev has included the correct archive in this branch
