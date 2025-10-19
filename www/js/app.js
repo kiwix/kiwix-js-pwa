@@ -2598,52 +2598,33 @@ function setExpressServerUI (port, ipaddress) {
         var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
         openAppInBrowserSpan.style.display = 'inline';
         var openAppInBrowserLinksDiv = document.getElementById('openAppInBrowserLinks');
-
         // Clear existing links
         openAppInBrowserLinksDiv.innerHTML = '';
-
         var localhostURI = 'http://localhost:' + params.expressPort;
-
+        var lanURI;
+        console.log('Local URI: ' + localhostURI);
+        // Create LAN span
+        var localhostSpan = document.createElement('span');
+        localhostSpan.innerHTML = '<a href="' + localhostURI + '">' + localhostURI + '</a> (from this PC)';
+        localhostSpan.addEventListener('click', function (e) {
+            e.preventDefault();
+            electronAPI.openExternal(localhostURI + '/www/index.html');
+        });
+        openAppInBrowserLinksDiv.appendChild(localhostSpan);
         if (ipaddress && ipaddress !== 'localhost') {
             // External access enabled - show both localhost and LAN address
-            var lanURI = 'http://' + params.expressIPaddress + ':' + params.expressPort;
-
-            console.log('App URIs: ' + localhostURI + ' (local), ' + lanURI + ' (LAN)');
-
+            lanURI = 'http://' + ipaddress + ':' + params.expressPort;
+            console.log('LAN URI: ' + lanURI);
             // Create localhost link
-            var localhostLink = document.createElement('a');
-            localhostLink.href = '#';
-            localhostLink.textContent = localhostURI + ' (from this PC)';
-            localhostLink.addEventListener('click', function (e) {
-                e.preventDefault();
-                electronAPI.openExternal(localhostURI + '/www/index.html');
-            });
-
-            // Create LAN link
-            var lanLink = document.createElement('a');
-            lanLink.href = '#';
-            lanLink.textContent = lanURI + ' (from other devices)';
-            lanLink.addEventListener('click', function (e) {
+            var lanSpan = document.createElement('span');
+            lanSpan.innerHTML = '<a href="' + lanURI + '">' + lanURI + '</a> (from other device)';
+            lanSpan.addEventListener('click', function (e) {
                 e.preventDefault();
                 electronAPI.openExternal(lanURI + '/www/index.html');
             });
-
-            openAppInBrowserLinksDiv.appendChild(localhostLink);
+            openAppInBrowserLinksDiv.appendChild(localhostSpan);
             openAppInBrowserLinksDiv.appendChild(document.createElement('br'));
-            openAppInBrowserLinksDiv.appendChild(lanLink);
-        } else {
-            // Localhost only - show single link
-            console.log('App URI: ' + localhostURI);
-
-            var link = document.createElement('a');
-            link.href = '#';
-            link.textContent = localhostURI;
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                electronAPI.openExternal(localhostURI + '/www/index.html');
-            });
-
-            openAppInBrowserLinksDiv.appendChild(link);
+            openAppInBrowserLinksDiv.appendChild(lanSpan);
         }
     }
 }
