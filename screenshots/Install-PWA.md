@@ -6,12 +6,13 @@ Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser. R
 
 See also: [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Install PWA in Firefox for Android](Install-PWA_Firefox_Android.gif)&ensp;]  [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.gif)&ensp;]
 
-## Install in Chrome/Edge, bookmark in Firefox, add to Home in Safari
+## Install in Chrome/Edge, add to Home in Safari, add to taskbar in Firefox
 
 In **Chromium browsers** (e.g. Chrome, Edge), you can install the PWA (Progressive Web App) as an offline-first app as in the demo above:
-an "Install" button will show up in Configuration. **Firefox** doesn't support installing PWAs, but instead you can bookmark it and
-(after your first visit) it will also work offline when you open the bookmark. This should work in any browser that supports
-[Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API). In Safari (including on iOS devices), you can add the app to your Home screen, and it will install itself as an offline-first app.
+an "Install" button will show up in Configuration. In Safari (including on iOS devices), you can add the app to your Home screen,
+and it will install itself as an offline-first app. In **Firefox** you can add it to the taskbar (Firefox >=143), and it will gain its own
+icon and dedicated window. In earlier Friefox, you can bookmark the app and it will still work offline. This should work in any browser
+that supports [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
 ## So why bother installing the app?
 
