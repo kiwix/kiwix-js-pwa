@@ -15,11 +15,10 @@ its own icon in your Home Screen.
 
 ## Accessing your ZIM files
 
-As shown in the Demo, Firefox for Android works best when using the Origin Private File System. Loading larger archives from the user-visible File System
-can be slow and glitchy on Firefox for Android, because the browser attempts to load the whole file into memory. So you are generally limited to files
-that will fit in the OPFS.
+As shown in the Demo, Firefox for Android works best when using the Origin Private File System (OPFS). Loading larger archives from the
+user-visible File System can be slow and glitchy on Firefox for Android, because the browser attempts to load the whole file into memory.
+So you are generally limited to files that will fit in the OPFS.
 
-Firefox currently limits the maximum size of the OPFS to ~10GB. On Chromium browsers, there is usually a much larger quota (limited only by the amount
-of free space in your storage).
+Fortunately, both Firefox and Chromium now offer ample storage in the OPFS, but it is limited by the free space on your system drive.
 
 See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]  [&ensp;[Demo of all OPFS features](Demo-OPFS_all_features.md)&ensp;]
