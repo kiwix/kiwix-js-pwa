@@ -9,8 +9,10 @@ See also: [&ensp;[Install PWA](Install-PWA.md)&ensp;]  [&ensp;[Folder picking](F
 ## How do I install the PWA?
 
 In Chromium browsers (Chrome, Edge, Brave, etc.), an Install button will show in Configuration. In Safari on macOS you can use File ->
-Add to Dock, and in Firefox (desktop), you can bookmark the app. The demo shows file handling in a Chromium browser on Linux, but it's
-exactly the same process on Windows and macOS. For Firefox and Safari, see "[What about Firefox and Safari](#what-about-firefox-and-safari)?"
+Add to Dock, and in Firefox (Windows) >= 143, you can add the app to the taskbar (see button in address bar).
+
+The demo shows file handling in a Chromium browser on Linux, but it's exactly the same process on Windows and macOS. For Firefox and Safari,
+see "[What about Firefox and Safari](#what-about-firefox-and-safari)?"
 below. We also have a demo page with more info about [Installing the PWA](Install-PWA.md).
 
 ## The File Handling API is available on Chromium desktop browsers

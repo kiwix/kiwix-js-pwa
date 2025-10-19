@@ -10,9 +10,9 @@ See also: [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Install P
 
 In **Chromium browsers** (e.g. Chrome, Edge), you can install the PWA (Progressive Web App) as an offline-first app as in the demo above:
 an "Install" button will show up in Configuration. In Safari (including on iOS devices), you can add the app to your Home screen,
-and it will install itself as an offline-first app. In **Firefox** you can add it to the taskbar (Firefox >=143), and it will gain its own
-icon and dedicated window. In earlier Friefox, you can bookmark the app and it will still work offline. This should work in any browser
-that supports [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+and it will install itself as an offline-first app. In **Firefox** you can add it to the taskbar (Firefox >= 143 for Windows), and it will
+gain its own icon and dedicated window. In earlier Friefox, you can bookmark the app and it will still work offline. This should work in
+any browser that supports [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
 ## So why bother installing the app?
 

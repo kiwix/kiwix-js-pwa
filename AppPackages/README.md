@@ -1,20 +1,20 @@
-# Installation Instructions (Windows/Linux)
+# Installation Instructions (Windows/Linux/macOS and mobile)
+
+There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), Windows XP/Vista/7/8/10/11, and macOS available from https://kiwix.github.io/kiwix-js-pwa/app.
 
 The easiest way to install the UWP app on Windows 10/11 is from the Microsoft Store:
 
-https://apps.microsoft.com/detail/9p8slz4j979j
+* https://apps.microsoft.com/detail/9p8slz4j979j
 
-There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-pwa/app. The Store and Electron Setup and AppImage versions are self-updating. The `zip`, `deb` and `rpm` versions do not self-update.
-
-There is a PWA version at https://pwa.kiwix.org/ which can be installed as a dedicated offline app in any Chromium browser (Chrome, Edge) -- see Install button in
-Configuration. In Firefox >= 143, you can add the app to the system taskbar (see button in address bar), and the app will gain its own icon and
-dedicated window. In earlier Firefox, you can bookmark the app, and it will still work offline.
+There is an offline-first **Progressive Web App (PWA)** version at https://pwa.kiwix.org/ which can be installed as a dedicated app in any
+Chromium browser (Chrome, Edge) -- see Install button in Configuration. It can also be installed also in Safari for iOS (add to Home),
+Chrome/Edge on Android, and Firefox for Android (via browser menu). In Firefox >= 143 for Windows, you can add the app to the system taskbar
+(see button in address bar), and the app will gain its own icon and dedicated window. In other Firefox, you can bookmark the app, and it will still work offline.
 
 # Sideloading Instructions (Windows 10/11 and Mobile)
 
-You can now sideload the app easily by opening a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at the commandline type
-`winget install kiwix.kiwixjs`. If you don't have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/) yet, or wish to test a
-different build, then follow the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this procedure_.
+You can now sideload the app easily in Windows by opening a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at
+the commandline type `winget install kiwix.kiwixjs`. If you don't have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/) yet, or wish to test a different build, then follow the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this procedure_.
 
 ## Windows 10/11 Tablet / PC
 
