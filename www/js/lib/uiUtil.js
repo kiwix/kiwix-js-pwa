@@ -23,7 +23,7 @@
 'use strict';
 
 /* eslint-disable no-global-assign, indent */
-/* global webpMachine, params, appstate, Windows */
+/* global webpMachine, params, appstate, Windows, electronAPI */
 
 import util from './util.js';
 import settingsStore from './settingsStore.js';
@@ -1697,6 +1697,48 @@ function dynamicallySetMaxSearchResults () {
     document.getElementById('libzimSearchType').checked = params.libzimSearchType === 'searchWithSnippets';
 }
 
+function setExpressServerUI (port, ipaddress) {
+    // See main.cjs for default values
+    params.expressIPaddress = ipaddress || 'localhost';
+    document.getElementById('expressPortInput').value = port;
+    document.getElementById('expressPortInputDiv').style.display = 'block';
+
+    // Only encourage opening in browser if we are not in a packaged app
+    if (!params.packagedFile) {
+        var openAppInBrowserSpan = document.getElementById('openAppInBrowserSpan');
+        openAppInBrowserSpan.style.display = 'inline';
+        var openAppInBrowserLinksDiv = document.getElementById('openAppInBrowserLinks');
+        // Clear existing links
+        openAppInBrowserLinksDiv.innerHTML = '';
+        var localhostURI = 'http://localhost:' + port;
+        var lanURI;
+        console.log('Local URI: ' + localhostURI);
+        // Create LAN span
+        var localhostSpan = document.createElement('span');
+        localhostSpan.innerHTML = '<a href="' + localhostURI + '">' + localhostURI + '</a> (from this PC)';
+        localhostSpan.addEventListener('click', function (e) {
+            e.preventDefault();
+            electronAPI.openExternal(localhostURI + '/www/index.html');
+        });
+        openAppInBrowserLinksDiv.appendChild(localhostSpan);
+        if (ipaddress && ipaddress !== 'localhost') {
+            // External access enabled - show both localhost and LAN address
+            lanURI = 'http://' + ipaddress + ':' + port;
+            console.log('LAN URI: ' + lanURI);
+            // Create localhost link
+            var lanSpan = document.createElement('span');
+            lanSpan.innerHTML = '<a href="' + lanURI + '">' + lanURI + '</a> (from other device)';
+            lanSpan.addEventListener('click', function (e) {
+                e.preventDefault();
+                electronAPI.openExternal(lanURI + '/www/index.html');
+            });
+            openAppInBrowserLinksDiv.appendChild(localhostSpan);
+            openAppInBrowserLinksDiv.appendChild(document.createElement('br'));
+            openAppInBrowserLinksDiv.appendChild(lanSpan);
+        }
+    }
+}
+
 /**
  * Functions and classes exposed by this module
  */
@@ -1739,5 +1781,6 @@ export default {
     createSnippetElements: createSnippetElements,
     toggleSnippet: toggleSnippet,
     attachArticleListEventListeners: attachArticleListEventListeners,
-    dynamicallySetMaxSearchResults: dynamicallySetMaxSearchResults
+    dynamicallySetMaxSearchResults: dynamicallySetMaxSearchResults,
+    setExpressServerUI: setExpressServerUI
 };
