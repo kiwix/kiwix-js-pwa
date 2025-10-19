@@ -1,12 +1,14 @@
 # Changelog
 
-## Interim release 3.7.83
+## Interim release 3.7.84
 
-* ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search 
-* REGRESSION: Fixed broken printing support
+* ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
+* SECURITY: Increase security of Electron app's Express server and provide controls for LAN access
+* REGRESSION: Fix broken printing support
 * FIX: Accidental processing of certain openZIM articles by the Zimit redirect algorithm
 * DEV: Fix broken macOS workflow in nightlies
-* DEV: Bump Electron to 38.3.0
+* DEV: Bump Electron to 38.3.0 (for modern Electron builds)
+* DEV: Bump NWJS to 104.1 (for modern NWJS builds)
 
 ## Release 3.7.7 / 3.7.8
 
