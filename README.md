@@ -43,27 +43,26 @@ Once installed, bookmarked or added to your home screen, the PWA works even when
 
 ## How do I get all of Wikipedia offline?
 
-If you want it with images, then please be aware that it's a big download: the English version is around 97 Gigabytes! We recommend you
+If you want it with images, then please be aware that it's a big download: the English version is larger than 110 Gigabytes! We recommend you
 try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
 handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
 
-If you really want full English Wikipedia with images, then we strongly recommend you use the open-source app
-[qBittorrent](https://www.qbittorrent.org/) to download it on a PC with plenty of disk space. First install qBittorrent. Then, when you
-select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
-download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
-want to download. It's much easier than it sounds!
+If you really want full English Wikipedia with images, then we strongly recommend you use an open-source torrenting app such as
+[qBittorrent](https://www.qbittorrent.org/) or [Transmission](https://transmissionbt.com/) to download it on a PC with plenty of
+disk space. First install your torrenting app. Then, when you select a large archive for download in the app, it will provide you with
+a torrent link. Click the link and allow your browser to download and open the torrent file. This small file will open in qBittorrent
+or Transmission, and you'll be asked where you want to save the archive you want to download. It's much easier than it sounds!
 
 ## What about Zimit (Web Archive) format?
 
 Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
-you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full support for
-Zimit-based archives as of v.2.8.5 using the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html), and already support
-the forthcoming Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
+you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full
+support both for legacy Zimit 1 archives that use the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html),
+and for the current Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
 
 The Kiwix download library (available in-app) publishes a number of fantastically useful refernce sites in the Zimit file format, such as
-the **Ready.Gov disaster preparedness site**, the fascinating **Low-Tech magazine**, the **CIA World Factbook**, the **Harmony Project**
-library of sheet music, and the **Internet Encyclopaedia of Philosophy** -- amongst many others. Just open the Zimit directory in the
-in-app library.
+the **Ready.Gov disaster preparedness site**, the fascinating **Low-Tech magazine**, the **CIA World Factbook**, and the
+**Internet Encyclopaedia of Philosophy** -- amongst many others. Just open the Zimit directory in the in-app library.
 
 ![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
 
@@ -93,8 +92,8 @@ try switching the app to Restricted mode (see Content injection mode in Configur
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
 
-`*` With **Firefox on Android**, the app is only useable with files stored in the Origin Private File System. There is a Firefox bug whereby the browser
-attempts to read the entire ZIM archive into memory if opening it from the user-visible file system.
+`*` With **Firefox on Android**, the app is only useable with files stored in the Origin Private File System. There is a Firefox bug whereby
+the browser attempts to read the entire ZIM archive into memory if opening it from the user-visible file system.
 
 ### Deprecated
 
@@ -120,16 +119,17 @@ the app, please star this Repostiory (see top)!
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 and legacy High Sierra/Mojave) are available from
-[releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
-Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be
-buggy and change rapidly. Additionally, nightly Windows binaries are **unsigned**.
+Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 and legacy High
+Sierra/Mojave) are available from [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable
+[nightly builds](https://download.kiwix.org/nightly/) of the Electron and NWJS apps are available together with a
+[development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be buggy and change rapidly. Additionally, nightly
+Windows binaries are **unsigned**.
 
-The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the [Kiwix Offline reader](https://kiwix.org/).
-Significant development has gone into packaging this app for various frameworks, and to add some features which are often backported
-upstream. The PWA can be installed as a fully integrated system app if opened in a modern Chromium browser, and it uses the File
-System Access API and the File Handling API for a native-like experience in browsers supporting those APIs. For more info about these
-APIs, see the bottom of this page:
+The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the
+[Kiwix Offline reader](https://kiwix.org/). Significant development has gone into packaging this app for various frameworks, and to add
+some features which are often backported upstream. The PWA can be installed as a fully integrated system app if opened in a modern
+Chromium browser, and it uses the File System Access API and the File Handling API for a native-like experience in browsers supporting
+those APIs. For more info about these APIs, see the bottom of this page:
 [File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
 
 The apps are also available in the WinGet Package Manager. You can sideload the UWP version (in Windows 10/11) by opening a Command
