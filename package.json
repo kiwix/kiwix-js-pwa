@@ -75,6 +75,7 @@
       "category": "public.app-category.education"
     },
     "linux": {
+      "executableName": "kiwix-js-electron",
       "asar": "true",
       "extraResources": {
         "from": "archives",
