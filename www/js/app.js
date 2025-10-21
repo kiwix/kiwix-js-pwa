@@ -2358,7 +2358,6 @@ Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(func
 });
 
 var iframe = document.getElementById('articleContent');
-var iframeWindow = null;
 
 function checkToolbar () {
     if (document.getElementById('row2').style.display === 'none') {
@@ -2368,26 +2367,24 @@ function checkToolbar () {
     }
 
     // Get the contentWindow of the iframe to operate on
-    var replayIframe = iframe.contentWindow ? iframe.contentWindow.document ? iframe.contentWindow.document.getElementById('replay_iframe') : null : null;
-    iframeWindow = replayIframe ? replayIframe.contentWindow : iframe.contentWindow;
+    var thisArticleWindow = articleWindow;
+    if (articleWindow.document && articleWindow.document.getElementById('replay_iframe')) {
+        thisArticleWindow = articleContainer.contentWindow.document.getElementById('replay_iframe').contentWindow;
+    }
 
-    if (!iframeWindow) return;
-
-    iframeWindow.removeEventListener('scroll', uiUtil.scroller);
-
+    // Remove and add the scroll event listener to the new article window
+    // Note that IE11 doesn't support wheel or touch events on the iframe, but it does support keydown and scroll
+    thisArticleWindow.removeEventListener('scroll', uiUtil.scroller);
+    thisArticleWindow.removeEventListener('touchstart', uiUtil.scroller);
+    thisArticleWindow.removeEventListener('touchend', uiUtil.scroller);
+    thisArticleWindow.removeEventListener('wheel', uiUtil.scroller);
+    thisArticleWindow.removeEventListener('keydown', uiUtil.scroller);
     if (params.hideToolbars) {
-        // We have to add this one this way, because another function is using the onscroll event
-        iframeWindow.addEventListener('scroll', uiUtil.scroller);
-        iframeWindow.ontouchstart = uiUtil.scroller;
-        iframeWindow.ontouchend = uiUtil.scroller;
-        iframeWindow.onwheel = uiUtil.scroller;
-        iframeWindow.onkeydown = uiUtil.scroller;
-    } else {
-        iframeWindow.ontouchstart = null;
-        iframeWindow.ontouchend = null;
-        iframeWindow.onwheel = null;
-        iframeWindow.onkeydown = null;
-        uiUtil.showSlidingUIElements();
+        thisArticleWindow.addEventListener('scroll', uiUtil.scroller);
+        thisArticleWindow.addEventListener('touchstart', uiUtil.scroller);
+        thisArticleWindow.addEventListener('touchend', uiUtil.scroller);
+        thisArticleWindow.addEventListener('wheel', uiUtil.scroller);
+        thisArticleWindow.addEventListener('keydown', uiUtil.scroller);
     }
 }
 
