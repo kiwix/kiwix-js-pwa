@@ -370,7 +370,7 @@ prefix.addEventListener('blur', function () {
     }, 100);
 });
 
-listenForSearchAndPrintKeys(window);
+listenForKeyboardEvents(window);
 
 // Handle listeners for print dialogue
 function printArticle (doc) {
@@ -4868,29 +4868,8 @@ function onKeyUpPrefix (evt) {
     }, 1000);
 }
 
-function listenForNavigationKeys () {
-    var listener = function (e) {
-        var hit = false;
-        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey)) {
-            // Ctrl/Alt-Left was pressed
-            e.preventDefault();
-            if (hit) return;
-            hit = true;
-            articleWindow.history.back();
-        } else if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey || e.altKey)) {
-            // Ctrl/Alt-Right was pressed
-            e.preventDefault();
-            if (hit) return;
-            hit = true;
-            articleWindow.history.forward();
-        }
-    };
-    articleWindow.removeEventListener('keydown', listener);
-    articleWindow.addEventListener('keydown', listener);
-}
-
-// Listen to key presses for in-page search and print
-function listenForSearchAndPrintKeys (controlWindow) {
+// Listen to keyboard events for navigation, search, and print
+function listenForKeyboardEvents (controlWindow) {
     // We may have a replay_iframe inside articleWindow if we are using the ReplayWorker
     if (appstate.isReplayWorkerAvailable) {
         var replayIframe = articleWindow.document.getElementById('replay_iframe');
@@ -4898,22 +4877,41 @@ function listenForSearchAndPrintKeys (controlWindow) {
             controlWindow = replayIframe.contentWindow;
         }
     }
-    // Set up key listeners for find in article
-    controlWindow.addEventListener('keyup', function (e) {
+
+    // Single keyup listener for all keyup events
+    var keyupListener = function (e) {
         // Alt-F (and Alt-Shift-F) for search in article, also patches Ctrl-F and Ctrl-Shift-F for apps that do not have access to browser search
         if ((e.ctrlKey || e.altKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+            e.stopPropagation();
             document.getElementById('findText').click();
         }
         // Ctrl-L / Alt-D / Cmd-L for search bar (address bar analogy) - only fires if browser doesn't handle it (e.g., in PWA/Electron mode)
         if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') || (e.altKey && e.key.toLowerCase() === 'd')) {
             if (!/(input|textarea)/i.test(e.target.tagName)) {
+                e.stopPropagation();
                 uiUtil.showSlidingUIElements();
                 prefix.focus();
                 prefix.setSelectionRange(prefix.value.length, prefix.value.length);
             }
         }
-    });
-    controlWindow.addEventListener('keydown', function (e) {
+    };
+
+    // Single keydown listener for all keydown events
+    var keydownListener = function (e) {
+        // Navigation: Ctrl/Alt/Cmd-Left for back
+        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
+            e.preventDefault();
+            e.stopPropagation();
+            articleWindow.history.back();
+            return;
+        }
+        // Navigation: Ctrl/Alt/Cmd-Right for forward
+        if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
+            e.preventDefault();
+            e.stopPropagation();
+            articleWindow.history.forward();
+            return;
+        }
         // Ctrl-P to patch printing support, so iframe gets printed
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
@@ -4946,7 +4944,15 @@ function listenForSearchAndPrintKeys (controlWindow) {
             prefix.focus();
             prefix.setSelectionRange(prefix.value.length, prefix.value.length);
         }
-    }, true);
+    };
+
+    // Remove any existing listeners before adding new ones to prevent duplicates
+    controlWindow.removeEventListener('keyup', keyupListener);
+    controlWindow.removeEventListener('keydown', keydownListener, true);
+
+    // Add the listeners
+    controlWindow.addEventListener('keyup', keyupListener);
+    controlWindow.addEventListener('keydown', keydownListener, true);
 }
 
 /**
@@ -5759,7 +5765,7 @@ var articleLoadedSW = function (dirEntry, container) {
                 docBody.addEventListener('drop', handleIframeDrop);
             }
             setupTableOfContents();
-            listenForSearchAndPrintKeys(articleWindow);
+            listenForKeyboardEvents(articleWindow);
         }
         // Note that switchCSSTheme() requires access to params.lastPageVisit
         if (!appstate.isReplayWorkerAvailable) switchCSSTheme(); // Gets called in articleLoader for replay_iframe
@@ -5778,7 +5784,6 @@ var articleLoadedSW = function (dirEntry, container) {
         // Set page width according to user preference
         removePageMaxWidth();
         setupHeadings();
-        listenForNavigationKeys();
         applyWikimediaZimFixes(doc);
 
         if (!appstate.isReplayWorkerAvailable) {
@@ -6971,7 +6976,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     docBody.addEventListener('dragover', handleIframeDragover);
                     docBody.addEventListener('drop', handleIframeDrop);
                 }
-                listenForSearchAndPrintKeys(articleWindow);
+                listenForKeyboardEvents(articleWindow);
                 // Trap clicks in the iframe to restore Fullscreen mode
                 if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 setupTableOfContents();
@@ -6981,7 +6986,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Set page width according to user preference
             removePageMaxWidth();
             setupHeadings();
-            listenForNavigationKeys();
             // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
             // Process endnote references (so they open the reference block if closed)
             var refs = docBody.getElementsByClassName('mw-reflink-text');
