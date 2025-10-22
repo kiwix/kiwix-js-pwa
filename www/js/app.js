@@ -2569,21 +2569,16 @@ function cssUIThemeGetOrSet (value, getOnly) {
 }
 
 /**
- * Helper function to update tooltip styles for the current theme
- * @param {Document} doc - The document to update
- * @param {boolean} isDark - Whether to apply dark theme styles
+ * Switches the CSS theme for the article content
+ *
+ * For new Wikipedia ZIMs (October 2024+), this function uses the ZIM's native theme system.
+ * For older ZIMs, it applies custom dark stylesheets.
+ *
+ * DEVELOPER NOTE: To force the custom dark theme on new Wikipedia ZIMs for testing:
+ * - Browser users: Add ?customDarkTheme=true to the URL
+ * - PWA/Electron users: Open DevTools console and type: params.customDarkTheme = true
+ *   Then navigate to a new article to see the custom theme applied
  */
-function updateTooltipStyles (doc, isDark) {
-    // Remove existing tooltip stylesheet
-    var kiwixTooltipStyleSheet = doc.getElementById('kiwixtooltipstylesheet');
-    if (kiwixTooltipStyleSheet) {
-        kiwixTooltipStyleSheet.disabled = true;
-        kiwixTooltipStyleSheet.parentNode.removeChild(kiwixTooltipStyleSheet);
-    }
-    // Attach appropriate tooltip styles
-    popovers.attachKiwixPopoverCss(doc, isDark);
-}
-
 function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
     var doc = articleContainer ? articleContainer.contentDocument : '';
@@ -2595,13 +2590,13 @@ function switchCSSTheme () {
     // Detect if this article uses the new Wikipedia theme system (October 2024+)
     var usesNewWikipediaTheme = false;
     if (appstate.wikimediaZimLoaded) {
-        // Check for the presence of skin-theme-clientpref classes in any style tags
-        var styles = doc.querySelectorAll('style');
-        for (var j = 0; j < styles.length; j++) {
-            if (/skin-theme-clientpref/.test(styles[j].textContent)) {
-                usesNewWikipediaTheme = true;
-                break;
-            }
+        // Check if the html element actually has one of the theme classes applied
+        // This is more reliable than checking for the class name in CSS, as old ZIMs
+        // may reference the classes without actually implementing the theme system
+        var htmlElement = doc.documentElement;
+        if (htmlElement && htmlElement.classList) {
+            usesNewWikipediaTheme = htmlElement.classList.contains('skin-theme-clientpref-night') ||
+                                    htmlElement.classList.contains('skin-theme-clientpref-os');
         }
         console.log('[Theme Detection] Article uses new Wikipedia theme system:', usesNewWikipediaTheme);
     }
@@ -2625,48 +2620,55 @@ function switchCSSTheme () {
         // Remove all theme preference classes first
         html.classList.remove('skin-theme-clientpref-night', 'skin-theme-clientpref-os');
 
-        // Apply the appropriate class based on user preference
-        if (params.cssTheme === 'auto') {
-            // Let the ZIM handle theme via OS preference
-            html.classList.add('skin-theme-clientpref-os');
-            console.log('[Theme] Applied OS theme preference to new Wikipedia theme system');
-        } else if (params.cssTheme === 'dark') {
-            html.classList.add('skin-theme-clientpref-night');
-            console.log('[Theme] Applied dark theme class to new Wikipedia theme system');
-        } else if (params.cssTheme === 'darkReader' || params.cssTheme === 'invert') {
-            // For darkReader and invert, set ZIM to light theme and let the old logic handle the rest
-            console.log('[Theme] Set ZIM to light for darkReader/invert processing');
-            // Don't return early - fall through to old injection logic
+        // If custom dark theme override is enabled, set ZIM to light and fall through to old logic
+        if (params.customDarkTheme) {
+            console.log('[Theme] Custom dark theme override enabled - setting ZIM to light mode');
+            // Classes already removed, so ZIM will be in light mode
+            // Fall through to apply custom dark stylesheet
         } else {
-            // For 'light', just leave the classes removed (default is light)
-            console.log('[Theme] Applied light theme (removed classes) to new Wikipedia theme system');
-        }
-
-        // Only return early if we're NOT using darkReader or invert
-        if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
-            // Display the article since we've handled the theme
-            if (document.getElementById('configuration').style.display === 'none') {
-                articleContainer.style.display = '';
-                if (zimitIframe) zimitIframe.style.display = '';
-                window.dispatchEvent(new Event('resize')); // Force repaint
+            // Apply the appropriate class based on user preference
+            if (params.cssTheme === 'auto') {
+                // Let the ZIM handle theme via OS preference
+                html.classList.add('skin-theme-clientpref-os');
+                console.log('[Theme] Applied OS theme preference to new Wikipedia theme system');
+            } else if (params.cssTheme === 'dark') {
+                html.classList.add('skin-theme-clientpref-night');
+                console.log('[Theme] Applied dark theme class to new Wikipedia theme system');
+            } else if (params.cssTheme === 'darkReader' || params.cssTheme === 'invert') {
+                // For darkReader and invert, set ZIM to light theme and let the old logic handle the rest
+                console.log('[Theme] Set ZIM to light for darkReader/invert processing');
+                // Don't return early - fall through to old injection logic
+            } else {
+                // For 'light', just leave the classes removed (default is light)
+                console.log('[Theme] Applied light theme (removed classes) to new Wikipedia theme system');
             }
 
-            // Still need to handle tooltips and breakout link icon
-            var isDark = determinedWikiTheme !== 'light';
-            if (breakoutLink) {
-                breakoutLink.src = locationPrefix + (isDark ? '/img/icons/new_window_lb.svg' : '/img/icons/new_window.svg');
+            // Only return early if we're NOT using darkReader or invert
+            if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
+                // Display the article since we've handled the theme
+                if (document.getElementById('configuration').style.display === 'none') {
+                    articleContainer.style.display = '';
+                    if (zimitIframe) zimitIframe.style.display = '';
+                    window.dispatchEvent(new Event('resize')); // Force repaint
+                }
+
+                // Still need to handle tooltips and breakout link icon
+                var isDark = determinedWikiTheme !== 'light';
+                if (breakoutLink) {
+                    breakoutLink.src = locationPrefix + (isDark ? '/img/icons/new_window_lb.svg' : '/img/icons/new_window.svg');
+                }
+
+                // Handle tooltip styles
+                popovers.updateTooltipStyles(doc, isDark);
+
+                // Update UI theme indicators
+                // Hide invert/darkReader options when in auto mode or when theme is light
+                document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
+                document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
+
+                return; // Skip the old theme injection logic
             }
-
-            // Handle tooltip styles
-            updateTooltipStyles(doc, isDark);
-
-            // Update UI theme indicators
-            // Hide invert/darkReader options when in auto mode or when theme is light
-            document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
-            document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
-
-            return; // Skip the old theme injection logic
-        }
+        } // end else (not customDarkTheme)
     }
 
     if (determinedWikiTheme !== 'light' && params.cssTheme !== 'darkReader') {
@@ -2738,7 +2740,7 @@ function switchCSSTheme () {
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
     // Update tooltip styles for the current theme
-    updateTooltipStyles(doc, determinedWikiTheme !== 'light');
+    popovers.updateTooltipStyles(doc, determinedWikiTheme !== 'light');
     // Hide invert/darkReader options when in auto mode or when theme is light
     document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
@@ -6839,12 +6841,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (cssArray) {
             getBLOB(cssArray);
         } else {
-            // Apply dark or light content theme if necessary
-            // COMMENTED OUT: Testing if DOM-based theme switching in switchCSSTheme() is fast enough to prevent FOIT
-            // var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            // var contentThemeStyle = (determinedTheme == 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-            //     : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
-            // htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
             injectHTML();
         }
     } else {
@@ -6961,11 +6957,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             // Remove any voided styles
             cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
-            // Add dark mode CSS if required
-            // COMMENTED OUT: Testing if DOM-based theme switching in switchCSSTheme() is fast enough to prevent FOIT
-            // var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-            // cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + locationPrefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n'
-            //     : params.cssTheme == 'invert' ? '<link href="' + locationPrefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : '';
             // Ensure all headings are open
             // htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + '$1');
