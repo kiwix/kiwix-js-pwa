@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.7.85
+## Interim release 3.7.86
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
