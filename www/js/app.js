@@ -2598,9 +2598,8 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * For older ZIMs, it applies legacy custom dark stylesheets.
  *
  * DEVELOPER NOTE: To force the legacy custom dark theme on new Wikipedia ZIMs for testing:
- * - Browser users: Add ?customDarkTheme=true to the URL, or...
- * - (PWA/Electron users): Open DevTools console and type: params.customDarkTheme = true
- *   Then navigate to a new article to see the custom theme applied
+ * - Open DevTools console and type: params.customDarkTheme = true
+ * - Then navigate to a new article to see the custom theme applied
  */
 function switchCSSTheme () {
     // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
