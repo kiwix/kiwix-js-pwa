@@ -2647,8 +2647,8 @@ function switchCSSTheme () {
         // Remove all theme preference classes first
         html.classList.remove('skin-theme-clientpref-night', 'skin-theme-clientpref-os');
 
-        // If custom dark theme override is enabled, set ZIM to light and fall through to old logic
-        if (params.customDarkTheme) {
+        // If custom dark theme override is enabled, or we are using the custom mobile style transform, set ZIM to light and fall through to old logic
+        if (params.customDarkTheme || params.cssSource === 'mobile') {
             console.log('[Theme] Custom dark theme override enabled - setting ZIM to light mode');
             // Classes already removed, so ZIM will be in light mode
             // Fall through to apply custom dark stylesheet
