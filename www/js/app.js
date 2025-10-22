@@ -7138,6 +7138,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             applyWikimediaZimFixes(doc);
 
             parseAnchorsJQuery(dirEntry);
+            switchCSSTheme();
             loadCSSJQuery();
             images.prepareImagesJQuery(articleWindow);
             if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
