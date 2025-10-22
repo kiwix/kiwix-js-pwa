@@ -105,7 +105,8 @@ params['removePageMaxWidth'] = getSetting('removePageMaxWidth') != null ? getSet
 params['displayHiddenBlockElements'] = getSetting('displayHiddenBlockElements') !== null ? getSetting('displayHiddenBlockElements') : 'auto'; // Set default for displaying hidden block elements ("auto" = displayed in Wikimedia archives in mobile style)
 params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; // Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
 params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; // Set default to true to use cached CSS, false to use Zim only
-params['cssTheme'] = getSetting('cssTheme') || 'light'; // Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
+params['cssTheme'] = getSetting('cssTheme') || 'light'; // Set default to 'auto', 'light', 'dark', 'invert' or 'darkreader' to use respective themes for articles
+params['customDarkTheme'] = getSetting('customDarkTheme') === true; // Set to true to use custom dark theme (legacy Wikimedia dark theme)
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; // Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
 params['displayThemeOrRandomButtons'] = getSetting('displayThemeOrRandomButtons') != null ? getSetting('displayThemeOrRandomButtons') : 'theme'; // theme | random | both
 params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') === true; // Default for the display reset feature that fixes bugs with secondary displays
@@ -270,8 +271,10 @@ document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme
 document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme === 'auto';
 document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
 document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
+document.getElementById('darkLegacy').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme === 'invert';
+document.getElementById('cssWikiDarkThemeLegacyCheck').checked = params.customDarkTheme;
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme === 'darkReader';
 document.getElementById('triStateThemeRandomBtnCheck').checked = params.displayThemeOrRandomButtons === 'random';
 document.getElementById('triStateThemeRandomBtnCheck').indeterminate = params.displayThemeOrRandomButtons === 'both';

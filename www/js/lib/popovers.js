@@ -523,10 +523,27 @@ function closePopover (div) {
 };
 
 /**
+ * Helper function to update tooltip styles for the current theme
+ * @param {Document} doc - The document to update
+ * @param {boolean} isDark - Whether to apply dark theme styles
+ */
+function updateTooltipStyles (doc, isDark) {
+    // Remove existing tooltip stylesheet
+    var kiwixTooltipStyleSheet = doc.getElementById('kiwixtooltipstylesheet');
+    if (kiwixTooltipStyleSheet) {
+        kiwixTooltipStyleSheet.disabled = true;
+        kiwixTooltipStyleSheet.parentNode.removeChild(kiwixTooltipStyleSheet);
+    }
+    // Attach appropriate tooltip styles
+    attachKiwixPopoverCss(doc, isDark);
+}
+
+/**
  * Functions and classes exposed by this module
  */
 export default {
     attachKiwixPopoverCss: attachKiwixPopoverCss,
     populateKiwixPopoverDiv: populateKiwixPopoverDiv,
-    removeKiwixPopoverDivs: removeKiwixPopoverDivs
+    removeKiwixPopoverDivs: removeKiwixPopoverDivs,
+    updateTooltipStyles: updateTooltipStyles
 };

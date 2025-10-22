@@ -1,10 +1,17 @@
 # Changelog
 
-## Interim release 3.7.84
+## Interim release 3.7.85
 
+* ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
 * SECURITY: Increase security of Electron app's Express server and provide controls for LAN access
+* INFO: Add information about PWA install method for Firefox 143+ on Windows
+* INFO: General app and project information update
+* INFO: Give instructions for installing AppImage on recent Ubuntu missing fuse2
 * REGRESSION: Fix broken printing support
+* FIX: Touch events for sliding away tool and navbars
+* FIX: Unify all keyboard events under the same function
+* FIX: Set more reasonable product name for Linux Electron app
 * FIX: Accidental processing of certain openZIM articles by the Zimit redirect algorithm
 * DEV: Fix broken macOS workflow in nightlies
 * DEV: Bump Electron to 38.3.0 (for modern Electron builds)
