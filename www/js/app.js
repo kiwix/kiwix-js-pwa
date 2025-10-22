@@ -2572,11 +2572,11 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * Switches the CSS theme for the article content
  *
  * For new Wikipedia ZIMs (October 2024+), this function uses the ZIM's native theme system.
- * For older ZIMs, it applies custom dark stylesheets.
+ * For older ZIMs, it applies legacy custom dark stylesheets.
  *
- * DEVELOPER NOTE: To force the custom dark theme on new Wikipedia ZIMs for testing:
- * - Browser users: Add ?customDarkTheme=true to the URL
- * - PWA/Electron users: Open DevTools console and type: params.customDarkTheme = true
+ * DEVELOPER NOTE: To force the legacy custom dark theme on new Wikipedia ZIMs for testing:
+ * - Browser users: Add ?customDarkTheme=true to the URL, or...
+ * - (PWA/Electron users): Open DevTools console and type: params.customDarkTheme = true
  *   Then navigate to a new article to see the custom theme applied
  */
 function switchCSSTheme () {
