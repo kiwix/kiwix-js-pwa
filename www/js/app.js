@@ -2416,6 +2416,7 @@ function initializeUISettings () {
 // Code below is needed on startup to show or hide the inverted and DarkReader theme checkboxes;
 // similar code also runs in switchCSSTheme(), but that is not evoked on startup
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
+if (params.cssTheme == 'auto') document.getElementById('darkLegacy').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
 document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
     params.cssThemeOriginal = params.cssTheme;
@@ -2455,6 +2456,7 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     if (params.cssTheme == 'light') document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
     if (determinedValue == 'dark') document.getElementById('footer').classList.add('darkfooter');
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
+    document.getElementById('darkLegacy').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
@@ -2468,6 +2470,8 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     if (this.checked) {
         params.cssTheme = 'invert';
         document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
+        const customDarkThemeCheckbox = document.getElementById('cssWikiDarkThemeLegacyCheck');
+        if (customDarkThemeCheckbox.checked) customDarkThemeCheckbox.click();
     } else {
         var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
         params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
@@ -2477,11 +2481,30 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     switchCSSTheme();
     params.cssThemeOriginal = null;
 });
+document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change', function () {
+    if (this.checked) {
+        params.cssTheme = 'dark';
+        params.customDarkTheme = true;
+        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
+        document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+    } else {
+        var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
+        params.customDarkTheme = false;
+        params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
+    }
+    settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
+    settingsStore.setItem('customDarkTheme', params.customDarkTheme, Infinity);
+    document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
+    switchCSSTheme();
+    params.cssThemeOriginal = null;
+});
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
     params.cssThemeOriginal = params.cssTheme;
     if (this.checked) {
         params.cssTheme = 'darkReader';
         document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+        const customDarkThemeCheckbox = document.getElementById('cssWikiDarkThemeLegacyCheck');
+        if (customDarkThemeCheckbox.checked) customDarkThemeCheckbox.click();
     } else {
         var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
         params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
@@ -2669,6 +2692,7 @@ function switchCSSTheme () {
                 // Update UI theme indicators
                 // Hide invert/darkReader options when in auto mode or when theme is light
                 document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
+                document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
                 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
 
                 return; // Skip the old theme injection logic
@@ -2748,6 +2772,7 @@ function switchCSSTheme () {
     popovers.updateTooltipStyles(doc, determinedWikiTheme !== 'light');
     // Hide invert/darkReader options when in auto mode or when theme is light
     document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
+    document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
 }
 
