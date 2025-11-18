@@ -897,9 +897,25 @@ function iterateAsyncDirEntries (entries, archives, noFilter) {
         if (!result.done) {
             var entry = result.value[1];
             if (/\.zim(\w\w)?$/.test(entry.name)) {
-                if (noFilter) archives.push(entry);
-                // Hide all parts of split file except first in UI
-                else if (/\.zim(aa)?$/.test(entry.name)) archives.push(entry.name);
+                if (noFilter) {
+                    archives.push(entry);
+                } else if (/\.zim(aa)?$/.test(entry.name)) {
+                    // Hide all parts of split file except first in UI
+                    // Get file metadata (size and lastModified date)
+                    return entry.getFile().then(function (file) {
+                        archives.push({
+                            name: entry.name,
+                            size: file.size,
+                            lastModified: file.lastModified,
+                            lastModifiedDate: file.lastModifiedDate || new Date(file.lastModified)
+                        });
+                        // In an Electron app, we should be able to get the path of the files
+                        if (window.fs && !params.pickedFolder.path) {
+                            params.pickedFolder.path = file.path;
+                        }
+                        return iterateAsyncDirEntries(entries, archives, noFilter);
+                    });
+                }
                 // In an Electron app, we should be able to get the path of the files
                 if (window.fs && !params.pickedFolder.path) {
                     entry.getFile().then(function (file) {

@@ -884,6 +884,14 @@
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
+                                <div class="col-xs-12" style="margin-bottom: 0.5em;">
+                                    <label for="archiveSortSelect" style="display: inline-block; margin-right: 0.5em;">Sort by:</label>
+                                    <select id="archiveSortSelect" style="display: inline-block; width: auto; padding: 2px 5px;">
+                                        <option value="alpha">Name (A-Z)</option>
+                                        <option value="size">Size (Largest first)</option>
+                                        <option value="date">Date (Newest first)</option>
+                                    </select>
+                                </div>
                                 <div class="col-xs-12">
                                     <select id="archiveList" class="form-control"></select>
                                 </div>

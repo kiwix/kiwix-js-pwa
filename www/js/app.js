@@ -1282,6 +1282,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
 });
 var selectFired = false;
 var archiveList = document.getElementById('archiveList');
+var currentArchiveData = []; // Store current archive data for re-sorting
 archiveList.addEventListener('keydown', function (e) {
     e.preventDefault();
     if (/^Enter$/.test(e.key)) {
@@ -1783,6 +1784,15 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         scanNodeFolderforArchives(params.pickedFolder);
     } else if (params.webkitdirectory) {
         document.getElementById('archiveFiles').click();
+    }
+});
+document.getElementById('archiveSortSelect').addEventListener('change', function () {
+    // Save the sort preference and re-populate the archive list
+    var sortPreference = this.value;
+    settingsStore.setItem('archiveSortPreference', sortPreference, Infinity);
+    // Re-populate the archive list with the new sort order
+    if (currentArchiveData.length > 0) {
+        populateDropDownListOfArchives(currentArchiveData, false);
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
@@ -3784,16 +3794,88 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location';
     var usage = document.getElementById('usage');
     archiveList.options.length = 0;
-    for (var i = 0; i < archiveDirectories.length; i++) {
-        var archiveDirectory = archiveDirectories[i];
-        if (archiveDirectory === '/') {
+
+    // Helper function to format file size
+    var formatFileSize = function (bytes) {
+        if (bytes === 0 || !bytes) return '';
+        var k = 1024;
+        var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+    };
+
+    // Helper function to format date
+    var formatDate = function (date) {
+        if (!date) return '';
+        var d = date instanceof Date ? date : new Date(date);
+        if (isNaN(d.getTime())) return '';
+        var year = d.getFullYear();
+        var month = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    };
+
+    // Normalize the archive list to handle both strings and objects
+    var normalizedArchives = archiveDirectories.map(function (item) {
+        if (typeof item === 'string') {
+            return { name: item, size: 0, lastModified: 0, lastModifiedDate: null };
+        }
+        return item;
+    });
+
+    // Store the normalized archives globally for re-sorting
+    currentArchiveData = normalizedArchives;
+
+    // Get sort preference from settingsStore, default to alphabetical
+    var sortPreference = settingsStore.getItem('archiveSortPreference') || 'alpha';
+
+    // Update the UI sort selector to match the current preference
+    var sortSelect = document.getElementById('archiveSortSelect');
+    if (sortSelect) {
+        sortSelect.value = sortPreference;
+    }
+
+    // Sort the archives based on preference
+    normalizedArchives.sort(function (a, b) {
+        if (sortPreference === 'size') {
+            // Sort by size (descending)
+            return b.size - a.size;
+        } else if (sortPreference === 'date') {
+            // Sort by date (newest first)
+            return b.lastModified - a.lastModified;
+        } else {
+            // Sort alphabetically (default)
+            return a.name.localeCompare(b.name);
+        }
+    });
+
+    for (var i = 0; i < normalizedArchives.length; i++) {
+        var archiveItem = normalizedArchives[i];
+        var archiveName = archiveItem.name;
+
+        if (archiveName === '/') {
             uiUtil.systemAlert('It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory');
         } else {
-            archiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
+            // Create option text with metadata
+            var optionText = archiveName;
+            var metadata = [];
+
+            if (archiveItem.size) {
+                metadata.push(formatFileSize(archiveItem.size));
+            }
+            if (archiveItem.lastModifiedDate || archiveItem.lastModified) {
+                metadata.push(formatDate(archiveItem.lastModifiedDate || archiveItem.lastModified));
+            }
+
+            if (metadata.length > 0) {
+                optionText = archiveName + ' [' + metadata.join(' | ') + ']';
+            }
+
+            archiveList.options[i] = new Option(optionText, archiveName);
         }
     }
     // Store the list of archives in settingsStore, to avoid rescanning at each start
-    settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
+    settingsStore.setItem('listOfArchives', normalizedArchives.map(function (item) { return item.name; }).join('|'), Infinity);
     if (!/Android|iOS/.test(params.appType)) {
         archiveList.size = archiveList.length > 15 ? 15 : archiveList.length;
         if (archiveList.length > 1) archiveList.removeAttribute('multiple');
@@ -4435,7 +4517,20 @@ function processFilesArray (files, callback) {
         var archiveList = [];
         files.forEach(function (file) {
             if (/\.zim(aa)?$/i.test(file.fileType) || /\.zim(aa)?$/i.test(file) || /\.zim(aa)?$/i.test(file.name)) {
-                archiveList.push(file.name || file);
+                // Preserve file metadata
+                var fileName = file.name || file;
+                if (typeof fileName === 'string') {
+                    // If it's just a string, push it as-is
+                    archiveList.push(fileName);
+                } else {
+                    // If it's a file object, extract metadata
+                    archiveList.push({
+                        name: fileName,
+                        size: file.size || 0,
+                        lastModified: file.lastModified || file.dateModified || 0,
+                        lastModifiedDate: file.lastModifiedDate || (file.lastModified ? new Date(file.lastModified) : null) || (file.dateModified ? new Date(file.dateModified) : null)
+                    });
+                }
             }
         });
         if (archiveList.length) {
