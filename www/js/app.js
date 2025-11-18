@@ -991,19 +991,19 @@ function setDynamicIcons (btn) {
     var btnAbout = document.getElementById('btnAbout');
     if (params.lockDisplayOrientation) {
         if (uiUtil.appIsFullScreen()) {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-resize-small"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-compress"></i>';
             btnAbout.title = 'Exit fullscreen';
         } else {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-fullscreen"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-expand"></i>';
             btnAbout.title = 'Return to fullscreen';
         }
     } else {
         // When the scrollbox height is 0, we are not in Configuration or About
         if ((!btn && scrollbox.offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-print"></i>';
             btnAbout.title = 'Ctrl-P: Print';
         } else {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-info-sign"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-info-circle"></i>';
             btnAbout.title = 'About';
         }
     }

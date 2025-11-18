@@ -126,6 +126,12 @@ div:not(.card.border-success, .alert-message) {
 #scrollbox {
     width: 100%;
     overflow: auto;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 #articleListWithHeader {
@@ -243,11 +249,16 @@ div:not(.card.border-success, .alert-message) {
     padding: 5px 1em !important;
 }
 
-.navbar-inverse, .navbar-dark {
+.navbar-inverse, .navbar-dark, .navbar-light {
     background-color: #d9edf7 !important;
-    border-color: #d9edf7 !important;
+    border-color: #bce8f1 !important;
     margin-bottom: 0 !important;
     padding: 0 !important;
+}
+
+.dark .navbar-inverse, .dark .navbar-dark, .dark .navbar-light {
+    background-color: #2b3e50 !important;
+    border-color: #1a252f !important;
 }
 
 .dark .form-control {
@@ -265,12 +276,54 @@ div:not(.card.border-success, .alert-message) {
 
 .category-padding {
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0 20px;
+    max-width: 1400px;
 }
 
-/* Override Bootstrap 4 container max-width to use full width */
-.container {
+@media (min-width: 768px) {
+    .category-padding {
+        padding: 0 40px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .category-padding {
+        padding: 0 60px;
+    }
+}
+
+/* Override Bootstrap 4 container max-width */
+#scrollbox.container {
     max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Remove extra padding from return to article link */
+.returntoArticle {
+    padding-top: 0 !important;
+}
+
+/* Configuration page heading - make title and version stack vertically */
+#configuration > .row:first-of-type {
+    display: block !important;
+}
+
+#configuration > .row:first-of-type > * {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+}
+
+#configuration > .row:first-of-type h2 {
+    margin-bottom: 0.5rem;
+}
+
+#configuration > .row:first-of-type > p {
+    margin: 0.5em 0 !important;
+    max-width: none !important;
+    text-align: left !important;
 }
 
 /* Bootstrap 4 card heading styles */
@@ -280,6 +333,7 @@ div:not(.card.border-success, .alert-message) {
     background-color: rgba(0,0,0,.03);
     border-bottom: 1px solid rgba(0,0,0,.125);
     font-weight: bold;
+    cursor: pointer;
 }
 
 .dark .card-heading {
@@ -287,11 +341,80 @@ div:not(.card.border-success, .alert-message) {
     border-bottom: 1px solid rgba(255,255,255,.125);
 }
 
+/* Colored headings based on card type */
+.card.border-info .card-heading {
+    background-color: #d1ecf1;
+    border-bottom-color: #bee5eb;
+}
+
+.dark .card.border-info .card-heading {
+    background-color: #0c5460;
+    border-bottom-color: #17a2b8;
+}
+
+.card.border-warning .card-heading {
+    background-color: #fff3cd;
+    border-bottom-color: #ffeeba;
+}
+
+.dark .card.border-warning .card-heading {
+    background-color: #856404;
+    border-bottom-color: #ffc107;
+}
+
+.card.border-success .card-heading {
+    background-color: #d4edda;
+    border-bottom-color: #c3e6cb;
+}
+
+.dark .card.border-success .card-heading {
+    background-color: #155724;
+    border-bottom-color: #28a745;
+}
+
+.card.border-danger .card-heading {
+    background-color: #f8d7da;
+    border-bottom-color: #f5c6cb;
+}
+
+.dark .card.border-danger .card-heading {
+    background-color: #721c24;
+    border-bottom-color: #dc3545;
+}
+
 .card-group-heading {
     font-size: 1.5rem;
     font-weight: 500;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+/* Ensure Download library heading is not indented */
+#downloads .row {
+    display: block;
+    padding-top: 1rem;
+}
+
+#downloads .card-group-heading {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.column {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+#btnToggleSettings {
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .apiAvailable {
@@ -382,19 +505,35 @@ div:not(.card.border-success, .alert-message) {
 
 .navbar {
     min-height: 0px !important;
-    left: env(titlebar-area-x, 0);
-    top: env(titlebar-area-y, 0);
-    width: env(titlebar-area-width, 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1030;
     -webkit-app-region: drag;
+}
+
+/* Add padding to body/article to account for fixed navbar */
+#scrollbox {
+    padding-top: 42px;
+}
+
+/* Reduce navbar padding when Configuration page is showing */
+#configuration {
+    margin-top: -32px;
+    padding-top: 10px;
 }
 
 nav a.btn-primary, .input-group-text {
     background: #d9edf7;
-    border-color: #d9edf7 !important;
-    color: #000 !important;
+    border-color: #bce8f1 !important;
+    color: #31708f !important;
 }
 
-.dark nav a.btn-primary {
+.dark nav a.btn-primary, .dark .input-group-text {
+    background: #2b3e50;
+    border-color: #1a252f !important;
     color: #fff !important;
 }
 
@@ -403,7 +542,7 @@ nav a.btn-primary, .input-group-text {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    margin: 3px 0 0 0;
+    margin: 0;
     padding: 0;
     width: 100%;
 }
@@ -411,10 +550,11 @@ nav a.btn-primary, .input-group-text {
 #navbar .input-group .btn {
     border-radius: 0;
     margin: 0;
-    padding: 5px 1em;
+    padding: 5px 0.75em;
     height: auto;
     line-height: 1.5;
     flex-shrink: 0;
+    min-width: 40px;
 }
 
 #navbar .input-group .form-control {
@@ -496,10 +636,39 @@ nav a.btn-primary, .input-group-text {
     border-color: #222 !important;
 }
 
-.dark .btn-inline {
-    background: #182828 !important;
-    border-color: darkslategray !important;
+/* Specific styling for Refresh and Reset buttons only */
+#btnRefreshApp, #btnReset2 {
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: normal;
+    line-height: 1 !important;
 }
+
+.dark #btnRefreshApp, .dark #btnReset2 {
+    color: #adb5bd;
+}
+
+/* Styling for Open all button */
+#btnToggleSettings {
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #495057;
+    font-weight: normal;
+    line-height: 1 !important;
+}
+
+.dark #btnToggleSettings {
+    color: #adb5bd;
+    border-color: #6c757d !important;
+}
+
 
 .dark .modal-footer .btn-primary, .dark .modal-footer .btn-secondary {
     border-color: #777 !important;
@@ -513,7 +682,7 @@ footer .btn-xs {
     color: darkblue;
 }
 
-.btn-sm, .btn-lg, .btn-default {
+.btn-sm:not(.btn-inline), .btn-lg:not(.btn-inline), .btn-default {
     background-color: rgba(217,237,247,0) !important;
     border: transparent !important;
     /*color: whitesmoke !important;*/

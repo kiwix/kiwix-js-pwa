@@ -1287,17 +1287,17 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
  * Set up toggles to make Configuration headings collapsible
  */
 function setupConfigurationToggles () {
-    var configHeadings = document.querySelectorAll('.panel-heading');
+    var configHeadings = document.querySelectorAll('.card-heading');
     Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
         var headingText = panelHeading.innerHTML;
         var panelBody = panelHeading.nextElementSibling;
         var panelParent = panelHeading.parentElement;
         var panelPrevious = panelParent ? panelParent.previousElementSibling : null;
-        if (panelPrevious && !/panel\s/.test(panelPrevious.className)) panelPrevious = null;
-        var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.panel-heading') : null;
+        if (panelPrevious && !/card\s/.test(panelPrevious.className)) panelPrevious = null;
+        var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.card-heading') : null;
         var panelNext = panelParent ? panelParent.nextElementSibling : null;
-        if (panelNext && !/panel\s/.test(panelNext.className)) panelPrevious = null;
-        var panelNextHeading = panelNext ? panelNext.querySelector('.panel-heading') : null;
+        if (panelNext && !/card\s/.test(panelNext.className)) panelPrevious = null;
+        var panelNextHeading = panelNext ? panelNext.querySelector('.card-heading') : null;
         panelHeading.addEventListener('click', function () {
             if (/▶/.test(panelHeading.innerHTML)) {
                 panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▼ ');
