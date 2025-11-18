@@ -74,11 +74,11 @@ body {
     background-color: whitesmoke !important;
 }
 
-.panel-heading {
+.card-header {
     font-weight: 600;
 }
 
-div:not(.panel-success, .alert-message) {
+div:not(.card.border-success, .alert-message) {
     -ms-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -293,7 +293,7 @@ div:not(.panel-success, .alert-message) {
     height: 50px;
 }
 
-.glyphicon.spinning {
+.fa.spinning {
     color: white;
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
@@ -424,7 +424,7 @@ footer .btn-xs {
     margin: 5px 5px 10px;
 }
 
-.glyphicon {
+.fa {
     color: darkblue;
 }
 
@@ -503,7 +503,7 @@ pre {
     border-left: 6px solid grey;
 }
 
-.darkfooter .glyphicon, .dark .glyphicon {
+.darkfooter .fa, .dark .fa {
     color: lightblue;
 }
 
@@ -540,24 +540,24 @@ pre {
     border-color: darkgray;
 }
 
-.dark .panel {
+.dark .card {
     color: lightgray !important;
     background: #222 !important;
     border-color: darkgray;
 }
 
-.dark .panel-heading {
+.dark .card-header {
     color: lightgray !important;
     background: #12303b !important;
     border-color: darkgray;
 }
 
-    .dark .panel-warning .panel-heading {
+    .dark .card.border-warning .card-header {
         background: #333300 !important;
     }
 
 
-    .dark .panel-danger .panel-heading {
+    .dark .card.border-danger .card-header {
         background: #330000 !important;
     }
 
@@ -725,19 +725,19 @@ pre {
     background: steelblue;
 }
 
-.panel-warning .checkmark, .panel-warning .radiobtn, .panel-warning input:checked ~ .checkmark:after, .panel-warning input:indeterminate ~ .checkmark:after {
+.card.border-warning .checkmark, .card.border-warning .radiobtn, .card.border-warning input:checked ~ .checkmark:after, .card.border-warning input:indeterminate ~ .checkmark:after {
     border-color: #a0a090;
 }
 
-.panel-warning input:checked ~ .radiobtn::after {
+.card.border-warning input:checked ~ .radiobtn::after {
     background: #a0a090;
 }
 
-.panel-danger .checkmark, .panel-danger .radiobtn, .panel-danger input:checked ~ .checkmark:after, .panel-danger input:indeterminate ~ .checkmark:after {
+.card.border-danger .checkmark, .card.border-danger .radiobtn, .card.border-danger input:checked ~ .checkmark:after, .card.border-danger input:indeterminate ~ .checkmark:after {
     border-color: #c37b7a;
 }
 
-.panel-danger input:checked ~ .radiobtn:after {
+.card.border-danger input:checked ~ .radiobtn:after {
     background: #c37b7a;
 }
 
@@ -745,11 +745,11 @@ pre {
     border-color: darkslategray;
 }
 
-.dark .panel-warning .checkmark, .dark .panel-warning .radiobtn, .dark .panel-warning input:checked ~ .checkmark:after, .dark .panel-warning input:indeterminate ~ .checkmark:after {
+.dark .card.border-warning .checkmark, .dark .card.border-warning .radiobtn, .dark .card.border-warning input:checked ~ .checkmark:after, .dark .card.border-warning input:indeterminate ~ .checkmark:after {
     border-color: #808000;
 }
 
-.dark .panel-danger .checkmark, .dark .panel-danger .radiobtn {
+.dark .card.border-danger .checkmark, .dark .card.border-danger .radiobtn {
     border-color: #800000;
 }
 
@@ -762,11 +762,11 @@ pre {
     background-color: #12303b;
 }
 
-.dark .panel-warning input ~ .checkmark, .dark .panel-warning input ~ .radiobtn, .dark .panel-warning input:checked ~ .checkmark, .dark .panel-warning input:checked ~ .radiobtn {
+.dark .card.border-warning input ~ .checkmark, .dark .card.border-warning input ~ .radiobtn, .dark .card.border-warning input:checked ~ .checkmark, .dark .card.border-warning input:checked ~ .radiobtn {
     background-color: #4d4d00;
 }
 
-.dark .panel-danger input ~ .checkmark, .dark .panel-danger input ~ .radiobtn, .dark .panel-danger input:checked ~ .checkmark, .dark .panel-danger input:checked ~ .radiobtn {
+.dark .card.border-danger input ~ .checkmark, .dark .card.border-danger input ~ .radiobtn, .dark .card.border-danger input:checked ~ .checkmark, .dark .card.border-danger input:checked ~ .radiobtn {
     background-color: #4d0000;
 }
 

@@ -43,9 +43,12 @@ const config = {
         copy({
             targets: [{
                 src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', 'www/js/lib/webpHeroBundle*',
-                    'node_modules/jquery/dist/jquery.slim.min.*', '!www/js/lib/libzim-wasm.dev*'],
+                    '!www/js/lib/libzim-wasm.dev*'],
                 dest: 'dist/www/js'
             },
+            { src: ['node_modules/bootstrap/dist/css/bootstrap.min.css'], dest: 'dist/www/css' },
+            { src: ['node_modules/@fortawesome/fontawesome-free/css/all.min.css'], dest: 'dist/www/css' },
+            { src: ['node_modules/@fortawesome/fontawesome-free/webfonts/*'], dest: 'dist/www/webfonts' },
             { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
             ],
             flatten: true
@@ -147,10 +150,9 @@ if (process.env.BUILD === 'production') {
                         .replace(/bundle\.js/, 'bundle.min.js')
                     // Comment out the old app.js link
                         .replace(/(<script type="module.*app.js.*)/, '<!-- $1 -->')
-                    // Redirect jQuery and bootstrap
-                        .replace(/(<script\s.*src=").*jquery.slim.min.js/, '$1js/jquery.slim.min.js')
-                        // .replace(/(<script\s.*src=").*bootstrap.bundle.min.js/, '$1js/bootstrap.bundle.min.js')
-                        // .replace(/(<link\s.*href=").*bootstrap.min.css/, '$1css/bootstrap.min.css')
+                    // Redirect Bootstrap 4 and Font Awesome to dist locations
+                        .replace(/(<link\s.*href=")\.\.\/node_modules\/bootstrap\/dist\/css\/bootstrap.min.css/, '$1css/bootstrap.min.css')
+                        .replace(/(<link\s.*href=")\.\.\/node_modules\/@fortawesome\/fontawesome-free\/css\/all.min.css/, '$1css/all.min.css')
                 }
             ],
             flatten: false
@@ -200,10 +202,9 @@ if (process.env.BUILD === 'production') {
                         .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, '$1')
                     // Comment out the old app.js link
                         .replace(/(<script type="module.*app.js.*)/, '<!-- $1 -->')
-                    // Redirect jQuery and bootstrap
-                        .replace(/(<script\s.*src=").*jquery.slim.min.js/, '$1js/jquery.slim.min.js')
-                        // .replace(/(<script\s.*src=").*bootstrap.bundle.min.js/, '$1js/bootstrap.bundle.min.js')
-                        // .replace(/(<link\s.*href=").*bootstrap.min.css/, '$1css/bootstrap.min.css')
+                    // Redirect Bootstrap 4 and Font Awesome to dist locations
+                        .replace(/(<link\s.*href=")\.\.\/node_modules\/bootstrap\/dist\/css\/bootstrap.min.css/, '$1css/bootstrap.min.css')
+                        .replace(/(<link\s.*href=")\.\.\/node_modules\/@fortawesome\/fontawesome-free\/css\/all.min.css/, '$1css/all.min.css')
                 }
             ],
             flatten: false
