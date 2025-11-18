@@ -11,6 +11,9 @@ Chromium browser (Chrome, Edge) -- see Install button in Configuration. It can a
 Chrome/Edge on Android, and Firefox for Android (via browser menu). In Firefox >= 143 for Windows, you can add the app to the system taskbar
 (see button in address bar), and the app will gain its own icon and dedicated window. In other Firefox, you can bookmark the app, and it will still work offline.
 
+For browsers that do not show the install prompt, see:
+- [Installing the PWA when the install prompt is not supported](readme/PWA_FALLBACK_INSTALL.md)
+
 # Sideloading Instructions (Windows 10/11 and Mobile)
 
 You can now sideload the app easily in Windows by opening a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at
