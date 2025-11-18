@@ -243,10 +243,11 @@ div:not(.card.border-success, .alert-message) {
     padding: 5px 1em !important;
 }
 
-.navbar-inverse {
+.navbar-inverse, .navbar-dark {
     background-color: #d9edf7 !important;
     border-color: #d9edf7 !important;
     margin-bottom: 0 !important;
+    padding: 0 !important;
 }
 
 .dark .form-control {
@@ -264,7 +265,33 @@ div:not(.card.border-success, .alert-message) {
 
 .category-padding {
     margin: 0 auto;
-    max-width: 800px;
+    padding: 0 15px;
+}
+
+/* Override Bootstrap 4 container max-width to use full width */
+.container {
+    max-width: 100%;
+}
+
+/* Bootstrap 4 card heading styles */
+.card-heading {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    font-weight: bold;
+}
+
+.dark .card-heading {
+    background-color: rgba(255,255,255,.03);
+    border-bottom: 1px solid rgba(255,255,255,.125);
+}
+
+.card-group-heading {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .apiAvailable {
@@ -345,6 +372,7 @@ div:not(.card.border-success, .alert-message) {
 
 .navbar-header {
     float: none !important;
+    width: 100%;
     -webkit-app-region: no-drag;
 }
 
@@ -360,11 +388,68 @@ div:not(.card.border-success, .alert-message) {
     -webkit-app-region: drag;
 }
 
-nav a.btn-primary, .input-group-addon {
+nav a.btn-primary, .input-group-text {
     background: #d9edf7;
     border-color: #d9edf7 !important;
-    margin-top: 3px;
-    padding: 5px 1em !important;
+    color: #000 !important;
+}
+
+.dark nav a.btn-primary {
+    color: #fff !important;
+}
+
+/* Bootstrap 4 input-group fixes */
+#navbar .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 3px 0 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+#navbar .input-group .btn {
+    border-radius: 0;
+    margin: 0;
+    padding: 5px 1em;
+    height: auto;
+    line-height: 1.5;
+    flex-shrink: 0;
+}
+
+#navbar .input-group .form-control {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#navbar .input-group .input-group-text {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#navbar .container-fluid {
+    padding: 0;
+    width: 100%;
+}
+
+#navbar form {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#navbar #row,
+#navbar #row2 {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .btn:active, .btn-primary:active, .btn-primary.active {
@@ -406,7 +491,7 @@ nav a.btn-primary, .input-group-addon {
     }
 }
 
-.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse {
+.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse, .dark .navbar-dark {
     background: #222 !important;
     border-color: #222 !important;
 }
@@ -600,7 +685,7 @@ pre {
     background-color: darkslategray !important;
 }
 
-.dark .btn-default, .dark .input-group-addon, .dark pre {
+.dark .btn-default, .dark .input-group-text, .dark pre {
     background: #222 !important;
     border-color: #222 !important;
     color: lightgray !important;
@@ -659,6 +744,17 @@ pre {
 /*********************************/
 
 /* Hide the browser's default checkbox */
+/* Custom checkbox/radio container */
+label.checkbox,
+label.radio {
+    position: relative;
+    padding-left: 30px;
+    display: block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .container input[type=checkbox], .container input[type=radio] {
     position: absolute;
     opacity: 0;
@@ -671,7 +767,7 @@ pre {
 .checkmark {
     position: absolute;
     top: 0;
-    left: -25px;
+    left: 0;
     height: 20px;
     width: 20px;
     background-color: whitesmoke;
@@ -705,7 +801,7 @@ pre {
 .radiobtn {
     position: absolute;
     top: 0;
-    left: -25px;
+    left: 0;
     height: 20px;
     width: 20px;
     background-color: whitesmoke;

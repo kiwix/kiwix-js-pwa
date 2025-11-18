@@ -247,38 +247,34 @@
     </div>
     <section id="search-article" role="region">
         <header id="top">
-            <nav id="navbar" class="navbar navbar-inverse" role="navigation">
+            <nav id="navbar" class="navbar navbar-dark bg-dark" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch" role="search" aria-label="Search articles">
                             <div class="" id="row">
-                                <span class="input-group">
-                                    <span class="input-group-btn">
-                                        <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img alt="Kiwix icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
-                                        <!--button -->
-                                        <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><i class="fas fa-arrow-circle-left"></i></a>
-                                        <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><i class="fas fa-arrow-circle-right"></i></a>
-                                    </span>
+                                <div class="input-group">
+                                    <!-- button id="btnHome" type="button" class="btn btn-default" -->
+                                    <a id="btnHome" title="Home" class="btn btn-primary"><img alt="Kiwix icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                    <!--button -->
+                                    <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><i class="fas fa-arrow-circle-left"></i></a>
+                                    <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><i class="fas fa-arrow-circle-right"></i></a>
                                     <input type="search" id="prefix" placeholder="Search [.*] or space key..."
                                         title="Press /, Home, or Ctrl/Cmd+K to focus search"
-                                        class="form-control" style="z-index: 0; width: 99.5%" autocomplete="off" />
-                                    <span class="input-group-btn">
-                                        <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><i class="fas fa-book"></i></a>
-                                        <a class="btn btn-primary" title="Ctrl-Shift-F or Alt-F: Find and highlight text in article..." id="findText"><i class="fas fa-search"></i></a>
-                                        <a class="btn btn-primary" title="Random Article" id="btnRandomArticle"><i class="fas fa-random"></i></a>
-                                        <a class="btn btn-primary" title="Switch between light and dark modes" id="btnToggleTheme"><i class="fas fa-adjust"></i></a>
-                                        <a class="btn btn-primary" title="Settings" id="btnConfigure"><i class="fas fa-wrench"></i></a>
-                                        <a class="btn btn-primary" title="About" id="btnAbout" style="margin-right:5px;"><i class="fas fa-info-circle"></i></a>
-                                    </span>
-                                </span>
+                                        class="form-control" style="z-index: 0;" autocomplete="off" />
+                                    <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><i class="fas fa-book"></i></a>
+                                    <a class="btn btn-primary" title="Ctrl-Shift-F or Alt-F: Find and highlight text in article..." id="findText"><i class="fas fa-search"></i></a>
+                                    <a class="btn btn-primary" title="Random Article" id="btnRandomArticle"><i class="fas fa-random"></i></a>
+                                    <a class="btn btn-primary" title="Switch between light and dark modes" id="btnToggleTheme"><i class="fas fa-adjust"></i></a>
+                                    <a class="btn btn-primary" title="Settings" id="btnConfigure"><i class="fas fa-wrench"></i></a>
+                                    <a class="btn btn-primary" title="About" id="btnAbout" style="margin-right:5px;"><i class="fas fa-info-circle"></i></a>
+                                </div>
                             </div>
                             <div class="" id="row2" style="display:none;">
-                                <span class="input-group" style="padding-bottom: 5px; padding-left: 15px; margin-left: 5px;">
+                                <div class="input-group" style="padding-bottom: 5px; padding-left: 15px; margin-left: 5px;">
                                     <input class="form-control" id="findInArticle" style="display:inline;" type="search" placeholder="Highlight in article...">
-                                    <span class="input-group-addon" id="matches">Full: 0</span>
-                                    <span class="input-group-addon" id="partial">Partial: 0</span>
-                                </span>
+                                    <span class="input-group-text" id="matches">Full: 0</span>
+                                    <span class="input-group-text" id="partial">Partial: 0</span>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -840,7 +836,7 @@
                 <div id="configuration" style="display: none;" class="container category-padding">
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div id="divInstall2" style="display:none; float:right;">
-                        <button id="btnInstall2" class="btn btn-xs btn-primary btn-inline">Install PWA</button>
+                        <button id="btnInstall2" class="btn btn-sm btn-primary btn-inline">Install PWA</button>
                     </div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
@@ -848,11 +844,11 @@
                         <p style="margin: 1em auto 1em;">
                             Version: <b>Kiwix JS <span id="appType"></span><span class="version"></span></b> <span id="updateCheck">[<a class="unhideLibrary" href="#btnRescanDeviceStorage">check for updates</a>]</span>&nbsp;
                             <button title="This performs a simple page reload. May be useful if the app has become unresponsive."
-                                    id="btnRefreshApp" class="btn btn-xs btn-inline" style="border-color: gray" type="button">
+                                    id="btnRefreshApp" class="btn btn-sm btn-inline" style="border-color: gray" type="button">
                                 Refresh
                             </button>
                             <button title="WARNING! Make sure you have an Internet connection! This will erase the app's Service Worker and all settings (except OPFS archives), returning it to a freshly installed state."
-                                    id="btnReset2" class="btn btn-xs btn-inline" style="border-color: palevioletred" type="button">
+                                    id="btnReset2" class="btn btn-sm btn-inline" style="border-color: palevioletred" type="button">
                                 Reset
                             </button>
                         </p>
@@ -870,11 +866,11 @@
                         <p id="usage">For <b>instructions</b> and <b>usage guide</b>, please see the <a href="#" class="aboutLink"><b>About tab</b> <i class="fas fa-info-circle"></i></a> (top right).</p>
                         <p class="packagedInfo" style="display: none; margin-top: 1em;">
                             Packaged ZIM archive: <b><span class="fileVersion"></span></b>
-                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs btn-inline">Reload</button>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-sm btn-inline">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;">
                             Current archive: <b><a href="#" id="currentArchiveLink"></a></b>
-                            <button id="openCurrentArchive" style="display: none;" type="button" class="btn btn-primary btn-xs btn-inline">Open</button>
+                            <button id="openCurrentArchive" style="display: none;" type="button" class="btn btn-primary btn-sm btn-inline">Open</button>
                         </p>
                         <p id="downloadLinksText">
                             <a class="unhideLibrary" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
@@ -885,7 +881,7 @@
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
-                                <div class="col-xs-12">
+                                <div class="col-12">
                                     <select id="archiveList" class="form-control"></select>
                                 </div>
                             </div>
@@ -893,32 +889,32 @@
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location!</p>
                             </div>
                             <div id="fsManager" class="row">
-                                <div class="col-xs-8"></div>
-                                <div class="col-xs-1">
+                                <div class="col-8"></div>
+                                <div class="col-1">
                                     <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><i class="fas fa-share"></i></a>
                                 </div>
-                                <div class="col-xs-1">
+                                <div class="col-1">
                                     <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><i class="fas fa-trash-alt"></i></a>
                                 </div>
-                                <div class="col-xs-1">
+                                <div class="col-1">
                                     <a href="#" title="Refresh archive list" id="btnRefresh"><i class="fas fa-sync-alt"></i></a>
                                 </div>
                             </div>
                             <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
                                     <div class="row">
-                                        <div class="col-xs-6" id="archiveFileLabel">
+                                        <div class="col-6" id="archiveFileLabel">
                                             <p><b>Pick ZIM archive(s)</b>:</p>
                                         </div>
-                                        <div class="col-xs-6" id="archiveFilesLabel">
+                                        <div class="col-6" id="archiveFilesLabel">
                                             <p><b>For multiple or split archives</b>:</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div id="archiveFileCol" class="col-xs-6">
+                                        <div id="archiveFileCol" class="col-6">
                                             <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
                                         </div>
-                                        <div id="archiveFilesCol" class="col-xs-6">
+                                        <div id="archiveFilesCol" class="col-6">
                                             <div id="OPFSQuota"  style="display: none;"></div>
                                             <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." />
                                         </div>
@@ -946,7 +942,7 @@
                                 </div>
                             </div>
                             <div id="rescanStorage" class="row" style="margin-top: 1em;">
-                                <div class="col-xs-12">
+                                <div class="col-12">
                                     <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" title="Tap to show file or folder pickers and other storage options." />
                                     Select ZIM files or <b>drag and drop</b>
                                 </div>
@@ -955,7 +951,7 @@
                         <div id="downloads">
                             <div class="row">
                                 <h4 class="card-group-heading">Download library</h4>
-                                <div id="libraryArea" class="col-xs-12">
+                                <div id="libraryArea" class="col-12">
                                     <table>
                                         <tr>
                                             <td><input id="downloadTrigger" type="button" class="btn btn-primary btn-inline" value="Open library" style="float:left; margin-right:1em;" /></td>
@@ -977,10 +973,12 @@
                     </div>
 
                     <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-group-heading mb-0">Display settings</h4>
+                            <button style="border-color: gray;" title="Open all the setting panels."
+                                id="btnToggleSettings" class="btn btn-sm btn-inline" type="button">▶ Open all</button>
+                        </div>
                         <div class="row">
-                            <button style="float: right; border-color: gray;" title="Open all the setting panels."
-                                id="btnToggleSettings" class="btn btn-xs btn-inline" type="button">▶ Open all</button>
-                            <h4 class="card-group-heading">Display settings</h4>
                             <div class="column">
                                 <div id="displaySettingsDiv" class="card border-info" style="clear: left;">
                                     <div class="card-heading">Display size, theme and orientation</div>
@@ -1447,27 +1445,27 @@
             <div id="alertBoxFooter"></div>
             <div id="divInstall1" style="display:none">
                 Install app on this device?
-                <button id="btnInstall1" class="btn btn-xs btn-primary">Now</button>
-                <button id="btnLater" class="btn btn-xs btn-primary">Later</button>
+                <button id="btnInstall1" class="btn btn-sm btn-primary">Now</button>
+                <button id="btnLater" class="btn btn-sm btn-primary">Later</button>
             </div>
-            <div id="navigationButtons" class="btn-group btn-group-justified">
-                <div class="row">
-                    <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><i class="fas fa-home"></i></a>
-                    <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><i class="fas fa-arrow-circle-left"></i></a>
-                    <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><i class="fas fa-arrow-circle-right"></i></a>
-                    <a class="btn btn-default col-xs-1" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><i class="fas fa-random"></i></a>
-                    <a class="btn btn-default col-xs-1" style="display:none;" id="btnToggleThemeAlt" title="Switch between light and dark modes"><i class="fas fa-adjust"></i></a>
+            <div id="navigationButtons" class="btn-group d-flex">
+                <div class="row w-100">
+                    <a class="btn btn-outline-secondary col-2" id="btnHomeBottom" title="Home"><i class="fas fa-home"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnBack" title="Back"><i class="fas fa-arrow-circle-left"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnForward" title="Forward"><i class="fas fa-arrow-circle-right"></i></a>
+                    <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><i class="fas fa-random"></i></a>
+                    <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnToggleThemeAlt" title="Switch between light and dark modes"><i class="fas fa-adjust"></i></a>
                     <div class="dropup">
-                        <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="btn btn-outline-secondary dropdown-toggle col-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>&nbsp;ToC&nbsp;</b>
                             <span class="caret"></span>
                         </a>
                         <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
                     </div>
-                    <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><i class="fas fa-search-minus"></i></a>
-                    <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><i class="fas fa-search-plus"></i></a>
-                    <span class="label label-default" id="lblZoom"></span>
-                    <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><i class="fas fa-arrow-up"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnZoomout" title="Zoom out"><i class="fas fa-search-minus"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnZoomin" title="Zoom in"><i class="fas fa-search-plus"></i></a>
+                    <span class="badge badge-secondary" id="lblZoom"></span>
+                    <a class="btn btn-outline-secondary col-2" id="btnTop" title="Top" href="#top"><i class="fas fa-arrow-up"></i></a>
                 </div>
             </div>
         </footer>
