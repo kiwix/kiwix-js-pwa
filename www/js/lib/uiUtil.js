@@ -645,7 +645,7 @@ function displayActiveContentWarning (type) {
                     container = container.parentNode;
                 }
                 container.style.display = 'block';
-                container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▶/, '▼');
+                container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▷/, '▽');
                 var btnHome = document.getElementById('btnHome');
                 [thisLabel, btnHome].forEach(function (ele) {
                 // Define event listeners to cancel the highlighting both on the highlighted element and on the Home tab
@@ -1299,8 +1299,8 @@ function setupConfigurationToggles () {
         if (panelNext && !/card\s/.test(panelNext.className)) panelPrevious = null;
         var panelNextHeading = panelNext ? panelNext.querySelector('.card-heading') : null;
         panelHeading.addEventListener('click', function () {
-            if (/▶/.test(panelHeading.innerHTML)) {
-                panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▼ ');
+            if (/▷/.test(panelHeading.innerHTML)) {
+                panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, '▽ ');
                 panelBody.style.display = 'block';
                 // We're opening, so separate from previous and next
                 if (panelPrevious) panelPrevious.style.marginBottom = null;
@@ -1308,17 +1308,17 @@ function setupConfigurationToggles () {
                 // Close all other panels
                 Array.prototype.slice.call(configHeadings).forEach(function (head) {
                     var text = head.innerHTML;
-                    if (/▶/.test(text)) return;
+                    if (/▷/.test(text)) return;
                     // Don't close panel for certain cases
                     if (panelHeading === head || /API\sStatus/.test(text + headingText) ||
                         !params.appCache && /Troubleshooting/.test(text)) return;
                     head.click();
                 });
             } else {
-                panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▶ ');
+                panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, '▷ ');
                 panelBody.style.display = 'none';
-                if (panelPrevious) panelPrevious.style.marginBottom = panelPreviousHeading && /▼/.test(panelPreviousHeading.innerHTML) ? null : 0;
-                if (panelNext) panelParent.style.marginBottom = panelNextHeading && /▼/.test(panelNextHeading.innerHTML) ? null : 0;
+                if (panelPrevious) panelPrevious.style.marginBottom = panelPreviousHeading && /▽/.test(panelPreviousHeading.innerHTML) ? null : 0;
+                if (panelNext) panelParent.style.marginBottom = panelNextHeading && /▽/.test(panelNextHeading.innerHTML) ? null : 0;
             }
         });
 
@@ -1326,13 +1326,13 @@ function setupConfigurationToggles () {
         var exceptionTest = function (testStr) {
             return /Display\ssize|API\sStatus/i.test(testStr) || /Troubleshooting/i.test(testStr) && !params.appCache;
         }
-        if (panelNext) panelNextHeading.innerHTML = (exceptionTest(panelNextHeading.innerHTML) ? '&#9660; ' : '&#9654; ') + panelNextHeading.innerHTML;
-        var icon = exceptionTest(headingText) ? '▼ ' : '▶ ';
-        panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, icon);
+        if (panelNext) panelNextHeading.innerHTML = (exceptionTest(panelNextHeading.innerHTML) ? '▽ ' : '▷ ') + panelNextHeading.innerHTML;
+        var icon = exceptionTest(headingText) ? '▽ ' : '▷ ';
+        panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, icon);
         if (panelBody && !exceptionTest(headingText)) panelBody.style.display = 'none';
         var marginBottom = 0;
-        marginBottom = /▼/.test(panelHeading.innerHTML) ? null : marginBottom;
-        if (panelNext) panelParent.style.marginBottom = /▼/.test(panelNextHeading.innerHTML) ? null : marginBottom;
+        marginBottom = /▽/.test(panelHeading.innerHTML) ? null : marginBottom;
+        if (panelNext) panelParent.style.marginBottom = /▽/.test(panelNextHeading.innerHTML) ? null : marginBottom;
         else panelParent.style.marginBottom = 0;
     });
     // Programme the button to toggle all settings
@@ -1341,18 +1341,18 @@ function setupConfigurationToggles () {
         var open = /Open/.test(e.target.innerHTML);
         Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
             if (!open && /API\sStatus/.test(panelHeading.innerHTML)) return;
-            if (!open && /▼\sTroubleshooting/.test(panelHeading.innerHTML)) {
+            if (!open && /▽\sTroubleshooting/.test(panelHeading.innerHTML)) {
                 panelHeading.click();
                 return;
             }
             var panelBody = panelHeading.nextElementSibling;
-            panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▶/, '▼') : panelHeading.innerHTML.replace(/▼/, '▶');
+            panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▷/, '▽') : panelHeading.innerHTML.replace(/▽/, '▷');
             panelBody.style.display = open ? 'block' : 'none';
             var panelParent = panelHeading.parentElement;
             if (panelParent) panelParent.style.marginBottom = open ? null : 0;
         });
-        if (open) e.target.innerHTML = e.target.innerHTML.replace(/▶\sOpen/, '▼ Close');
-        else e.target.innerHTML = e.target.innerHTML.replace(/▼\sClose/, '▶ Open');
+        if (open) e.target.innerHTML = e.target.innerHTML.replace(/▷\sOpen/, '▽ Close');
+        else e.target.innerHTML = e.target.innerHTML.replace(/▽\sClose/, '▷ Open');
     });
 }
 
