@@ -325,8 +325,6 @@
     <Content Include="www\js\katex\katex.min.css" />
     <Content Include="www\js\katex\katex.min.js" />
     <Content Include="www\js\katex\README.md" />
-    <Content Include="node_modules/jquery/dist/jquery.slim.min.js" />
-    <Content Include="node_modules/jquery/dist/jquery.slim.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4a0dddb5-7a95-4fbf-97cc-616d07737a77}" />

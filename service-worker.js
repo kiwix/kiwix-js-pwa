@@ -234,9 +234,7 @@ const precacheFiles = [
     'www/js/katex/fonts/KaTeX_Size1-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size2-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size3-Regular.woff2',
-    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2',
-    'node_modules/jquery/dist/jquery.slim.min.js',
-    'node_modules/jquery/dist/jquery.slim.min.map'
+    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2'
 ];
 
 if ('WebAssembly' in self) {
