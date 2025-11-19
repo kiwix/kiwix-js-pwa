@@ -78,6 +78,9 @@ if (process.env.BUILD === 'production') {
                         // Remove all the lib files that will be included in the bundle
                         .replace(/(?:<Content Include=)?["']www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js["'](?:\s*\/>|,)\s*/, '')
                         // Replace any references to node_modules
+                        .replace(/node_modules[\\/]@fortawesome[\\/]fontawesome-free[\\/]((?:css|webfonts)[\\/])?/g, function (m, p1) {
+                            return 'www/' + p1;
+                        })
                         .replace(/node_modules[\\/].*dist[\\/]((?:js|css)[\\/])?/g, function (m, p1) {
                             p1 = p1 || 'js/';
                             return 'www/' + p1;
@@ -99,6 +102,9 @@ if (process.env.BUILD === 'production') {
                             // Remove all the lib files that will be included in the bundle
                                 .replace(/(?:<Content Include=)?["']www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js["'](?:\s*\/>|,)\s*/, '')
                             // Replace any references to node_modules
+                                .replace(/node_modules[\\/]@fortawesome[\\/]fontawesome-free[\\/]((?:css|webfonts)[\\/])?/g, function (m, p1) {
+                                    return 'www/' + p1;
+                                })
                                 .replace(/node_modules[\\/].*dist[\\/]((?:js|css)[\\/])?/g, function (m, p1) {
                                     p1 = p1 || 'js/';
                                     return 'www/' + p1;
@@ -180,6 +186,9 @@ if (process.env.BUILD === 'production') {
                     // Remove all the lib files that will be included in the bundle
                         .replace(/(?:<Content Include=)?["']www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js["'](?:\s*\/>|,)\s*/, '')
                     // Replace any references to node_modules
+                        .replace(/node_modules[\\/]@fortawesome[\\/]fontawesome-free[\\/]((?:css|webfonts)[\\/])?/g, function (m, p1) {
+                            return 'www/' + p1;
+                        })
                         .replace(/node_modules[\\/].*dist[\\/]((?:js|css)[\\/])?/g, function (m, p1) {
                             p1 = p1 || 'js/';
                             return 'www/' + p1;
