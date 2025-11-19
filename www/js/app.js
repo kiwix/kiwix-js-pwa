@@ -998,8 +998,11 @@ function setDynamicIcons (btn) {
             btnAbout.title = 'Return to fullscreen';
         }
     } else {
-        // When the scrollbox height is 0, we are not in Configuration or About
-        if ((!btn && scrollbox.offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
+        // Check if we're on Home page (not in Configuration or About)
+        var configuration = document.getElementById('configuration');
+        var about = document.getElementById('about');
+        var isHomePage = configuration.style.display === 'none' && about.style.display === 'none';
+        if ((isHomePage && !btn) || btn === 'btnHome' || btn === 'findText') {
             btnAbout.innerHTML = '<i class="fas fa-print"></i>';
             btnAbout.title = 'Ctrl-P: Print';
         } else {
@@ -1254,9 +1257,9 @@ function getNativeFSHandle (callback) {
 document.getElementById('btnAbout').addEventListener('click', function () {
     var btnAboutElement = document.getElementById('btnAbout');
     // Don't allow this button to be clicked if button is being used as exit fullscreen button
-    if (/glyphicon-(fullscreen|resize-small)/.test(btnAboutElement.innerHTML)) return;
+    if (/fa-(expand|compress)/.test(btnAboutElement.innerHTML)) return;
     // Deal with use of button for printing
-    if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
+    if (/fa-print/.test(btnAboutElement.innerHTML)) {
         printIntercept();
         return;
     }
@@ -5161,9 +5164,9 @@ function showZIMIndex (start, search) {
                         switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
                         switchAlphaButton.addEventListener('click', function () {
                             var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
-                            var panelBody = util.closest(alphaLabel, '.panel-body');
+                            var panelBody = util.closest(alphaLabel, '.card-body');
                             if (panelBody && panelBody.style.display === 'none') {
-                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /panel-heading/.test(el.className) });
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-heading/.test(el.className) });
                                 if (panelHeading) panelHeading.click();
                             }
                             alphaLabel.style.borderColor = 'red';

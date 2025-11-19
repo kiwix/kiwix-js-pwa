@@ -641,7 +641,7 @@ function displayActiveContentWarning (type) {
                 thisLabel.style.borderStyle = 'solid';
                 // Make sure the container is visible
                 var container = thisLabel.parentNode;
-                if (!/panel-body/.test(container.className)) {
+                if (!/card-body/.test(container.className)) {
                     container = container.parentNode;
                 }
                 container.style.display = 'block';
