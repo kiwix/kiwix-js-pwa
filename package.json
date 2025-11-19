@@ -182,12 +182,14 @@
     "@babel/cli": "^7.21.5",
     "@babel/core": "^7.21.5",
     "@babel/preset-env": "^7.21.5",
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
+    "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
     "electron": "38.3.0",
     "electron-builder": "^26.0.18",
@@ -206,7 +208,6 @@
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.6.8",
-    "express": "^4.21.0",
-    "jquery": "^3.7.1"
+    "express": "^4.21.0"
   }
 }
