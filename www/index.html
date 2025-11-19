@@ -282,7 +282,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container">
                 <div id="about" style="display: none;" class="category-padding">
-                    <div class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
+                    <div class="returntoArticle""></div>
                     <h2>
                         <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
                         Kiwix JS <span class="identity">Windows</span>
@@ -832,7 +832,7 @@
                     <p>&nbsp;</p>
                 </div>
                 <div id="configuration" style="display: none;" class="container category-padding">
-                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
+                    <div id="returntoArticle" class="returntoArticle"></div>
                     <div id="divInstall2" style="display:none; float:right;">
                         <button id="btnInstall2" class="btn btn-sm btn-primary btn-inline">Install PWA</button>
                     </div>
@@ -1423,8 +1423,12 @@
                     <br />
                 </div>
                 <div id="welcomeText" class="container category-padding">
-                    You can search the content of your ZIM archive by typing in the above search field.
-                    <br />It will suggest articles starting with the letters you type.
+                    <h4>Welcome to Kiwix JS PWA!</h4>
+                    <p>To use this app, you need to load a ZIM archive first. Go to Configuration <i class="fas fa-wrench"></i> and use the file or folder selector to pick an archive.
+                    You can also download an archive using the in-app library (in Configuration).</p>
+                    <p>For usage instructions and more information, please go to the <a href="#" class="aboutLink"><b>About tab</b> <i class="fas fa-info-circle"></i></a>.</p>
+                    <p>Once you have picked an archive, you can search its contents by typing in the above search field.
+                    It will suggest articles starting with the letters you type.</p>
                 </div>
                 <!-- List of articles matching the typed prefix -->
                 <div id="articleListWithHeader" style="display: none;" class="container">

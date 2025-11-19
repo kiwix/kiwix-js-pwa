@@ -185,7 +185,6 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     left: 0;
     right: 0;
     bottom: 0;
-    padding-top: 42px;
 }
 
 #articleListWithHeader {
@@ -361,7 +360,11 @@ div:not(.card.border-success .card-body):not(.alert-message) {
 
 /* Remove extra padding from return to article link */
 .returntoArticle {
-    padding-top: 0 !important;
+    text-align: center;
+}
+
+#configuration, #about {
+    padding-top: 20px;
 }
 
 /* Configuration page heading - make title and version stack vertically */
@@ -565,12 +568,6 @@ div:not(.card.border-success .card-body):not(.alert-message) {
 }
 
 /* Add padding to body/article to account for fixed navbar */
-
-/* Reduce navbar padding when Configuration page is showing */
-#configuration {
-    margin-top: -32px;
-    padding-top: 10px;
-}
 
 nav a.btn-primary, .input-group-text {
     background: #d9edf7;

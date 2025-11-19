@@ -1287,19 +1287,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
         setTab();
         return;
     }
-    // Highlight the selected section in the navbar
-    setTab('btnAbout');
-    // Hide footer toolbar
-    document.getElementById('footer').style.display = 'none';
-    // Show the selected content in the page
-    document.getElementById('about').style.display = '';
-    document.getElementById('articleContent').style.display = 'none';
-    document.querySelectorAll('.alert').forEach(function (el) {
-        el.style.display = 'none';
-    });
-    // Re-enable top-level scrolling
-    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
-    document.getElementById('search-article').style.overflowY = 'auto';
+    setAbout();
 });
 var selectFired = false;
 var archiveList = document.getElementById('archiveList');
@@ -2374,9 +2362,26 @@ document.getElementById('interceptBeforeUnloadCheck').addEventListener('change',
 });
 Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(function (link) {
     link.addEventListener('click', function () {
-        document.getElementById('btnAbout').click();
+        setAbout();
     });
 });
+
+// Function to set the About page view
+function setAbout() {
+    // Highlight the selected section in the navbar
+    setTab('btnAbout');
+    // Hide footer toolbar
+    document.getElementById('footer').style.display = 'none';
+    // Show the selected content in the page
+    document.getElementById('about').style.display = '';
+    document.getElementById('articleContent').style.display = 'none';
+    document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.display = 'none';
+    });
+    // Re-enable top-level scrolling
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    document.getElementById('search-article').style.overflowY = 'auto';
+}
 
 var iframe = document.getElementById('articleContent');
 
@@ -4929,7 +4934,9 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
 // Set up the event listener for return to article links
 var returnDivs = document.getElementsByClassName('returntoArticle');
 for (i = 0; i < returnDivs.length; i++) {
-    returnDivs[i].addEventListener('click', setTab);
+    returnDivs[i].addEventListener('click', function () {
+        setTab();
+    });
 }
 
 /**
