@@ -1296,7 +1296,7 @@ function setupConfigurationToggles () {
         if (panelPrevious && !/card\s/.test(panelPrevious.className)) panelPrevious = null;
         var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.card-heading') : null;
         var panelNext = panelParent ? panelParent.nextElementSibling : null;
-        if (panelNext && !/card\s/.test(panelNext.className)) panelPrevious = null;
+        if (panelNext && !/card\s/.test(panelNext.className)) panelNext = null;
         var panelNextHeading = panelNext ? panelNext.querySelector('.card-heading') : null;
         panelHeading.addEventListener('click', function () {
             if (/▷/.test(panelHeading.innerHTML)) {

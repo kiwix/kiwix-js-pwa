@@ -131,11 +131,7 @@ body {
     background-color: whitesmoke !important;
 }
 
-.card-header {
-    font-weight: 600;
-}
-
-div:not(.card.border-success, .alert-message) {
+div:not(.card.border-success .card-body):not(.alert-message) {
     -ms-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;

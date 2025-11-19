@@ -12,4 +12,12 @@ sed -i 's|/\*node_modules\*/|/node_modules/*\
 !/node_modules/bootstrap/dist/css\
 !/node_modules/bootstrap/dist/css/*\
 !/node_modules/bootstrap/dist/js\
-!/node_modules/bootstrap/dist/js/*|' .gitignore
+!/node_modules/bootstrap/dist/js/*\
+!/node_modules/@fortawesome\
+/node_modules/@fortawesome/*\
+!/node_modules/@fortawesome/fontawesome-free\
+/node_modules/@fortawesome/fontawesome-free/*\
+!/node_modules/@fortawesome/fontawesome-free/css\
+!/node_modules/@fortawesome/fontawesome-free/css/*\
+!/node_modules/@fortawesome/fontawesome-free/webfonts\
+!/node_modules/@fortawesome/fontawesome-free/webfonts/*|' .gitignore
