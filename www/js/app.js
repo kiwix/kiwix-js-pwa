@@ -131,12 +131,16 @@ function resizeIFrame (reload) {
     // Re-enable top-level scrolling
     var configuration = document.getElementById('configuration');
     var about = document.getElementById('about');
+    var welcomeText = document.getElementById('welcomeText');
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
     if (configuration.style.display === 'none' && about.style.display === 'none' &&
-        // Don't collapse the scrollbox if user is interacting with search
-        prefix !== document.activeElement && !appstate.snippetInteractionFlag) {
+        // Don't collapse the scrollbox if user is interacting with search or if welcome text is visible
+        prefix !== document.activeElement && !appstate.snippetInteractionFlag &&
+        welcomeText.style.display === 'none') {
         scrollbox.style.height = 0;
     } else {
-        scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
     }
     uiUtil.showSlidingUIElements();
     var ToCList = document.getElementById('ToCList');
@@ -945,8 +949,15 @@ function setTab (activeBtn) {
     document.getElementById('configuration').style.display = 'none';
     document.getElementById('formArticleSearch').style.display = '';
     if (!activeBtn || activeBtn === 'btnHome') {
-        scrollbox.style.height = 0;
-        document.getElementById('search-article').style.overflowY = 'hidden';
+        // Only collapse scrollbox if we have an archive loaded
+        if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+            scrollbox.style.height = 0;
+            document.getElementById('search-article').style.overflowY = 'hidden';
+        } else {
+            // No archive loaded - show welcome text and size scrollbox appropriately
+            document.getElementById('welcomeText').style.display = '';
+            resizeIFrame();
+        }
         setTimeout(function () {
             if (appstate.target === 'iframe' && appstate.selectedArchive) {
                 // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
@@ -964,7 +975,14 @@ function setTab (activeBtn) {
     while (articleListHeaderMessage.firstChild) articleListHeaderMessage.removeChild(articleListHeaderMessage.firstChild);
     document.getElementById('articleListWithHeader').style.display = 'none';
     prefix.value = '';
-    document.getElementById('welcomeText').style.display = 'none';
+    // Hide welcome text unless we're on home page with no archive
+    if (activeBtn !== 'btnHome' && activeBtn !== null && activeBtn !== undefined) {
+        // We're on Configuration or About page - always hide welcome text
+        document.getElementById('welcomeText').style.display = 'none';
+    } else if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+        // We're on home page but have an archive - hide welcome text
+        document.getElementById('welcomeText').style.display = 'none';
+    }
     if (params.beforeinstallpromptFired) {
         var divInstall1 = document.getElementById('divInstall1');
         if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {

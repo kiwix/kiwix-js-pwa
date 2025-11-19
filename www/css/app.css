@@ -189,6 +189,7 @@ div:not(.card.border-success, .alert-message) {
     left: 0;
     right: 0;
     bottom: 0;
+    padding-top: 42px;
 }
 
 #articleListWithHeader {
@@ -337,6 +338,11 @@ div:not(.card.border-success, .alert-message) {
     max-width: 1400px;
 }
 
+#welcomeText {
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
 @media (min-width: 768px) {
     .category-padding {
         padding: 0 40px;
@@ -396,6 +402,9 @@ div:not(.card.border-success, .alert-message) {
 .dark .card-heading {
     background-color: rgba(255,255,255,.03);
     border-bottom: 1px solid rgba(255,255,255,.125);
+    color: lightgray !important;
+    background: #12303b !important;
+    border-bottom-color: #12303b !important;
 }
 
 /* Colored headings based on card type */
@@ -452,6 +461,14 @@ div:not(.card.border-success, .alert-message) {
 #btnToggleSettings {
     white-space: nowrap;
     flex-shrink: 0;
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #495057;
+    font-weight: normal;
+    line-height: 1 !important;
 }
 
 .apiAvailable {
@@ -552,9 +569,6 @@ div:not(.card.border-success, .alert-message) {
 }
 
 /* Add padding to body/article to account for fixed navbar */
-#scrollbox {
-    padding-top: 42px;
-}
 
 /* Reduce navbar padding when Configuration page is showing */
 #configuration {
@@ -695,18 +709,7 @@ nav a.btn-primary, .input-group-text {
     color: #adb5bd;
 }
 
-/* Styling for Open all button */
-#btnToggleSettings {
-    background: transparent !important;
-    border-width: 1px;
-    border-style: solid;
-    padding: 0.1rem 0.3rem;
-    font-size: 0.75rem;
-    color: #495057;
-    font-weight: normal;
-    line-height: 1 !important;
-}
-
+/* Styling for Open all button in dark mode */
 .dark #btnToggleSettings {
     color: #adb5bd;
     border-color: #6c757d !important;
@@ -841,12 +844,6 @@ pre {
     color: lightgray !important;
     background: #222 !important;
     border-color: darkgray;
-}
-
-.dark .card-heading {
-    color: lightgray !important;
-    background: #12303b !important;
-    border-bottom-color: #12303b !important;
 }
 
 .dark .card.border-info {
