@@ -12,7 +12,7 @@ See also: [&ensp;[File handling](Demo-FileHandling.md)&ensp;]  [&ensp;[Install P
 Some browsers do **not** display the PWA install prompt (Safari, Firefox, Vivaldi, etc.).  
 If the “Install App” button does not appear, follow:
 
-👉 **[PWA Fallback Installation Guide](../PWA_FALLBACK_INSTALL.md)**
+**[PWA Fallback Installation Guide](../PWA_FALLBACK_INSTALL.md)**
 
 This explains how to install / Add to Home Screen on iOS, Firefox, Vivaldi, desktop Linux, etc.
 
