@@ -2636,22 +2636,22 @@ function switchCSSTheme () {
     if (!doc) return;
 
     // Detect if this article uses the new Wikipedia theme system (October 2024+)
-    var usesProvidedWikipediaTheme = false;
+    var usesProvidedWikimediaTheme = false;
     if (appstate.wikimediaZimLoaded) {
         var htmlElement = doc.documentElement;
         if (htmlElement) {
             // First check if we've already detected and marked this article
             if (htmlElement.hasAttribute('data-kiwix-has-skin-theme-clientpref')) {
-                usesProvidedWikipediaTheme = htmlElement.getAttribute('data-kiwix-has-skin-theme-clientpref') === 'true';
+                usesProvidedWikimediaTheme = htmlElement.getAttribute('data-kiwix-has-skin-theme-clientpref') === 'true';
             } else if (htmlElement.classList) {
                 // Initial detection: check if the html element has one of the theme preference classes
-                usesProvidedWikipediaTheme = htmlElement.classList.contains('skin-theme-clientpref-night') ||
-                                        htmlElement.classList.contains('skin-theme-clientpref-os');
+                usesProvidedWikimediaTheme = htmlElement.classList.contains('skin-theme-clientpref-night') ||
+                    htmlElement.classList.contains('skin-theme-clientpref-os');
                 // Remember this detection for subsequent theme switches on the same article
-                htmlElement.setAttribute('data-kiwix-has-skin-theme-clientpref', usesProvidedWikipediaTheme ? 'true' : 'false');
+                htmlElement.setAttribute('data-kiwix-has-skin-theme-clientpref', usesProvidedWikimediaTheme ? 'true' : 'false');
             }
         }
-        console.log('[Theme Detection] Article uses Wikipedia\'s auto theme system:', usesProvidedWikipediaTheme);
+        console.log('[Theme Detection] Article uses Wikimedia\'s auto theme system:', usesProvidedWikimediaTheme);
     }
 
     var styleSheets = doc.getElementsByTagName('link');
@@ -2668,11 +2668,10 @@ function switchCSSTheme () {
     var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
 
     // Handle new Wikipedia theme system if detected
-    if (usesProvidedWikipediaTheme) {
+    if (usesProvidedWikimediaTheme) {
         var html = doc.documentElement;
         // Remove all theme preference classes first
         html.classList.remove('skin-theme-clientpref-night', 'skin-theme-clientpref-os');
-
         // If custom dark theme override is enabled, or we are using the custom mobile style transform, set ZIM to light and fall through to old logic
         if (params.customDarkTheme || params.cssSource === 'mobile') {
             console.log('[Theme] Custom dark theme override enabled - setting ZIM to light mode');
@@ -2693,9 +2692,8 @@ function switchCSSTheme () {
                 // Don't return early - fall through to old injection logic
             } else {
                 // For 'light', just leave the classes removed (default is light)
-                console.log('[Theme] Applied light theme (removed classes) to new Wikipedia theme system');
+                console.log('[Theme] Applied light theme (removed classes) to new Wikimedia theme system');
             }
-
             // Only return early if we're NOT using darkReader or invert
             if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
                 // Display the article since we've handled the theme
@@ -2704,22 +2702,18 @@ function switchCSSTheme () {
                     if (zimitIframe) zimitIframe.style.display = '';
                     window.dispatchEvent(new Event('resize')); // Force repaint
                 }
-
                 // Still need to handle tooltips and breakout link icon
                 var isDark = determinedWikiTheme !== 'light';
                 if (breakoutLink) {
                     breakoutLink.src = locationPrefix + (isDark ? '/img/icons/new_window_lb.svg' : '/img/icons/new_window.svg');
                 }
-
                 // Handle tooltip styles
                 popovers.updateTooltipStyles(doc, isDark);
-
                 // Update UI theme indicators
                 // Hide invert/darkReader options when in auto mode or when theme is light
                 document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
                 document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
                 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
-
                 return; // Skip the old theme injection logic
             }
         } // end else (not customDarkTheme)
