@@ -388,41 +388,35 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     text-align: left !important;
 }
 
-/* Bootstrap 4 card heading styles */
-.card-heading {
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 0;
-    background-color: rgba(0,0,0,.03);
-    border-bottom: 1px solid rgba(0,0,0,.125);
+/* Bootstrap 4 card header customizations */
+.card-header {
     font-weight: bold;
     cursor: pointer;
 }
 
-.dark .card-heading {
-    background-color: rgba(255,255,255,.03);
-    border-bottom: 1px solid rgba(255,255,255,.125);
+.dark .card-header {
     color: lightgray !important;
     background: #12303b !important;
     border-bottom-color: #12303b !important;
 }
 
-/* Colored headings based on card type */
-.card.border-info .card-heading {
+/* Colored headers based on card type */
+.card.border-info .card-header {
     background-color: #d1ecf1;
     border-bottom-color: #bee5eb;
 }
 
-.card.border-warning .card-heading {
+.card.border-warning .card-header {
     background-color: #fff3cd;
     border-bottom-color: #ffeeba;
 }
 
-.card.border-success .card-heading {
+.card.border-success .card-header {
     background-color: #d4edda;
     border-bottom-color: #c3e6cb;
 }
 
-.card.border-danger .card-heading {
+.card.border-danger .card-header {
     background-color: #f8d7da;
     border-bottom-color: #f5c6cb;
 }
@@ -847,7 +841,7 @@ pre {
     border-color: #333300 !important;
 }
 
-.dark .card.border-warning .card-heading {
+.dark .card.border-warning .card-header {
     background: #333300 !important;
     border-bottom-color: #333300 !important;
 }
@@ -860,7 +854,7 @@ pre {
     border-color: #330000 !important;
 }
 
-.dark .card.border-danger .card-heading {
+.dark .card.border-danger .card-header {
     background: #330000 !important;
     border-bottom-color: #330000 !important;
 }

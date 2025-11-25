@@ -1829,7 +1829,7 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         if (this.value === 'serviceworker' && window.location.protocol !== 'ms-appx-web:') {
             document.getElementById('enableSourceVerificationCheck').style.display = '';
-            if (params.sourceVerification && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
+            if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
                 verifyLoadedArchive(appstate.selectedArchive);
             }
@@ -3139,15 +3139,15 @@ function refreshAPIStatus () {
     var messageChannelStatus = document.getElementById('messageChannelStatus');
     var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
     var apiStatusPanel = document.getElementById('apiStatusDiv');
-    apiStatusPanel.classList.remove('panel-success', 'panel-warning', 'panel-danger');
-    var apiPanelClass = 'panel-success';
+    apiStatusPanel.classList.remove('border-success', 'border-warning', 'border-danger');
+    var apiPanelClass = 'border-success';
     if (isMessageChannelAvailable()) {
         messageChannelStatus.textContent = 'MessageChannel API available';
         messageChannelStatus.classList.remove('apiAvailable');
         messageChannelStatus.classList.remove('apiUnavailable')
         messageChannelStatus.classList.add('apiAvailable');
     } else {
-        apiPanelClass = 'panel-warning';
+        apiPanelClass = 'border-warning';
         messageChannelStatus.textContent = 'MessageChannel API unavailable';
         messageChannelStatus.classList.remove('apiAvailable');
         messageChannelStatus.classList.remove('apiUnavailable');
@@ -3160,14 +3160,14 @@ function refreshAPIStatus () {
             serviceWorkerStatus.classList.remove('apiUnavailable');
             serviceWorkerStatus.classList.add('apiAvailable');
         } else {
-            apiPanelClass = 'panel-warning';
+            apiPanelClass = 'border-warning';
             serviceWorkerStatus.textContent = 'ServiceWorker API available, but not registered';
             serviceWorkerStatus.classList.remove('apiAvailable');
             serviceWorkerStatus.classList.remove('apiUnavailable');
             serviceWorkerStatus.classList.add('apiUnavailable');
         }
     } else {
-        apiPanelClass = 'panel-warning';
+        apiPanelClass = 'border-warning';
         serviceWorkerStatus.textContent = 'ServiceWorker API unavailable';
         serviceWorkerStatus.classList.remove('apiAvailable');
         serviceWorkerStatus.classList.remove('apiUnavailable');
@@ -3180,7 +3180,7 @@ function refreshAPIStatus () {
     settingsStoreStatusDiv.innerHTML = 'Settings Storage API in use: ' + apiName;
     settingsStoreStatusDiv.classList.remove('apiAvailable', 'apiUnavailable');
     settingsStoreStatusDiv.classList.add(params.storeType === 'none' ? 'apiUnavailable' : 'apiAvailable');
-    apiPanelClass = params.storeType === 'none' ? 'panel-warning' : apiPanelClass;
+    apiPanelClass = params.storeType === 'none' ? 'border-warning' : apiPanelClass;
 
     // Update Decompressor API section of panel
     var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
@@ -3188,7 +3188,7 @@ function refreshAPIStatus () {
     if (apiName && params.decompressorAPI.decompressorLastUsed) {
         apiName += ' [&nbsp;' + (params.useLibzim ? (params.debugLibzimASM || 'default') : params.decompressorAPI.decompressorLastUsed) + '&nbsp;]';
     }
-    apiPanelClass = params.decompressorAPI.errorStatus ? 'panel-danger' : apiName ? apiPanelClass : 'panel-warning';
+    apiPanelClass = params.decompressorAPI.errorStatus ? 'border-danger' : apiName ? apiPanelClass : 'border-warning';
     decompAPIStatusDiv.className = apiName ? params.decompressorAPI.errorStatus ? 'apiBroken' : 'apiAvailable' : 'apiUnavailable';
     apiName = params.decompressorAPI.errorStatus || apiName || 'Not initialized';
     decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
@@ -3209,10 +3209,10 @@ function refreshAPIStatus () {
 
     // Set colour of contentInjectionMode div
     var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
-    contentInjectionDiv.classList.remove('parnel-warning');
-    contentInjectionDiv.classList.remove('panel-danger');
-    if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('panel-warning');
-    else contentInjectionDiv.classList.add('panel-danger');
+    contentInjectionDiv.classList.remove('border-warning');
+    contentInjectionDiv.classList.remove('border-danger');
+    if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('border-warning');
+    else contentInjectionDiv.classList.add('border-danger');
 
     refreshCacheStatus();
 }
@@ -3231,10 +3231,10 @@ function refreshCacheStatus () {
         var cacheStatusPanel = document.getElementById('cacheStatusPanel');
         [cacheSettings, cacheStatusPanel].forEach(function (card) {
             // IE11 cannot remove more than one class from a list at a time
-            card.classList.remove('panel-warning');
-            card.classList.remove('panel-danger');
-            if (params.assetsCache) card.classList.add('panel-warning');
-            else card.classList.add('panel-danger');
+            card.classList.remove('border-warning');
+            card.classList.remove('border-danger');
+            if (params.assetsCache) card.classList.add('border-warning');
+            else card.classList.add('border-danger');
         });
     });
     if (params.appCache) {
@@ -3245,12 +3245,12 @@ function refreshCacheStatus () {
         prefix.style.setProperty('background', /^dark/.test(document.body.className) ? '#200000' : 'lavenderblush', 'important');
     }
     var expertSettings = document.getElementById('expertSettingsDiv');
-    expertSettings.classList.remove('panel-warning');
-    expertSettings.classList.remove('panel-danger');
+    expertSettings.classList.remove('border-warning');
+    expertSettings.classList.remove('border-danger');
     if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim || params.useLegacyZimitSupport) {
-        expertSettings.classList.add('panel-danger');
+        expertSettings.classList.add('border-danger');
     } else {
-        expertSettings.classList.add('panel-warning');
+        expertSettings.classList.add('border-warning');
     }
 }
 
@@ -5191,7 +5191,7 @@ function showZIMIndex (start, search) {
                             var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
                             var panelBody = util.closest(alphaLabel, '.card-body');
                             if (panelBody && panelBody.style.display === 'none') {
-                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-heading/.test(el.className) });
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className) });
                                 if (panelHeading) panelHeading.click();
                             }
                             alphaLabel.style.borderColor = 'red';

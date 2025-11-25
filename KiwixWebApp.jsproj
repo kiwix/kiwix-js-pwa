@@ -227,11 +227,11 @@
     <Content Include="www\-\s\vector.css" />
     <Content Include="www\article.html" />
     <Content Include="www\css\app.css" />
-    <Content Include="www\css\bootstrap.min.css" />
-    <Content Include="node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
-    <Content Include="node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2" />
-    <Content Include="node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2" />
-    <Content Include="node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2" />
+    <Content Include="node_modules\bootstrap\dist\css\bootstrap.min.css" />
+    <Content Include="node_modules\@fortawesome\fontawesome-free\css\all.min.css" />
+    <Content Include="node_modules\@fortawesome\fontawesome-free\webfonts\fa-brands-400.woff2" />
+    <Content Include="node_modules\@fortawesome\fontawesome-free\webfonts\fa-regular-400.woff2" />
+    <Content Include="node_modules\@fortawesome\fontawesome-free\webfonts\fa-solid-900.woff2" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\img\icons\kiwix-32.png" />
     <Content Include="www\img\icons\kiwix-60.png" />

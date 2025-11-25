@@ -1220,7 +1220,7 @@ function reportAssemblerErrorToAPIStatusPanel (decoderType, error, assemblerMach
     var decompAPI = document.getElementById('decompressorAPIStatus');
     decompAPI.textContent = 'Decompressor API: ' + params.decompressorAPI.errorStatus;
     decompAPI.className = 'apiBroken';
-    document.getElementById('apiStatusDiv').className = 'panel panel-danger';
+    document.getElementById('apiStatusDiv').className = 'card border-danger';
 }
 
 // Reports the search provider to the API Status Panel
@@ -1287,17 +1287,17 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
  * Set up toggles to make Configuration headings collapsible
  */
 function setupConfigurationToggles () {
-    var configHeadings = document.querySelectorAll('.card-heading');
+    var configHeadings = document.querySelectorAll('.card-header');
     Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
         var headingText = panelHeading.innerHTML;
         var panelBody = panelHeading.nextElementSibling;
         var panelParent = panelHeading.parentElement;
         var panelPrevious = panelParent ? panelParent.previousElementSibling : null;
         if (panelPrevious && !/card\s/.test(panelPrevious.className)) panelPrevious = null;
-        var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.card-heading') : null;
+        var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.card-header') : null;
         var panelNext = panelParent ? panelParent.nextElementSibling : null;
         if (panelNext && !/card\s/.test(panelNext.className)) panelNext = null;
-        var panelNextHeading = panelNext ? panelNext.querySelector('.card-heading') : null;
+        var panelNextHeading = panelNext ? panelNext.querySelector('.card-header') : null;
         panelHeading.addEventListener('click', function () {
             if (/▷/.test(panelHeading.innerHTML)) {
                 panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, '▽ ');

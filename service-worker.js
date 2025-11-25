@@ -167,7 +167,7 @@ const precacheFiles = [
     'www/I/s/Icon_External_Link.png',
     'www/I/s/Icons-mini-file_acrobat.gif',
     'www/css/app.css',
-    'www/css/bootstrap.min.css',
+    'node_modules/bootstrap/dist/css/bootstrap.min.css',
     'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
     'node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2',
     'node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2',

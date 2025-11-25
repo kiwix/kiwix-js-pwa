@@ -495,7 +495,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
             body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
-            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-warning');
+            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
                 domain = domain.replace(/download/, 'library');
                 domain = domain.replace(/master/, 'dev');
@@ -585,8 +585,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var body = document.getElementById('dl-panel-body');
         body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
         downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
-        if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-danger');
-        if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-warning');
+        if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-danger');
+        if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
         var langSel = document.getElementById('langs');
         var subjSel = document.getElementById('subjects');
         var dateSel = document.getElementById('dates');
@@ -685,7 +685,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Reduce size of header
         doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
         // Limit height of pre box and prevent word wrapping
-        doc = doc.replace(/<pre>/i, '<div class="panel panel-success">\r\n' +
+        doc = doc.replace(/<pre>/i, '<div class="panel border-success">\r\n' +
             '<pre id="dl-panel-heading" class="panel-heading" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
             '<pre id="dl-panel-body" class="panel panel-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
         // Remove hr at end of page and add extra </div>
