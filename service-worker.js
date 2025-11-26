@@ -167,8 +167,11 @@ const precacheFiles = [
     'www/I/s/Icon_External_Link.png',
     'www/I/s/Icons-mini-file_acrobat.gif',
     'www/css/app.css',
-    'www/css/bootstrap.min.css',
-    'www/fonts/glyphicons-halflings-regular.woff2',
+    'node_modules/bootstrap/dist/css/bootstrap.min.css',
+    'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
+    'node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2',
+    'node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2',
+    'node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2',
     'www/img/icons/apple-touch-icon.png',
     'www/img/icons/favicon-16x16.png',
     'www/img/icons/favicon-32x32.png',
@@ -231,9 +234,7 @@ const precacheFiles = [
     'www/js/katex/fonts/KaTeX_Size1-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size2-Regular.woff2',
     'www/js/katex/fonts/KaTeX_Size3-Regular.woff2',
-    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2',
-    'node_modules/jquery/dist/jquery.slim.min.js',
-    'node_modules/jquery/dist/jquery.slim.min.map'
+    'www/js/katex/fonts/KaTeX_Size4-Regular.woff2'
 ];
 
 if ('WebAssembly' in self) {
