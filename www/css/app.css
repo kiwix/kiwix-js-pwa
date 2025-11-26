@@ -561,10 +561,13 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     -webkit-app-region: drag;
 }
 
-/* Add padding to body/article to account for fixed navbar */
+.btn-primary {
+    background-color: #337ab7 !important;
+    border-color: #1862b5 !important;
+}
 
 nav a.btn-primary, .input-group-text {
-    background: #d9edf7;
+    background: #d9edf7 !important;
     border-color: #bce8f1 !important;
     color: #31708f !important;
 }
