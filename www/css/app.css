@@ -61,7 +61,6 @@
 
 label {
     font-weight: normal !important;
-    margin-left: 20px;
 }
 
 #navigationButtons .restrictedSize {
@@ -494,6 +493,10 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     color: white;
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
+}
+
+.range {
+    width: 300px;
 }
 
 .status {
