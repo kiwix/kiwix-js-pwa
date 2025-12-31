@@ -231,6 +231,7 @@ function onPointerUp (e) {
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
 document.getElementById('searchArticles').addEventListener('click', function () {
+    if (!appstate.selectedArchive || !appstate.selectedArchive.isReady()) return;
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
     if (appstate.search.prefix === val && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
@@ -639,6 +640,7 @@ document.getElementById('matches').addEventListener('click', function (e) {
 
 // Set up the click event listener for the findText button
 document.getElementById('findText').addEventListener('click', function () {
+    if (!appstate.selectedArchive || !appstate.selectedArchive.isReady()) return;
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
         // Hide the search bar
@@ -2367,7 +2369,7 @@ Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(func
 });
 
 // Function to set the About page view
-function setAbout() {
+function setAbout () {
     // Highlight the selected section in the navbar
     setTab('btnAbout');
     // Hide footer toolbar
