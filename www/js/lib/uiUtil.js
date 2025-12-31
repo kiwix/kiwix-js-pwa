@@ -988,7 +988,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
             // function to call when modal is closed
             var close = function (e) {
                 // If user clicked on the backdrop, close the modal
-                if (e.target.id === alertModal || /close|decline/i.test(e.target.id)) {
+                if (e.target.id === alertModal || /close|decline/i.test(e.currentTarget.id)) {
                     closeModalHandler();
                     resolve(false);
                 }
