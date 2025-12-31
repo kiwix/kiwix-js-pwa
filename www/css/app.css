@@ -318,6 +318,11 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     background: #222;
 }
 
+.dark .form-control:focus {
+    color: lightgray;
+    background: #222;
+}
+
 .articleIFrame {
     position: fixed;
     width: 100%;
