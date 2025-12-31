@@ -758,9 +758,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             }
             // Normalize languages with a - (from Stackexchange)
             doc = doc.replace(/(lang="\w+)-(\w+")/ig, '$1$2');
-            doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang || dropdownSubj ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
-            doc = dropdownSubj ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Subject:&nbsp;&nbsp;' + dropdownSubj + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
-            doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownSubj || dropdownDate ? '' : '</div>\r\n')) : doc;
+            doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang || dropdownSubj ? '' : '\r\n<div class="row">\r\n') + '<div class="col-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
+            doc = dropdownSubj ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-4">Subject:&nbsp;&nbsp;' + dropdownSubj + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
+            doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownSubj || dropdownDate ? '' : '</div>\r\n')) : doc;
         }
         downloadLinks.innerHTML = doc;
         var langSel = document.getElementById('langs');
@@ -964,7 +964,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Display the finished panel
         downloadLinks.style.display = 'block';
         document.getElementById('indexHeader').scrollIntoView();
-        document.getElementById('scrollbox').scrollTop += 65;
+        // document.getElementById('scrollbox').scrollTop += 65;
 
         // Standardize the document for array extraction
         function getStandardizedDoc (fromDoc) {

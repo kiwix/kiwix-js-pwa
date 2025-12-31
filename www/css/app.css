@@ -435,7 +435,7 @@ div:not(.card.border-success .card-body):not(.alert-message) {
 }
 
 /* Ensure Download library heading is not indented */
-#downloads .row {
+#downloads > .row {
     display: block;
     padding-top: 1rem;
 }
