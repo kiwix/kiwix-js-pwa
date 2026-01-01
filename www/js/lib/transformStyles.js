@@ -97,8 +97,6 @@ function filterCSS (zl, zim, cc, cs, i) {
                 /\/inserted_style_mobile.css/i.test(zl) ||
                 /\/inserted_style.css/i.test(zl) ||
                 /\/meta.wikimedia.org\/api\/rest_v1\/data\/css\/mobile\/base.css/i.test(zl) ||
-                /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
-                /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                 /-\/static\/main.css/i.test(zl) ||
                 /\/static\/css\/sotoki.css/i.test(zl) ||
                 /\/mobile.css/i.test(zl) ||

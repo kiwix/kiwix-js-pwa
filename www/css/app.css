@@ -61,7 +61,6 @@
 
 label {
     font-weight: normal !important;
-    margin-left: 20px;
 }
 
 #navigationButtons .restrictedSize {
@@ -70,15 +69,68 @@ label {
     margin-right: auto;
 }
 
+/* Bottom navigation bar - spread icons across full width */
+#navigationButtons .row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+#navigationButtons .btn {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.5rem;
+}
+
+#navigationButtons .btn:hover,
+#navigationButtons .btn:focus,
+#navigationButtons .btn:active {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+/* Keep icon color visible on hover */
+#navigationButtons .btn:hover .fa,
+#navigationButtons .btn:hover .fas {
+    color: darkblue !important;
+}
+
+.dark #navigationButtons .btn:hover .fa,
+.dark #navigationButtons .btn:hover .fas {
+    color: lightblue !important;
+}
+
+#navigationButtons .dropup {
+    flex: 0 0 auto;
+    position: relative;
+}
+
+/* Position ToC dropdown above the button */
+#navigationButtons .dropup .dropdown-menu {
+    bottom: 100% !important;
+    top: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    margin-bottom: 0.5rem;
+}
+
+#navigationButtons .badge {
+    flex: 0 0 auto;
+    padding: 0.5rem;
+}
+
 body {
     background-color: whitesmoke !important;
 }
 
-.panel-heading {
-    font-weight: 600;
-}
-
-div:not(.panel-success, .alert-message) {
+div:not(.card.border-success .card-body):not(.alert-message) {
     -ms-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -126,6 +178,12 @@ div:not(.panel-success, .alert-message) {
 #scrollbox {
     width: 100%;
     overflow: auto;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 #articleListWithHeader {
@@ -243,13 +301,24 @@ div:not(.panel-success, .alert-message) {
     padding: 5px 1em !important;
 }
 
-.navbar-inverse {
+.navbar-inverse, .navbar-dark, .navbar-light {
     background-color: #d9edf7 !important;
-    border-color: #d9edf7 !important;
+    border-color: #bce8f1 !important;
     margin-bottom: 0 !important;
+    padding: 0 !important;
+}
+
+.dark .navbar-inverse, .dark .navbar-dark, .dark .navbar-light {
+    background-color: #2b3e50 !important;
+    border-color: #1a252f !important;
 }
 
 .dark .form-control {
+    color: lightgray;
+    background: #222;
+}
+
+.dark .form-control:focus {
     color: lightgray;
     background: #222;
 }
@@ -264,7 +333,139 @@ div:not(.panel-success, .alert-message) {
 
 .category-padding {
     margin: 0 auto;
-    max-width: 800px;
+    padding: 0 20px;
+    max-width: 1400px;
+}
+
+#welcomeText {
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .category-padding {
+        padding: 0 40px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .category-padding {
+        padding: 0 60px;
+    }
+}
+
+/* Override Bootstrap 4 container max-width */
+#scrollbox.container {
+    max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Remove extra padding from return to article link */
+.returntoArticle {
+    text-align: center;
+}
+
+#configuration, #about {
+    padding-top: 20px;
+}
+
+/* Configuration page heading - make title and version stack vertically */
+#configuration > .row:first-of-type {
+    display: block !important;
+}
+
+#configuration > .row:first-of-type > * {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+}
+
+#configuration > .row:first-of-type h2 {
+    margin-bottom: 0.5rem;
+}
+
+#configuration > .row:first-of-type > p {
+    margin: 0.5em 0 !important;
+    max-width: none !important;
+    text-align: left !important;
+}
+
+/* Bootstrap 4 card header customizations */
+.card-header {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.dark .card-header {
+    color: lightgray !important;
+    background: #12303b !important;
+    border-bottom-color: #12303b !important;
+}
+
+/* Colored headers based on card type */
+.card.border-info .card-header {
+    background-color: #d1ecf1;
+    border-bottom-color: #bee5eb;
+}
+
+.card.border-warning .card-header {
+    background-color: #fff3cd;
+    border-bottom-color: #ffeeba;
+}
+
+.card.border-success .card-header {
+    background-color: #d4edda;
+    border-bottom-color: #c3e6cb;
+}
+
+.card.border-danger .card-header {
+    background-color: #f8d7da;
+    border-bottom-color: #f5c6cb;
+}
+
+.card-group-heading {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+/* Ensure Download library heading is not indented */
+#downloads > .row {
+    display: block;
+    padding-top: 1rem;
+}
+
+#downloads .card-group-heading {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.column {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+#btnToggleSettings {
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #495057;
+    font-weight: normal;
+    line-height: 1 !important;
 }
 
 .apiAvailable {
@@ -293,10 +494,14 @@ div:not(.panel-success, .alert-message) {
     height: 50px;
 }
 
-.glyphicon.spinning {
+.fa.spinning {
     color: white;
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
+}
+
+.range {
+    width: 300px;
 }
 
 .status {
@@ -345,6 +550,7 @@ div:not(.panel-success, .alert-message) {
 
 .navbar-header {
     float: none !important;
+    width: 100%;
     -webkit-app-region: no-drag;
 }
 
@@ -354,17 +560,91 @@ div:not(.panel-success, .alert-message) {
 
 .navbar {
     min-height: 0px !important;
-    left: env(titlebar-area-x, 0);
-    top: env(titlebar-area-y, 0);
-    width: env(titlebar-area-width, 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1030;
     -webkit-app-region: drag;
 }
 
-nav a.btn-primary, .input-group-addon {
-    background: #d9edf7;
-    border-color: #d9edf7 !important;
-    margin-top: 3px;
-    padding: 5px 1em !important;
+.btn-primary {
+    background-color: #337ab7 !important;
+    border-color: #1862b5 !important;
+}
+
+nav a.btn-primary, .input-group-text {
+    background: #d9edf7 !important;
+    border-color: #bce8f1 !important;
+    color: #31708f !important;
+}
+
+.dark nav a.btn-primary, .dark .input-group-text {
+    background: #2b3e50;
+    border-color: #1a252f !important;
+    color: #fff !important;
+}
+
+/* Icon color in navbar buttons should be lightblue in dark mode */
+.dark nav a.btn-primary .fa,
+.dark nav a.btn-primary .fas {
+    color: lightblue !important;
+}
+
+/* Bootstrap 4 input-group fixes */
+#navbar .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#navbar .input-group .btn {
+    border-radius: 0;
+    margin: 0;
+    padding: 5px 0.75em;
+    height: auto;
+    line-height: 1.5;
+    flex-shrink: 0;
+    min-width: 40px;
+}
+
+#navbar .input-group .form-control {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#navbar .input-group .input-group-text {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#navbar .container-fluid {
+    padding: 0;
+    width: 100%;
+}
+
+#navbar form {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#navbar #row,
+#navbar #row2 {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .btn:active, .btn-primary:active, .btn-primary.active {
@@ -406,15 +686,33 @@ nav a.btn-primary, .input-group-addon {
     }
 }
 
-.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse {
+.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse, .dark .navbar-dark, .dark .navbar-light {
     background: #222 !important;
     border-color: #222 !important;
 }
 
-.dark .btn-inline {
-    background: #182828 !important;
-    border-color: darkslategray !important;
+/* Specific styling for Refresh and Reset buttons only */
+#btnRefreshApp, #btnReset2 {
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: normal;
+    line-height: 1 !important;
 }
+
+.dark #btnRefreshApp, .dark #btnReset2 {
+    color: #adb5bd;
+}
+
+/* Styling for Open all button in dark mode */
+.dark #btnToggleSettings {
+    color: #adb5bd;
+    border-color: #6c757d !important;
+}
+
 
 .dark .modal-footer .btn-primary, .dark .modal-footer .btn-secondary {
     border-color: #777 !important;
@@ -424,11 +722,11 @@ footer .btn-xs {
     margin: 5px 5px 10px;
 }
 
-.glyphicon {
+.fa {
     color: darkblue;
 }
 
-.btn-sm, .btn-lg, .btn-default {
+.btn-sm:not(.btn-inline), .btn-lg:not(.btn-inline), .btn-default {
     background-color: rgba(217,237,247,0) !important;
     border: transparent !important;
     /*color: whitesmoke !important;*/
@@ -503,7 +801,7 @@ pre {
     border-left: 6px solid grey;
 }
 
-.darkfooter .glyphicon, .dark .glyphicon {
+.darkfooter .fa, .dark .fa {
     color: lightblue;
 }
 
@@ -540,26 +838,37 @@ pre {
     border-color: darkgray;
 }
 
-.dark .panel {
+.dark .card {
     color: lightgray !important;
     background: #222 !important;
     border-color: darkgray;
 }
 
-.dark .panel-heading {
-    color: lightgray !important;
-    background: #12303b !important;
-    border-color: darkgray;
+.dark .card.border-info {
+    border-color: #12303b !important;
 }
 
-    .dark .panel-warning .panel-heading {
-        background: #333300 !important;
-    }
+.dark .card.border-warning {
+    border-color: #333300 !important;
+}
 
+.dark .card.border-warning .card-header {
+    background: #333300 !important;
+    border-bottom-color: #333300 !important;
+}
 
-    .dark .panel-danger .panel-heading {
-        background: #330000 !important;
-    }
+.dark .card.border-success {
+    border-color: #12303b !important;
+}
+
+.dark .card.border-danger {
+    border-color: #330000 !important;
+}
+
+.dark .card.border-danger .card-header {
+    background: #330000 !important;
+    border-bottom-color: #330000 !important;
+}
 
 .dropdown {
     width: 100%;
@@ -600,7 +909,7 @@ pre {
     background-color: darkslategray !important;
 }
 
-.dark .btn-default, .dark .input-group-addon, .dark pre {
+.dark .btn-default, .dark .input-group-text, .dark pre {
     background: #222 !important;
     border-color: #222 !important;
     color: lightgray !important;
@@ -659,6 +968,17 @@ pre {
 /*********************************/
 
 /* Hide the browser's default checkbox */
+/* Custom checkbox/radio container */
+label.checkbox,
+label.radio {
+    position: relative;
+    padding-left: 30px;
+    display: block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .container input[type=checkbox], .container input[type=radio] {
     position: absolute;
     opacity: 0;
@@ -671,7 +991,7 @@ pre {
 .checkmark {
     position: absolute;
     top: 0;
-    left: -25px;
+    left: 0;
     height: 20px;
     width: 20px;
     background-color: whitesmoke;
@@ -705,7 +1025,7 @@ pre {
 .radiobtn {
     position: absolute;
     top: 0;
-    left: -25px;
+    left: 0;
     height: 20px;
     width: 20px;
     background-color: whitesmoke;
@@ -725,19 +1045,19 @@ pre {
     background: steelblue;
 }
 
-.panel-warning .checkmark, .panel-warning .radiobtn, .panel-warning input:checked ~ .checkmark:after, .panel-warning input:indeterminate ~ .checkmark:after {
+.card.border-warning .checkmark, .card.border-warning .radiobtn, .card.border-warning input:checked ~ .checkmark:after, .card.border-warning input:indeterminate ~ .checkmark:after {
     border-color: #a0a090;
 }
 
-.panel-warning input:checked ~ .radiobtn::after {
+.card.border-warning input:checked ~ .radiobtn::after {
     background: #a0a090;
 }
 
-.panel-danger .checkmark, .panel-danger .radiobtn, .panel-danger input:checked ~ .checkmark:after, .panel-danger input:indeterminate ~ .checkmark:after {
+.card.border-danger .checkmark, .card.border-danger .radiobtn, .card.border-danger input:checked ~ .checkmark:after, .card.border-danger input:indeterminate ~ .checkmark:after {
     border-color: #c37b7a;
 }
 
-.panel-danger input:checked ~ .radiobtn:after {
+.card.border-danger input:checked ~ .radiobtn:after {
     background: #c37b7a;
 }
 
@@ -745,11 +1065,11 @@ pre {
     border-color: darkslategray;
 }
 
-.dark .panel-warning .checkmark, .dark .panel-warning .radiobtn, .dark .panel-warning input:checked ~ .checkmark:after, .dark .panel-warning input:indeterminate ~ .checkmark:after {
+.dark .card.border-warning .checkmark, .dark .card.border-warning .radiobtn, .dark .card.border-warning input:checked ~ .checkmark:after, .dark .card.border-warning input:indeterminate ~ .checkmark:after {
     border-color: #808000;
 }
 
-.dark .panel-danger .checkmark, .dark .panel-danger .radiobtn {
+.dark .card.border-danger .checkmark, .dark .card.border-danger .radiobtn {
     border-color: #800000;
 }
 
@@ -762,11 +1082,11 @@ pre {
     background-color: #12303b;
 }
 
-.dark .panel-warning input ~ .checkmark, .dark .panel-warning input ~ .radiobtn, .dark .panel-warning input:checked ~ .checkmark, .dark .panel-warning input:checked ~ .radiobtn {
+.dark .card.border-warning input ~ .checkmark, .dark .card.border-warning input ~ .radiobtn, .dark .card.border-warning input:checked ~ .checkmark, .dark .card.border-warning input:checked ~ .radiobtn {
     background-color: #4d4d00;
 }
 
-.dark .panel-danger input ~ .checkmark, .dark .panel-danger input ~ .radiobtn, .dark .panel-danger input:checked ~ .checkmark, .dark .panel-danger input:checked ~ .radiobtn {
+.dark .card.border-danger input ~ .checkmark, .dark .card.border-danger input ~ .radiobtn, .dark .card.border-danger input:checked ~ .checkmark, .dark .card.border-danger input:checked ~ .radiobtn {
     background-color: #4d0000;
 }
 

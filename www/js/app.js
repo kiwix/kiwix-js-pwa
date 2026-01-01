@@ -131,12 +131,16 @@ function resizeIFrame (reload) {
     // Re-enable top-level scrolling
     var configuration = document.getElementById('configuration');
     var about = document.getElementById('about');
+    var welcomeText = document.getElementById('welcomeText');
+    var headerHeight = document.getElementById('top').getBoundingClientRect().height;
+    var footerHeight = document.getElementById('footer').getBoundingClientRect().height;
     if (configuration.style.display === 'none' && about.style.display === 'none' &&
-        // Don't collapse the scrollbox if user is interacting with search
-        prefix !== document.activeElement && !appstate.snippetInteractionFlag) {
+        // Don't collapse the scrollbox if user is interacting with search or if welcome text is visible
+        prefix !== document.activeElement && !appstate.snippetInteractionFlag &&
+        welcomeText.style.display === 'none') {
         scrollbox.style.height = 0;
     } else {
-        scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        scrollbox.style.height = window.innerHeight - headerHeight - footerHeight + 'px';
     }
     uiUtil.showSlidingUIElements();
     var ToCList = document.getElementById('ToCList');
@@ -227,6 +231,7 @@ function onPointerUp (e) {
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
 document.getElementById('searchArticles').addEventListener('click', function () {
+    if (!appstate.selectedArchive || !appstate.selectedArchive.isReady()) return;
     var val = prefix.value;
     // Do not initiate the same search if it is already in progress
     if (appstate.search.prefix === val && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
@@ -635,6 +640,7 @@ document.getElementById('matches').addEventListener('click', function (e) {
 
 // Set up the click event listener for the findText button
 document.getElementById('findText').addEventListener('click', function () {
+    if (!appstate.selectedArchive || !appstate.selectedArchive.isReady()) return;
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
         // Hide the search bar
@@ -945,8 +951,15 @@ function setTab (activeBtn) {
     document.getElementById('configuration').style.display = 'none';
     document.getElementById('formArticleSearch').style.display = '';
     if (!activeBtn || activeBtn === 'btnHome') {
-        scrollbox.style.height = 0;
-        document.getElementById('search-article').style.overflowY = 'hidden';
+        // Only collapse scrollbox if we have an archive loaded
+        if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+            scrollbox.style.height = 0;
+            document.getElementById('search-article').style.overflowY = 'hidden';
+        } else {
+            // No archive loaded - show welcome text and size scrollbox appropriately
+            document.getElementById('welcomeText').style.display = '';
+            resizeIFrame();
+        }
         setTimeout(function () {
             if (appstate.target === 'iframe' && appstate.selectedArchive) {
                 // Note that it is too early to display the zimit iframe due to possible loading of darkReader and other css issues
@@ -964,7 +977,14 @@ function setTab (activeBtn) {
     while (articleListHeaderMessage.firstChild) articleListHeaderMessage.removeChild(articleListHeaderMessage.firstChild);
     document.getElementById('articleListWithHeader').style.display = 'none';
     prefix.value = '';
-    document.getElementById('welcomeText').style.display = 'none';
+    // Hide welcome text unless we're on home page with no archive
+    if (activeBtn !== 'btnHome' && activeBtn !== null && activeBtn !== undefined) {
+        // We're on Configuration or About page - always hide welcome text
+        document.getElementById('welcomeText').style.display = 'none';
+    } else if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+        // We're on home page but have an archive - hide welcome text
+        document.getElementById('welcomeText').style.display = 'none';
+    }
     if (params.beforeinstallpromptFired) {
         var divInstall1 = document.getElementById('divInstall1');
         if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {
@@ -991,19 +1011,22 @@ function setDynamicIcons (btn) {
     var btnAbout = document.getElementById('btnAbout');
     if (params.lockDisplayOrientation) {
         if (uiUtil.appIsFullScreen()) {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-resize-small"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-compress"></i>';
             btnAbout.title = 'Exit fullscreen';
         } else {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-fullscreen"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-expand"></i>';
             btnAbout.title = 'Return to fullscreen';
         }
     } else {
-        // When the scrollbox height is 0, we are not in Configuration or About
-        if ((!btn && scrollbox.offsetHeight === 0) || btn === 'btnHome' || btn === 'findText') {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
+        // Check if we're on Home page (not in Configuration or About)
+        var configuration = document.getElementById('configuration');
+        var about = document.getElementById('about');
+        var isHomePage = configuration.style.display === 'none' && about.style.display === 'none';
+        if ((isHomePage && !btn) || btn === 'btnHome' || btn === 'findText') {
+            btnAbout.innerHTML = '<i class="fas fa-print"></i>';
             btnAbout.title = 'Ctrl-P: Print';
         } else {
-            btnAbout.innerHTML = '<span class="glyphicon glyphicon-info-sign"></span>';
+            btnAbout.innerHTML = '<i class="fas fa-info-circle"></i>';
             btnAbout.title = 'About';
         }
     }
@@ -1254,9 +1277,9 @@ function getNativeFSHandle (callback) {
 document.getElementById('btnAbout').addEventListener('click', function () {
     var btnAboutElement = document.getElementById('btnAbout');
     // Don't allow this button to be clicked if button is being used as exit fullscreen button
-    if (/glyphicon-(fullscreen|resize-small)/.test(btnAboutElement.innerHTML)) return;
+    if (/fa-(expand|compress)/.test(btnAboutElement.innerHTML)) return;
     // Deal with use of button for printing
-    if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
+    if (/fa-print/.test(btnAboutElement.innerHTML)) {
         printIntercept();
         return;
     }
@@ -1266,19 +1289,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
         setTab();
         return;
     }
-    // Highlight the selected section in the navbar
-    setTab('btnAbout');
-    // Hide footer toolbar
-    document.getElementById('footer').style.display = 'none';
-    // Show the selected content in the page
-    document.getElementById('about').style.display = '';
-    document.getElementById('articleContent').style.display = 'none';
-    document.querySelectorAll('.alert').forEach(function (el) {
-        el.style.display = 'none';
-    });
-    // Re-enable top-level scrolling
-    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
-    document.getElementById('search-article').style.overflowY = 'auto';
+    setAbout();
 });
 var selectFired = false;
 var archiveList = document.getElementById('archiveList');
@@ -1820,7 +1831,7 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         if (this.value === 'serviceworker' && window.location.protocol !== 'ms-appx-web:') {
             document.getElementById('enableSourceVerificationCheck').style.display = '';
-            if (params.sourceVerification && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
+            if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
                 verifyLoadedArchive(appstate.selectedArchive);
             }
@@ -2353,9 +2364,26 @@ document.getElementById('interceptBeforeUnloadCheck').addEventListener('change',
 });
 Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(function (link) {
     link.addEventListener('click', function () {
-        document.getElementById('btnAbout').click();
+        setAbout();
     });
 });
+
+// Function to set the About page view
+function setAbout () {
+    // Highlight the selected section in the navbar
+    setTab('btnAbout');
+    // Hide footer toolbar
+    document.getElementById('footer').style.display = 'none';
+    // Show the selected content in the page
+    document.getElementById('about').style.display = '';
+    document.getElementById('articleContent').style.display = 'none';
+    document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.display = 'none';
+    });
+    // Re-enable top-level scrolling
+    scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+    document.getElementById('search-article').style.overflowY = 'auto';
+}
 
 var iframe = document.getElementById('articleContent');
 
@@ -3107,15 +3135,15 @@ function refreshAPIStatus () {
     var messageChannelStatus = document.getElementById('messageChannelStatus');
     var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
     var apiStatusPanel = document.getElementById('apiStatusDiv');
-    apiStatusPanel.classList.remove('panel-success', 'panel-warning', 'panel-danger');
-    var apiPanelClass = 'panel-success';
+    apiStatusPanel.classList.remove('border-success', 'border-warning', 'border-danger');
+    var apiPanelClass = 'border-success';
     if (isMessageChannelAvailable()) {
         messageChannelStatus.textContent = 'MessageChannel API available';
         messageChannelStatus.classList.remove('apiAvailable');
         messageChannelStatus.classList.remove('apiUnavailable')
         messageChannelStatus.classList.add('apiAvailable');
     } else {
-        apiPanelClass = 'panel-warning';
+        apiPanelClass = 'border-warning';
         messageChannelStatus.textContent = 'MessageChannel API unavailable';
         messageChannelStatus.classList.remove('apiAvailable');
         messageChannelStatus.classList.remove('apiUnavailable');
@@ -3128,14 +3156,14 @@ function refreshAPIStatus () {
             serviceWorkerStatus.classList.remove('apiUnavailable');
             serviceWorkerStatus.classList.add('apiAvailable');
         } else {
-            apiPanelClass = 'panel-warning';
+            apiPanelClass = 'border-warning';
             serviceWorkerStatus.textContent = 'ServiceWorker API available, but not registered';
             serviceWorkerStatus.classList.remove('apiAvailable');
             serviceWorkerStatus.classList.remove('apiUnavailable');
             serviceWorkerStatus.classList.add('apiUnavailable');
         }
     } else {
-        apiPanelClass = 'panel-warning';
+        apiPanelClass = 'border-warning';
         serviceWorkerStatus.textContent = 'ServiceWorker API unavailable';
         serviceWorkerStatus.classList.remove('apiAvailable');
         serviceWorkerStatus.classList.remove('apiUnavailable');
@@ -3148,7 +3176,7 @@ function refreshAPIStatus () {
     settingsStoreStatusDiv.innerHTML = 'Settings Storage API in use: ' + apiName;
     settingsStoreStatusDiv.classList.remove('apiAvailable', 'apiUnavailable');
     settingsStoreStatusDiv.classList.add(params.storeType === 'none' ? 'apiUnavailable' : 'apiAvailable');
-    apiPanelClass = params.storeType === 'none' ? 'panel-warning' : apiPanelClass;
+    apiPanelClass = params.storeType === 'none' ? 'border-warning' : apiPanelClass;
 
     // Update Decompressor API section of panel
     var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
@@ -3156,7 +3184,7 @@ function refreshAPIStatus () {
     if (apiName && params.decompressorAPI.decompressorLastUsed) {
         apiName += ' [&nbsp;' + (params.useLibzim ? (params.debugLibzimASM || 'default') : params.decompressorAPI.decompressorLastUsed) + '&nbsp;]';
     }
-    apiPanelClass = params.decompressorAPI.errorStatus ? 'panel-danger' : apiName ? apiPanelClass : 'panel-warning';
+    apiPanelClass = params.decompressorAPI.errorStatus ? 'border-danger' : apiName ? apiPanelClass : 'border-warning';
     decompAPIStatusDiv.className = apiName ? params.decompressorAPI.errorStatus ? 'apiBroken' : 'apiAvailable' : 'apiUnavailable';
     apiName = params.decompressorAPI.errorStatus || apiName || 'Not initialized';
     decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
@@ -3177,10 +3205,10 @@ function refreshAPIStatus () {
 
     // Set colour of contentInjectionMode div
     var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
-    contentInjectionDiv.classList.remove('parnel-warning');
-    contentInjectionDiv.classList.remove('panel-danger');
-    if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('panel-warning');
-    else contentInjectionDiv.classList.add('panel-danger');
+    contentInjectionDiv.classList.remove('border-warning');
+    contentInjectionDiv.classList.remove('border-danger');
+    if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('border-warning');
+    else contentInjectionDiv.classList.add('border-danger');
 
     refreshCacheStatus();
 }
@@ -3199,10 +3227,10 @@ function refreshCacheStatus () {
         var cacheStatusPanel = document.getElementById('cacheStatusPanel');
         [cacheSettings, cacheStatusPanel].forEach(function (card) {
             // IE11 cannot remove more than one class from a list at a time
-            card.classList.remove('panel-warning');
-            card.classList.remove('panel-danger');
-            if (params.assetsCache) card.classList.add('panel-warning');
-            else card.classList.add('panel-danger');
+            card.classList.remove('border-warning');
+            card.classList.remove('border-danger');
+            if (params.assetsCache) card.classList.add('border-warning');
+            else card.classList.add('border-danger');
         });
     });
     if (params.appCache) {
@@ -3213,12 +3241,12 @@ function refreshCacheStatus () {
         prefix.style.setProperty('background', /^dark/.test(document.body.className) ? '#200000' : 'lavenderblush', 'important');
     }
     var expertSettings = document.getElementById('expertSettingsDiv');
-    expertSettings.classList.remove('panel-warning');
-    expertSettings.classList.remove('panel-danger');
+    expertSettings.classList.remove('border-warning');
+    expertSettings.classList.remove('border-danger');
     if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM || params.useLibzim || params.useLegacyZimitSupport) {
-        expertSettings.classList.add('panel-danger');
+        expertSettings.classList.add('border-danger');
     } else {
-        expertSettings.classList.add('panel-warning');
+        expertSettings.classList.add('border-warning');
     }
 }
 
@@ -4902,7 +4930,9 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
 // Set up the event listener for return to article links
 var returnDivs = document.getElementsByClassName('returntoArticle');
 for (i = 0; i < returnDivs.length; i++) {
-    returnDivs[i].addEventListener('click', setTab);
+    returnDivs[i].addEventListener('click', function () {
+        setTab();
+    });
 }
 
 /**
@@ -5155,9 +5185,9 @@ function showZIMIndex (start, search) {
                         switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
                         switchAlphaButton.addEventListener('click', function () {
                             var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
-                            var panelBody = util.closest(alphaLabel, '.panel-body');
+                            var panelBody = util.closest(alphaLabel, '.card-body');
                             if (panelBody && panelBody.style.display === 'none') {
-                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /panel-heading/.test(el.className) });
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className) });
                                 if (panelHeading) panelHeading.click();
                             }
                             alphaLabel.style.borderColor = 'red';
