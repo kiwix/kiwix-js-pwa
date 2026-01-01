@@ -685,9 +685,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Reduce size of header
         doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
         // Limit height of pre box and prevent word wrapping
-        doc = doc.replace(/<pre>/i, '<div class="panel border-success">\r\n' +
-            '<pre id="dl-panel-heading" class="panel-heading" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
-            '<pre id="dl-panel-body" class="panel panel-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
+        doc = doc.replace(/<pre>/i, '<div class="card border-success">\r\n' +
+            '<pre id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
+            '<pre id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
         // Remove hr at end of page and add extra </div>
         doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, '$1</div>');
         // Remove any residual hr
