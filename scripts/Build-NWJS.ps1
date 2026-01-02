@@ -13,7 +13,7 @@ if ($only32bit) {
 }
 $version10 = "0.104.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "3.7.86-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
+$appBuild = "3.8.1-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
 # Check that the dev has included the correct archive in this branch
 $init_params = Get-Content -Raw "$PSScriptRoot\..\dist\www\js\init.js"
 $PackagedArchive = $init_params -imatch 'params\[.packagedFile.][^;]+?[''"]([^\s]+?\.zim)[''"];'
