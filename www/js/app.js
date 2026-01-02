@@ -2702,7 +2702,10 @@ function switchCSSTheme () {
                 if (document.getElementById('configuration').style.display === 'none') {
                     articleContainer.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
-                    window.dispatchEvent(new Event('resize')); // Force repaint
+                    // Force repaint - using createEvent for IE11 compatibility
+                    var resizeEvent = document.createEvent('Event');
+                    resizeEvent.initEvent('resize', true, true);
+                    window.dispatchEvent(resizeEvent);
                 }
                 // Still need to handle tooltips and breakout link icon
                 var isDark = determinedWikiTheme !== 'light';
@@ -2730,7 +2733,10 @@ function switchCSSTheme () {
             if (document.getElementById('configuration').style.display === 'none') {
                 articleContainer.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
-                window.dispatchEvent(new Event('resize')); // Force repaint
+                // Force repaint - using createEvent for IE11 compatibility
+                var resizeEvent = document.createEvent('Event');
+                resizeEvent.initEvent('resize', true, true);
+                window.dispatchEvent(resizeEvent);
             }
         }
         doc.head.appendChild(link);
@@ -2749,7 +2755,10 @@ function switchCSSTheme () {
                         articleContainer.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
-                            window.dispatchEvent(new Event('resize')); // Force repaint
+                            // Force repaint - using createEvent for IE11 compatibility
+                            var resizeEvent = document.createEvent('Event');
+                            resizeEvent.initEvent('resize', true, true);
+                            window.dispatchEvent(resizeEvent);
                         }, 350);
                     }
                 }
@@ -2778,14 +2787,20 @@ function switchCSSTheme () {
                     articleC.style.display = '';
                     zimitf.style.display = '';
                     clearInterval(interval);
-                    window.dispatchEvent(new Event('resize')); // Force repaint
+                    // Force repaint - using createEvent for IE11 compatibility
+                    var resizeEvent = document.createEvent('Event');
+                    resizeEvent.initEvent('resize', true, true);
+                    window.dispatchEvent(resizeEvent);
                 }, 3000, zimitIframe, articleContainer);
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
             articleContainer.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
-            window.dispatchEvent(new Event('resize')); // Force repaint
+            // Force repaint - using createEvent for IE11 compatibility
+            var resizeEvent = document.createEvent('Event');
+            resizeEvent.initEvent('resize', true, true);
+            window.dispatchEvent(resizeEvent);
         }
         if (breakoutLink) breakoutLink.src = locationPrefix + '/img/icons/new_window.svg';
     }
