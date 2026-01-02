@@ -103,28 +103,20 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>[3.7.85] Support new Wikimedia ZIM-provided dark theme (SW mode only)</li>
-                                <li>[3.7.85] Add info about new PWA installation for Firefox 143+ for Windows</li>
-                                <li>[3.7.85] Fix touch events for sliding away tool and navbars</li>
-                                <li>[3.7.85] Unify all keyboard events under the same function</li>
-                                <li>[3.7.85] App documentation updates</li>
-                                <li>[3.7.83] Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
-                                <li>[3.7.83] Fixed broken printing support</li>
-                                <li>[3.7.83] Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
-                                <li>PWA now auto-updates immediately when new version is detected (can be turned off)</li>
-                                <li>Added Electron-based macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)</li>
-                                <li>Provide new persistent File System permissions handler for Electron-based packages</li>
-                                <li>Enter key now selects first search result</li>
-                                <li>Prevent user selecting contradictory settings for page style</li>
-                                <li>Better conversion of headings to collapsible sections for ActionParse ZIMs</li>
-                                <li>Fixed display of gallery images in Wikimedia ZIMs when transformed to mobile style</li>
-                                <li>Fixed restricted width of Wikimedia articles on mobile screen sizes</li>
-                                <li>Fixed display of some ultra-wide infoboxes in RTL Wikipedia ZIMs</li>
-                                <li>Fixed size of regular infoboxes with Wikipedia articles converted to mobile style</li>
-                                <li>Fixed display of some dark_mode_safe svg images in dark theme</li>
-                                <li>Fixed incorrect hiding of search results when user is interacting with snippets</li>
-                                <li>Do not attempt to auto-update appx or MSIX packages</li>
-                                <li>Bump Electron to latest (v38.2.2)</li>
+                                <li>Support new Wikimedia ZIM-provided auto dark/light theming system (SW mode only)</li>
+                                <li>Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
+                                <li>Migrated project to Bootstrap 4 and replaced Glyphicons with Font Awesome icons</li>
+                                <li>Removed dependency on JQuery completely</li>
+                                <li>Increased security of Electron app's Express server and provided controls for LAN access</li>
+                                <li>Added PWA installation guide for major browsers</li>
+                                <li>Added instructions for installing AppImage on recent Ubuntu missing fuse2</li>
+                                <li>Fixed broken printing support</li>
+                                <li>Fixed critical error in IE11 preventing rendering of webp images</li>
+                                <li>Fixed touch events for sliding away tool and navbars</li>
+                                <li>Unified all keyboard events under the same function</li>
+                                <li>Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
+                                <li>General app and project information updates</li>
+                                <li>Security updates to dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

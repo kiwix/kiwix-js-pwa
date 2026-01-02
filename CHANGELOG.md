@@ -1,21 +1,27 @@
 # Changelog
 
-## Interim release 3.7.86
+## Interim release 3.8.1
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
+* UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
+* UPDATE: Replace Glyphicons with Font Awesome icons
+* UPDATE: Remove dependency on JQuery completely
 * SECURITY: Increase security of Electron app's Express server and provide controls for LAN access
-* INFO: Add information about PWA install method for Firefox 143+ on Windows
+* INFO: Add PWA installation guide for major browsers
 * INFO: General app and project information update
 * INFO: Give instructions for installing AppImage on recent Ubuntu missing fuse2
 * REGRESSION: Fix broken printing support
+* REGRESSION: Fix critical error in IE11 preventing rendering of webp images
 * FIX: Touch events for sliding away tool and navbars
 * FIX: Unify all keyboard events under the same function
 * FIX: Set more reasonable product name for Linux Electron app
 * FIX: Accidental processing of certain openZIM articles by the Zimit redirect algorithm
 * DEV: Fix broken macOS workflow in nightlies
+* DEV: Service Worker now handles event passing
 * DEV: Bump Electron to 38.3.0 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
+* DEV: Bump qs and Express
 
 ## Release 3.7.7 / 3.7.8
 
