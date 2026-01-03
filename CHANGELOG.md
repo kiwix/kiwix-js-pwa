@@ -6,6 +6,7 @@
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
 * ENHANCEMENT: Provide new persistent FS permissions handler (allows upgrade to latest Electron)
 * ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)
+* UPDATE:  Packaged archive updated to `wikivoyage_en_all_maxi_2025-12`
 * UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
 * UPDATE: Replace Glyphicons with Font Awesome icons
 * UPDATE: Remove dependency on JQuery completely
