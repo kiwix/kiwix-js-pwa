@@ -2636,7 +2636,7 @@ function switchCSSTheme () {
         : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
-
+    var resizeEvent;
     // Detect if this article uses the new Wikipedia theme system (October 2024+)
     var usesProvidedWikimediaTheme = false;
     if (appstate.wikimediaZimLoaded) {
@@ -2703,7 +2703,7 @@ function switchCSSTheme () {
                     articleContainer.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
                     // Force repaint - using createEvent for IE11 compatibility
-                    var resizeEvent = document.createEvent('Event');
+                    resizeEvent = document.createEvent('Event');
                     resizeEvent.initEvent('resize', true, true);
                     window.dispatchEvent(resizeEvent);
                 }
@@ -2734,7 +2734,7 @@ function switchCSSTheme () {
                 articleContainer.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
                 // Force repaint - using createEvent for IE11 compatibility
-                var resizeEvent = document.createEvent('Event');
+                resizeEvent = document.createEvent('Event');
                 resizeEvent.initEvent('resize', true, true);
                 window.dispatchEvent(resizeEvent);
             }
@@ -2756,7 +2756,7 @@ function switchCSSTheme () {
                         setTimeout(function () {
                             zimitIframe.style.display = '';
                             // Force repaint - using createEvent for IE11 compatibility
-                            var resizeEvent = document.createEvent('Event');
+                            resizeEvent = document.createEvent('Event');
                             resizeEvent.initEvent('resize', true, true);
                             window.dispatchEvent(resizeEvent);
                         }, 350);
@@ -2788,7 +2788,7 @@ function switchCSSTheme () {
                     zimitf.style.display = '';
                     clearInterval(interval);
                     // Force repaint - using createEvent for IE11 compatibility
-                    var resizeEvent = document.createEvent('Event');
+                    resizeEvent = document.createEvent('Event');
                     resizeEvent.initEvent('resize', true, true);
                     window.dispatchEvent(resizeEvent);
                 }, 3000, zimitIframe, articleContainer);
@@ -2798,7 +2798,7 @@ function switchCSSTheme () {
             articleContainer.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
             // Force repaint - using createEvent for IE11 compatibility
-            var resizeEvent = document.createEvent('Event');
+            resizeEvent = document.createEvent('Event');
             resizeEvent.initEvent('resize', true, true);
             window.dispatchEvent(resizeEvent);
         }
