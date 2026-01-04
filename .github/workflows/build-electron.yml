@@ -624,7 +624,11 @@ jobs:
       if: github.event.inputs.target != 'artefacts'
       run: |
         $SSH_KEY = $Env:SSH_KEY
-        echo "$SSH_KEY" > .\scripts\ssh_key
+        $keyfile = ".\scripts\ssh_key"
+        echo "$SSH_KEY" > $keyfile
+        # Set strict permissions on SSH key file (Windows equivalent of chmod 600)
+        icacls $keyfile /inheritance:r
+        icacls $keyfile /grant:r "$env:USERNAME:(R)"
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
@@ -706,7 +710,11 @@ jobs:
       if: github.event.inputs.target != 'artefacts'
       run: |
         $SSH_KEY = $Env:SSH_KEY
-        echo "$SSH_KEY" > .\scripts\ssh_key
+        $keyfile = ".\scripts\ssh_key"
+        echo "$SSH_KEY" > $keyfile
+        # Set strict permissions on SSH key file (Windows equivalent of chmod 600)
+        icacls $keyfile /inheritance:r
+        icacls $keyfile /grant:r "$env:USERNAME:(R)"
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
