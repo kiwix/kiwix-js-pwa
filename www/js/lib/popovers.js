@@ -264,7 +264,7 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
     // Do not show popover if there is no href or with certain landing pages
     if (!linkHref || /^wikivoyage/i.test(archive.file.name) &&
       (state.expectedArticleURLToBeDisplayed === archive.landingPageUrl ||
-      state.expectedArticleURLToBeDisplayed === 'A/Wikivoyage:Offline_reader_Expedition/Home_page')) {
+      state.expectedArticleURLToBeDisplayed === 'C/Wikivoyage:Offline_reader_Expedition/Home_page')) {
         return Promise.resolve();
     }
     link.popoverisloading = true;
