@@ -62,12 +62,12 @@ Please choose the correct version:
        - Open Terminal (Applications > Utilities > Terminal)
        - Run the following command:
        ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Kiwix-JS-Electron-*.zip
+       xattr -d com.apple.quarantine ~/Downloads/Wikivoyage*.zip
        ```
        - Then extract the ZIP file by double-clicking it
-    2. **Safari users only**: The app (`Kiwix JS Electron.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag (not necessary if you did Step 1):
+    2. **Safari users only**: The app (`Wikivoyage by Kiwix.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag (not necessary if you did Step 1):
        ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Kiwix\ JS\ Electron.app
+       xattr -d com.apple.quarantine ~/Downloads/Wikivoyage\ by\ Kiwix.app
        ```
     3. **Launch** the app by double-clicking it - it should now open normally
   + **Architecture Selection:**
