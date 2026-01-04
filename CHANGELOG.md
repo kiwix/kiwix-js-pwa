@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.8.1
+## Interim release 3.8.2
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
@@ -13,13 +13,17 @@
 * INFO: Give instructions for installing AppImage on recent Ubuntu missing fuse2
 * REGRESSION: Fix broken printing support
 * REGRESSION: Fix critical error in IE11 preventing rendering of webp images
+* REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * FIX: Touch events for sliding away tool and navbars
 * FIX: Unify all keyboard events under the same function
 * FIX: Set more reasonable product name for Linux Electron app
 * FIX: Accidental processing of certain openZIM articles by the Zimit redirect algorithm
+* FIX: Windows package uploads with new SSH kay
+* FIX: Typo causing large WikiMed packages to autoupdate to the plain app
+* FIX: MacOS script uploading packages to GitHub Releases and macOS-related template for Wikivoyage releases
 * DEV: Fix broken macOS workflow in nightlies
 * DEV: Service Worker now handles event passing
-* DEV: Bump Electron to 38.3.0 (for modern Electron builds)
+* DEV: Bump Electron to 39.2.7 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
 * DEV: Bump qs and Express
 
