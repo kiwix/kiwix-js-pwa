@@ -35,9 +35,9 @@ Please choose the correct version:
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 10.15+ Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-x64.zip)
-    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-HighSierra.zip)
+    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 10.15+ Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
+    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
 
 ## Installation Instructions - Electron
 
