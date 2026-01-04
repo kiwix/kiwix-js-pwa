@@ -1126,7 +1126,7 @@ function checkUpdateServer () {
         var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
         var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
         var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
-            : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
+            : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
                 : 'electron';
         if (baseApp === 'electron' && isUpdateableElectronVersion && !params.isAppxOrMSIX) {
             console.log('Launching Electron auto-updater...');
