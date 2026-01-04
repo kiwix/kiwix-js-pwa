@@ -627,8 +627,8 @@ jobs:
         $keyfile = ".\scripts\ssh_key"
         echo "$SSH_KEY" > $keyfile
         # Set strict permissions on SSH key file (Windows equivalent of chmod 600)
-        icacls $keyfile /inheritance:r
-        icacls $keyfile /grant:r "$env:USERNAME:(R)"
+        icacls $keyfile /inheritance:r | Out-Null
+        icacls $keyfile /grant "${env:USERNAME}:(R)" | Out-Null
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
@@ -713,8 +713,8 @@ jobs:
         $keyfile = ".\scripts\ssh_key"
         echo "$SSH_KEY" > $keyfile
         # Set strict permissions on SSH key file (Windows equivalent of chmod 600)
-        icacls $keyfile /inheritance:r
-        icacls $keyfile /grant:r "$env:USERNAME:(R)"
+        icacls $keyfile /inheritance:r | Out-Null
+        icacls $keyfile /grant "${env:USERNAME}:(R)" | Out-Null
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
