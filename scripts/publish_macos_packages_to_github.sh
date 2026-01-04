@@ -24,17 +24,27 @@ echo "Found draft release: $tag_name"
 # Upload all zip, blockmap, and yml files from dist/bld/Electron
 for file in ./dist/bld/Electron/*.{zip,blockmap} ./dist/bld/Electron/latest-mac*.yml; do
   if [[ -f "$file" ]]; then
-    # Extract filename and convert spaces to hyphens
-    filename=$(basename "$file" | sed 's/ /-/g')
+    # Extract original filename
+    original_filename=$(basename "$file")
+    # Convert spaces to hyphens for new filename
+    new_filename=$(echo "$original_filename" | sed 's/ /-/g')
+
+    # Only rename if the filename contains spaces
+    if [[ "$original_filename" != "$new_filename" ]]; then
+      new_file="./dist/bld/Electron/$new_filename"
+      echo "Renaming: $original_filename -> $new_filename"
+      mv "$file" "$new_file"
+      file="$new_file"
+    fi
 
     echo ""
-    echo "Uploading $filename to GitHub..."
+    echo "Uploading $(basename "$file") to GitHub..."
 
     # Upload the file using gh CLI (--clobber replaces if exists)
-    if gh release upload "$tag_name" "$file#$filename" --repo kiwix/kiwix-js-pwa --clobber; then
-      echo "✓ Successfully uploaded $filename"
+    if gh release upload "$tag_name" "$file" --repo kiwix/kiwix-js-pwa --clobber; then
+      echo "✓ Successfully uploaded $(basename "$file")"
     else
-      echo "ERROR: Failed to upload $filename"
+      echo "ERROR: Failed to upload $(basename "$file")"
       exit 1
     fi
   fi
