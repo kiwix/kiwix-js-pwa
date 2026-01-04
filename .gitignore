@@ -19,12 +19,12 @@ _pkginfo.txt
 null
 /scripts/kiwix-*.pem
 /scripts/set_secret_environment_variables.sh
-/scripts/ssh_key
 /scripts/*secret*
 /scripts/*rsa
 /scripts/github_token
 /scripts/master_key*
 *.ppk
+ssh_key*
 .hintrc
 CLAUDE.md
 .claude/settings.local.json
