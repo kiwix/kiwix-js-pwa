@@ -65,9 +65,9 @@ env:
   ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_USER_TOTP_SECRET }}
   MASTER_KEY_FILE: "C:\\Users\\runneradmin\\eSignerCKA\\master.key"
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
-  SSH_KEY: ${{ secrets.SSH_KEY }}
+  SSH_KEY: ${{ secrets.KIWIX_FILE_UPLOAD_SSH_KEY }}
   REF_NAME: ${{ github.ref_name }}
-      
+
 jobs:
 
   Release_Linux:
@@ -135,7 +135,7 @@ jobs:
           npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
         fi
     - name: Build and pulblish 32bit
-      env: 
+      env:
         USE_HARD_LINKS: false
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
@@ -149,7 +149,7 @@ jobs:
           npx electron-builder --linux AppImage:ia32 --projectDir dist
         fi
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -163,7 +163,7 @@ jobs:
         path: |
           dist/bld/Electron/*.AppImage
           dist/bld/Electron/*.deb
-          dist/bld/Electron/*.rpm      
+          dist/bld/Electron/*.rpm
 
   Release_macOS:
     if: github.event.inputs.win11only != 'true'
@@ -382,7 +382,7 @@ jobs:
         chmod +x ./scripts/publish_macos_packages_to_github.sh
         ./scripts/publish_macos_packages_to_github.sh
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -645,7 +645,7 @@ jobs:
           dist/bld/Electron/*.appx
           dist/bld/Electron/*.zip
           dist/bld/Electron/nsis-web/*.exe
-          dist/bld/Electron/nsis-web/*.nsis.7z     
+          dist/bld/Electron/nsis-web/*.nsis.7z
 
   Release_NWJS:
     if: github.ref_name == 'main' && github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
@@ -722,4 +722,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: kiwix-js-nwjs_windows
-        path: dist/bld/nwjs/*.zip  
+        path: dist/bld/nwjs/*.zip
