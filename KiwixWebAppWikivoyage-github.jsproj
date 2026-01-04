@@ -226,7 +226,7 @@
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
     <Content Include="www\article.html" />
-    <Content Include="www\A\Main_Page" />
+    <Content Include="www\C\Main_Page" />
     <Content Include="www\css\app.css" />
     <Content Include="node_modules\bootstrap\dist\css\bootstrap.min.css" />
     <Content Include="node_modules\@fortawesome\fontawesome-free\css\all.min.css" />
