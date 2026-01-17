@@ -435,7 +435,15 @@ self.addEventListener('fetch', function (event) {
                     });
                 } else {
                     // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
-                    return fetch(modRequestOrResponse).then(function (response) {
+                    // Use a timeout to fail fast when offline (Edge can hang for 30+ seconds otherwise)
+                    var fetchWithTimeout = Promise.race([
+                        fetch(modRequestOrResponse),
+                        new Promise(function (resolve, reject) {
+                            setTimeout(function () { reject(new Error('Network timeout')); }, 3000);
+                        })
+                    ]);
+
+                    return fetchWithTimeout.then(function (response) {
                         // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
                         if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
                             event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
@@ -443,6 +451,8 @@ self.addEventListener('fetch', function (event) {
                         return response;
                     }).catch(function (error) {
                         console.debug('[SW] Network request failed and no cache.', error);
+                        // Return a minimal fallback response to prevent blocking
+                        return new Response('', { status: 408, statusText: 'Request Timeout' });
                     });
                 }
             });
