@@ -435,7 +435,14 @@ self.addEventListener('fetch', function (event) {
                     });
                 } else {
                     // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
-                    return fetch(modRequestOrResponse).then(function (response) {
+                    // Use a timeout to fail fast when offline (Edge can hang for 30+ seconds otherwise)
+                    var fetchWithTimeout = Promise.race([
+                        fetch(modRequestOrResponse),
+                        new Promise(function (resolve, reject) {
+                            setTimeout(reject, 3000, new Error('Network timeout'));
+                        })
+                    ]);
+                    return fetchWithTimeout.then(function (response) {
                         // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
                         if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
                             event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
@@ -443,6 +450,8 @@ self.addEventListener('fetch', function (event) {
                         return response;
                     }).catch(function (error) {
                         console.debug('[SW] Network request failed and no cache.', error);
+                        // Return a minimal fallback response to prevent blocking
+                        return new Response('', { status: 408, statusText: 'Request Timeout' });
                     });
                 }
             });
@@ -682,7 +691,7 @@ function cacheAndReturnResponseForAsset (event, response) {
  *     Zimit requests may be for a range of bytes, in fact video (at least) is stored as a blob, so the appropriate response will just be a normal 200.
  * @returns {Promise<Response>} A Promise for the Response, or rejects with the invalid message port data
  */
-function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders*/) {
+function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders */) {
     return new Promise(function (resolve, reject) {
         var pathname = typeof urlObjectOrString === 'string' ? urlObjectOrString : urlObjectOrString.pathname;
         // Note that titles may contain bare question marks or hashes, so we must use only the pathname without any URL parameters.
@@ -708,9 +717,9 @@ function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders*/) 
         // or another context. We pass this info to the app so it knows whether to hide the articleContainer
         // to prevent theme flash (only needed for its own iframe, not for new windows/tabs users open).
         var getRequestingFrameType = event && event.clientId
-            ? self.clients.get(event.clientId).then(function(client) {
+            ? self.clients.get(event.clientId).then(function (client) {
                 return client ? client.frameType : 'unknown';
-            }).catch(function() {
+            }).catch(function () {
                 return 'unknown';
             })
             : Promise.resolve('unknown');
