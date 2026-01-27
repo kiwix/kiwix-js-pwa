@@ -104,21 +104,22 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Support new Wikimedia ZIM-provided auto dark/light theming system (SW mode only)</li>
+                                <li>Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)</li>
                                 <li>Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
-                                <li>Migrated project to Bootstrap 4 and replaced Glyphicons with Font Awesome icons</li>
+                                <li>Persistent file system permissions handler (allows upgrade to latest Electron)</li>
+                                <li>Packaged archive updated to mdwiki_en_all[-app]_maxi 2025-11</li>
+                                <li>Migrated project to Bootstrap 4 and fixed display glitches</li>
+                                <li>Replaced Glyphicons with Font Awesome icons</li>
                                 <li>Removed dependency on JQuery completely</li>
-                                <li>Increased security of Electron app's Express server and provided controls for LAN access</li>
-                                <li>Added PWA installation guide for major browsers</li>
+                                <li>Increased security of Electron app's Express server with controls for LAN access</li>
                                 <li>Added instructions for installing AppImage on recent Ubuntu missing fuse2</li>
                                 <li>Fixed broken printing support</li>
-                                <li>Fixed critical error in IE11 preventing rendering of webp images</li>
                                 <li>Fixed touch events for sliding away tool and navbars</li>
                                 <li>Unified all keyboard events under the same function</li>
                                 <li>Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
-                                <li>Prevent display of popovers on Wikivoyage custom landing page</li>
+                                <li>Fixed incorrect hiding of search results when user is interacting with snippets</li>
+                                <li>Fixed Fetch request timeout for style files</li>
                                 <li>General app and project information updates</li>
-                                <li>Security updates to dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-WikiMed/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
