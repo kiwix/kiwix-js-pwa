@@ -3088,7 +3088,12 @@ document.addEventListener('DOMContentLoaded', function () {
         : window.nw ? 'NWJS '
         : /Electron/.test(params.appType) ? 'Electron '
         : /PWA/.test(params.appType) ? 'PWA ' : '';
-    // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
+    // Hide notice to download an archive if we are in a packaged ZIM app
+    var noPackagedZIM = document.getElementById('noPackagedZIM');
+    if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
+        noPackagedZIM.style.display = 'none';
+    }
+     // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
     if (settingsStore.getItem('appVersion') !== params.appVersion) {
         //  Update the installed version
         if (settingsStore.getItem('PWAInstalled')) {
@@ -3100,10 +3105,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result === false) console.log('Unable to delete old idxDB databases (this is normal in non-Chromium browsers');
             else console.log('Deleted ' + result + ' deprecated database(s).');
         });
-        var noPackagedZIM = document.getElementById('noPackagedZIM');
-        if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
-            noPackagedZIM.style.display = 'none';
-        }
         // We remove splashScreenDismissed from the settingsStore to ensure that the modal is displayed after an autorefresh if user didn't consciously dismiss it
         settingsStore.removeItem('splashScreenDismissed');
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
