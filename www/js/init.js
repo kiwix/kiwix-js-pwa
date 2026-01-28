@@ -82,6 +82,7 @@ params['fileVersion'] = getSetting('fileVersion') || ''; // This will be display
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikipedia_en_medicine_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    'mdwiki_en_all-app_maxi': 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     mdwiki_en_all_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'C/Main_Page'
 };
