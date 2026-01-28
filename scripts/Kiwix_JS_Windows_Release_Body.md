@@ -121,6 +121,6 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ## Instructions for sideloading (UWP)
 
-You can sideload the UWP app easily by typing `winget install kiwix.kiwixjs` in a Command Prompt or PowerShell terminal (Windows 10/11). This will download and install the Electron-based appx. If you want to install the legacy UWP appxbundle based on EdgeHTML, then simply download the appxbundle (see below) and double click it. The app installer should launch and will let you install it.
+You can sideload the UWP app easily by typing `winget install kiwix.kiwixjs` in a Command Prompt or PowerShell terminal (Windows 10/11). This will download and install the Electron-based appx. If you want to install the legacy UWP appx based on EdgeHTML, then simply download the appx (see below) and double click it. The app installer should launch and will let you install it.
 
-For Windows Mobile or for sideloading manually, please download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#readme.
+For Windows Mobile or for sideloading manually, please download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appx) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#readme.
