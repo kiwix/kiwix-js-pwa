@@ -31,7 +31,7 @@ Please choose the correct version:
     + Windows 7/8/8.1 standalone 32bit installer: [Wikivoyage-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikivoyage.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
-    + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
+    + Windows 10/11 32bit (also runs on 64bit): [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip) (for Win7/8/8.1, please use the Win7 installer above)
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
