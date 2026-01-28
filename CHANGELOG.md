@@ -1,12 +1,14 @@
 # Changelog
 
-## Interim release 3.8.2
+## Interim release 3.8.3
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
 * UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
 * UPDATE: Replace Glyphicons with Font Awesome icons
 * UPDATE: Remove dependency on JQuery completely
+* UPDATE: Custom mdwiki landing page
+* UPDATE: Build types in release templates
 * SECURITY: Increase security of Electron app's Express server and provide controls for LAN access
 * INFO: Add PWA installation guide for major browsers
 * INFO: General app and project information update
@@ -14,6 +16,7 @@
 * REGRESSION: Fix broken printing support
 * REGRESSION: Fix critical error in IE11 preventing rendering of webp images
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
+* REGRESSION: Properly set initial express port value
 * FIX: Touch events for sliding away tool and navbars
 * FIX: Unify all keyboard events under the same function
 * FIX: Set more reasonable product name for Linux Electron app
@@ -21,11 +24,16 @@
 * FIX: Windows package uploads with new SSH kay
 * FIX: Typo causing large WikiMed packages to autoupdate to the plain app
 * FIX: MacOS script uploading packages to GitHub Releases and macOS-related template for Wikivoyage releases
+* FIX: Fail fast offline requests to network
+* FIX: Properly hide notice to download ZIM in packaged apps
 * DEV: Fix broken macOS workflow in nightlies
+* DEV: Buid only appx version of UWP for GitHub releases
 * DEV: Service Worker now handles event passing
-* DEV: Bump Electron to 39.2.7 (for modern Electron builds)
+* DEV: Bump Electron to 40.0.0 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
+* DEV: bump Electron Builder to 26.4.0
 * DEV: Bump qs and Express
+* DEV: Bump lodash
 
 ## Release 3.7.7 / 3.7.8
 
