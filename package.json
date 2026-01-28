@@ -110,12 +110,14 @@
     "nsis": {
       "oneClick": "false",
       "allowElevation": "true",
-      "runAfterFinish": "true"
+      "runAfterFinish": "true",
+      "useZip": true
     },
     "nsisWeb": {
       "oneClick": "false",
       "allowElevation": "true",
-      "runAfterFinish": "true"
+      "runAfterFinish": "true",
+      "useZip": true
     },
     "appx": {
       "backgroundColor": "transparent",

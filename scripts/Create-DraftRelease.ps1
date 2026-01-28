@@ -558,10 +558,16 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
-        if ($buildstorerelease) { $buildmode = "StoreUpload" }
+        $bundleOption = ""
+        if ($buildstorerelease) {
+          $buildmode = "StoreUpload"
+        } else {
+          # Skip bundle creation for GitHub releases to avoid SignTool errors with 2GB+ files
+          $bundleOption = " /p:AppxBundle=Never"
+        }
         # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
         ren $PSScriptRoot/../node_modules node_modules_electron
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe dist/KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe dist/KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode$bundleOption"
         ren $PSScriptRoot/../node_modules_electron node_modules
         if ($rename_check) {
           "`nReverting changes to UWP manifests..."
