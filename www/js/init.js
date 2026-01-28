@@ -86,7 +86,11 @@ params['cachedStartPages'] = {
     mdwiki_en_all_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'C/Main_Page'
 };
-
+if (window.electronAPI) {
+    // Initial port for Express server in Electron: this will be different for base app (3000), WikiMed (3001) and Wikivoyage (3002)
+    // This will be overridden by the actual port defined or stored in main.cjs
+    params['expressPort'] = 3000;
+}
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
