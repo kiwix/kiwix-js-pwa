@@ -534,7 +534,38 @@ jobs:
 
           echo "ED_SIGNTOOL_THUMBPRINT=$Thumbprint" >> $env:GITHUB_ENV
           echo "ED_SIGNTOOL_SUBJECT_NAME=$SubjectName" >> $env:GITHUB_ENV
-    
+
+    - name: Configure publish target (GitHub or AWS S3)
+      shell: powershell
+      run: |
+        $PUBLISH_TO = $Env:PUBLISH_TO
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        if ($PUBLISH_TO -eq 'aws') {
+          echo "Configuring electron-builder to publish to AWS S3..."
+          $VERSION = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+          $packageJson = Get-Content -Raw ./package.json | ConvertFrom-Json
+          # Replace GitHub publish config with S3 config in win, mac, and linux sections
+          $s3Config = @{
+            provider = "s3"
+            bucket = "org-kiwix-download.branded-apps"
+            endpoint = "https://s3.eu-west-2.wasabisys.com"
+            path = "WikiMed/v$VERSION/"
+            acl = "public-read"
+          }
+          $packageJson.build.win.publish = @($s3Config)
+          if ($packageJson.build.PSObject.Properties.Name -contains 'mac') {
+            $packageJson.build.mac.publish = @($s3Config)
+          }
+          if ($packageJson.build.PSObject.Properties.Name -contains 'linux') {
+            $packageJson.build.linux.publish = @($s3Config)
+          }
+          $packageJson | ConvertTo-Json -Depth 100 | Set-Content ./package.json
+          echo "S3 publish configuration injected into package.json"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
+        } else {
+          echo "Using default GitHub publish configuration"
+        }
+
     - name: Run electron builder for Win 7/8/8.1
       if: github.event.inputs.win11only != 'true'
       shell: powershell
@@ -585,6 +616,9 @@ jobs:
 
     - name: Run electron builder for Win 10/11
       shell: powershell
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
@@ -607,52 +641,44 @@ jobs:
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
+
         $PUBLISH_TO = $Env:PUBLISH_TO
         $WIN11_PACKAGES = $Env:WIN11_PACKAGES
-        $USE_PUBLISH_NEVER = (!$INPUT_SIGN -or $PUBLISH_TO -eq 'aws')
-
         echo "Building Windows packages (sign=$INPUT_SIGN, publish_to=$PUBLISH_TO, packages=$WIN11_PACKAGES)..."
 
-        if ($USE_PUBLISH_NEVER) {
-            if (!$INPUT_SIGN) {
-                echo "********************"
-                echo "*** DEV: Packages are NOT signed, as requested! ***"
-                echo "********************"
-            }
+        if (!$INPUT_SIGN) {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
+        }
 
-            switch ($WIN11_PACKAGES) {
-                'nsisweb' {
-                    if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
-                    } else {
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
-                    }
-                }
-                'appx' {
-                    if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
-                    } else {
-                        npx electron-builder build --win appx --publish never --projectDir dist
-                    }
-                }
-                default {
-                    if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist
-                        node scripts/delete-latest-yml.js
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
-                    } else {
-                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist
-                        node scripts/delete-latest-yml.js
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
-                    }
+        # Build and publish to configured target (GitHub or S3)
+        # The publish target was configured in package.json by the previous step
+        switch ($WIN11_PACKAGES) {
+            'nsisweb' {
+                if (!$INPUT_SIGN) {
+                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                } else {
+                    npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                 }
             }
-        } else {
-            # Signed + GitHub publish (existing behavior)
-            switch ($WIN11_PACKAGES) {
-                'nsisweb' { npm run publish-nsis-web }
-                'appx' { npx electron-builder build --win appx --projectDir dist }
-                default { npm run publish }
+            'appx' {
+                if (!$INPUT_SIGN) {
+                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --projectDir dist
+                } else {
+                    npx electron-builder build --win appx --projectDir dist
+                }
+            }
+            default {
+                if (!$INPUT_SIGN) {
+                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                    node scripts/delete-latest-yml.js
+                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                } else {
+                    npx electron-builder build --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                    node scripts/delete-latest-yml.js
+                    npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                }
             }
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
@@ -686,32 +712,6 @@ jobs:
           echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
           ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
         }
-    - name: Publish packages to AWS S3
-      if: github.event.inputs.publish_to == 'aws' && github.event.inputs.target != 'artefacts'
-      shell: powershell
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
-      run: |
-        $INPUT_VERSION = $Env:INPUT_VERSION
-        $VERSION = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
-        $ENDPOINT = "https://s3.eu-west-2.wasabisys.com"
-        $S3_PATH = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION"
-        echo "Uploading build artifacts to $S3_PATH ..."
-        # Upload nsis-web artifacts if they exist
-        if (Test-Path "dist/bld/Electron/nsis-web") {
-          aws s3 cp "dist/bld/Electron/nsis-web/" "$S3_PATH/" --recursive --quiet --endpoint-url $ENDPOINT
-          echo "Uploaded nsis-web artifacts"
-        }
-        # Upload appx, exe, and yml files from main build dir
-        Get-ChildItem "dist/bld/Electron" -File | Where-Object {
-          $_.Extension -in '.appx', '.exe', '.yml'
-        } | ForEach-Object {
-          echo "Uploading $($_.Name)..."
-          aws s3 cp $_.FullName "$S3_PATH/$($_.Name)" --quiet --endpoint-url $ENDPOINT
-        }
-        echo "Upload complete."
-        echo "Files available at: https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v4
