@@ -559,8 +559,15 @@ jobs:
           if ($packageJson.build.PSObject.Properties.Name -contains 'linux') {
             $packageJson.build.linux.publish = @($s3Config)
           }
+          # Configure nsis-web appPackageUrl to point to S3
+          $s3BaseUrl = "https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+          if (!($packageJson.build.PSObject.Properties.Name -contains 'nsisWeb')) {
+            $packageJson.build | Add-Member -MemberType NoteProperty -Name 'nsisWeb' -Value @{}
+          }
+          $packageJson.build.nsisWeb.appPackageUrl = $s3BaseUrl
           $packageJson | ConvertTo-Json -Depth 100 | Set-Content ./package.json
           echo "S3 publish configuration injected into package.json"
+          echo "nsis-web appPackageUrl set to: $s3BaseUrl"
           echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
         } else {
           echo "Using default GitHub publish configuration"
