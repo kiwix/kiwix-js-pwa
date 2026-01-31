@@ -239,6 +239,7 @@ jobs:
         grep '"electron":' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
         npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
@@ -275,6 +276,7 @@ jobs:
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         npm install
         cd dist && npm uninstall electron && npm install electron --save-dev && cd ..
         echo "Verifying Electron versions before building..."
@@ -554,6 +556,7 @@ jobs:
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
@@ -600,6 +603,7 @@ jobs:
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Copying the rewritten package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
@@ -696,7 +700,7 @@ jobs:
         echo "Uploading build artifacts to $S3_PATH ..."
         # Upload nsis-web artifacts if they exist
         if (Test-Path "dist/bld/Electron/nsis-web") {
-          aws s3 cp "dist/bld/Electron/nsis-web/" "$S3_PATH/" --recursive --endpoint-url $ENDPOINT
+          aws s3 cp "dist/bld/Electron/nsis-web/" "$S3_PATH/" --recursive --quiet --endpoint-url $ENDPOINT
           echo "Uploaded nsis-web artifacts"
         }
         # Upload appx, exe, and yml files from main build dir
@@ -704,7 +708,7 @@ jobs:
           $_.Extension -in '.appx', '.exe', '.yml'
         } | ForEach-Object {
           echo "Uploading $($_.Name)..."
-          aws s3 cp $_.FullName "$S3_PATH/$($_.Name)" --endpoint-url $ENDPOINT
+          aws s3 cp $_.FullName "$S3_PATH/$($_.Name)" --quiet --endpoint-url $ENDPOINT
         }
         echo "Upload complete."
         echo "Files available at: https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
