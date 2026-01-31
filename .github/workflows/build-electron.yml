@@ -615,20 +615,32 @@ jobs:
                 echo "*** DEV: Packages are NOT signed, as requested! ***"
                 echo "********************"
             }
-            # Determine config flag (skip-signing config if not signing)
-            $configFlag = if (!$INPUT_SIGN) { "--config ../scripts/electronBuilder.cjs" } else { "" }
 
             switch ($WIN11_PACKAGES) {
                 'nsisweb' {
-                    npx electron-builder build $configFlag --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    } else {
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    }
                 }
                 'appx' {
-                    npx electron-builder build $configFlag --win appx --publish never --projectDir dist
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --publish never --projectDir dist
+                    }
                 }
                 default {
-                    npx electron-builder build $configFlag --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist
-                    node scripts/delete-latest-yml.js
-                    npx electron-builder build $configFlag --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    } else {
+                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    }
                 }
             }
         } else {
