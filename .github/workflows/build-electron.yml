@@ -229,7 +229,18 @@ jobs:
       run: |
         if [[ "$PUBLISH_TO" == "aws" ]]; then
           echo "Configuring electron-builder to publish to AWS S3..."
-          VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v([0-9.]+).*/\1/')
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
           echo "S3_VERSION=$VERSION" >> $GITHUB_ENV
           node -e "
             const fs = require('fs');
@@ -309,7 +320,7 @@ jobs:
           if [[ -f "$file" ]]; then
             filename=$(basename "$file")
             echo "Uploading $filename..."
-            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT"
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
           fi
         done
         echo "HighSierra upload complete."
