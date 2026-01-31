@@ -655,32 +655,63 @@ jobs:
         # Build and publish to configured target (GitHub or S3)
         # The publish target was configured in package.json by the previous step
         # For AWS publishing, use --publish always to override the onTagOrDraft policy
-        $publishFlag = if ($PUBLISH_TO -eq 'aws') { '--publish always' } else { '' }
 
-        switch ($WIN11_PACKAGES) {
-            'nsisweb' {
-                if (!$INPUT_SIGN) {
-                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 $publishFlag --projectDir dist
-                } else {
-                    npx electron-builder build --win nsis-web --ia32 --x64 --arm64 $publishFlag --projectDir dist
+        if ($PUBLISH_TO -eq 'aws') {
+            # AWS S3 publishing - use --publish always
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
+                }
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --publish always --projectDir dist
+                    }
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --publish always --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --publish always --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
                 }
             }
-            'appx' {
-                if (!$INPUT_SIGN) {
-                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx $publishFlag --projectDir dist
-                } else {
-                    npx electron-builder build --win appx $publishFlag --projectDir dist
+        } else {
+            # GitHub publishing - use default onTagOrDraft policy
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    } else {
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    }
                 }
-            }
-            default {
-                if (!$INPUT_SIGN) {
-                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx $publishFlag --projectDir dist
-                    node scripts/delete-latest-yml.js
-                    npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 $publishFlag --projectDir dist
-                } else {
-                    npx electron-builder build --win NSIS:ia32 portable:ia32 appx $publishFlag --projectDir dist
-                    node scripts/delete-latest-yml.js
-                    npx electron-builder build --win nsis-web --ia32 --x64 --arm64 $publishFlag --projectDir dist
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --projectDir dist
+                    }
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    } else {
+                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    }
                 }
             }
         }
