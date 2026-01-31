@@ -225,6 +225,30 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v([0-9.]+).*/\1/')
+          echo "S3_VERSION=$VERSION" >> $GITHUB_ENV
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.mac) pkg.build.mac.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+          "
+          echo "S3 publish configuration injected into package.json"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
@@ -270,9 +294,30 @@ jobs:
         sed -i '' -E "s/\"electron\"[[:space:]]*:[[:space:]]*\"[^\"]+\"/\"electron\": \"$ORIGINAL_ELECTRON_VERSION\"/" ./package.json
         echo "Verifying restoration:"
         grep '"electron":' ./package.json
+    - name: Upload HighSierra build to S3
+      if: env.PUBLISH_TO == 'aws'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
+        # Ensure AWS CLI is available
+        which aws || pip3 install awscli --quiet
+        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
+        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
+        echo "Uploading HighSierra build to $S3_PATH ..."
+        for file in dist/bld/Electron/*HighSierra*.zip; do
+          if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT"
+          fi
+        done
+        echo "HighSierra upload complete."
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
@@ -296,11 +341,11 @@ jobs:
           echo "✓ Electron versions verified successfully"
         fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
-        else
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
         fi
+        npx electron-builder --mac zip:x64 zip:arm64 --publish $PUBLISH_FLAG --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -389,12 +434,12 @@ jobs:
         echo "Smoke test completed successfully"
 
     - name: Publish packages to GitHub
-      if: github.event.inputs.target == 'release'
+      if: github.event.inputs.target == 'release' && github.event.inputs.publish_to != 'aws'
       run: |
         chmod +x ./scripts/publish_macos_packages_to_github.sh
         ./scripts/publish_macos_packages_to_github.sh
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
