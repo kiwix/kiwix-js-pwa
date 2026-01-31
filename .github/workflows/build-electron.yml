@@ -653,7 +653,7 @@ jobs:
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
-      if: github.event.inputs.win11packages != 'nsisweb'
+      if: github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
