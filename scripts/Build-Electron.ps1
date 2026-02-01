@@ -44,10 +44,11 @@ if ($electronbuild -eq "cloud") {
     }
     Body = @{
       'ref' = $branch_name
-      'inputs' = @{ 
+      'inputs' = @{
         'target' = 'release'
         'version' = $release_name
         'sign' = 'true'
+        'publish_to' = if ($text_tag -imatch 'WikiMed') { 'aws' } else { 'github' }
       }
     } | ConvertTo-Json
     ContentType = "application/json"
