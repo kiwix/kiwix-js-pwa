@@ -30,6 +30,7 @@ on:
           - linux
           - macos
           - windows
+          - win7
           - win11
         default: 'all'
       win11packages:
@@ -509,7 +510,7 @@ jobs:
           dist/bld/Electron/*.zip
 
   Release_Windows:
-    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win7' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
@@ -678,7 +679,10 @@ jobs:
     - name: Run electron builder for Win 7/8/8.1
       if: github.event.inputs.build_platform != 'win11'
       shell: powershell
-      run: | 
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
@@ -700,30 +704,82 @@ jobs:
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Building Windows 7+ 32bit NSIS package..."
-        if ($INPUT_SIGN) {
-          npm run dist-win-nsis
+        # Check if this is WikiMed (NSIS Setup too large to sign)
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $isWikiMed = $packageName -match 'wikimed'
+        if ($isWikiMed) {
+          # WikiMed: build unpacked dir + zip (NSIS Setup exe too large for signtool)
+          echo "Building Windows 7+ unpacked app (no NSIS installer - package too large for signing)..."
+          if ($INPUT_SIGN) {
+            npx electron-builder build --win dir:ia32 --publish never --projectDir dist
+          } else {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
+            npx electron-builder build --config ../scripts/electronBuilder.cjs --win dir:ia32 --publish never --projectDir dist
+          }
+          # Create portable zip with launcher scripts
+          $unpacked = "dist/bld/Electron/win-ia32-unpacked"
+          $foldername = "kiwix-js-pwa-win32-ia32"
+          $productName = (Get-Content ./package.json | ConvertFrom-Json).productName
+          $zipDir = "dist/bld/Electron/$foldername"
+          if (Test-Path $zipDir) { rm -r $zipDir }
+          mkdir $zipDir
+          cp -r "$unpacked\*" $zipDir
+          # Create launcher scripts
+          $executable = (ls "$unpacked/*.exe" | Select-Object -First 1).Name
+          $launcherStub = "dist/bld/Electron/Start $productName"
+          $batch = "@cd `"$foldername`"`r`n@start `"$productName`" `"$executable`"`r`n"
+          $batch > "$launcherStub.bat"
+          $WshShell = New-Object -ComObject WScript.Shell
+          $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
+          $Shortcut.TargetPath = '%windir%\explorer.exe'
+          $Shortcut.Arguments = "$foldername\$executable"
+          $Shortcut.IconLocation = '%windir%\explorer.exe,12'
+          $Shortcut.Save()
+          $safeName = $productName -replace '\s', '-'
+          $zipName = "$safeName-Win7-$INPUT_VERSION_E.zip"
+          $zipPath = "dist/bld/Electron/$zipName"
+          echo "Compressing to $zipPath..."
+          "$launcherStub.bat", "$launcherStub.lnk", $zipDir | Compress-Archive -DestinationPath $zipPath -Force
+          # Upload to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Path = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/$zipName"
+            echo "Uploading $zipName to S3..."
+            aws s3 cp $zipPath $s3Path --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+          }
+          ls ./dist/bld/Electron/
+          if ($Env:INPUT_TARGET -ne 'artefacts' -and $Env:PUBLISH_TO -ne 'aws') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly -portableonly
+          }
         } else {
-          echo "********************"
-          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
-          echo "********************"
-          npm run dist-win-nsis-skipsigning
-        }
-        echo "Renaming Windows 7+ executable"
-        $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
-        foreach ($file in $files) {
-          mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
-          mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
-        }
-        mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
-        ls ./dist/bld/Electron/
-        # DEV: We did not use electron-builder to publish because we needed to change the filenames, so we need to publish to GitHub here
-        if ($INPUT_TARGET -ne 'artefacts') {
-          & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+          # Non-WikiMed: build standard NSIS Setup installer
+          echo "Building Windows 7+ 32bit NSIS package..."
+          if ($INPUT_SIGN) {
+            npm run dist-win-nsis
+          } else {
+            echo "********************"
+            echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+            echo "********************"
+            npm run dist-win-nsis-skipsigning
+          }
+          echo "Renaming Windows 7+ executable"
+          $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
+          foreach ($file in $files) {
+            mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
+            mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
+          }
+          mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
+          ls ./dist/bld/Electron/
+          if ($INPUT_TARGET -ne 'artefacts') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+          }
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
 
     - name: Run electron builder for Win 10/11
+      if: github.event.inputs.build_platform != 'win7'
       shell: powershell
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
@@ -761,6 +817,18 @@ jobs:
             echo "********************"
         }
 
+        # Determine phase 1 build targets based on app type
+        # WikiMed: skip NSIS Setup (too large for signtool) and portable (too large to self-extract)
+        # Wikivoyage: skip portable (too large to self-extract) but keep NSIS Setup
+        # Kiwix JS Electron: build all targets
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $phase1Targets = @()
+        if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
+        if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
+        $phase1Targets += 'appx'
+        $PHASE1_TARGETS = $phase1Targets -join ' '
+        echo "Phase 1 build targets: $PHASE1_TARGETS"
+
         # Build and publish to configured target (GitHub or S3)
         # The publish target was configured in package.json by the previous step
         # For AWS publishing, use --publish always to override the onTagOrDraft policy
@@ -784,11 +852,11 @@ jobs:
                 }
                 default {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --publish always --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --publish always --projectDir dist
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     } else {
-                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --publish always --projectDir dist
+                        npx electron-builder build --win $PHASE1_TARGETS --publish always --projectDir dist
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
@@ -813,11 +881,11 @@ jobs:
                 }
                 default {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --projectDir dist
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     } else {
-                        npx electron-builder build --win NSIS:ia32 portable:ia32 appx --projectDir dist
+                        npx electron-builder build --win $PHASE1_TARGETS --projectDir dist
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     }
@@ -826,7 +894,10 @@ jobs:
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
-      if: github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
@@ -837,9 +908,22 @@ jobs:
           # To ensure there is enough disk space, we can delete the archive that is no longer needed
           rm -r dist/archives
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N -nobranchcheck
+          # Upload portable zip to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Base = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+            $zipFiles = Get-ChildItem "dist/bld/Electron/*.zip"
+            foreach ($zip in $zipFiles) {
+              # Skip the Win7 zip (already uploaded in the Win7 step)
+              if ($zip.Name -notmatch 'Win7') {
+                echo "Uploading $($zip.Name) to S3..."
+                aws s3 cp $zip.FullName "$s3Base/$($zip.Name)" --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+              }
+            }
+          }
         }
     - name: Publish packages
-      if: github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         $SSH_KEY = $Env:SSH_KEY
         $keyfile = ".\scripts\ssh_key"
