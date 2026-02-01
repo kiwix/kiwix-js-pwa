@@ -350,30 +350,9 @@ jobs:
         sed -i '' -E "s/\"electron\"[[:space:]]*:[[:space:]]*\"[^\"]+\"/\"electron\": \"$ORIGINAL_ELECTRON_VERSION\"/" ./package.json
         echo "Verifying restoration:"
         grep '"electron":' ./package.json
-    - name: Upload HighSierra build to S3
-      if: env.PUBLISH_TO == 'aws'
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
-      run: |
-        # Ensure AWS CLI is available
-        which aws || pip3 install awscli --quiet
-        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
-        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
-        echo "Uploading HighSierra build to $S3_PATH ..."
-        for file in dist/bld/Electron/*HighSierra*.zip; do
-          if [[ -f "$file" ]]; then
-            filename=$(basename "$file")
-            echo "Uploading $filename..."
-            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
-          fi
-        done
-        echo "HighSierra upload complete."
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
-        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
@@ -397,11 +376,7 @@ jobs:
           echo "✓ Electron versions verified successfully"
         fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
-        PUBLISH_FLAG="never"
-        if [[ "$PUBLISH_TO" == "aws" ]]; then
-          PUBLISH_FLAG="always"
-        fi
-        npx electron-builder --mac zip:x64 zip:arm64 --publish $PUBLISH_FLAG --projectDir dist
+        npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -427,6 +402,24 @@ jobs:
         # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
         # rm -f *.blockmap
         cd ../../..
+    - name: Upload macOS builds to S3
+      if: env.PUBLISH_TO == 'aws'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
+        which aws || pip3 install awscli --quiet
+        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
+        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
+        echo "Uploading macOS builds to $S3_PATH ..."
+        for file in dist/bld/Electron/*.zip; do
+          if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
+          fi
+        done
+        echo "macOS upload complete."
     - name: Smoke test Electron app
       run: |
         echo "Extracting macOS app for testing..."
