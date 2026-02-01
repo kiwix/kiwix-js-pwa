@@ -49,7 +49,7 @@ const config = {
             { src: ['node_modules/bootstrap/dist/css/bootstrap.min.css'], dest: 'dist/www/css' },
             { src: ['node_modules/@fortawesome/fontawesome-free/css/all.min.css'], dest: 'dist/www/css' },
             { src: ['node_modules/@fortawesome/fontawesome-free/webfonts/*'], dest: 'dist/www/webfonts' },
-            { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
+            { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
             ],
             flatten: true
         })

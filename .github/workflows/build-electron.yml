@@ -21,22 +21,27 @@ on:
           - nightly
           - artefacts
         default: 'artefacts'
-      win11only:
-        description: Do you wish to build only for Windows 11 (primarily for testing)?
+      build_platform:
+        description: Which platform(s) to build for?
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
-      nsisweb:
-        description: For Windows 11 builds, do you want to build only the nsis-web installer?
+          - all
+          - linux
+          - macos
+          - windows
+          - win7
+          - win11
+        default: 'all'
+      win11packages:
+        description: For Windows 11 builds, select which packages to build
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
+          - all
+          - nsisweb
+          - appx
+        default: 'all'
       sign:
         description: Do you wish to sign the Windows packages?
         type: choice
@@ -45,20 +50,22 @@ on:
           - true
           - false
         default: 'false'
-      macosonly:
-        description: Do you wish to build only for macOS (primarily for testing)?
+      publish_to:
+        description: Publish to GitHub releases or AWS S3?
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
+          - github
+          - aws
+        default: 'github'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
   INPUT_SIGN: ${{ github.event.inputs.sign || 'false' }}
-  NSISWEB_ONLY: ${{ github.event.inputs.nsisweb }}
+  BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'all' }}
+  WIN11_PACKAGES: ${{ github.event.inputs.win11packages }}
+  PUBLISH_TO: ${{ github.event.inputs.publish_to }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ESIGNER_USERNAME: ${{ secrets.ESIGNER_USER_USERNAME }}
   ESIGNER_PASSWORD: ${{ secrets.ESIGNER_USER_PASSWORD }}
@@ -71,7 +78,7 @@ env:
 jobs:
 
   Release_Linux:
-    if: github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == ''
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -120,36 +127,84 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.linux) pkg.build.linux.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+            console.log('S3 path configured as:', s3Config.path);
+          "
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build and publish 64bit
-      env: 
+      env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         # echo "Setting the module type to one supported by Electron in ./package.json"
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
+        echo "Copying package.json to dist"
+        cp ./package.json ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
+        fi
         echo "Building 64bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
         fi
-    - name: Build and pulblish 32bit
+    - name: Build and publish 32bit
       env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
+        fi
         echo "Building 32bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 --publish $PUBLISH_FLAG --projectDir dist
         fi
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -166,7 +221,7 @@ jobs:
           dist/bld/Electron/*.rpm
 
   Release_macOS:
-    if: github.event.inputs.win11only != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == ''
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
@@ -215,6 +270,41 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
+          echo "S3_VERSION=$VERSION" >> $GITHUB_ENV
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.mac) pkg.build.mac.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+          "
+          echo "S3 publish configuration injected into package.json"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
@@ -229,6 +319,7 @@ jobs:
         grep '"electron":' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
         npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
@@ -265,6 +356,7 @@ jobs:
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         npm install
         cd dist && npm uninstall electron && npm install electron --save-dev && cd ..
         echo "Verifying Electron versions before building..."
@@ -284,11 +376,7 @@ jobs:
           echo "✓ Electron versions verified successfully"
         fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
-        else
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
-        fi
+        npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -376,13 +464,31 @@ jobs:
         fi
         echo "Smoke test completed successfully"
 
+    - name: Upload macOS builds to S3
+      if: env.PUBLISH_TO == 'aws'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
+        which aws || pip3 install awscli --quiet
+        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
+        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
+        echo "Uploading macOS builds to $S3_PATH ..."
+        for file in dist/bld/Electron/*.zip; do
+          if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
+          fi
+        done
+        echo "macOS upload complete."
     - name: Publish packages to GitHub
-      if: github.event.inputs.target == 'release'
+      if: github.event.inputs.target == 'release' && github.event.inputs.publish_to != 'aws'
       run: |
         chmod +x ./scripts/publish_macos_packages_to_github.sh
         ./scripts/publish_macos_packages_to_github.sh
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -397,7 +503,7 @@ jobs:
           dist/bld/Electron/*.zip
 
   Release_Windows:
-    if: github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win7' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
@@ -522,11 +628,54 @@ jobs:
 
           echo "ED_SIGNTOOL_THUMBPRINT=$Thumbprint" >> $env:GITHUB_ENV
           echo "ED_SIGNTOOL_SUBJECT_NAME=$SubjectName" >> $env:GITHUB_ENV
-    
-    - name: Run electron builder for Win 7/8/8.1
-      if: github.event.inputs.win11only != 'true'
+
+    - name: Configure publish target (GitHub or AWS S3)
       shell: powershell
-      run: | 
+      run: |
+        $PUBLISH_TO = $Env:PUBLISH_TO
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        if ($PUBLISH_TO -eq 'aws') {
+          echo "Configuring electron-builder to publish to AWS S3..."
+          $VERSION = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+          $packageJson = Get-Content -Raw ./package.json | ConvertFrom-Json
+          # Replace GitHub publish config with S3 config in win, mac, and linux sections
+          $s3Config = @{
+            provider = "s3"
+            bucket = "org-kiwix-download.branded-apps"
+            endpoint = "https://s3.eu-west-2.wasabisys.com"
+            path = "WikiMed/v$VERSION/"
+            acl = "public-read"
+          }
+          $packageJson.build.win.publish = @($s3Config)
+          if ($packageJson.build.PSObject.Properties.Name -contains 'mac') {
+            $packageJson.build.mac.publish = @($s3Config)
+          }
+          if ($packageJson.build.PSObject.Properties.Name -contains 'linux') {
+            $packageJson.build.linux.publish = @($s3Config)
+          }
+          # Configure nsis-web appPackageUrl to point to S3
+          $s3BaseUrl = "https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+          if ($packageJson.build.PSObject.Properties.Name -contains 'nsisWeb') {
+            $packageJson.build.PSObject.Properties.Remove('nsisWeb')
+          }
+          $packageJson.build | Add-Member -MemberType NoteProperty -Name 'nsisWeb' -Value ([PSCustomObject]@{
+            appPackageUrl = $s3BaseUrl
+          })
+          $packageJson | ConvertTo-Json -Depth 100 | Set-Content ./package.json
+          echo "S3 publish configuration injected into package.json"
+          echo "nsis-web appPackageUrl set to: $s3BaseUrl"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
+        } else {
+          echo "Using default GitHub publish configuration"
+        }
+
+    - name: Run electron builder for Win 7/8/8.1
+      if: github.event.inputs.build_platform != 'win11'
+      shell: powershell
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
@@ -544,34 +693,91 @@ jobs:
         (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Building Windows 7+ 32bit NSIS package..."
-        if ($INPUT_SIGN) {
-          npm run dist-win-nsis
+        # Check if this is WikiMed (NSIS Setup too large to sign)
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $isWikiMed = $packageName -match 'wikimed'
+        if ($isWikiMed) {
+          # WikiMed: build unpacked dir + zip (NSIS Setup exe too large for signtool)
+          echo "Building Windows 7+ unpacked app (no NSIS installer - package too large for signing)..."
+          if ($INPUT_SIGN) {
+            npx electron-builder build --win dir:ia32 --publish never --projectDir dist
+          } else {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
+            npx electron-builder build --config ../scripts/electronBuilder.cjs --win dir:ia32 --publish never --projectDir dist
+          }
+          # Create portable zip with launcher scripts
+          $unpacked = "dist/bld/Electron/win-ia32-unpacked"
+          $foldername = "kiwix-js-pwa-win32-ia32"
+          $productName = (Get-Content ./package.json | ConvertFrom-Json).productName
+          $zipDir = "dist/bld/Electron/$foldername"
+          if (Test-Path $zipDir) { rm -r $zipDir }
+          mkdir $zipDir
+          cp -r "$unpacked\*" $zipDir
+          # Create launcher scripts
+          $executable = (ls "$unpacked/*.exe" | Select-Object -First 1).Name
+          $launcherStub = "dist/bld/Electron/Start $productName"
+          $batch = "@cd `"$foldername`"`r`n@start `"$productName`" `"$executable`"`r`n"
+          $batch > "$launcherStub.bat"
+          $WshShell = New-Object -ComObject WScript.Shell
+          $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
+          $Shortcut.TargetPath = '%windir%\explorer.exe'
+          $Shortcut.Arguments = "$foldername\$executable"
+          $Shortcut.IconLocation = '%windir%\explorer.exe,12'
+          $Shortcut.Save()
+          $safeName = $productName -replace '\s', '-'
+          $zipName = "$safeName-Win7-$INPUT_VERSION_E.zip"
+          $zipPath = "dist/bld/Electron/$zipName"
+          echo "Compressing to $zipPath..."
+          # Use 7z instead of Compress-Archive (which has a 2GB stream limit)
+          7z a -tzip $zipPath "$launcherStub.bat" "$launcherStub.lnk" $zipDir
+          # Upload to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Path = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/$zipName"
+            echo "Uploading $zipName to S3..."
+            aws s3 cp $zipPath $s3Path --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+          }
+          ls ./dist/bld/Electron/
+          if ($Env:INPUT_TARGET -ne 'artefacts' -and $Env:PUBLISH_TO -ne 'aws') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly -portableonly
+          }
         } else {
-          echo "********************"
-          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
-          echo "********************"
-          npm run dist-win-nsis-skipsigning
-        }
-        echo "Renaming Windows 7+ executable"
-        $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
-        foreach ($file in $files) {
-          mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
-          mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
-        }
-        mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
-        ls ./dist/bld/Electron/
-        # DEV: We did not use electron-builder to publish because we needed to change the filenames, so we need to publish to GitHub here
-        if ($INPUT_TARGET -ne 'artefacts') {
-          & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+          # Non-WikiMed: build standard NSIS Setup installer
+          echo "Building Windows 7+ 32bit NSIS package..."
+          if ($INPUT_SIGN) {
+            npm run dist-win-nsis
+          } else {
+            echo "********************"
+            echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+            echo "********************"
+            npm run dist-win-nsis-skipsigning
+          }
+          echo "Renaming Windows 7+ executable"
+          $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
+          foreach ($file in $files) {
+            mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
+            mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
+          }
+          mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
+          ls ./dist/bld/Electron/
+          if ($INPUT_TARGET -ne 'artefacts') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+          }
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
 
     - name: Run electron builder for Win 10/11
+      if: github.event.inputs.build_platform != 'win7'
       shell: powershell
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
@@ -590,25 +796,102 @@ jobs:
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Copying the rewritten package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Building Windows packages..."
-        if ($INPUT_SIGN) {
-          if ($Env:NSISWEB_ONLY -eq 'true') {
-            npm run publish-nsis-web
-          } else {
-            npm run publish
-          }
+
+        $PUBLISH_TO = $Env:PUBLISH_TO
+        $WIN11_PACKAGES = $Env:WIN11_PACKAGES
+        echo "Building Windows packages (sign=$INPUT_SIGN, publish_to=$PUBLISH_TO, packages=$WIN11_PACKAGES)..."
+
+        if (!$INPUT_SIGN) {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
+        }
+
+        # Determine phase 1 build targets based on app type
+        # WikiMed: skip NSIS Setup (too large for signtool) and portable (too large to self-extract)
+        # Wikivoyage: skip portable (too large to self-extract) but keep NSIS Setup
+        # Kiwix JS Electron: build all targets
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $phase1Targets = @()
+        if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
+        if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
+        $phase1Targets += 'appx'
+        $PHASE1_TARGETS = $phase1Targets -join ' '
+        echo "Phase 1 build targets: $PHASE1_TARGETS"
+
+        # Build and publish to configured target (GitHub or S3)
+        # The publish target was configured in package.json by the previous step
+        # For AWS publishing, use --publish always to override the onTagOrDraft policy
+
+        if ($PUBLISH_TO -eq 'aws') {
+            # AWS S3 publishing - use --publish always
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
+                }
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --publish always --projectDir dist
+                    }
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --publish always --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win $PHASE1_TARGETS --publish always --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
+                }
+            }
         } else {
-          echo "********************"
-          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
-          echo "********************"
-          npm run build-skipsigning
+            # GitHub publishing - use default onTagOrDraft policy
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    } else {
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    }
+                }
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --projectDir dist
+                    }
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    } else {
+                        npx electron-builder build --win $PHASE1_TARGETS --projectDir dist
+                        node scripts/delete-latest-yml.js
+                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                    }
+                }
+            }
         }
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
-      if: github.event.inputs.nsisweb != 'true'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
@@ -619,9 +902,22 @@ jobs:
           # To ensure there is enough disk space, we can delete the archive that is no longer needed
           rm -r dist/archives
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N -nobranchcheck
+          # Upload portable zip to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Base = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+            $zipFiles = Get-ChildItem "dist/bld/Electron/*.zip"
+            foreach ($zip in $zipFiles) {
+              # Skip the Win7 zip (already uploaded in the Win7 step)
+              if ($zip.Name -notmatch 'Win7') {
+                echo "Uploading $($zip.Name) to S3..."
+                aws s3 cp $zip.FullName "$s3Base/$($zip.Name)" --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+              }
+            }
+          }
         }
     - name: Publish packages
-      if: github.event.inputs.target != 'artefacts'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         $SSH_KEY = $Env:SSH_KEY
         $keyfile = ".\scripts\ssh_key"
@@ -650,7 +946,7 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z
 
   Release_NWJS:
-    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    if: github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == '')
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4      

@@ -13,11 +13,11 @@ Please choose the correct version:
 
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
-    + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage)
-    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, opnSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage) 
-    + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
+    + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E.AppImage)
+    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-arm64.AppImage)
+    + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
-    + Deb package 64bit (Ubuntu, Debian): [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
+    + Deb package 64bit (Ubuntu, Debian): [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
 
 * **Windows**:
   - **Store app for Windows 10/11** - _recommended_ (self-updates)
@@ -25,26 +25,25 @@ Please choose the correct version:
     + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - upgrade easily by running `winget upgrade kiwix.wikimed`
   - **Installable (Electron)**
-    + Windows 10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64): [WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe)
-    + Windows 10/11 64bit modern MSIX install / uninstall: [WikiMed-by-Kiwix-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.appx)
-    + Windows 10/11 standalone 32bit installer (also runs on 64bit): [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
-    + Windows 7/8/8.1 standalone 32bit installer: [WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe)
+    + Windows 10/11 Web installer (auto selects correct package, supports 64bit, 32bit, Windows on ARM64): [WikiMed-by-Kiwix-Web-Setup-<<numeric_tag>>-E.exe](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix%20Web%20Setup%20<<numeric_tag>>-E.exe)
+    + Windows 10/11 64bit modern MSIX install / uninstall: [WikiMed-by-Kiwix-<<numeric_tag>>-E.appx](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix%20<<numeric_tag>>-E.appx)
     + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
-    + Windows 10/11 32bit (also runs on 64bit): [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip) (for Win7/8/8.1, please use the Win7 installer above)
+    + Windows 10/11 32bit (also runs on 64bit): [WikiMed-by-Kiwix-<<numeric_tag>>-E.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed-by-Kiwix-<<numeric_tag>>-E.zip)
+    + Windows 7/8/8.1 32bit (also runs on 64bit): [WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip)
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 10.15+ Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+    + macOS 10.15+ Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 10.15+ Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
+    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
 
 ## Installation Instructions - Electron
 
 ### Windows
-* For the Windows Web installer, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in yourshortcut menu. When you want to update the app, just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, then use the standalone installer.
-* For the Windows Portable build, unzip the contents of the [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start WikiMed by Kiwix` or `Start WikiMed by Kiwix.bat`, or open the `kiwix-js-pwa-win32-ia32` folder and double click on `WikiMed by Kiwix.exe`.
-* For Windows 7/8/8.1, due to the deprecation of Chromium on these platforms, we now only provide one option: a standalone installer built with the last version of Electron that supported Chrome on Windows 7+. This is also a 32bit package (but will run on 64bit).
+* For the Windows Web installer, simply download and launch. It will select the correct architecture automatically and install itself, together with a shortcut in your shortcut menu. When you want to update the app, just install a new version over it (it will uninstall the old one for you). **Please note that the Web installer needs Web access during the installation.** If this is a problem, use the portable zip instead.
+* For the Windows Portable build, unzip the contents of the [WikiMed-by-Kiwix-<<numeric_tag>>-E.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed-by-Kiwix-<<numeric_tag>>-E.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start WikiMed by Kiwix` or `Start WikiMed by Kiwix.bat`, or open the `kiwix-js-pwa-win32-ia32` folder and double click on `WikiMed by Kiwix.exe`.
+* For Windows 7/8/8.1, due to the deprecation of Chromium on these platforms, we provide a portable zip built with the last version of Electron that supported Chrome on Windows 7+. This is a 32bit package (but will run on 64bit). Unzip and use the launcher scripts as described above.
 * **Microsoft Defender SmartScreen warning:** If you get a Smartscreen notification when downloading an `.exe`, or on first launch of the zipped portable apps, follow instructions to "Run anyway" if you trust this site. Additionally, when you first download an `.exe` installer, you may get a warning in your downloads "Kiwix-JS-Electron isn't commonly downloaded". If you see this, click on the file and choose "Keep anyway". A second screen may then popup telling you the publisher. So long as it's kiwix, then click on "Show more" and allow the app. If you prefer, use one of the appx versions (ending `.appx` or `.appxbundle`) as this format runs in a secure, isolated container.
 
 ### Linux
