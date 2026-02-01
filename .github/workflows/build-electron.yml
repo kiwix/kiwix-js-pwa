@@ -21,14 +21,17 @@ on:
           - nightly
           - artefacts
         default: 'artefacts'
-      win11only:
-        description: Do you wish to build only for Windows 11 (primarily for testing)?
+      build_platform:
+        description: Which platform(s) to build for?
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
+          - all
+          - linux
+          - macos
+          - windows
+          - win11
+        default: 'all'
       win11packages:
         description: For Windows 11 builds, select which packages to build
         type: choice
@@ -40,14 +43,6 @@ on:
         default: 'all'
       sign:
         description: Do you wish to sign the Windows packages?
-        type: choice
-        required: false
-        options:
-          - true
-          - false
-        default: 'false'
-      macosonly:
-        description: Do you wish to build only for macOS (primarily for testing)?
         type: choice
         required: false
         options:
@@ -67,6 +62,7 @@ env:
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
   INPUT_SIGN: ${{ github.event.inputs.sign || 'false' }}
+  BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'all' }}
   WIN11_PACKAGES: ${{ github.event.inputs.win11packages }}
   PUBLISH_TO: ${{ github.event.inputs.publish_to }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +77,7 @@ env:
 jobs:
 
   Release_Linux:
-    if: github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == ''
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -130,36 +126,84 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.linux) pkg.build.linux.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+            console.log('S3 path configured as:', s3Config.path);
+          "
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build and publish 64bit
-      env: 
+      env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         # echo "Setting the module type to one supported by Electron in ./package.json"
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
+        echo "Copying package.json to dist"
+        cp ./package.json ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
+        fi
         echo "Building 64bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
+          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
         fi
-    - name: Build and pulblish 32bit
+    - name: Build and publish 32bit
       env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
+        fi
         echo "Building 32bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 --publish $PUBLISH_FLAG --projectDir dist
         fi
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -176,7 +220,7 @@ jobs:
           dist/bld/Electron/*.rpm
 
   Release_macOS:
-    if: github.event.inputs.win11only != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == ''
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
@@ -465,7 +509,7 @@ jobs:
           dist/bld/Electron/*.zip
 
   Release_Windows:
-    if: github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
@@ -632,7 +676,7 @@ jobs:
         }
 
     - name: Run electron builder for Win 7/8/8.1
-      if: github.event.inputs.win11only != 'true'
+      if: github.event.inputs.build_platform != 'win11'
       shell: powershell
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
@@ -824,7 +868,7 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z
 
   Release_NWJS:
-    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    if: github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == '')
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4      
