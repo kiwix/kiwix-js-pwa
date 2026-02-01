@@ -741,7 +741,8 @@ jobs:
           $zipName = "$safeName-Win7-$INPUT_VERSION_E.zip"
           $zipPath = "dist/bld/Electron/$zipName"
           echo "Compressing to $zipPath..."
-          "$launcherStub.bat", "$launcherStub.lnk", $zipDir | Compress-Archive -DestinationPath $zipPath -Force
+          # Use 7z instead of Compress-Archive (which has a 2GB stream limit)
+          7z a -tzip $zipPath "$launcherStub.bat" "$launcherStub.lnk" $zipDir
           # Upload to S3 if configured
           if ($Env:PUBLISH_TO -eq 'aws') {
             $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'

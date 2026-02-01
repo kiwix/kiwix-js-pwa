@@ -213,7 +213,11 @@ if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $
   }
   $AddAppPackage = $base_dir + "Start*Kiwix*.*"
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
-  if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
+  if (-Not $dryrun) {
+    # Use tar instead of Compress-Archive (which has a 2GB stream limit for WikiMed/Wikivoyage)
+    $tarItems = @((Resolve-Path $AddAppPackage | ForEach-Object { Split-Path $_ -Leaf })) + $foldername
+    tar -a -cf $comp_electron_archive -C $base_dir @tarItems
+  }
 }
 if ($electronbuild -eq "local" -and (-not $portableonly) -and (-not $winonly)) {
   # Package Electron app for Linux
