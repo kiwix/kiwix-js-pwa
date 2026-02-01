@@ -402,24 +402,6 @@ jobs:
         # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
         # rm -f *.blockmap
         cd ../../..
-    - name: Upload macOS builds to S3
-      if: env.PUBLISH_TO == 'aws'
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
-      run: |
-        which aws || pip3 install awscli --quiet
-        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
-        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
-        echo "Uploading macOS builds to $S3_PATH ..."
-        for file in dist/bld/Electron/*.zip; do
-          if [[ -f "$file" ]]; then
-            filename=$(basename "$file")
-            echo "Uploading $filename..."
-            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
-          fi
-        done
-        echo "macOS upload complete."
     - name: Smoke test Electron app
       run: |
         echo "Extracting macOS app for testing..."
@@ -482,6 +464,24 @@ jobs:
         fi
         echo "Smoke test completed successfully"
 
+    - name: Upload macOS builds to S3
+      if: env.PUBLISH_TO == 'aws'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
+        which aws || pip3 install awscli --quiet
+        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
+        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
+        echo "Uploading macOS builds to $S3_PATH ..."
+        for file in dist/bld/Electron/*.zip; do
+          if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
+          fi
+        done
+        echo "macOS upload complete."
     - name: Publish packages to GitHub
       if: github.event.inputs.target == 'release' && github.event.inputs.publish_to != 'aws'
       run: |
