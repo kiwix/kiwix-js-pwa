@@ -333,22 +333,21 @@ if ($updatewinget) {
     } else {
       $package_id = 'Kiwix.' +  'KiwixJS'
     }
-    if ($package_url -match '\.appx$') { 
+    if ($package_url -match '\.appx$') {
       $winget_version = $numeric_tag + '.0'
-      $UrlsWithOverride = '"' + "$package_url|X64" + '"'
+      $UrlsWithOverride = @("$package_url|X64")
     }
     if ($package_url -match '\.exe') {
       $package_id = $package_id + '.Electron'
       $winget_version = $numeric_tag + '-E'
-      $UrlsWithOverride = '"' + "$package_url|x86|machine" + '" "' + "$package_url|x86|user" + '"'
+      $UrlsWithOverride = @("$package_url|x86|machine", "$package_url|x86|user")
     }
     if (-Not $dryrun) {
       "`nSubmitting to winget-pkg repository..."
-      $arguments = 'update', $package_id, '--version', "$winget_version", '--urls', $UrlsWithOverride, '-s', '-t', $github_token
+      $arguments = @('update', $package_id, '--version', "$winget_version", '--urls') + $UrlsWithOverride + @('-s', '-t', $github_token)
       & wingetcreate.exe @arguments
-      # & wingetcreate.exe update $package_id --version "$winget_version" --urls $UrlsWithOverride -s -t $github_token
     } else {
-      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $UrlsWithOverride -s -t $github_token"
+      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $($UrlsWithOverride -join ' ') -s -t $github_token"
     }
   }
   "`nDone."
