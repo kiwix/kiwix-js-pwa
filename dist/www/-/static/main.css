@@ -1,0 +1,373 @@
+﻿a[href*="//"]:after {  /* all external links are absolute */
+    content: " " url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);
+}
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 10px;
+}	
+p.description {
+	  padding: 20px;
+	  border-bottom: 1px solid white;
+}
+
+.selogo {
+	float:left;
+	margin-top:30px;
+	margin-right:10px;
+	margin-left:10px;
+}
+
+
+/* badges  */
+
+.badgesblob {
+	width:60%;
+    background: white;
+	border: 1px solid grey;
+	border-radius: 8px;
+	padding:10px;
+}
+
+.badgesblob .badge {
+	background-color: #656565;
+	font-weight: bold;
+	color: #FFF;
+	margin-bottom: 5px;
+	border: 1px solid #000;
+	border-radius: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin-right: 20px;
+}
+
+.badgesblob td {
+	color:grey;
+	font-size:small;
+}
+
+
+h2.title {
+	border-bottom: 1px solid white;
+    padding: 30px;
+}
+
+
+h3.title {
+	margin-left: 15px;
+	color:grey;
+}
+
+a.button {
+	border:1px solid grey;
+	padding:10px;
+	margin-right:20px;
+	background-color: white;
+	border-radius:8px;
+	display:inline-block;
+	font-weight: bold;
+}
+
+#footer {
+	border-bottom:1px solid white;
+	margin-bottom:30px;
+	margin-top:20px;
+	text-align: center;
+	padding-bottom:10px;
+}	
+
+.container {
+	background-color: #f0f0f0;;
+	padding-left: 30px;
+    padding-right: 30px;
+	box-shadow: 2px 2px 9px 0px rgba(50, 50, 50, 0.5);
+	margin-top: 15px;
+    margin-bottom: 30px;
+	border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+/* related */
+
+#related ul {
+    list-style: none;
+    padding: 0px;
+}
+
+#related ul li {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #B2CCD7;
+    border-radius: 8px;
+}
+
+/* post */
+
+.post {
+    border-bottom: 1px solid #EEE;
+    padding: 15px;
+    margin-bottom: 15px;
+	background-color: white;
+	border-radius: 8px;
+}
+
+#question .post {
+    border: 0px;
+	border: 1px solid grey;
+}
+
+.post .post-container {
+    display: flex;
+}
+
+/** reputation **/
+
+.post .reputation {
+    padding-right: 15px;
+    width: 100px;
+}
+
+.post .reputation > div {
+    margin-bottom: 15px;
+}
+
+.post .reputation p {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+    font-size: 22px;
+}
+
+/*** reputation score ***/
+
+.post .reputation .score .glyphicon {
+    font-size: 36px;
+    margin: 0px;
+}
+
+.post .reputation .score .glyphicon.negative {
+    color: hsl(10, 90%, 80%);
+}
+
+.post .reputation .score .glyphicon.positive {
+    color: hsl(33, 97%, 76%);
+}
+
+.post .reputation .score .glyphicon.good {
+    color: hsl(33, 97%, 66%);
+}
+
+.post .reputation .score .glyphicon.verygood {
+    color: hsl(33, 97%, 56%);
+}
+
+/*** reputation favorites ***/
+
+.post .reputation .favorites .glyphicon {
+    font-size: 36px;
+    color: hsl(50, 100%, 50%);
+    margin: 0px;
+}
+
+.post .body {
+    padding: 15px;
+}
+
+.post .body blockquote {
+    font-size: 0.8em;
+}
+
+/** accepted **/
+.post .accepted {
+  font-size: 36px;
+  color: hsl(120, 50%, 40%);
+  margin: 0px;
+}
+
+/** tags  **/
+
+.tagsblob {
+    background: white;
+	border: 1px solid grey;
+	border-radius: 8px;
+	padding:10px;
+}
+
+.post .tags ul li {
+    display: inline-block;
+    margin-right: 5px;
+	margin-bottom:25px;
+}
+
+.post .tags ul li a {
+    color: #333;
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 8px;
+}	
+
+/** author **/
+
+.post .author {
+    text-align: right;
+    padding: 15px;
+}
+
+.post .author > div {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #eee;
+	width: 45%;
+}
+
+.post .author img {
+    padding: 5px;
+	height:85px;
+	width:85px;
+	float: left;
+}
+
+.post .author p {
+    margin: 0px;
+	font-size: small;
+	text-align: left;
+}
+
+.post .closed-banner {
+    background: #CCC;
+    border: 1px solid #AAA;
+    padding: 15px;
+}
+
+.post .closed-banner p {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* comments */
+
+.post .comments {
+    margin-top: 15px;
+    padding: 15px;
+    border-top: 1px solid #EEE;
+    font-size: 0.9em;
+
+}
+
+.post .comments .comment {
+    padding: 5px;
+    margin-bottom: 5px;
+	background-color: #f0f0f0;
+	border-radius: 8px;
+	margin-bottom: 10px;
+}
+
+.post .comments .comment .text {
+    display: inline;
+}
+
+/** score **/
+
+.post .comments .comment .score {
+    display: inline-block;
+    min-width: 1.6em;
+    min-height: 1.6em;
+    text-align: center;
+	font-weight: bold;
+	color: white;
+	border-radius: 8px;
+	margin-right:10px;
+	padding-left: 3px;
+    padding-right: 3px;
+	border:1px solid grey;
+}
+
+.post .comments .comment .score.negative {
+    background-color: hsl(10, 90%, 80%);
+}
+
+.post .comments .comment .score.positive {
+    background-color: hsl(33, 97%, 76%);
+}
+
+.post .comments .comment .score.good {
+    background-color: hsl(33, 97%, 66%);
+}
+
+.post .comments .comment .score.verygood {
+    background-color: hsl(33, 97%, 56%);
+}
+
+.post .comments .comment:last-child {
+    margin-bottom: 0px;
+}
+
+/* tag */
+
+.tag p.question {
+    padding: 15px;
+	background-color:white;
+	border-radius:8px;
+	padding-bottom: 20px;
+}
+
+.tag p.question .score {
+    height: 2em;
+    width: 4em;
+    padding: 5px;
+    display: block;
+    float: left;
+    text-align: center;
+    margin-right: 15px;
+}
+
+.tag p.question .score.negative {
+    background: hsl(10, 90%, 80%);
+}
+
+.tag p.question .score.positive {
+    background: hsl(33, 97%, 76%);
+}
+
+.tag p.question .score.good {
+    background: hsl(33, 97%, 66%);
+}
+
+.tag p.question .score.verygood {
+    background: hsl(33, 97%, 56%);
+}
+
+/* tags.html */
+
+.tags ul {
+    list-style: none;
+	padding-left: 10px;
+	background-color: white;
+    padding-top: 10px;
+	padding-bottom: 10px;
+    border-radius: 8px;
+}
+
+.tags > div.container ul > li {
+    display: inline-block;
+    margin-right: 25px;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+/* user page */
+
+.user .col-md-3 {
+    text-align: center;
+}
+
+.user .reputation span {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.metadata {
+	padding: 20px;
+	border-radius: 8px;
+	background-color: white;
+	margin-bottom: 15px;
+}

@@ -1,0 +1,1180 @@
+﻿/*!
+ * app.css : Main CSS of the application
+ * 
+ * Copyright 2013-2023 Mossroy, Jaifroid and contributors
+ * License GPL v3:
+ * 
+ * This file is part of Kiwix.
+ * 
+ * Kiwix is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
+ * (at your option) any later version.
+ * 
+ * Kiwix is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public Licence for more details.
+ * 
+ * You should have received a copy of the GNU General Public Licence
+ * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
+ */
+
+[role=region] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    overflow: hidden;
+}
+
+[role=region] > header {
+    margin-left: 1px;
+    text-align: center;
+}
+
+[role=region] > header > h1 {
+    margin: 0;
+    text-shadow: 0 1px 1px rgba(0,0,0,.4);
+}
+
+[role=region] > .view-content {
+    margin: 0;
+    position: relative; /*Fixes #250 Random button display bug in W10M */
+    height: 0;
+}
+
+[role=region] > footer {
+    background: rgba(217,237,247,0.8);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    text-align: center;
+}
+
+[role=region] > footer > menu[role=toolbar] {
+    margin: 0;
+    padding: 0;
+}
+
+label {
+    font-weight: normal !important;
+}
+
+#navigationButtons .restrictedSize {
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Bottom navigation bar - spread icons across full width */
+#navigationButtons .row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+#navigationButtons .btn {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.5rem;
+}
+
+#navigationButtons .btn:hover,
+#navigationButtons .btn:focus,
+#navigationButtons .btn:active {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+/* Keep icon color visible on hover */
+#navigationButtons .btn:hover .fa,
+#navigationButtons .btn:hover .fas {
+    color: darkblue !important;
+}
+
+.dark #navigationButtons .btn:hover .fa,
+.dark #navigationButtons .btn:hover .fas {
+    color: lightblue !important;
+}
+
+#navigationButtons .dropup {
+    flex: 0 0 auto;
+    position: relative;
+}
+
+/* Position ToC dropdown above the button */
+#navigationButtons .dropup .dropdown-menu {
+    bottom: 100% !important;
+    top: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    margin-bottom: 0.5rem;
+}
+
+#navigationButtons .badge {
+    flex: 0 0 auto;
+    padding: 0.5rem;
+}
+
+body {
+    background-color: whitesmoke !important;
+}
+
+div:not(.card.border-success .card-body):not(.alert-message) {
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.dark ::-webkit-scrollbar {
+    height: 10px;
+}
+
+.dark ::-webkit-scrollbar-button:start:decrement,
+.dark ::-webkit-scrollbar-button:end:increment {
+    height: 30px;
+    background-color: transparent;
+}
+
+.dark ::-webkit-scrollbar-track-piece {
+    background-color: #3b3b3b;
+}
+
+.dark ::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #666;
+    border: 1px solid #eee;
+}
+
+.nopadding {
+    padding-right: 1px !important;
+    padding-left: 1px !important;
+}
+
+.dragging-over * {
+    pointer-events: none;
+}
+
+#articleList {
+    margin-bottom: 12px !important;
+    overflow-wrap: break-word;
+}
+
+#top, #articleContent, #footer, article {
+    transition: transform 0.5s ease;
+}
+
+#scrollbox {
+    width: 100%;
+    overflow: auto;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#articleListWithHeader {
+    position: absolute;
+    top: 0;
+    left: 5%;
+    padding-left: 12px;
+    padding-right: 12px;
+    background: lightblue;
+    z-index: 1;
+}
+
+/* Article list item followed by .snippet-container */
+#articleList a.list-group-item:has(+ .snippet-container) {
+    padding-bottom: 5px;
+}
+
+#articleList a:hover, #articleList a.hover, .snippet-header:hover, .snippet-header.hover, .backgroundLightBlue {
+    background: lightblue;
+}
+
+.dark #articleList a:hover, .dark #articleList a.hover, .dark .snippet-header:hover, .dark .snippet-header.hover  {
+    background: darkslategray;
+}
+
+.dark #articleListWithHeader {
+    background: darkslategrey;
+}
+
+.snippet-container {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.snippet-header {
+    cursor: pointer;
+    padding-left: 2em;
+    background-color: #f8f9fa;
+    border-left: 3px solid #dee2e6;
+    font-size: 0.9em;
+    color: slategray;
+    transition: background-color 0.2s ease;
+}
+
+.snippet-indicator {
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+    font-size: 0.8em;
+}
+
+.snippet-header[aria-expanded="true"] .snippet-indicator {
+    transform: rotate(90deg);
+}
+
+.snippet-preview {
+    font-style: italic;
+}
+
+.snippet-content {
+    padding: 0.25em 1em 1em 2em;
+    background-color: #fff;
+    border-left: 3px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    max-height: 200px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.snippet-content.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+    border-top: none;
+}
+
+.dark .snippet-header {
+    background: #222;
+    border: 0;
+    color: lightgray;
+}
+
+.dark .snippet-content {
+    background: #222;
+    border: 0;
+    color: whitesmoke;
+}
+
+#btnHome {
+    padding: 0px 1em !important;
+}
+
+#btnRandomArticle, #btnToggleTheme {
+    top: 2px;
+}
+
+#OPFSQuota {
+    padding: 4px;
+    width: -moz-fit-content;
+    width: fit-content;
+    border-style: groove;
+    border-width: 3px;
+}
+
+.form-control:not([id^="findInArticle"]) {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+    /*box-shadow: none !important;*/
+}
+
+.form-control:not([id^="archiveList"]) {
+    height: 2.2em !important;
+    padding: 5px 1em !important;
+}
+
+.navbar-inverse, .navbar-dark, .navbar-light {
+    background-color: #d9edf7 !important;
+    border-color: #bce8f1 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+}
+
+.dark .navbar-inverse, .dark .navbar-dark, .dark .navbar-light {
+    background-color: #2b3e50 !important;
+    border-color: #1a252f !important;
+}
+
+.dark .form-control {
+    color: lightgray;
+    background: #222;
+}
+
+.dark .form-control:focus {
+    color: lightgray;
+    background: #222;
+}
+
+.articleIFrame {
+    position: fixed;
+    width: 100%;
+    border: 0;
+    transition: top 300ms;
+    z-index: 0;
+}
+
+.category-padding {
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 1400px;
+}
+
+#welcomeText {
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .category-padding {
+        padding: 0 40px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .category-padding {
+        padding: 0 60px;
+    }
+}
+
+/* Override Bootstrap 4 container max-width */
+#scrollbox.container {
+    max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Remove extra padding from return to article link */
+.returntoArticle {
+    text-align: center;
+}
+
+#configuration, #about {
+    padding-top: 20px;
+}
+
+/* Configuration page heading - make title and version stack vertically */
+#configuration > .row:first-of-type {
+    display: block !important;
+}
+
+#configuration > .row:first-of-type > * {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+}
+
+#configuration > .row:first-of-type h2 {
+    margin-bottom: 0.5rem;
+}
+
+#configuration > .row:first-of-type > p {
+    margin: 0.5em 0 !important;
+    max-width: none !important;
+    text-align: left !important;
+}
+
+/* Bootstrap 4 card header customizations */
+.card-header {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.dark .card-header {
+    color: lightgray !important;
+    background: #12303b !important;
+    border-bottom-color: #12303b !important;
+}
+
+/* Colored headers based on card type */
+.card.border-info .card-header {
+    background-color: #d1ecf1;
+    border-bottom-color: #bee5eb;
+}
+
+.card.border-warning .card-header {
+    background-color: #fff3cd;
+    border-bottom-color: #ffeeba;
+}
+
+.card.border-success .card-header {
+    background-color: #d4edda;
+    border-bottom-color: #c3e6cb;
+}
+
+.card.border-danger .card-header {
+    background-color: #f8d7da;
+    border-bottom-color: #f5c6cb;
+}
+
+.card-group-heading {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    flex-basis: 100%;
+    width: 100%;
+}
+
+/* Ensure Download library heading is not indented */
+#downloads > .row {
+    display: block;
+    padding-top: 1rem;
+}
+
+#downloads .card-group-heading {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.column {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+#btnToggleSettings {
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #495057;
+    font-weight: normal;
+    line-height: 1 !important;
+}
+
+.apiAvailable {
+    color: green;
+}
+
+.apiUnavailable, .apiSuboptimal {
+    color: orange;
+}
+
+.apiBroken {
+    color : red;
+}
+
+.loader {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    border: 5px solid lightgrey;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    border-top: 5px solid steelblue;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.fa.spinning {
+    color: white;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+.range {
+    width: 300px;
+}
+
+.status {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    z-index: 1;
+}
+
+.message {
+    position: absolute;
+    margin: 70px auto 0;
+    left: 0;
+    right: 0;
+    font-size: smaller;
+    background: whitesmoke;
+    color: dimgrey;
+    border: 1px solid gainsboro;
+    padding: 1px 4px;
+    width: 200px;
+}
+
+.dark .message {
+    background: darkslategrey;
+    color: darkgrey;
+    border: 1px solid dimgrey;
+}
+
+.dark code {
+    background-color: lightsteelblue;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.settings {
+    float: left;
+    margin: 5px;
+    padding: 10px;
+    max-width: 500px;
+    min-height: 150px;
+    border: 1px solid black;
+}
+
+.navbar-header {
+    float: none !important;
+    width: 100%;
+    -webkit-app-region: no-drag;
+}
+
+.navbar-fixed-bottom {
+    background: inherit;
+}
+
+.navbar {
+    min-height: 0px !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1030;
+    -webkit-app-region: drag;
+}
+
+.btn-primary {
+    background-color: #337ab7 !important;
+    border-color: #1862b5 !important;
+}
+
+nav a.btn-primary, .input-group-text {
+    background: #d9edf7 !important;
+    border-color: #bce8f1 !important;
+    color: #31708f !important;
+}
+
+.dark nav a.btn-primary, .dark .input-group-text {
+    background: #2b3e50;
+    border-color: #1a252f !important;
+    color: #fff !important;
+}
+
+/* Icon color in navbar buttons should be lightblue in dark mode */
+.dark nav a.btn-primary .fa,
+.dark nav a.btn-primary .fas {
+    color: lightblue !important;
+}
+
+/* Bootstrap 4 input-group fixes */
+#navbar .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#navbar .input-group .btn {
+    border-radius: 0;
+    margin: 0;
+    padding: 5px 0.75em;
+    height: auto;
+    line-height: 1.5;
+    flex-shrink: 0;
+    min-width: 40px;
+}
+
+#navbar .input-group .form-control {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto !important;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#navbar .input-group .input-group-text {
+    margin: 0;
+    padding: 5px 1em;
+    height: auto;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+#navbar .container-fluid {
+    padding: 0;
+    width: 100%;
+}
+
+#navbar form {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#navbar #row,
+#navbar #row2 {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.btn:active, .btn-primary:active, .btn-primary.active {
+    background: lightsteelblue !important;
+    background-color: lightsteelblue !important;
+}
+
+.dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
+    background: darkslategray !important;
+    background-color: darkslategray !important;
+}
+
+.btn:hover  {
+    background: lightsteelblue;
+    background-color: lightsteelblue;
+}
+
+.dark .btn:hover {
+    background: darkslategray;
+    background-color: darkslategray;
+}
+
+@media (pointer: coarse) {
+    .btn:hover {
+        background: #d9edf7 !important;
+        background-color: #d9edf7 !important;
+    }
+    .btn:active  {
+        background: lightsteelblue !important;
+        background-color: lightsteelblue !important;
+    }
+    .dark .btn:hover {
+        background: #222 !important;
+        background-color: #222 !important;
+    }
+    .dark .btn:active {
+        background: darkslategray !important;
+        background-color: darkslategray !important;
+    }
+}
+
+.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse, .dark .navbar-dark, .dark .navbar-light {
+    background: #222 !important;
+    border-color: #222 !important;
+}
+
+/* Specific styling for Refresh and Reset buttons only */
+#btnRefreshApp, #btnReset2 {
+    background: transparent !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: normal;
+    line-height: 1 !important;
+}
+
+.dark #btnRefreshApp, .dark #btnReset2 {
+    color: #adb5bd;
+}
+
+/* Styling for Open all button in dark mode */
+.dark #btnToggleSettings {
+    color: #adb5bd;
+    border-color: #6c757d !important;
+}
+
+
+.dark .modal-footer .btn-primary, .dark .modal-footer .btn-secondary {
+    border-color: #777 !important;
+}
+
+footer .btn-xs {
+    margin: 5px 5px 10px;
+}
+
+.fa {
+    color: darkblue;
+}
+
+.btn-sm:not(.btn-inline), .btn-lg:not(.btn-inline), .btn-default {
+    background-color: rgba(217,237,247,0) !important;
+    border: transparent !important;
+    /*color: whitesmoke !important;*/
+    color: darkblue !important;
+    font-weight: bold !important;
+}
+
+.btn {
+    z-index:initial !important;
+}
+
+.btn-danger {
+    background-color: lightyellow !important;
+    color: darkred !important;
+}
+
+.dark .btn-danger {
+    background-color: #250000 !important;
+    color: gainsboro !important;
+}
+
+.btn-danger:hover {
+    background-color: red !important;
+    color: lightyellow !important;
+}
+
+.dark .btn-danger:hover {
+    background-color: darkred !important;
+    color: lightyellow !important;
+}
+
+.darkfooter {
+    background: rgba(34,34,34,0.8) !important;
+}
+
+.console {
+    font-size: medium;
+    font-weight:bold;
+    font-family:consolas,monospace;
+}
+
+pre {
+    font-weight: bold;
+}
+
+.dropdown-menu, .dropdown-menu a {
+    background: rgba(255,255,255,0.7) !important;
+}
+
+    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+        background-color: #337ab7 !important;
+    }
+
+.disclaimer {
+    background-color: lightyellow;
+    border-left: 6px solid gold;
+    padding: 10px 5px 1px 10px;
+}
+
+.dark .disclaimer {
+    background: #333300;
+}
+
+.update {
+    background-color: lightcyan;
+    border-left: 6px solid cyan;
+    padding: 10px 5px 1px 10px;
+}
+
+.dark .update {
+    background: black;
+    border-left: 6px solid grey;
+}
+
+.darkfooter .fa, .dark .fa {
+    color: lightblue;
+}
+
+.modal-title {
+    color: black;
+    font-weight: bold;
+}
+
+.panel-group-heading {
+    margin-top: 1em;
+    margin-bottom: 0.8em;
+    font-weight: 600;
+}
+
+.dark .modal-title {
+    color: lightgray !important;
+}
+
+.modal-content.dark {
+    background: #222 !important;
+}
+
+.modal-content:not(.dark) {
+    background: #fff !important;
+}
+
+.dark .modal-content:not(.dark) {
+    background: #333 !important;
+}
+
+.dark {
+    color: lightgray !important;
+    background: black !important;
+    border-color: darkgray;
+}
+
+.dark .card {
+    color: lightgray !important;
+    background: #222 !important;
+    border-color: darkgray;
+}
+
+.dark .card.border-info {
+    border-color: #12303b !important;
+}
+
+.dark .card.border-warning {
+    border-color: #333300 !important;
+}
+
+.dark .card.border-warning .card-header {
+    background: #333300 !important;
+    border-bottom-color: #333300 !important;
+}
+
+.dark .card.border-success {
+    border-color: #12303b !important;
+}
+
+.dark .card.border-danger {
+    border-color: #330000 !important;
+}
+
+.dark .card.border-danger .card-header {
+    background: #330000 !important;
+    border-bottom-color: #330000 !important;
+}
+
+.dropdown {
+    width: 100%;
+    max-width: 8em;
+    margin-bottom: 10px;
+}
+
+.dark .dropdown {
+    color: #222 !important;
+    background-color: lightblue !important;
+    border-color: lightgray !important;
+}
+
+.dark .dropdown option:focus, .dark .dropdown option:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
+
+.darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
+    color: lightblue !important;
+    background: rgba(34,34,34,0.6) !important;
+    border-color: darkgray;
+}
+
+.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
+
+.dark .list-group-item, .modal .dark .close {
+    color: lightblue !important;
+    background-color: #222;
+    border: 0;
+}
+
+.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {
+    color: lightblue !important;
+    background-color: darkslategray !important;
+}
+
+.dark .btn-default, .dark .input-group-text, .dark pre {
+    background: #222 !important;
+    border-color: #222 !important;
+    color: lightgray !important;
+    text-shadow: none;
+}
+
+.dark a {
+    color: lightblue !important;
+}
+
+.darkfooter .btn-default {
+    background: rgba(34,34,34,0) !important;
+    color: lightblue !important;
+}
+
+.modal-full {
+    width: 94% !important;
+    margin: 3% !important;
+}
+
+#alert-modal {
+    margin-top: 15% !important;
+    margin-bottom: 15% !important;
+}
+
+#alertBoxHeader {
+    transition: opacity 0.5s;
+    text-align: center;
+    position: relative;
+    z-index: 1; 
+}
+
+#alertBoxFooter .alert {
+    margin-bottom: 0;
+}
+
+.modal-dialog {
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.1s;
+    animation-name: animatetop;
+    animation-duration: 0.1s;
+}
+
+/* Add Animation */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0px; opacity: 1}
+}
+
+#dl-panel-body::before, #dl-panel-body::after {
+    content: '' !important;
+}
+
+  /*********************************/
+ /******* Custom checkboxes *******/
+/*********************************/
+
+/* Hide the browser's default checkbox */
+/* Custom checkbox/radio container */
+label.checkbox,
+label.radio {
+    position: relative;
+    padding-left: 30px;
+    display: block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.container input[type=checkbox], .container input[type=radio] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: whitesmoke;
+    border: 2px solid #0078d7;
+}
+
+/* Style the checkmark/indicator */
+.container input:checked ~ .checkmark:after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid steelblue;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.container input:indeterminate ~ .checkmark:after {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    width: 40%;
+    height: 40%;
+    background: steelblue;
+}
+
+/* Create a custom radio button */
+.radiobtn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: whitesmoke;
+    border-radius: 50%;
+    border: 2px solid #0078d7;
+}
+
+/* Style the indicator (dot/circle) */
+.container input:checked ~ .radiobtn:after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: steelblue;
+}
+
+.card.border-warning .checkmark, .card.border-warning .radiobtn, .card.border-warning input:checked ~ .checkmark:after, .card.border-warning input:indeterminate ~ .checkmark:after {
+    border-color: #a0a090;
+}
+
+.card.border-warning input:checked ~ .radiobtn::after {
+    background: #a0a090;
+}
+
+.card.border-danger .checkmark, .card.border-danger .radiobtn, .card.border-danger input:checked ~ .checkmark:after, .card.border-danger input:indeterminate ~ .checkmark:after {
+    border-color: #c37b7a;
+}
+
+.card.border-danger input:checked ~ .radiobtn:after {
+    background: #c37b7a;
+}
+
+.dark .checkmark, .dark .radiobtn {
+    border-color: darkslategray;
+}
+
+.dark .card.border-warning .checkmark, .dark .card.border-warning .radiobtn, .dark .card.border-warning input:checked ~ .checkmark:after, .dark .card.border-warning input:indeterminate ~ .checkmark:after {
+    border-color: #808000;
+}
+
+.dark .card.border-danger .checkmark, .dark .card.border-danger .radiobtn {
+    border-color: #800000;
+}
+
+/* When the checkbox is checked, add a blue background 
+.container input:checked ~ .checkmark, .container input:indeterminate ~ .checkmark, .container input:checked ~ .radiobtn {
+    background-color: steelblue;
+} */
+
+.dark input ~ .checkmark, .dark input ~ .radiobtn, .dark input:checked ~ .checkmark, .dark input:indeterminate ~ .checkmark, .dark input:checked ~ .radiobtn {
+    background-color: #12303b;
+}
+
+.dark .card.border-warning input ~ .checkmark, .dark .card.border-warning input ~ .radiobtn, .dark .card.border-warning input:checked ~ .checkmark, .dark .card.border-warning input:checked ~ .radiobtn {
+    background-color: #4d4d00;
+}
+
+.dark .card.border-danger input ~ .checkmark, .dark .card.border-danger input ~ .radiobtn, .dark .card.border-danger input:checked ~ .checkmark, .dark .card.border-danger input:checked ~ .radiobtn {
+    background-color: #4d0000;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox:hover input ~ .checkmark, .checkbox:hover input:checked ~ .checkmark, .checkbox:hover input:indeterminate ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* On mouse-over, add a grey background color */
+.radio:hover input ~ .radiobtn, .radio:hover input:checked ~ .checkmark {
+    background-color: #ccc !important;
+}
+
+/* Collapsible features section */
+.collapsible-section {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.features-summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    padding: 15px;
+    margin: 0;
+    outline: none;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.features-summary:hover {
+    background-color: #e9ecef;
+}
+
+.features-summary::-webkit-details-marker {
+    display: none;
+}
+
+.features-summary h3 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.collapse-indicator {
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+
+.collapsible-section[open] .collapse-indicator {
+    transform: rotate(180deg);
+}
+
+.features-content {
+    margin-top: 0;
+    padding: 0 15px 15px;
+}
+
+/* Dark theme support */
+.dark .collapsible-section {
+    border-color: #4a5568;
+}
+
+.dark .features-summary {
+    background-color: #2d3748;
+}
+
+.dark .features-summary:hover {
+    background-color: #374151;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {
+    /*Increase touchability of bottom buttons*/
+    footer .btn-default {
+        font-size: 120% !important;
+    }
+    .navbar-nav {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    /*Make sure these align correctly rather than stacking at full width - GK*/
+    .navbar-nav > li > a {
+        /*float: left !important;*/
+        /*Added this to prevent the buttons becoming so small*/
+        padding-top: 15px !important;
+    }
+}
