@@ -7322,6 +7322,24 @@ function parseAnchorsJQuery (dirEntry) {
     var currentProtocol = articleWindow.location.protocol;
     currentProtocol = currentProtocol === 'about:' ? ':' : currentProtocol;
     var currentHost = articleWindow.location.host;
+
+    let anchor = null;
+
+if (url.includes("#")) {
+  const parts = url.split("#");
+  url = parts[0];   // load article without hash
+  anchor = parts[1];
+}
+
+loadArticle(url);
+
+if (anchor) {
+  setTimeout(() => {
+    const el = document.getElementById(anchor);
+    if (el) el.scrollIntoView();
+  }, 200);
+}
+
     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
     // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own.
     var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+/()[{])/g, '\\$1');
