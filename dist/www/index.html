@@ -1,0 +1,1485 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Kiwix JS PWA</title>
+    <meta name="description" content="Offline Wikipedia reader">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
+    <meta name="theme-color" content="black">
+    <!--
+    Kiwix (offline Wikipedia reader) - HTML5/Javascript version
+    Home page : https://www.kiwix.org
+
+    Main authors of this application:
+        Mossroy - https://github.com/mossroy - mossroy@mossroy.fr
+    Peter-x - https://github.com/peter-x
+    Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10, Electron, NWJS and PWA:
+        Geoffrey Kantaris egk10@cam.ac.uk
+
+    Copyright 2013-2023 Jaifroid, Mossroy, Peter-x and contributors
+    License GPL v3:
+
+    This file is part of Kiwix.
+
+    Kiwix is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Kiwix is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+        along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <https://www.gnu.org/licenses/>
+
+    -->
+    <link rel="manifest" href="../manifest.json" />
+    <link rel="icon" type="image/png" href="img/icons/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="img/icons/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="img/icons/favicon-192x192.png" sizes="192x192" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="img/icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/app.css" />
+    <!-- Bootstrap 4 -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <!-- Font Awesome 5 -->
+    <link href="css/all.min.css" rel="stylesheet" media="screen" />
+    <script type="text/javascript">
+        // This script is needed to retrieve launch arguments when the app is started from cold by double-clicking on a file
+        var launchArgumentsUWP = null;
+        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
+            Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
+                if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
+                    console.log("App was activated with a file: " + eventArgs.files[0].name);
+                    launchArgumentsUWP = eventArgs;
+                }
+            }, false);
+        }
+        // If we're running in NWJS context, rename NWJS require and add needed functions
+        var nwjsVersion = '';
+        if (typeof window.nw !== 'undefined') {
+            window.requireNode = window.require;
+            window.require = undefined;
+            window.fs = requireNode('fs');
+            nwjsVersion = nw.process.versions.nw;
+        } 
+    </script>
+</head>
+<body role="application" class="dark">
+    <!-- Modal info -->
+    <div id="myModal" class="modal">
+        <div class="modal-dialog modal-lg">
+            <div id="modalTheme" class="modal-content dark">
+                <div id="largeModal" class="modal-body">
+                    <button id="mymodalCloseBtn" class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div id="mymodalVariableContent">
+                        <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
+
+                        <h2 style="font-size:32px;margin-top:10px;">
+                            Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
+                        </h2>
+                        <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
+                        <h3>Please read this important information</h3>
+                        <div class="disclaimer">
+                            <p>
+                                <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                                download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
+                                <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                            </p>
+                        </div>
+                        <p id="noPackagedZIM" style="padding-top:10px;">
+                            <span><strong>IMPORTANT:</strong> To use this app, you <strong>must download an offline ZIM archive</strong> and store it on your device!</span>
+                            You can do this from the <b>Configuration page&nbsp;<i class="fas fa-wrench"></i></b>, or else see the
+                            <b>About page&nbsp;<i class="fas fa-info-circle"></i></b> for more information.
+                        </p>
+                        <p>
+                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                            improving the app are very welcome: see About section.
+                        </p>
+                        <div id="update" class="update">
+                            <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
+                            <ul style="padding-left: 15px;">
+                                <li>For updates since v3.7.8 please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md<img alt="external link" src="I/s/Icon_External_Link.png"></a></li>
+                                <li>Support new Wikimedia ZIM-provided auto dark/light theming system (SW mode only)</li>
+                                <li>Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
+                                <li>Migrated project to Bootstrap 4 and replaced Glyphicons with Font Awesome icons</li>
+                                <li>Removed dependency on JQuery completely</li>
+                                <li>Increased security of Electron app's Express server and provided controls for LAN access</li>
+                                <li>Added PWA installation guide for major browsers</li>
+                                <li>Added instructions for installing AppImage on recent Ubuntu missing fuse2</li>
+                                <li>Fixed broken printing support</li>
+                                <li>Fixed critical error in IE11 preventing rendering of webp images</li>
+                                <li>Fixed touch events for sliding away tool and navbars</li>
+                                <li>Unified all keyboard events under the same function</li>
+                                <li>Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
+                                <li>Prevent display of popovers on Wikivoyage custom landing page</li>
+                                <li>General app and project information updates</li>
+                                <li>Security updates to dependencies</li>
+                            </ul>
+                            <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
+                        </div>
+                        <div id="features">
+                            <details class="collapsible-section">
+                                <summary class="features-summary">
+                                    <h3>Features in Version 3.x</h3>
+                                    <span class="collapse-indicator">▼</span>
+                                </summary>
+                                <div class="features-content">
+                                    <ul style="padding-left:15px;">
+                                        <li>Support for all known ZIM types from Wikipedia 0.5 to Zimit v2</li>
+                                        <li>Huge range of supported browsers and frameworks</li>
+                                        <li>Full-text searching of ZIM contents using <a href="https://github.com/openzim/javascript-libzim" target="_blank" rel="noopener">javascript-libzim</a></li>
+                                        <li>Cutting-edge Origin Private File System support with best-available fallbacks</li>
+                                        <li>Built-in DarkReader support for nearly all ZIM types</li>
+                                        <li>Display article previews in popovers for Wikimedia archives</li>
+                                        <li>Use multiple ZIM archives simultaneously with File Handling API</li>
+                                        <li>ZIM content is loaded in a secure sandbox for your protection</li>
+                                        <li>Download ZIM archives in-app and display download progress</li>
+                                        <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
+                                        <li>Open a new browsable tab or window</li>
+                                        <li>In-page searching and highlighting</li>
+                                        <li>Title and URL search with wildcards .* or regexes</li>
+                                        <li>Alphabetical index of all articles in archive (type space in search field)</li>
+                                        <li>Find assets by URL in ZIM archive by prefixing namespace (or type space + / in search)</li>
+                                        <li>Printing articles (with optional filtering for Wikipedia articles)</li>
+                                        <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
+                                        <li>Download and save content from ZIM</li>
+                                        <li>Support full-screen and orientation lock in most browsers and frameworks</li>
+                                    </ul>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="extraModalFooterContent"></div>
+                    <button id="mycloseMessage" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Bootstrap modal for alert and confirmation pop up-->
+    <div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Modal title goes here</h5>
+                    <button type="button" id="modalCloseBtn" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalText">Modal text goes here</p>
+                </div>
+                <div class="modal-footer" id="modalFooter">
+                    <button type="button" class="btn btn-primary" id="approveConfirm" data-dismiss="modal">Confirm</button>
+                    <button type="button" class="btn btn-secondary" id="declineConfirm" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="closeMessage" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="printModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div id="print-modal-content" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please choose print options</h5>
+                    <button id="printmodalCloseBtn" class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div oninput="document.getElementById('zoomSliderVal').innerHTML = documentZoomSlider.value + '%';" style="margin-bottom: 1rem;">
+                        <div><b>Resize document for printing:</b></div>
+                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="1" value="75" style="width: 100%;">
+                        <div>Current value: <b><span id="zoomSliderVal">75%</span></b></div>
+                    </div>
+                    <label id="printImages" class="checkbox">
+                        <input type="checkbox" name="printImage" id="printImageCheck" checked>
+                        <b>Print images</b> (<i>default: yes</i>)
+                    </label>
+                    <p style="color:red;font-weight:bold;">Options below ONLY apply to Wikimedia ZIMs</p>
+                    <label id="printDesktopStyle" class="checkbox">
+                        <input type="checkbox" name="printDesktop" id="printDesktopCheck" checked>
+                        <b>Print the desktop (not mobile) style</b> (<i>default: yes</i>)
+                    </label>
+                    <label id="printNavBoxes" class="checkbox">
+                        <input type="checkbox" name="printNavBox" id="printNavBoxCheck">
+                        <b>Print navigation boxes</b> (<i>default: no</i>)
+                    </label>
+                    <label id="printEndNotes" class="checkbox">
+                        <input type="checkbox" name="printEndNote" id="printEndNoteCheck">
+                        <b>Print endnotes</b> (<i>default: no</i>)
+                    </label>
+                    <label id="externalLinks" class="checkbox">
+                        <input type="checkbox" name="externalLink" id="externalLinkCheck">
+                        <b>Print External Links / Further Reading</b> (<i>default: no</i>)
+                    </label>
+                    <label id="seeAlsoLinks" class="checkbox">
+                        <input type="checkbox" name="seeAlsoLink" id="seeAlsoLinkCheck">
+                        <b>Print See Also</b> (<i>default: no</i>)
+                    </label>
+                    <label id="printInfoboxes" class="checkbox">
+                        <input type="checkbox" name="printInfobox" id="printInfoboxCheck" checked>
+                        <b>Print infoboxes</b> (<i>default: yes</i>)
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button name="confirm-print" id="printdeclineConfirm" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
+                    <button name="confirm-print" id="printapproveConfirm" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
+                    <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Status indicators -->
+    <div id="searchingArticles" style="display: none;" class="status">
+        <div class="loader"></div>
+        <div id="cachingAssets" style="display: none;" class="message"></div>
+    </div>
+    <section id="search-article" role="region">
+        <header id="top">
+            <nav id="navbar" class="navbar navbar-light" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-header" id="container">
+                        <form id="formArticleSearch" role="search" aria-label="Search articles">
+                            <div class="" id="row">
+                                <div class="input-group">
+                                    <!-- button id="btnHome" type="button" class="btn btn-default" -->
+                                    <a id="btnHome" title="Home" class="btn btn-primary"><img alt="Kiwix icon" id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                    <!--button -->
+                                    <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><i class="fas fa-arrow-circle-left"></i></a>
+                                    <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><i class="fas fa-arrow-circle-right"></i></a>
+                                    <input type="search" id="prefix" placeholder="Search [.*] or space key..."
+                                        title="Press /, Home, or Ctrl/Cmd+K to focus search"
+                                        class="form-control" style="z-index: 0;" autocomplete="off" />
+                                    <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><i class="fas fa-book"></i></a>
+                                    <a class="btn btn-primary" title="Ctrl-Shift-F or Alt-F: Find and highlight text in article..." id="findText"><i class="fas fa-search"></i></a>
+                                    <a class="btn btn-primary" title="Random Article" id="btnRandomArticle"><i class="fas fa-random"></i></a>
+                                    <a class="btn btn-primary" title="Switch between light and dark modes" id="btnToggleTheme"><i class="fas fa-adjust"></i></a>
+                                    <a class="btn btn-primary" title="Settings" id="btnConfigure"><i class="fas fa-wrench"></i></a>
+                                    <a class="btn btn-primary" title="About" id="btnAbout" style="margin-right:5px;"><i class="fas fa-info-circle"></i></a>
+                                </div>
+                            </div>
+                            <div class="" id="row2" style="display:none;">
+                                <div class="input-group" style="padding-bottom: 5px; padding-left: 15px; margin-left: 5px;">
+                                    <input class="form-control" id="findInArticle" style="display:inline;" type="search" placeholder="Highlight in article...">
+                                    <span class="input-group-text" id="matches">Full: 0</span>
+                                    <span class="input-group-text" id="partial">Partial: 0</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <article class="view-content" id="article">
+            <div id="scrollbox" class="container">
+                <div id="about" style="display: none;" class="category-padding">
+                    <div class="returntoArticle"></div>
+                    <h2>
+                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
+                        Kiwix JS <span class="identity">Windows</span>
+                    </h2>
+                    <h3 style="margin-top:0;">
+                        Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
+                    </h3>
+                    <p class="packagedInfo" style="display: none">Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
+                    <ul style="padding-left:1em;">
+                        <li><a href="#addingArchives">Adding archives and languages</a></li>
+                        <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#security">Security</a></li>
+                        <li><a href="#themes">Themes (dark and light)</a></li>
+                        <li><a href="#styles">Style transformations (desktop, mobile) and collapsible sections</a></li>
+                        <li><a href="#filehandling">File handling and File System access</a></li>
+                        <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
+                        <li><a href="#fullTextSearch">Full-text search</a></li>
+                        <li><a href="#removeNavbars" data-i18n="about-remove-navbars">Removing navigation bars</a></li>
+                        <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
+                        <li><a href="#windows">Window and tab management</a></li>
+                        <li><a href="browsers">Browser support</a></li>
+                        <li><a href="#expressServer">Express server (Electron app)</a></li>
+                        <li><a href="#modes">Technical Information</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#feedback">Feedback and Support</a></li>
+                        <li><a href="#credits">Credits and Licence</a></li>
+                        <li>Official site : <a href="https://www.kiwix.org/" target="_blank" rel="noopener">https://www.kiwix.org/</a><img src="I/s/Icon_External_Link.png" /></li>
+                    </ul>
+                    <div class="disclaimer">
+                        <p>
+                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                            download a new archive periodically. Information in official archives is free, open source and provided by volunteers.<br>
+                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                        </p>
+                    </div>
+                    <br>
+                    <p>
+                        Kiwix aspires to make the world's knowledge available to everyone for free. If your Internet access is expensive, slow, unreliable, insecure or censored,
+                        you can still gain access to a huge repository of knowledge and culture in almost every language using Kiwix offline archives.
+                    </p>
+                    <p>
+                        To use this app, you will need to obtain/download one or more archives (called ZIM archives). You can download them in this app (see <a href="#addingArchives">Usage</a>
+                        below), or if you know someone with an archive you want, you can also share archives, e.g. on a USB stick. Archives are available in many different languages
+                        for resources such as Wikipedia, WikiMed, Wiktionary, Wikivoyage, Project Gutenberg, TED Talks, Stackexchange, etc. You can access this virtual offline
+                        encyclopaedia even if you are undertaking a long plane journey, hiking, and travelling or living in areas with weak or non-existent Internet access.
+                    </p>
+                    <p>
+                        Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
+                        different archives, and works with almost all of them, depending on the capabilities of your browser or framework. There is now full support for
+                        <a href="https://download.kiwix.org/zim/zimit/" target="_blank">Zimit archives</a>, including support for Zimit v2.
+                        For more information on Zimit and how to make your own ZIM archives, see <a href="https://youzim.it/" target="_blank">youzim.it</a>.
+                    </p>
+                    <p>
+                        You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
+                        <a href="#searchSyntax">Title search</a>). <b><i>There is support for full-text search in the PWA and Electron apps (for ZIM archives that
+                        include a full-text index).</i></b>
+                    </p>
+                    <p>
+                        On some Wikipedia and Wikivoyage pages you will see map pins: <img src="img/icons/map_marker-30px.png" width="18px" />. This will open a map
+                        centered on the pin location in <b>online</b> Open Street Maps (if you have an Internet connection). The Windows 11 offline Maps app has unfortunately
+                        been deprecated, so this is the only way to view maps in the app currently.
+                    </p>
+                    <h3 id="addingArchives">Usage</h3>
+                    <h4>Step 1: Download some content</h4>
+                    <p>
+                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page,
+                        and the app will provide instructions according to the type of file you download. Alternatively, visit
+                        <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> or
+                        <a href="https://library.kiwix.org" target="_blank">https://library.kiwix.org</a> using a regular computer. To use all the features of ZIM archives
+                        that have dynamic content (e.g. PhET), the needs to be running in PWA/ServiceWorker mode (see Performance/compatibility settings in
+                        configuration), which is available in modern browsers (on iOS devices it is only available in Safari).
+                    </p>
+                    <h4>Step 2: Copy the content onto your device</h4>
+                    <p>
+                        If you have enough space, you can put several archives on your device storage. If you download the content
+                        directly in the app, ensure you save the file to the device and note the location of the file once the download has
+                        completed. For PC users: if you see that the ZIM archive has a Kiwix icon, you may be able to open it by double-clicking it.
+                        For Mobile users: if you downloaded via a PC, you will generally need to use a USB cable to copy the ZIM
+                        archive(s) to an accessible location on your device, such as the SD card or the main storage area if
+                        there is enough space there.
+                    </p>
+                    <h4>Step 3: Go to the "Configure" menu and select your ZIM file (or double-click / drag-and-drop your file into the app)</h4>
+                    <p>
+                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a
+                        split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
+                        or else (in older browsers) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
+                        can instead pick the <b>file</b> directly, using the respective buttons on the
+                        <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (you may need to tap
+                        "Select Storage" first). In most modern contexts the archive will be remembered on next launch (Firefox, Safari and IE11
+                        are exceptions). If in the future you add more files to a folder you have selected, then you can use the rescan
+                        button <i class="fas fa-sync-alt"></i> to refresh the list of archives in the folder.
+                    </p>
+                    <p>
+                        Alternatively, in the UWP app, and experimentally in an installed PWA on the PC, you can simply <b>double-click</b> the ZIM
+                        file to launch it in the app, even if the app is closed (your choice will be remembered on next launch). You can also
+                        <b>drag-and-drop</b> your ZIM file into the app, but it may not be remembered on next launch in all contexts (try it if this method interests you!).
+                    </p>
+                    <h4>Step 4: Enjoy your content offline!</h4>
+                    <h3 id="changelog">Changes in <span class="version">1.0</span></h3>
+                    <div id="logUpdate" class="update"></div>
+                    <div id="logFeatures"></div>
+                    <h3 id="privacy">Privacy policy</h3>
+                    <p>
+                        When installed, Kiwix JS <span class="identity">Windows</span> works offline, and does not collect or record any of your personal data. It
+                        only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+                        viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
+                    </p>
+                    <p>
+                        If you access this app from a secure web server (e.g. the PWA server), it will only work offline if your browser is
+                        capable of installing a Service Worker (note that on iOS devices, ServiceWorker mode only works in Safari). If you
+                        install, bookmark or add the PWA version to your home screen, then it will work offline (if ServiceWorker Mode is available),
+                        but note that <b>by design</b> any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
+                        is available, to check for an updated Service Worker.
+                    </p>
+                    <p>
+                        Electron and NWJS versions of the app may access GitHub on each start of the app to check for an update. The installer
+                        (setup) version for Windows, and the AppImage version for Linux, will also self-update. You can block the update check
+                        in these apps by unchecking the Allow Internet Access checkbox.
+                    </p>
+                    <p>
+                        By default, this application will remember your last-visited page for each ZIM between sessions using local storage
+                        or a cookie that is accessible only by this app on this device. If you are accessing sensitive information that you do
+                        not wish to be displayed next time you open this app, we recommend that you <a href="#privacy"
+                        onclick="document.getElementById('btnConfigure').click();">turn this option off</a> in the Configuration options.
+                    </p>
+                    <p>
+                        This application only reads the archive files that you explicitly select on your device and files included in
+                        its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
+                        you specifically request it to access the download library for ZIM archives on the Configuration page. If you
+                        run the app as a PWA, it will cache its own code from the secure PWA server and then can be used offline.
+                        Some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
+                        contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
+                        Worker mode in Configuration.
+                    </p>
+                    <p>
+                        <b>
+                            If you believe your Internet access is insecure, or is being controlled or censored, we recommend that you completely
+                            shut down your Internet access (Data or WiFi) before using the application.
+                        </b>
+                    </p>
+                    <p>
+                        Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
+                        track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
+                        providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
+                        Store Privacy Policy for further information.
+                    </p>
+                    <p>
+                        <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
+                        <ul>
+                            <li><a href="https://github.com/kiwix/kiwix-js-pwa/releases" target="_blank">Releases</a></li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html" target="_blank">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                        </ul>
+                    </p>
+                    <h3 id="security">Security of your ZIM archives and your browser</h3>
+                    <p>
+                        Most ZIM archives nowadays contain active content (scripts). Although we sandbox content in the ZIM as much as possible and use a strict Content Security Policy,
+                        we have to interact with the loaded content, and so we cannot fully lock it down. When the app is running in its default mode (in modern browsers), it is possible
+                        that a deliberately malicious ZIM from an untrusted source could break out of the sandbox and do nasty things like redirecting your browser to third-party or
+                        phishing sites. To mitigate against this, the app asks you to indicate that you trust the source of a ZIM when you first open it, and offers to open the ZIM in
+                        <a href="#modes">Restricted mode</a> first, so you can check the validity of the content. Restricted mode prevents most dynamic content from running. When you
+                        next open a trusted file, the app will automatically switch back to ServiceWorker mode. If you make a mistake, and accidentally trust a malicious ZIM, then you
+                        should reset the app using the button in Configuration (and, of course, delete the ZIM).
+                    </p>
+                    <h3 id="themes">Themes (dark and light)</h3>
+                    <p>
+                        The default theme for the app is light. There are three dark themes available:
+                    </p>
+                    <ul>
+                        <li><b>Standard</b> - This is best for Wikimedia archives and provides a carefully designed dark theme that works well with Wikipedia, WikiMed, and other Wikimedia content</li>
+                        <li><b>Invert</b> - A generic inversion theme that re-inverts images to display them correctly</li>
+                        <li><b>DarkReader</b> - Uses a built-in DarkReader script, which works best for Zimit archives</li>
+                    </ul>
+                    <p>
+                        To toggle between basic light and dark modes, use the <i class="fas fa-adjust"></i> button in the top toolbar. For more fine-grained control over themes, including selecting specific dark themes, use the options in the <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page under "Display settings".
+                    </p>
+                    <h3 id="styles">Style transformations (desktop, mobile) and collapsible sections</h3>
+                    <p>
+                        The options in configuration to transform Wikimedia ZIMs from desktop to mobile style and vice versa attempt to mimic standard desktop and mobile styles for Wikimedia content.
+                        Please note that the latest ZIMs (ActionParse ZIMs with the Vector skin) are in desktop style by default, and in this style sections such as headers in articles are not collapsible.
+                        If you wish to have collapsible headers, please select the option "Use Wikimedia mobile style" in Configuration (under Display style). You may also set the option to collapse all
+                        sections by default, which is useful for browsing large articles on narrow screens.
+                    </p>
+                    <h3 id="filehandling">File handling and File System access</h3>
+                    <p>
+                        This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
+                        can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
+                        archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
+                        Electron apps, recent Chromium desktop browsers, or if you are using the Origin Private File System (see below), you will be asked to grant permission to access
+                        previously picked files or folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
+                    </p>
+                    <p>
+                        Chromium desktop browsers support <a href="https://developer.chrome.com/blog/persistent-permissions-for-the-file-system-access-api" target="_blank">Persistent Permissions</a>
+                        and the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA. Persistent Permissions are
+                        available in Chrome, Edge, and other Chromium browsers as of version 122: the second or third time you open a file or folder, you will be asked if you wish to grant
+                        persistent permission. The File Handling API allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer,
+                        it will open in the app. The first time you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can
+                        change your choice in the browser settings. Each time you launch a ZIM, it will open in a separate instance of the app, allowing you to browse multiple ZIMs at the
+                        same time. Note that multiple instances are not currently supported in the Electron/UWP apps.
+                    </p>
+                    <h4 id="OPFS">Origin Private File System</h4>
+                    <p>
+                        In some modern browsers, you will see the option "<b>Use Private File System</b>" under the File and Folder selectors. On Android, this is the default storage mode (as it is
+                        much, much faster). If you select this option, then the app will request an
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
+                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select more than one archive to store in the OPFS,
+                        including all the parts of a split ZIM file (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in
+                        the file list. If you drag-and-drop a file into the app while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
+                    </p>
+                    <p>
+                        You may also <b>download archives directly into the OPFS</b> by using the appropriate download link in the Dowmload Library. Look for the link under
+                        "Direct download to Origin Private File System". Downloading this way is suitable for archives of up to around 2GB in size, depending on your download
+                        speed. Larger files may take too long, and it is generally better to use a browser-managed download link for very large files. Then, if you wish, you
+                        can move the file into the OPFS using the "Add file(s)" picker.
+                    </p>
+                    <p>
+                        If you want to <b>delete an archive</b> from the Private File System, click the <i class="fas fa-trash-alt"></i> icon,
+                        and then click on the file you wish to delete. You will be asked for confirmation.
+                    </p>
+                    <p>
+                        In some cases, you may be able to <b>export an archive</b> from the OPFS to the visible file system. Click the <i class="fas fa-share"></i>
+                        icon, and then click on the file you wish to export. The OPFS copy of the file is <i>not</i> deleted after export. If you do not see the export icon,
+                        then this feature is not available in your browser.
+                    </p>
+                    <p>
+                        On iOS in Safari, the OPFS appears to be supported, but there is currently no way to download or move a file from the user-visible file system into the OPFS.
+                        This is because the <code>WriteableFileStream</code> API is not yet available on iOS, but it may become available soon.
+                    </p>
+                    <p>    
+                        The main <b>advantages</b> of the OPFS, especially on mobile, are:
+                        <ul>
+                            <li>that the file system can be accessed by the app without needing to give permission, even after you relaunch the app (the last selected archive will automatically launch);</li>
+                            <li>Additionally, once a file is stored in the OPFS, access to it, e.g. on Android, is much faster than with standard file picking.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        However, there are some <b>limitations</b> of the OPFS:
+                        <ul>
+                            <li>the file system has a quota set by the browser, which may be very small in some browsers;</li>
+                            <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
+                                <b>very</b> slow -- it can be faster to download the file directly into the OPFS from the Download library;</li>
+                            <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
+                            <li>any file you store here will only be accessible by this app (unless you export it to the visible file system).</li>
+                        </ul>
+                    </p>
+                    <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
+                    <p>
+                        All versions of this app support basic <b>title search</b>, which is very fast and matches the <b>start</b> of an article title. Some versions
+                        may also support <b>full-text searching</b> (<a href="#fullTextSearch">see below</a>).
+                    </p>
+                    <p>
+                        <i>You can quickly access the search bar using keyboard shortcuts</i>: press the <b>Home</b> key, the <b>/</b> key (forward slash), <b>Ctrl+K</b> (or <b>Cmd+K</b> on Mac) 
+                        to focus the search field from anywhere in the app. In PWA or Electron contexts, you can also use the traditional browser address bar shortcuts <b>Ctrl+L</b>
+                        (or <b>Cmd+L</b>) and <b>Alt+D</b>.
+                    </p>
+                    <p>
+                        With title search, if you search for 'France' you will get 'France (country)', 'France (disambiguation)', 'France (film)', etc. This kind of search
+                        tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited.
+                    </p>
+                    <p>
+                        You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: if you
+                        don't know the difference then use <code>.*</code>). For example, you can search for 'list.*medieval', and you will get (in full English Wikipedia)
+                        'List of Medieval bestiaries', 'List of Medieval topics', etc.
+                    </p>
+                    <p id="searchSyntaxError">
+                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
+                        the wildcard must be a valid regular expression or else the search will fail!</i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
+                        but you need to be aware that regular expressions reserve characters like '?', '(', '^', '$', '*', '+', so these (and others) must be used correctly if you
+                        use wildcards with them. You might be able to correct an error by placing a backslash before each reserved character, e.g. <code>list.*\(france</code>.
+                    </p>
+                    <p>
+                        Wildcards can come anywhere in a string, including at the beginning. This works fine for Stackexchange, Gutenberg, PhET and similar ZIMs, and if full-text
+                        search is not available, using a wildcard is the only way to get all the Stackexchange questions on topics/words that don't have a tag. For Wikipedia,
+                        <b>wildcards work best when they come after a simple string</b>. If your search text starts with a wildcard in full English Wikipedia, it will start searching
+                        at the very beginning of the index and try to search through everything (there are millions of titles)! It will give up after somewhere between 250,000 and
+                        1,000,000 searches (this is 10,000 x the value you set in Configuration for max search results).
+                    </p>
+                    <p>
+                        You can now <b>search for assets like images</b> or other non-HTML files in a ZIM by prefixing a namespace. For example, in older ZIMs, all images are in namesapce <code>I</code>,
+                        so you would type, e.g., <code>I/aquarius</code>. In newer ZIMs, all contents (including assets) are in namespace <code>C</code>, so to distinguish images, you might
+                        need to add a file extesnions, like <code>C/aquarius.*webp</code>.
+                    </p>
+                    <p id='zimIndex'>
+                        You can see the full alphabetical <b>ZIM Archive Index</b> by typing a <b><i>space</i></b> in the title search box. This is useful for ZIMs that have descriptive titles where
+                        you don't know the exact title you are searching for (e.g. Gutenberg or TED Talks, especially in Restricted mode, or for browsing Stackexchange or PhET). You can change
+                        your alphabet in Configuration for non-Roman alphabets. You can also show the <b>full URL index</b> by typing <b><i>space /</i></b> (a space followed by forward slash).
+                    </p>
+                    <p>
+                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration (under
+                        'Navigation, search and other').
+                    </p>
+                    <p>
+                        <i>For the geeks</i>, you can also use <b>full regular expressions</b> enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
+                        can use full regex syntax after a wildcard (not before, except that '\s' will be converted to a space). Regex syntax will match titles in a case-insensitive manner.
+                        You can search for different diacritics with a regex like 'discours.*m[eé]thode' or `Gonz.*[áa]lez I[nñ][áa]rrit[uùú]`. Long searches will give up after
+                        maxSearchResultsSize * 10^4 title scans.
+                    </p>
+                    <h3 id="fullTextSearch">Full-text search</h3>
+                    <p>
+                        Some versions of this app (PWA and Electron-based) support <b>full-text search <i>if your ZIM has a full-text index</i></b>, as well as the display of snippets for items in the full-text
+                        index. The API panel in Configuration will tell you whether the loaded ZIM and app support full-text search. A full-text search will be launched automatically after the title search
+                        if the latter didn't return the maximum number of results you have set in Configuration (default is 20 on desktop, lower on mobile). Users of iOS will need to be on iOS 15+ for
+                        full-text search to work (if you are on an earlier version, we recommend you disable use of libzim WASM/ASM in Expert settings -> Troubleshooting and development).
+                    </p>
+                    <p>
+                        Full-text results and snippets are displayed <i>after</i> any matching title search results. Full-text search results can be considerably slower than title search with very large ZIM archives.
+                        If you see the search result you want, you can click on it without having to wait for the full-text results. You can navigate the search results with your keyboard as well as by tapping or
+                        clicking on them. Snippets will open automatically if you hover over their summary entry, or you can tap the snippet header to open and close.
+                    </p>
+                    <p id="Android">
+                        If you are using the <b>PWA on Android</b>, please note that search with snippets is only enabled by default for archives in the Origin Private File System. This is because conventional
+                        file access on most Android versions is far too slow, but it is much faster in the OPFS. You can override default settings in Configuration.
+                    </p>
+                    <h3 id="removeNavbars" data-i18n="about-remove-navbars">Removing navigation bars</h3>
+                    <p data-i18n="about-remove-navbars-para1">
+                        The default setting is for the top and bottom navigation bars to slide away when you scroll down and slide back when you scroll up. However,
+                        in some ZIM archives, e.g. PhET, it is not possible to scroll, and the navigation bars can obscure some content. In this case, in most browsers
+                        you can swipe decisively up or down on the window (with touch or with the mouse wheel/touchpad) to toggle the display of the navigation bars.
+                        In all browsers, you can also use the <code>Ctrl/Cmd</code> + <code>UpArrow</code>/<code>DownArrow</code> keys.
+                    </p>
+                    <h3 id="linkHandling">Link handling, dynamic content and image download</h3>
+                    <p>
+                        This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
+                        works smoothly with every option.
+                    </p>
+                    <p>The app can usually operate in two modes: "Restricted" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
+                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). <b><i>Restricted mode doesn't support active or dynamic content.</i></b> You will usually
+                        get an <b>Active Content Warning</b> popping up at the top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you
+                        can often still access content in these archives by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some
+                        things, especially any proprietary User Interface, won't work.
+                    </p>
+                    <p>
+                        You can <b>download images</b> (as long as they haven't been inserted dynamically) by turning on the option <b>Allow image manipulation</b> in Configuration. Then you will be
+                        able to right-click an image and save it to disk or open it in a new tab (only tested in Wikimedia ZIMs). However, <b><i>this doesn't work in the UWP or NWJS apps</i></b>. Workaround
+                        for the UWP app: you can enable the <b>Download or open current article</b> (breakout link) option, export the article to a new browser tab (by clicking the Breakout icon), and then
+                        you will be able to manipulate images in the browser tab. Please note that enabling Image manipulation or the Download/ feature can interfere badly with some ZIMs that rely heavily on
+                        active content. So turn these options off if you are using such ZIMs.
+                    </p>
+                    <p>
+                        You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in Restricted mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
+                        in ServiceWorker mode, you need to enable the option <b>Open ZIM links in new tab</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
+                        Restricted mode or in the PWA/ Electron/ NWJS apps. In Restricted mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
+                        doesn't support the WebP video format (e.g. the mobile UWP app).
+                    </p>
+                    <p>
+                        <b>PhET ZIMs:</b> These science and maths simulations only work in ServiceWorker mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
+                        it hard to click on the experiment's controls. WORKAROUND: Please switch the <b>Hide toolbars while scrolling</b> option to <b>never</b>. This eliminates the pixel shift. You may also have to use the title
+                        search or <a href="#zimIndex">ZIM Archive Index</a> (press a space in title seaarch) to find the experiments, as there is an unresolved issue with displaying the ZIM's User Interface.
+                    </p>
+                    <h3 id="windows">Window and tab management</h3>
+                    <p>
+                        You can <b>open ZIM links in a new browsable tab (or window)</b> by setting the options in Configuration. Right-click (or double right-click if you set that option), ctrl-click, middle click
+                        and long press should all work. Somne contexts (e.g. mobile) don't support this option, or it works badly or very slowly. For those contexts, use the <b>Download or open current article</b> feature
+                        instead. With this feature, the tab is non-browsable, but you can save the page to PDF or print it, etc., from that tab.
+                    </p>
+                    <p>
+                        <b><i>Help! - when I click on an external link it gets blocked!</i></b> Don't panic, this is the Content Security Policy potecting you. You have probably activated Service Worker mode. To open
+                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in ServiceWorker mode). In Restricted mode, external links will open in a new tab/window regardliness of this
+                        setting. Additionally, please note that your browser's <b>popup blocker</b> may be interfering with options that open new tabs or windows. When asked, enable popups always for the app
+                        (if you trust Kiwix), and then reload the app. 
+                    </p>
+                    <p>
+                        In most browsers and frameworks you can set the app to <b>full-screen mode</b> using the option in Configuration, and in Chromium and Firefox browsers you can also <b>lock the orientation</b> of
+                        the app while it is in full-screen mode. Because the browser may throw you out of full-screen mode, for example, when you select an archive or when opening a new window, you may need to click in
+                        the app to re-activate full-screen mode. Full-screen mode needs to be activated by a user gesture: it is not possible to activate it automatically.
+                    </p>
+                    <h3 id="browsers">Browser support</h3>
+                    <p>
+                        We test the app frequently on older browsers and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
+                        in some cases (e.g. Firefox &lt;= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please try switching the app to Restricted mode (see below).
+                    </p>
+                    <p>
+                        We have a version of this app using the NWJS framework that runs on Windows XP/Vista, and there are Electron apps for 32bit and 64bit Linux, macOS and Windows 7/8/10/11, also on ARM64,
+                        as well as a UWP (Store) app.
+                    </p>
+                    <p>
+                        The PWA is fully supported for offline use in modern browsers on Android, iOS, macOS, Linux and Windows. On Android, Linux, macOS and Windows, using Chrome/Chromium browsers (including Edge and
+                        Samsung Internet), you can install the PWA using a button in Configuration for a near-native experience. On iOS in Safari, you can add the PWA to your Home screen, which has the same effect.
+                    </p>
+                    <h4>Officially supported:</h4>
+                    <ul>
+                        <li>Firefox &gt;= 60 on all operating systems (but see note about Android*)</li>
+                        <li>Edge Chromium &gt;= 79</li>
+                        <li>Chrome/Chromium &gt;= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)</li>
+                        <li>Edge Legacy 18, including UWP</li>
+                        <li>Safari on iOS</li>
+                    </ul>
+                    <p>
+                        * The Firefox on Android app only works well with files stored in the Origin Private File System. Picking files from the user-visible file system suffers from a Firefox bug whereby the app attempts
+                        to load the picked file into memory, which can take a very long time and may fail.
+                    </p>
+                    <h4>Deprecated</h4>
+                    <p>Although deprecated, we will keep support for as long as is practical:</p>
+                    <ul>
+                        <li>Internet Explorer 11 (Restricted mode only, no offline use of PWA)</li>
+                        <li>Edge Legacy &lt;= 17 (Restricted mode only, no offline use of PWA)</li>
+                        <li>Firefox 45-59 (some versions require you to switch manually to Restricted mode)</li>
+                        <li>Chromium 49-58 (some versions only run in Restricted mode)</li>
+                    </ul>
+                    <h3 id="expressServer">Express server (Electron app)</h3>
+                    <p>
+                        When running in the Electron framework, this app includes a built-in Express server that allows you to access the app
+                        from any browser on your local device or network. The server hosts the app's code, and you can then select and access
+                        your own ZIM archives through the browser interface. This is useful for when you want to serve the app to other devices
+                        on a closed network that does not have external Internet access.
+                    </p>
+                    <p>
+                        <b>To access from another browser on the same device:</b>
+                    </p>
+                    <ol>
+                        <li>On the Home tab, the app displays a localhost link (e.g., http://localhost:3000)</li>
+                        <li>Open any browser on the same device and navigate to this address</li>
+                        <li>You can then select your ZIM archives in the browser as normal</li>
+                    </ol>
+                    <p>
+                        <b>To access from another device on your local network:</b>
+                    </p>
+                    <ol>
+                        <li>On the Home tab, check the <b>"Allow external network access"</b> option (this session only)</li>
+                        <li>Your Firewall may prompt you to allow network access - approve this to enable external connections</li>
+                        <li>The app will display links showing the local IP address where you can access it (e.g., http://192.168.1.100:3000)</li>
+                        <li>On another device on the same network, open a web browser and navigate to the displayed address</li>
+                        <li>You can then select your ZIM archives in the browser (they need to be accessible from that device)</li>
+                        <li>To access ZIM archives stored on the host device, share them via a network file share so they can be selected from the remote browser</li>
+                    </ol>
+                    <p>
+                        You can customize the port number in Configuration &gt; Expert Settings. The default port is 3000.
+                    </p>
+                    <p>
+                        <b>Important notes:</b>
+                    </p>
+                    <ul>
+                        <li>Because access from other devices is over HTTP (not HTTPS), the app will run in <a href="#modes">Restricted mode</a>
+                            (see below) when accessed from a browser (this is not the case if using localhost)</li>
+                        <li>Only enable external network access when you trust all devices on your local network</li>
+                        <li>The server only allows connections from your local network (private IP ranges), not from the public internet</li>
+                        <li>External access is disabled by default for security and only applies to the current session</li>
+                    </ul>
+                    <h3 id="modes">Technical information</h3>
+                    <p>
+                        Depending on your browser or framework, this app may be capable of running in two different modes, which we call
+                        "ServiceWorker Mode" and "Restricted mode". There is a toggle under Performance/compatibility settings
+                        in Configuration. Here is an explanation of what these modes do:
+                        <ul>
+                            <li>
+                                <b>ServiceWorker Mode</b> (defualt): This mode, as its name implies, requires that the browser or framework be
+                                capable of installing a Service Worker. It works by intercepting the browser or framework's Fetch calls (network
+                                requests) and supplying the requested content from the ZIM. This mode requires no DOM traversal, and the content
+                                is read and supplied as-is from the archive. Dynamic content (e.g. JavaScript) and proprietary UIs are fully
+                                supported in this mode. It can feel initially a little slower while commonly used assets are being cached,
+                                but it soon equals Restricted mode in speed, at least in modern browsers. However, older browsers such as IE11 do
+                                not support this mode, and the app must be running in a secure context (https:, localhost, or certain browser
+                                extensions). Please be sure only to open ZIMs from sources you trust in this mode: see <a href="#security">Security</a>
+                                for more information. 
+                            </li>
+                            <li>
+                                <b>Restricted mode</b>:  This mode prevents attached scripts from running in the iframe, so it is useful for checking
+                                the static content of a ZIM before you allow scripts to run. It is also compatible with older browsers or frameworks
+                                that cannot run Service Workers.The mode has limitations which mean that only static content can be displayed, such as
+                                that found in Wikipedia / WikiMedia archives and (for now) Stackexchange. It is a way of inserting articles extracted
+                                from the ZIM into the DOM (browser document) by injecting the content into an iframe or tab. We then use native DOM
+                                methods to parse the article's HTML and insert required assets (images, stylesheets, event listeners for hyperlinks,
+                                etc.). On old devices, DOM traversal can be slow, but it is compensated for because we do not extract or run JavaScript
+                                assets (which would be technically extremely complicated). As a result, for WikiMedia archives this mode is usually
+                                quite fast. On the downside, ZIMs that have a proprietary dynamic UI (such as Gutenberg or TED talks) are only partially
+                                supported in this mode: the UI does not work, but articles can be searched for and loaded from the search bar.
+                            </li>
+                        </ul>
+                    </p>
+                    <h3 id="feedback">Feedback / helping / contributing</h3>
+                    <p>
+                        This application is still a work in progress. There are bugs that need fixing and improvements that
+                        need to be implemented. Suggestions and patches/pull requests are welcome: the source code is on
+                        <a href="https://github.com/kiwix/kiwix-js-pwa" target="_blank">github</a>.
+                        The <a href="https://github.com/kiwix/kiwix-js-pwa/issues" target="_blank">Kiwix JS <span class="identity">Windows</span> issue tracker</a>
+                        is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
+                                                                   target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
+                    </p>
+                    <p>
+                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20kiwix-js-pwa">
+                            by email
+                        </a>.
+                    </p>
+                    <p>
+                        In all cases, please give as much detail as you can: which device you are using, which version of Kiwix, which archive, which articles etc.
+                    </p>
+                    <p>If you like the Kiwix project and use it, please consider giving donations:</p>
+                    <ul>
+                        <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
+                        <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the <a href="https://www.kiwix.org" target="_blank">home page of kiwix.org</a></li>
+                    </ul>
+                    <p>You can also help by:</p>
+                    <ul>
+                        <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online Wikipedia articles</a></li>
+                        <li><a href="https://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
+                    </ul>
+                    <h3 id="credits">Credits</h3>
+                    <p>Thanks are due to:</p>
+                    <ul>
+                        <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
+                        <li>Wikipedia teams and contributors for helping to spread knowledge to everybody</li>
+                        <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
+                    </ul>
+                    <h3>Licence information</h3>
+                    <p>
+                        Copyright 2013-2023 Jaifroid, Mossroy, Peter-x and other contributors
+                        <br />Jaifroid for adaptation and development of the app on the Universal Windows, Electron, NWJS and PWA Platforms
+                        <br />
+                        <br />This application is licensed under the GPL v3 licence:
+                        <br />
+                        <i>
+                            <br />Kiwix is free software: you can redistribute it and/or modify
+                            <br />it under the terms of the GNU General Public Licence as published by
+                            <br />the Free Software Foundation, either version 3 of the Licence, or
+                            <br />(at your option) any later version.
+                            <br />
+                            <br />Kiwix is distributed in the hope that it will be useful,
+                            <br />but WITHOUT ANY WARRANTY; without even the implied warranty of
+                            <br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                            <br />GNU General Public Licence for more details.
+                            <br />
+                            <br />You should have received a copy of the GNU General Public Licence
+                            <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="https://www.gnu.org/licenses/" target="_blank">https://www.gnu.org/licenses/</a>
+                        </i>
+                    </p>
+                    <p>Main libraries and resources used:</p>
+                    <ul>
+                        <li><a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> 4.6.2, released under an <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache Licence 2.0</a></li>
+                        <li><a href="https://fontawesome.com/" target="_blank">Font Awesome</a> 5.15.4, released under the <a href="https://fontawesome.com/license/free" target="_blank">Font Awesome Free License</a></li>
+                        <li><a href="https://rollupjs.org/" target="_blank">rollup.js</a> 3 for bundling this app, released under an <a href="https://github.com/rollup/rollup/blob/master/LICENSE.md" target="_blank">MIT licence</a></li>
+                        <li><a href="https://qunitjs.com/" target="_blank">QUnit</a> 2, released under an <a href="https://jquery.org/license" target="_blank">MIT Licence</a></li>
+                        <li>Kiwix logo from <a href="https://www.kiwix.org/" target="_blank">kiwix.org</a>, released under a <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
+                        <li>OpenZIM specifications from <a href="https://wiki.openzim.org/wiki/OpenZIM" target="_blank">www.openzim.org</a>, released under the <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
+                        <li>Emscripten to generate XZ, ZSTD and libzim decompressors in JavaScript: <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT Licence</a></li>
+                        <li><a href="https://tukaani.org/xz/embedded.html" target="_blank">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
+                        <li>The <a href="https://github.com/facebook/zstd" target="_blank">Zstandard library</a>, released under a <a href="https://github.com/facebook/zstd/blob/dev/LICENSE" target="_blank">BSD Licence</a> and a <a href="https://github.com/facebook/zstd/blob/dev/COPYING" target="_blank">GPLv2 Copying Licence</a></li>
+                        <li><a href="https://katex.org/" target="_blank">KaTeX</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/KaTeX/KaTeX/blob/master/LICENSE" target="_blank">MIT licence</a></li>
+                        <li><a href="https://www.the-art-of-web.com/javascript/search-highlight/" target="_blank">Hilitor</a> for finding and hilighting text inside an article, released under <a href="https://www.the-art-of-web.com/copyright.html" target="_blank">this licence</a></li>
+                        <li><a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader</a> for converting Web pages to dark mode, released under an <a href="https://github.com/darkreader/darkreader/blob/main/LICENSE" target="_blank">MIT Licence</a></li>
+                        <li><a href="https://github.com/webrecorder/wabac.js" target="_blank">The Web Archive Browsing Advanced Client</a> and <a href="https://github.com/webrecorder/wombat" target="_blank">Wombat Client-Side Rewriting Library</a> from the WebRecorder ReplayWeb project, released under a
+                            <a href="https://github.com/webrecorder/wabac.js/blob/main/LICENSE.md" target="_blank">GNU Affero General Public Licence</a></li>
+                    </ul>
+                    <h3>Other platforms/versions</h3>
+                    <p>Other Kiwix clients exist on various platforms. See the official site : <a href="https://www.kiwix.org/" target="_blank">https://www.kiwix.org/</a>.</p>
+                    <p>&nbsp;</p>
+                    <div class="returntoArticle"></div>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                </div>
+                <div id="configuration" style="display: none;" class="container category-padding">
+                    <div id="returntoArticle" class="returntoArticle"></div>
+                    <div id="divInstall2" style="display:none; float:right;">
+                        <button id="btnInstall2" class="btn btn-sm btn-primary btn-inline">Install PWA</button>
+                    </div>
+                    <div>
+                        <h2 style="margin-top:0;">Configuration</h2>
+                        <div id="alertBoxPersistent"></div>
+                        <p style="margin: 1em 0;">
+                            Version: <b>Kiwix JS <span id="appType"></span><span class="version"></span></b> <span id="updateCheck">[<a class="unhideLibrary" href="#btnRescanDeviceStorage">check for updates</a>]</span>&nbsp;
+                            <button title="This performs a simple page reload. May be useful if the app has become unresponsive."
+                                    id="btnRefreshApp" class="btn btn-sm btn-inline" style="border-color: gray" type="button">
+                                Refresh
+                            </button>
+                            <button title="WARNING! Make sure you have an Internet connection! This will erase the app's Service Worker and all settings (except OPFS archives), returning it to a freshly installed state."
+                                    id="btnReset2" class="btn btn-sm btn-inline" style="border-color: palevioletred" type="button">
+                                Reset
+                            </button>
+                        </p>
+                        <div id="openAppInBrowserSpan" style="display: none; float: right; max-width: 50%; padding-left: 0.5em;">
+                            <b>Open this app in your browser:</b><br />
+                            <div id="openAppInBrowserLinks"></div>
+                            <div id="externalAccessDiv">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="externalAccessCheckbox" />
+                                    <span class="checkmark"></span>
+                                    <b>Allow external network access</b> (this session only)
+                                </label>
+                            </div>
+                        </div>
+                        <p id="usage">For <b>instructions</b> and <b>usage guide</b>, please see the <a href="#" class="aboutLink"><b>About tab</b> <i class="fas fa-info-circle"></i></a> (top right).</p>
+                        <p class="packagedInfo" style="display: none; margin-top: 1em;">
+                            Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-sm btn-inline">Reload</button>
+                        </p>
+                        <p id="currentArchive" style="display: none;">
+                            Current archive: <b><a href="#" id="currentArchiveLink"></a></b>
+                            <button id="openCurrentArchive" style="display: none;" type="button" class="btn btn-primary btn-sm btn-inline">Open</button>
+                        </p>
+                        <p id="downloadLinksText">
+                            <a class="unhideLibrary" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
+                        </p>
+                        <p></p>
+                    </div>
+                    <div id="hideFileSelectors">
+                        <div id="chooseArchiveFromLocalStorage" style="display: none;">
+                            <div id="archivesFound" class="row">
+                                <div class="col-12">
+                                    <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
+                                </div>
+                                <div class="col-12">
+                                    <select id="archiveList" class="form-control"></select>
+                                </div>
+                            </div>
+                            <div id="noZIMFound" style="display: none; margin-top: 1em">
+                                <p style="color: red;">There were no ZIM file(s) found in the selected location!</p>
+                            </div>
+                            <div id="fsManager" class="row">
+                                <div class="col-8"></div>
+                                <div class="col-1">
+                                    <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><i class="fas fa-share"></i></a>
+                                </div>
+                                <div class="col-1">
+                                    <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><i class="fas fa-trash-alt"></i></a>
+                                </div>
+                                <div class="col-1">
+                                    <a href="#" title="Refresh archive list" id="btnRefresh"><i class="fas fa-sync-alt"></i></a>
+                                </div>
+                            </div>
+                            <div id="openLocalFiles" style="margin-top: 0.5em;">
+                                <div id="archiveFilesDiv">
+                                    <div class="row">
+                                        <div class="col-6" id="archiveFileLabel">
+                                            <p><b>Pick ZIM archive(s)</b>:</p>
+                                        </div>
+                                        <div class="col-6" id="archiveFilesLabel">
+                                            <p><b>For multiple or split archives</b>:</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div id="archiveFileCol" class="col-6">
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
+                                        </div>
+                                        <div id="archiveFilesCol" class="col-6">
+                                            <div id="OPFSQuota"  style="display: none;"></div>
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="archiveFilesLegacyDiv">
+                                    <div class="row" style="padding-bottom: 0.5em;">
+                                        <input type="file" accept="application/octet-stream,.zim,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz,.zimba,.zimbb,.zimbc,.zimbd,.zimbe,.zimbf,.zimbg,.zimbh,.zimbi,.zimbj,.zimbk,.zimbl,.zimbm,.zimbn,.zimbo,.zimbp,.zimbq,.zimbr,.zimbs,.zimbt,.zimbu,.zimbv,.zimbw,.zimbx,.zimby,.zimbz"
+                                            class="btn btn-primary btn-inline" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple />
+                                        <input type="file" class="btn btn-primary btn-inline" value="Select folder" id="archiveDirLegacy" webkitdirectory />
+                                    </div>
+                                    <div id="instructions" class="row">
+                                        <p>
+                                            Please choose the location of your ZIM archive <b>or drag-and-drop the file(s) here</b>.<br />
+                                            For a split archive (.zimaa, .zimab, etc.) you must select <b>all</b> the split parts.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div id="displayOPFS" class="row" style="display: none; margin: 0.5em;">
+                                    <label class="checkbox" title="This uses a dedicated Origin Private File System (OPFS) for the app, which allows the app to load these files automatically on launch, and is much faster than the normal file system on Android. See About -> Origin Private File System for more information.">
+                                        <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
+                                        <span class="checkmark"></span>
+                                        <b>Use Private File System <a href="#OPFS" class="aboutLink">[info]</a></b> (<i>default for Firefox and Android</i>)
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="rescanStorage" class="row" style="margin-top: 1em;">
+                                <div class="col-12">
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" title="Tap to show file or folder pickers and other storage options." />
+                                    Select ZIM files or <b>drag and drop</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="downloads">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="card-group-heading">Download library</h4>
+                                </div>
+                                <div id="libraryArea" class="col-12">
+                                    <table>
+                                        <tr>
+                                            <td><input id="downloadTrigger" type="button" class="btn btn-primary btn-inline" value="Open library" style="float:left; margin-right:1em;" /></td>
+                                            <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
+                                        </tr>
+                                    </table>
+                                    <div class="row" style="margin: 0.5em;">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="downloadLinks" style="display: none;"></div>
+                                <pre id="serverResponse" class="card-footer" style="display:none;"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-group-heading mb-0">Display settings</h4>
+                            <button style="border-color: gray;" title="Open all the setting panels."
+                                id="btnToggleSettings" class="btn btn-sm btn-inline" type="button">▷ Open all</button>
+                        </div>
+                        <div class="row">
+                            <div class="column">
+                                <div id="displaySettingsDiv" class="card border-info" style="clear: left;">
+                                    <div class="card-header">Display size, theme and orientation</div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <b title="Put app into full-screen mode and optionally attempt to lock the display orientation (intended for mobile, if the app is installed: may not work in other contexts).">
+                                                    Full-screen mode / lock orientation:
+                                                </b>
+                                                <select title="Put app into full-screen mode and optionally attempt to lock the display orientation (intended for mobile, if the app is installed: may not work in other contexts)." name="lockDisplayOrientation" id="lockDisplayOrientationDrop" class="dropdown">
+                                                    <option value="">Normal</option>
+                                                    <option value="fullscreen">Full screen</option>
+                                                    <option value="natural">Natural</option>
+                                                    <option value="portrait">Portrait</option>
+                                                    <option value="landscape">Landscape</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <b>Change font size for the User Interface:</b>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
+                                                <div class="col-sm-12">
+                                                    (to change <b>article</b> font size, tap <i class="fas fa-search-plus"></i> and <i class="fas fa-search-minus"></i>)
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <input type="range" class="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="1" value="100">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <b><span id="spinnerVal">100%</span></b>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label class="checkbox" title="Tap three times for dark | auto | light">
+                                                    <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Set dark mode for User Interface</b>: [ <b><span id="cssUIDarkThemeState"></span></b> ] (<i>auto</i> mode uses OS Settings if available)
+                                                </label>
+                                                <label class="checkbox" title="Tap three times for dark | auto | light. This is tuned to work with Wikimedia ZIMs, but will also work with some other common ZIM types.">
+                                                    <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (for Wikimedia, Gutenberg and Stackexchange ZIMs only)
+                                                </label>
+                                                <label id="darkDarkReader" style="display:none;" class="checkbox" title="This uses the DarkReader plugin, and should work with a wider range of archives. It is automatically set if you load a Zimit archive, but can be unset.">
+                                                    <input type="checkbox" name="cssWikiDarkThemeDarkReader" id="cssWikiDarkThemeDarkReaderCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Use the <a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader plugin</a></b> (<i>experimental</i>: should work with wider range of archive types)<br />
+                                                </label>
+                                                <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and may work with some other ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
+                                                    <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Use simple inversion for dark theme</b> (may work with some other archive types)
+                                                </label>
+                                                <label id="darkLegacy" style="display:none;" class="checkbox" title="This is the legacy dark theme. It is applied automatically to Wikimedia archives before Oct 2025. Use this option to force apply to newer Wikimedia ZIMs.">
+                                                    <input type="checkbox" name="cssWikiDarkThemeLegacy" id="cssWikiDarkThemeLegacyCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Force use of legacy dark theme</b> (for older Wikimedia ZIMs)
+                                                </label>
+                                                <label class="checkbox" title="Tap three times for random btn | both | dark theme btn">
+                                                    <input type="checkbox" name="triStateThemeRandomBtn" id="triStateThemeRandomBtnCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Show toolbar buttons</b>: [ <b><span id="triStateThemeRandomBtnState"></span></b> ] (select to show random or theme buttons in toolbar)
+                                                </label>
+                                                <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This resets the display on app launch or when the app is resized, to fix UI on excternal monitors. It increases load time, so turn off if you do not use a secondary display.">
+                                                    <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Fix UI bug with secondary displays</b> (increases load and resize time, turn off if not needed)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card border-info" id="cssSettingsDiv">
+                                    <div class="card-header">Display style (mobile, desktop)</div>
+                                    <div class="card-body">
+                                        <label class="radio" title="The uses the style that is the default for the ZIM file you load. For Wikimedia ZIMs, this is now usually a 'mobile' display style. Note that 'mobile' hides certain elements, like some navigation boxes. If you want to see these in Wikimedia ZIMs, switch to 'desktop' style below.">
+                                            <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
+                                            <span class="radiobtn"></span>
+                                            <b>Default ZIM style</b> (<span id="zimtype">for Wikimedia ZIMs</span>)
+                                        </label>
+                                        <label class="radio" title="This is only relevant for Wikimedia ZIMs. It simulates the Wikipedia 'desktop' display style even for ZIMs with an embedded mobile style. Please note that this simulation involves adding in our own stylesheets and moving some elements, so it may not be 100% accurate.">
+                                            <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
+                                            <span class="radiobtn"></span>
+                                            <b>Use Wikimedia desktop style</b> (and transform if necessary)
+                                        </label>
+                                        <label class="radio" title="This is only relevant for Wikimedia ZIMs. If the ZIM is coded with a 'desktop' display style, then this setting transforms it to 'mobile'. Only older ZIMs have a 'desktop' style.">
+                                            <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
+                                            <span class="radiobtn"></span>
+                                            <b>Use Wikimedia mobile style</b> (and transform if necessary)
+                                        </label>
+                                        <label class="checkbox" title="This speeds up the display of articles for most Wikimedia ZIM types by using our own copies of common stylesheets and removing JavaScript that is unused. Note that our copies may not be 100% correct for all languages. We also do some optimizations that may result in minor infidelities. If you want to use the ZIM's own styles for full fidelity, turn this off.">
+                                            <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Use locally cached Wikimedia styles</b> (<i>recommended</i>: also removes unused JS)
+                                        </label>
+                                        <label class="checkbox" title="Tap three times for always | auto | never. This is only relevant when you maximize the app window (e.g. on a PC). It ensures the article uses the full screen width.">
+                                            <input name="pageMaxWidth" id="removePageMaxWidthCheck" type="checkbox" value="false">
+                                            <span class="checkmark"></span>
+                                            <b>Remove max page width restriction</b>: [ <b><span id="pageMaxWidthState"></span></b> ] (useful for recent Wikipedia archives)
+                                        </label>
+                                        <div id="displayHiddenBlockElementsDiv">
+                                            <label class="checkbox" title="Show navboxes, tables and other elements that tend to be hidden in Wikipedia mobile style. Not needed if you select Desktop display style. 'Auto' applies setting only to Wikimedia archives in mobile style.">
+                                                <input name="displayHiddenBlockElements" id="displayHiddenBlockElementsCheck" type="checkbox" value="false">
+                                                <span class="checkmark"></span>
+                                                <b>Display hidden block elements</b>: [ <b><span id="displayHiddenElementsState"></span></b> ] (<i>for Wikimedia ZIMs</i>: shows elements that are hidden in mobile style)
+                                            </label>
+                                        </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="openAllSections" id="openAllSectionsCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Open all headings</b> (<i>for WikiMedia ZIMs</i>: sets the state of collapsible headings in mobile style only)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card border-info" id="imageSettingsDiv">
+                                    <div class="card-header">Image and map settings</div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="This is useful for very low-memory devices, or to increase page rendering speed.">
+                                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-6" id="imageManipulationDiv">
+                                                <label class="checkbox" title="This allows saving images to disk (with right-click/long-press), or opening them in a new tab, but uses slightly more memory because images are stored in the document as dataURIs. WARNING: setting may interfere with dynamic content in non-Wikimedia ZIMs.">
+                                                    <input type="checkbox" name="manipulateImages" id="manipulateImagesCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Allow image manipulation</b> (may interfere with dynamic content)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <label class="checkbox" title="If a Wikipedia ZIM is loaded, you can hyperlink each image to its high resolution version online. This will then open if you click on an image. NB Setting does not work on the landing page or on image maps, and images are not guaranteed to exist on the server.">
+                                            <input type="checkbox" name="linkToWikimediaImageFile" id="linkToWikimediaImageFileCheck">
+                                            <span class="checkmark"></span>
+                                            <b>In Wikipedia ZIMs, hyperlink images to high-res Wikimedia versions</b> (click image to open the external site in a new window, disabled for imagemaps and landing page)
+                                        </label>
+                                        <label class="checkbox" title="By default, this app will use the Windows Maps app when you click on a map pin (you can download offline maps in Windows Settings -> Offline maps). If you prefer to use OpenStreetMap (online), then check this box.">
+                                            <input type="checkbox" name="useOSM" id="useOSMCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Use online OpenStreetMap for map pins instead of offline Windows Maps</b> (for some Wikipedia and English / German Wikivoyage)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card border-info" id="otherSettingsDiv">
+                                    <div class="card-header">Navigation, search and other</div>
+                                    <div class="card-body">
+                                        <label class="checkbox" title="Tap three times for both | top | never">
+                                            <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Hide toolbars while scrolling:</b> [ <b><span id="hideToolbarsState"></span></b> ] (scroll slightly up to reveal)
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="navButtonsPos" id="navButtonsPosCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Move navigation buttons to top toolbar</b> (note that Kiwix icon acts as Home button)
+                                        </label>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <b>Alphabetical ZIM Archive Index:</b>
+                                            </div>
+                                            <label title="Press space bar in search field to show the ZIM Archive Index.">
+                                                <div class="col-sm-6">
+                                                    <b>Start character</b> of alphabet:
+                                                    <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;color:steelblue;">
+                                                    (use capital letters if they exist in your locale)<br />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <b>End character</b> of alphabet:&nbsp;&nbsp;
+                                                    <input type="text" name="omegaChar" id="omegaCharTxt" value="Z" style="width:2em;color:steelblue;">
+                                                    (these are used to set appropriate alphabet for the Archive Index)
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="row" style="padding-top: 10px">
+                                            <div class="col-sm-12">
+                                                <b>Title search:</b>
+                                            </div>
+                                            <label title="Set the maximum number of title search results">
+                                                <div class="col-sm-12">
+                                                    <p>
+                                                        Wildcards <code>.*</code> or <code>.+</code> are permitted, e.g. <code>list.+medieval</code>, but
+                                                        <a href="#searchSyntax" class="aboutLink">see usage</a>
+                                                    </p>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <p><b>Select max number of search results:</b> (<i>higher values increase search time</i>)</p>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <div class="range">
+                                                        <input type="range" class="form-control-range" min="5" max="100" id="titleSearchRange" value="30">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <b><span id="titleSearchRangeVal"></span></b>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <label class="checkbox" id="libzimSearchTypeCheckBox" data-i18n-tip="configure-display-libzimsearchtype-tip" title="If checked, uses libzim fulltext search with snippet previews if available, otherwise just gets fulltext titles. Hover, click or press enter on keyboard to expand the snippet.">
+                                            <input type="checkbox" name="libzimSearchType" id="libzimSearchType" checked>
+                                            <span class="checkmark"></span>
+                                            <span data-i18n="configure-display-libzimsearchtype"><b>Add snippets to libzim fulltext search</b> (if available)</span>
+                                        </label>
+                                        <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Performance/compatibility settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
+                                            <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
+                                            <span class="checkmark"></span>
+                                            <strong>Open links in a new tab</strong> with right-click, ctrl-click, middle-click or long-press
+                                        </label>
+                                        <div class="row" id="openInNewWindow" hidden>
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="Open article in new window">
+                                                    <input type="checkbox" name="windowOpener" id="winOpenerCheck">
+                                                    <span class="checkmark"></span>
+                                                    <strong>Open in new window instead</strong>
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="Use double right-click to open window/tab">
+                                                    <input type="checkbox" name="dblRightClick" id="dblRightClickCheck">
+                                                    <span class="checkmark"></span>
+                                                    <strong>Use <i>double</i> right-click to open window/tab</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div id="winOpenerHelp" style="padding-bottom:1em;"></div>
+                                        <label class="checkbox" title="Inserts an icon at the top of an article which allows you to download or open the article, with all its images, in a new window or tab. The article will be saved as a self-contained HTML file, which you can open in any browser.">
+                                            <input type="checkbox" name="allowHTMLExtraction" id="allowHTMLExtractionCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Download or open <i>current</i> article via breakout icon</b> (self-contained, but not browsable)
+                                        </label>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="card-group-heading" id="privacy">Privacy settings</h4>
+                        </div>
+                        <div class="column">
+                            <div class="card border-warning" style="min-width:16em;" id="dataPersistence">
+                                <div class="card-header">Control of browsing data</div>
+                                <div class="card-body">
+                                    <label class="checkbox" title="Turn this off if you are researching sensitive topics that you do not want to be revealed when you next launch the app.">
+                                        <input type="checkbox" name="rememberLastPage" id="rememberLastPageCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Reopen last-visited page</b> on next app launch (<i>turn off if researching sensitive topics</i>)
+                                    </label>
+                                    <label class="checkbox" title="Prevents accidental navigation to external sites (and avoids some side-effects that can compromise the UI).">
+                                        <input type="checkbox" name="openExternalLinksInNewTabs" id="openExternalLinksInNewTabsCheck" checked>
+                                        <span class="checkmark"></span>
+                                        <strong>Warn before opening external links</strong> (<i>recommended</i>)
+                                    </label>
+                                    <p><i>To clear all data from the app, consider a full app reset after your browsing session</i> (see under <a href="#expertSettingsDiv"><b>Expert settings</b></a>)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="card-group-heading">Performance / compatibility</h4>
+                        </div>
+                        <div class="card border-warning" id="performanceSettingsDiv">
+                            <div class="card-header">Caching and preview settings</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <p>Speed up the display of articles by caching assets:</p>
+                                        <label class="radio" title="The cache provides high-speed access to ZIM assets such as stylesheets and scripts, which will improve article load times.">
+                                            <input type="radio" name="cachedAssetsMode" value="true" id="cachedAssetsModeRadioTrue" checked>
+                                            <strong>Cache assets</strong> (<i>recommended</i>)
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                        <label class="radio" title="For low-memory devices, caching assets may cause app instability. This option allows you to disable the cache.">
+                                            <input type="radio" name="cachedAssetsMode" value="false" id="cachedAssetsModeRadioFalse">
+                                            <strong>Do not cache assets</strong> (empties caches: for low-memory devices)
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div id="cacheStatusPanel" class="card-footer" style="overflow: hidden">
+                                            <div>
+                                                <p><b>Cache status:</b></p>
+                                            </div>
+                                            <div>
+                                                <div class="col-7">
+                                                    <p>Cache used: <b id="cacheUsed"></b></p>
+                                                </div>
+                                                <div class="col-5">
+                                                    <p>Assets: <b id="assetsCount"></b></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="checkbox" title="Shows a small popup preview of Wikipedia and Wikivoyage articles when the pointer is hovered over an article link. Turn this off if it is too slow or interferes wtih display of articles on small-screen devices.">
+                                    <input type="checkbox" name="showPopoverPreviews" id="showPopoverPreviewsCheck">
+                                    <span class="checkmark"></span>
+                                    <b>Show a popover preview of <i>Wikipedia / Wkivoyage</i> articles when hovering over links</b> (<i>limited functionality in Restricted mode</i>)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card border-warning" style="min-width:16em;" id="mathsProcessingMode">
+                            <div class="card-header">Mathematical and chemical equations and symbols</div>
+                            <div class="card-body">
+                                <label class="radio">
+                                    <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
+                                    <span class="radiobtn"></span>
+                                    <b>Typeset TeX equations with KaTeX</b> (<i>recommended</i>: very fast, but not all symbols may be supported in all languages; will use SVG fallbacks if TeX string not available)
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
+                                    <span class="radiobtn"></span>
+                                    <b>Use SVG fallback images</b> (slow and memory-hungry, but will display all symbols)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card border-warning" id="contentInjectionModeDiv">
+                            <div class="card-header">Content injection mode</div>
+                            <div class="card-body">
+                                <p>See <a href="#modes" class="aboutLink">About (Technical settings)</a> for an explanation of the difference between these modes:</p>
+                                <label class="radio"
+                                    title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
+                                    <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
+                                    <span class="radiobtn"></span>
+                                    <strong>ServiceWorker</strong> (<i>recommended</i>, supports dynamic content and inline JavaScript)
+                                </label>
+                                <label class="radio"
+                                    title="This mode is only recommended for checking ZIMs from untrusted sources since it blocks attached scripts. However, it works well with Wikimedia ZIMs and some other static content.">
+                                    <input type="radio" name="contentInjectionMode" value="jquery"
+                                        id="jQueryModeRadio" checked>
+                                    <span class="radiobtn"></span>
+                                    <strong>Restricted</strong> (no dynamic content, compatible with older browsers and frameworks)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="card border-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
+                            <div class="card-header">Display hidden ZIM archive selectors</div>
+                            <div class="card-body">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
+                                    <span class="checkmark"></span>
+                                    <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="card-group-heading">Expert settings</h4>
+                        </div>
+                        <div class="card border-warning" id="defaultBehaviourssDiv">
+                            <div class="card-header">Modify default behaviours</div>
+                            <div class="card-body">
+                                <div class="column">
+                                    <label class="checkbox" title="In some contexts, reloading the app will disconnect the currently loaded ZIM archive, requiring you to re-pick it. You may disable default interception here.">
+                                        <input type="checkbox" name="inerceptBeforeUnload" id="interceptBeforeUnloadCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Warn before leaving page with loaded archive</b> (<i>prevents accidental closing/reloading</i>)
+                                    </label>
+                                    <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction. Disable it here if it is causing issues." >
+                                        <input type="checkbox" name="disableDragAndDrop" id="disableDragAndDropCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Disable drag-and-drop</b> (in case it is causing anomalies)
+                                    </label>
+                                    <label class="checkbox" data-i18n-tip="configure-expert-enable-source-verification-tip" title="Warning: Some ZIM archives from untrusted sources could run malicious code in your browser. This can be prevented by using Restricted mode, which cannot run active content from the ZIM. Highly dynamic ZIMs will probably fail in Restricted mode, but ZIMs with largely static content should work. If you trust the source of all of your ZIMs, then disabling this option will use ServiceWorker mode by default, if available.">
+                                        <input type="checkbox" name="disableFileVerification" id="enableSourceVerificationCheck">
+                                        <span data-i18n="configure-expert-enable-source-verification-check-box" class="checkmark"></span>
+                                        <b>Enable source verification of new files</b> (<i>recommended</i>: you will only be prompted the first time you open a ZIM)
+                                    </label>
+                                    <label class="checkbox" data-i18n-tip="configure-expert-autoupdate-PWA-tip" title="Warning: disabling this option may cause the app to fail on next launch if a new update is pending and your device does not have Internet connectivity!">
+                                        <input type="checkbox" name="autoUpdatePWA" id="autoUpdatePWACheck">
+                                        <span data-i18n="configure-expert-autoupdate-PWA-check" class="checkmark"></span>
+                                        <b>Enable automatic updates for PWA</b> (<i>recommended</i>: you will be updated without being prompted)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card border-warning" id="expertSettingsDiv">
+                            <div class="card-header">Troubleshooting and development</div>
+                            <div class="card-body">
+                                <div class="column">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Permanently hide active content warning</b> (for experienced users)
+                                    </label>
+                                    <b title="You can force the app to use libzim full-text searching if the ZIM has a full-text index. Useful for earlier versions of Android, for example.">Force / disable libzim W/ASM for reading full-text index:</b>
+                                    <select title="You can force the app to use libzim full-text searching if the ZIM has a full-text index. Useful for earlier versions of Android, for example." name="debugLibzimASM" id="debugLibzimASMDrop" class="dropdown">
+                                        <option value="">Default</option>
+                                        <option value="wasm">WASM</option>
+                                        <option value="asm">ASM</option>
+                                        <option value="wasm.dev">WASM debug</option>
+                                        <option value="asm.dev">ASM debug</option>
+                                        <option id="libzimDisable" value="disable">Disable</option>
+                                    </select>
+                                    <p><i>Warning! Disables OS/ZIM checks and may make title search and article reading unresponsive!</i></p>
+                                    <label class="checkbox" title="This is highly experimental and unstable. It also currently does not work with Zimit archives using the Replay Worker.">
+                                        <input type="checkbox" name="useLibzimReader" id="useLibzimReaderCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Also use selected libzim for reading ZIM content</b> (<i>unstable</i>)
+                                    </label>
+                                    <label class="checkbox" title="The app automatically falls back to legacy support if the Replay system cannot run, but this option forces the app to use that mode. Primarily for developers maintaining the legacy code.">
+                                        <input type="checkbox" name="useLegacyZimitSupport" id="useLegacyZimitSupportCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Use legacy method for reading Zimit-based archives</b> (may be faster on some systems)
+                                    </label>
+                                    <div id="expressPortInputDiv" style="display: none;" title="If you allowed network access on startup, you can access this app from any local browser by going to localhost:port in the browser address bar (e.g. http://localhost:3000).">
+                                        <b>Customize the localhost port when accessing this app from a browser</b>:<br />
+                                        <label>
+                                            <input type="text" name="expressPort" id="expressPortInput" value="3000" style="width:5em;color:steelblue;">
+                                        </label>
+                                    </div>
+                                    <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
+                                        <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
+                                    </label>
+                                    <p>Reset the app to default settings and erase all caches:</p>
+                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. Archives stored in the OPFS will be preserved. The app will reload.">
+                                        <button type="button" class="btn btn-danger" id="btnReset">Reset app</button>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    &nbsp;
+                    <div class="row">
+                        <div class="card border-warning" id="apiStatusDiv">
+                            <div class="card-header">API Status</div>
+                            <div class="card-body">
+                                <div id="serviceWorkerStatus"></div>
+                                <div id="messageChannelStatus"></div>
+                                <div id="settingsStoreStatus"></div>
+                                <div id="decompressorAPIStatus"></div>
+                                <div id="searchProviderStatus"></div>
+                                <div id="pwaOriginStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="returntoArticle"></div>
+                    <br />
+                    <br />
+                    <br />
+                </div>
+                <div id="welcomeText" class="container category-padding">
+                    <h4>Welcome to Kiwix JS PWA!</h4>
+                    <p>To use this app, you need to load a ZIM archive first. Go to Configuration <i class="fas fa-wrench"></i> and use the file or folder selector to pick an archive.
+                    You can also download an archive using the in-app library (in Configuration).</p>
+                    <p>For usage instructions and more information, please go to the <a href="#" class="aboutLink"><b>About tab</b> <i class="fas fa-info-circle"></i></a>.</p>
+                    <p>Once you have picked an archive, you can search its contents by typing in the above search field.
+                    It will suggest articles starting with the letters you type.</p>
+                </div>
+                <!-- List of articles matching the typed prefix -->
+                <div id="articleListWithHeader" style="display: none;" class="container">
+                    <span id="articleListHeaderMessage" aria-live="polite"></span>
+                    <div id="articleList" class="list-group" role="listbox">
+                    </div>
+                </div>
+            </div>
+            <!-- Bootstrap alert box -->
+            <div id="alertBoxHeader" style="display: none;"></div>
+            <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
+            <iframe id="articleContent" class="articleIFrame" referrerpolicy="no-referrer" sandbox="allow-same-origin allow-scripts allow-modals allow-forms allow-popups allow-downloads" nwdisable></iframe>
+        </article>
+        <footer id="footer">
+            <!-- Bootstrap alert box -->
+            <div id="alertBoxFooter"></div>
+            <div id="divInstall1" style="display:none">
+                Install app on this device?
+                <button id="btnInstall1" class="btn btn-sm btn-primary">Now</button>
+                <button id="btnLater" class="btn btn-sm btn-primary">Later</button>
+            </div>
+            <div id="navigationButtons" class="btn-group d-flex">
+                <div class="row w-100">
+                    <a class="btn btn-outline-secondary col-2" id="btnHomeBottom" title="Home"><i class="fas fa-home"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnBack" title="Back"><i class="fas fa-arrow-circle-left"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnForward" title="Forward"><i class="fas fa-arrow-circle-right"></i></a>
+                    <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><i class="fas fa-random"></i></a>
+                    <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnToggleThemeAlt" title="Switch between light and dark modes"><i class="fas fa-adjust"></i></a>
+                    <div class="dropup">
+                        <a href="#" class="btn btn-outline-secondary dropdown-toggle col-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b>&nbsp;ToC&nbsp;</b>
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
+                    </div>
+                    <a class="btn btn-outline-secondary col-1" id="btnZoomout" title="Zoom out"><i class="fas fa-search-minus"></i></a>
+                    <a class="btn btn-outline-secondary col-1" id="btnZoomin" title="Zoom in"><i class="fas fa-search-plus"></i></a>
+                    <span class="badge badge-secondary" id="lblZoom"></span>
+                    <a class="btn btn-outline-secondary col-2" id="btnTop" title="Top" href="#top"><i class="fas fa-arrow-up"></i></a>
+                </div>
+            </div>
+        </footer>
+    </section>
+    <!-- Bootstrap 4 JavaScript is not needed as we handle all interactions manually -->
+    <script type="text/javascript" src="js/init.js"></script>
+    <!-- <script type="module" defer src="js/app.js"></script> -->
+    <script type="text/javascript" defer src="js/bundle.js"></script>
+</body>
+</html>
