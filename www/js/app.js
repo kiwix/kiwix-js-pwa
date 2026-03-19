@@ -5805,7 +5805,10 @@ function filterClickEvent (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
-            if (!/^(?:#|javascript|null)/i.test(decHref)) {
+            // We need to ensure that the link we wish to load is not already loaded in the article container, to handle links which are to the same document
+            // e.g., those containing fragments at the end of a relative URL, or those containing querystrings
+            var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(href, appstate.expectedArticleURLToBeDisplayed);
+            if (zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
                 // an event listener attached. For example, links in popovers in external windows. UWP doesn't allow access to the contents
@@ -7540,13 +7543,6 @@ function addListenersToLink (a, href, baseUrl) {
             }
         } else {
             zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-        }
-        // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
-        // a.newcontainer = true; // Prevents double activation
-        // uiUtil.showSlidingUIElements();
-        // Tear down contents of articleWindow.document
-        if (!/UWP/.test(params.appType) && articleWindow && articleWindow.document && articleWindow.document.body) {
-            articleWindow.document.body.innerHTML = '';
         }
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
