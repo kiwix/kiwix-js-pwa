@@ -189,7 +189,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
