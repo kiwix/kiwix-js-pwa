@@ -126,21 +126,21 @@ so you can self-host it on your own server or homelab. This gives you your own i
 [pwa.kiwix.org](https://pwa.kiwix.org/) that you can access in a browser from your PC or LAN, without any dependency on
 external servers.
 
-Pull the image with:
-
-    docker pull ghcr.io/kiwix/kiwix-pwa:latest
-
-Or clone this repo and use the provided [`docker-compose.yml`](docker-compose.yml) to get started immediately:
+Clone this repo and use the provided [`docker-compose.yml`](docker-compose.yml) to get started immediately:
 
     docker compose up -d
 
-Then open `http://localhost:8080` in your browser (or omit `-d` to run in the foreground and see logs).
-You can change the host port (`8080`) in the compose file if it conflicts with another service.
+Or to pull and run just the container image directly (replace `8080` with your preferred port):
+
+    docker run -d -p 8080:80 ghcr.io/kiwix/kiwix-pwa:latest
+
+Then open `http://localhost:8080` in your browser. With `docker compose`, you can omit `-d` to run in the
+foreground and see logs. You can also change the host port in [`docker-compose.yml`](docker-compose.yml).
 
 **Important notes:**
 - ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
   uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
-  must be available on the machine where you are browsing, or via a network mount.
+  must be available on the machine where you are browsing, or via a network mount. For a solution that aslo serves ZIM archives on a local server, please use [kiwix/kiwix-serve](https://github.com/kiwix/kiwix-tools).
 - When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
   without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
   Restricted mode — which is actually fine for reading legacy ZIM archives.
