@@ -2,6 +2,11 @@
 
 Demos:&emsp;[&nbsp;[Instal PWA on Desktop](screenshots/Install-PWA.md)&nbsp;]&emsp;[&nbsp;[Install and use: Android](screenshots/Demo-OPFS_Chrome_Android.md)&nbsp;]&emsp;[&nbsp;[Install and use: Firefox Android](screenshots/Install-PWA_Firefox_Android.md)&nbsp;]&emsp;[&nbsp;[Picking a folder of archives](screenshots/Folder-Picking.md)&nbsp;]&emsp;[&nbsp;[File handling (desktop)](screenshots/Demo-FileHandling.md)&nbsp;]&emsp;[&nbsp;[Demo all OPFS features](screenshots/Demo-OPFS_all_features.md)&nbsp;]&emsp;[&nbsp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&nbsp;]
 
+[![Build](https://github.com/kiwix/kiwix-js-pwa/workflows/Build%20Electron%20and%20NWJS%20packages/badge.svg?query=branch%3Amain)](https://github.com/kiwix/kiwix-js-pwa/actions?query=branch%3Amain)
+[![Publish](https://github.com/kiwix/kiwix-js-pwa/workflows/Publish%20appxbundle%20to%20Kiwix%20server/badge.svg?query=branch%3Amain)](https://github.com/kiwix/kiwix-js-pwa/actions?query=branch%3Amain)
+[![Container image](https://img.shields.io/badge/ghcr.io-kiwix%2Fkiwix--pwa-blue?logo=docker)](https://github.com/kiwix/kiwix-js-pwa/pkgs/container/kiwix-pwa)
+[![Licence: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
 **Kiwix is an offline browser for Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other sites and resources.
@@ -40,6 +45,32 @@ Once installed, bookmarked or added to your home screen, the PWA works even when
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
 <img src="https://github.com/kiwix/kiwix-js-pwa/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
+
+## Self-hosting with Docker
+
+The PWA is also published as a container image to the GitHub Container Registry (GHCR) on every release,
+so you can self-host it on your own server or homelab. This gives you your own instance of
+[pwa.kiwix.org](https://pwa.kiwix.org/) that you can access in a browser, without any dependency on
+external servers.
+
+Pull the image with:
+
+    docker pull ghcr.io/kiwix/kiwix-pwa:latest
+
+Or use the provided [`docker/docker-compose.yml`](docker/docker-compose.yml) to get started immediately:
+
+    docker compose -f docker/docker-compose.yml up -d
+
+Then open `http://localhost:8080` in your browser. You can change the host port (`8080`) in the compose
+file if it conflicts with another service.
+
+**Important notes:**
+- ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
+  uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
+  must be available on the machine where you are browsing, or via a network mount.
+- When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
+  without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
+  Restricted mode — which is actually fine for reading legacy ZIM archives.
 
 ## How do I get all of Wikipedia offline?
 
