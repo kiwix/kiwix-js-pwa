@@ -3,7 +3,6 @@
 Demos:&emsp;[&nbsp;[Instal PWA on Desktop](screenshots/Install-PWA.md)&nbsp;]&emsp;[&nbsp;[Install and use: Android](screenshots/Demo-OPFS_Chrome_Android.md)&nbsp;]&emsp;[&nbsp;[Install and use: Firefox Android](screenshots/Install-PWA_Firefox_Android.md)&nbsp;]&emsp;[&nbsp;[Picking a folder of archives](screenshots/Folder-Picking.md)&nbsp;]&emsp;[&nbsp;[File handling (desktop)](screenshots/Demo-FileHandling.md)&nbsp;]&emsp;[&nbsp;[Demo all OPFS features](screenshots/Demo-OPFS_all_features.md)&nbsp;]&emsp;[&nbsp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&nbsp;]
 
 [![Build](https://github.com/kiwix/kiwix-js-pwa/workflows/Build%20Electron%20and%20NWJS%20packages/badge.svg?query=branch%3Amain)](https://github.com/kiwix/kiwix-js-pwa/actions?query=branch%3Amain)
-[![Publish](https://github.com/kiwix/kiwix-js-pwa/workflows/Publish%20appxbundle%20to%20Kiwix%20server/badge.svg?query=branch%3Amain)](https://github.com/kiwix/kiwix-js-pwa/actions?query=branch%3Amain)
 [![Container image](https://img.shields.io/badge/ghcr.io-kiwix%2Fkiwix--pwa-blue?logo=docker)](https://github.com/kiwix/kiwix-js-pwa/pkgs/container/kiwix-pwa)
 [![Licence: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
