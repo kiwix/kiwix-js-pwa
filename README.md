@@ -45,32 +45,6 @@ Once installed, bookmarked or added to your home screen, the PWA works even when
 
 <img src="https://github.com/kiwix/kiwix-js-pwa/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
 
-## Self-hosting with Docker
-
-The PWA is also published as a container image to the GitHub Container Registry (GHCR) on every release,
-so you can self-host it on your own server or homelab. This gives you your own instance of
-[pwa.kiwix.org](https://pwa.kiwix.org/) that you can access in a browser, without any dependency on
-external servers.
-
-Pull the image with:
-
-    docker pull ghcr.io/kiwix/kiwix-pwa:latest
-
-Or use the provided [`docker/docker-compose.yml`](docker/docker-compose.yml) to get started immediately:
-
-    docker compose -f docker/docker-compose.yml up -d
-
-Then open `http://localhost:8080` in your browser. You can change the host port (`8080`) in the compose
-file if it conflicts with another service.
-
-**Important notes:**
-- ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
-  uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
-  must be available on the machine where you are browsing, or via a network mount.
-- When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
-  without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
-  Restricted mode — which is actually fine for reading legacy ZIM archives.
-
 ## How do I get all of Wikipedia offline?
 
 If you want it with images, then please be aware that it's a big download: the English version is larger than 110 Gigabytes! We recommend you
@@ -144,6 +118,32 @@ If you are having difficulties with the software, or would like to see a new fea
 Feedback section on the About page in the app for other ways of getting technical support for your issue. Feel free to get in contact
 (see About page of app) if you would just like to provide feedback, or leave a review if you obtained the app from a Store. If you like
 the app, please star this Repostiory (see top)!
+
+## Self-hosting with Docker
+
+The PWA is also published as a container image to the GitHub Container Registry (GHCR) on every release,
+so you can self-host it on your own server or homelab. This gives you your own instance of
+[pwa.kiwix.org](https://pwa.kiwix.org/) that you can access in a browser from your PC or LAN, without any dependency on
+external servers.
+
+Pull the image with:
+
+    docker pull ghcr.io/kiwix/kiwix-pwa:latest
+
+Or clone this repo and use the provided [`docker-compose.yml`](docker-compose.yml) to get started immediately:
+
+    docker compose up -d
+
+Then open `http://localhost:8080` in your browser (or omit `-d` to run in the foreground and see logs).
+You can change the host port (`8080`) in the compose file if it conflicts with another service.
+
+**Important notes:**
+- ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
+  uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
+  must be available on the machine where you are browsing, or via a network mount.
+- When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
+  without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
+  Restricted mode — which is actually fine for reading legacy ZIM archives.
 
 ## Technical information
 
