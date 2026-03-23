@@ -54,8 +54,7 @@ handy dropdown that allows you to choose your language and your theme, and then 
 If you really want full English Wikipedia with images, then we strongly recommend you use an open-source torrenting app such as
 [qBittorrent](https://www.qbittorrent.org/), [Transmission](https://transmissionbt.com/), or [Deluge](https://deluge-torrent.org/) to download it on a PC with plenty of
 disk space. First install your torrenting app. Then, when you select a large archive for download in the app, it will provide you with
-a torrent link. Click the link and allow your browser to download and open the torrent file. This small file will open in qBittorrent
-or Transmission, and you'll be asked where you want to save the archive you want to download. It's much easier than it sounds!
+a torrent link. Click the link and allow your browser to download and open the torrent file. This small file will open in your torrenting app, and you'll be asked where you want to save the archive you want to download. It's much easier than it sounds!
 
 ## What about Zimit (Web Archive) format?
 
@@ -140,7 +139,7 @@ foreground and see logs. You can also change the host port in [`docker-compose.y
 **Important notes:**
 - ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
   uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
-  must be available on the machine where you are browsing, or via a network mount. For a solution that aslo serves ZIM archives on a local server, please use [kiwix/kiwix-serve](https://github.com/kiwix/kiwix-tools).
+  must be available on the machine where you are browsing, or via a network mount. For a solution that also serves ZIM archives on a local server, please use [kiwix/kiwix-serve](https://github.com/kiwix/kiwix-tools).
 - When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
   without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
   Restricted mode — which is actually fine for reading legacy ZIM archives.
