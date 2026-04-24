@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Encrypt secret
         env:
-          SSH_KEY: ${{ secrets.KIWIX_FILE_UPLOAD_SSH_KEY }}
+          SSH_KEY: ${{ secrets.KIWIXJSPWA_FILE_UPLOAD_KEY }}
           GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
         run: |
           echo "$GPG_PUBLIC_KEY" | gpg --import

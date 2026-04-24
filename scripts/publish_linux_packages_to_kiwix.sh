@@ -10,7 +10,7 @@ if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     target="/data/download/nightly/$CURRENT_DATE"
 fi
 echo "Uploading packages to https://download.kiwix.org$target/"
-echo "mkdir ${target}" | sftp -P 30022 -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@master.download.kiwix.org
+echo "mkdir ${target}" | sftp -P 30322 -o StrictHostKeyChecking=no -i ./scripts/ssh_key kiwix-js-pwa@master.download.kiwix.org
 for file in ./dist/bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
@@ -47,6 +47,6 @@ for file in ./dist/bld/Electron/* ; do
             mv "$file" "$renamed_file"
         fi
         echo "Copying $renamed_file to $target"
-        scp -P 30022 -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" ci@master.download.kiwix.org:$target
+        scp -P 30322 -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" kiwix-js-pwa@master.download.kiwix.org:$target
     fi
 done
