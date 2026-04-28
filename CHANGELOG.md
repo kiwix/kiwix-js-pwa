@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.8.3
+## Interim release 3.8.4
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
@@ -17,6 +17,7 @@
 * REGRESSION: Fix critical error in IE11 preventing rendering of webp images
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * REGRESSION: Properly set initial express port value
+* REGRESSION: Fix blank page on 
 * FIX: Touch events for sliding away tool and navbars
 * FIX: Unify all keyboard events under the same function
 * FIX: Set more reasonable product name for Linux Electron app
@@ -26,13 +27,18 @@
 * FIX: MacOS script uploading packages to GitHub Releases and macOS-related template for Wikivoyage releases
 * FIX: Fail fast offline requests to network
 * FIX: Properly hide notice to download ZIM in packaged apps
+* FIX: Blank page on navigation with fragment or new tab (supports Single Page Applications)
+* FIX: Invalid HTML attribute causing Vite parsing error
+* DEV: WikiMed builds now use S3 publishing
+* DEV: Add Docker Compose configuration for serving PWA locally
 * DEV: Fix broken macOS workflow in nightlies
 * DEV: Buid only appx version of UWP for GitHub releases
 * DEV: Service Worker now handles event passing
-* DEV: Bump Electron to 40.0.0 (for modern Electron builds)
+* DEV: Fix broken invocation of wingetcreate
+* DEV: Bump Electron to 40.8.5 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
-* DEV: bump Electron Builder to 26.4.0
-* DEV: Bump qs and Express
+* DEV: Bump Electron Builder to 26.4.0
+* DEV: Security updates to many dependencies
 * DEV: Bump lodash
 
 ## Release 3.7.7 / 3.7.8
