@@ -7,7 +7,8 @@ const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
 const fs = require('fs');
 const os = require('os');
-// const https = require('https');
+const https = require('https');
+const http = require('http');
 
 const store = new Store();
 
@@ -274,8 +275,128 @@ if (!gotSingleInstanceLock) {
 //     cert: fs.readFileSync('path/to/your/cert.pem')
 // };
 
+// Track active download requests so they can be cancelled
+const activeDownloads = new Map();
+
 app.whenReady().then(() => {
     server = express()
+
+    // Expose the archives directory path to the renderer
+    // In production (asar-packed), archives are in extraResources (process.resourcesPath)
+    // In development, archives are in the project root (__dirname)
+    var archivesDir = app.isPackaged
+        ? path.join(process.resourcesPath, 'archives')
+        : path.join(__dirname, 'archives');
+
+    ipcMain.handle('get-archives-path', () => {
+        return archivesDir;
+    });
+
+    // Download a ZIM archive directly into the archives folder
+    // Returns a promise that resolves when download completes or rejects on error
+    ipcMain.handle('download-to-archives', async (event, archiveName, archiveUrl) => {
+        // Ensure the archives directory exists
+        if (!fs.existsSync(archivesDir)) {
+            fs.mkdirSync(archivesDir, { recursive: true });
+        }
+        const filePath = path.join(archivesDir, archiveName);
+        const tempPath = filePath + '.download';
+
+        return new Promise((resolve, reject) => {
+            const proto = archiveUrl.startsWith('https') ? https : http;
+            const request = proto.get(archiveUrl, (response) => {
+                // Follow redirects (3xx)
+                if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                    console.log('Redirecting to: ' + response.headers.location);
+                    // Recurse by invoking the handler logic again via a nested request
+                    const redirectProto = response.headers.location.startsWith('https') ? https : http;
+                    const redirectReq = redirectProto.get(response.headers.location, handleResponse);
+                    redirectReq.on('error', handleError);
+                    activeDownloads.set(archiveName, redirectReq);
+                    return;
+                }
+                handleResponse(response);
+            });
+
+            request.on('error', handleError);
+            activeDownloads.set(archiveName, request);
+
+            function handleResponse (response) {
+                if (response.statusCode !== 200) {
+                    reject(new Error('HTTP error, status = ' + response.statusCode));
+                    return;
+                }
+                const totalBytes = parseInt(response.headers['content-length'], 10) || 0;
+                let receivedBytes = 0;
+                let lastReported = 0;
+                const fileStream = fs.createWriteStream(tempPath);
+
+                response.on('data', (chunk) => {
+                    receivedBytes += chunk.length;
+                    // Report progress every ~512KB to avoid flooding IPC
+                    if (receivedBytes - lastReported >= 524288) {
+                        lastReported = receivedBytes;
+                        if (mainWindow && !mainWindow.isDestroyed()) {
+                            mainWindow.webContents.send('download-to-archives-progress', {
+                                archiveName: archiveName,
+                                receivedBytes: receivedBytes,
+                                totalBytes: totalBytes
+                            });
+                        }
+                    }
+                });
+
+                response.pipe(fileStream);
+
+                fileStream.on('finish', () => {
+                    fileStream.close(() => {
+                        // Rename temp file to final name
+                        try {
+                            if (fs.existsSync(filePath)) {
+                                fs.unlinkSync(filePath);
+                            }
+                            fs.renameSync(tempPath, filePath);
+                            activeDownloads.delete(archiveName);
+                            console.log('Download completed: ' + archiveName);
+                            resolve({ success: true, filePath: filePath });
+                        } catch (err) {
+                            activeDownloads.delete(archiveName);
+                            reject(err);
+                        }
+                    });
+                });
+
+                fileStream.on('error', (err) => {
+                    // Clean up temp file on write error
+                    try { fs.unlinkSync(tempPath); } catch (e) { /* ignore */ }
+                    activeDownloads.delete(archiveName);
+                    reject(err);
+                });
+            }
+
+            function handleError (err) {
+                // Clean up temp file on network error
+                try { fs.unlinkSync(tempPath); } catch (e) { /* ignore */ }
+                activeDownloads.delete(archiveName);
+                reject(err);
+            }
+        });
+    });
+
+    // Cancel an in-progress download
+    ipcMain.handle('cancel-download-to-archives', async (event, archiveName) => {
+        const request = activeDownloads.get(archiveName);
+        if (request) {
+            request.destroy();
+            activeDownloads.delete(archiveName);
+            // Clean up the temp file
+            const tempPath = path.join(archivesDir, archiveName + '.download');
+            try { fs.unlinkSync(tempPath); } catch (e) { /* ignore */ }
+            console.log('Download cancelled: ' + archiveName);
+            return { success: true };
+        }
+        return { success: false, error: 'No active download found for ' + archiveName };
+    });
 
     // Add security headers
     server.use((req, res, next) => {

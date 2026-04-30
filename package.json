@@ -13,13 +13,13 @@
       "buildResources": "../electron_icons"
     },
     "win": {
-        "signtoolOptions": {
-          "certificateSha1": "e33d961d35fb3161f7db607342868bb51ae05de3",
-          "signingHashAlgorithms": [
-            "sha256"
-          ],
-          "rfc3161TimeStampServer": "http://ts.ssl.com"
-        },
+      "signtoolOptions": {
+        "certificateSha1": "e33d961d35fb3161f7db607342868bb51ae05de3",
+        "signingHashAlgorithms": [
+          "sha256"
+        ],
+        "rfc3161TimeStampServer": "http://ts.ssl.com"
+      },
       "asar": "true",
       "extraResources": {
         "from": "archives",
@@ -200,6 +200,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "playwright": "^1.59.1",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^6.4.2"
