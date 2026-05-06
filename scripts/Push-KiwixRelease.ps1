@@ -137,12 +137,12 @@ function Main {
                 $keyfile = "$PSScriptRoot\ssh_key"
                 $keyfile = $keyfile -ireplace '[\\/]', '/'
                 if ($dryrun) {
-                    "C:\Program Files\Git\usr\bin\scp.exe -P 30022 -o StrictHostKeyChecking=no -i $keyfile $filename ci@master.download.kiwix.org:$target"
-                    "echo 'rename $target/$file $target/$newfilename' | C:\Program Files\Git\usr\bin\sftp.exe -P 30022 -o StrictHostKeyChecking=no -i $keyfile ci@master.download.kiwix.org"
+                    "C:\Program Files\Git\usr\bin\scp.exe -P 30322 -o StrictHostKeyChecking=no -i $keyfile $filename kiwix-js-pwa@master.download.kiwix.org:$target"
+                    "echo 'rename $target/$file $target/$newfilename' | C:\Program Files\Git\usr\bin\sftp.exe -P 30322 -o StrictHostKeyChecking=no -i $keyfile kiwix-js-pwa@master.download.kiwix.org"
                 } else {
                     # Uploading file
-                    & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$filename", "ci@master.download.kiwix.org:$target")
-                    echo "rename $target/$file $target/$newfilename" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
+                    & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30322', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$filename", "kiwix-js-pwa@master.download.kiwix.org:$target")
+                    echo "rename $target/$file $target/$newfilename" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30322', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'kiwix-js-pwa@master.download.kiwix.org')
                     Write-Host "`nDone.`n" -ForegroundColor Green
                 }
             }
