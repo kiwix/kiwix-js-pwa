@@ -1086,7 +1086,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
-            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + returnUrl + '">&lt;&lt; Back to list of files</a></p>\r\n';
+            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
             bodyDoc += '<p><b><i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
             bodyDoc += '<p><b>Browser-managed download of ZIM archive:</b></p>' +
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
@@ -1143,7 +1143,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         }
         var headerDoc = 'We found the following links to your file:';
         var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
-        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + returnUrl + '">&lt;&lt; Back to list of files</a></p>\r\n';
+        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
         bodyDoc += /\/(ted|videos)\//i.test(URL) && /UWP/.test(params.appType) ? '<h4 style="color:red">IMPORTANT: <b>VIDEOS</b> (e.g. TED Talks, Khan Academy, etc.) can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for the videos using standard ZIM search or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += '<h5';
