@@ -625,7 +625,10 @@ function resolveCatalogHref (href) {
     if (!href) return '';
     if (/^https?:\/\//i.test(href)) return href;
     if (/^\/\//.test(href)) return window.location.protocol + href;
-    if (/^\//.test(href)) return params.kiwixLibraryServer + href;
+    if (/^\//.test(href)) {
+        var host = /^\/catalog\//.test(href) ? params.kiwixCatalogServer : params.kiwixLibraryServer;
+        return host + href;
+    }
     return params.kiwixCatalogRoot.replace(/\/[^/]*$/, '/') + href;
 }
 
