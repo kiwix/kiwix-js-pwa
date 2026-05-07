@@ -1043,13 +1043,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             if (this.status === 200) {
                 clearTimeout(xhttpTimeout);
                 serverResponse.innerHTML = 'Server response: ' + this.status + ' ' + this.statusText + ' (data received)';
-                // Strip sorting querystring
-                URL = URL.replace(/\?.*/, '');
-                if (/\.meta4$/i.test(URL)) {
+                // Preserve original querystring for OPDS state restoration, while also keeping a stripped URL for legacy checks.
+                var requestURLWithQuery = URL;
+                var requestURLNoQuery = URL.replace(/\?.*/, '');
+                if (/\.meta4$/i.test(requestURLNoQuery)) {
                     processMetaLink(this.responseText);
-                } else if (/\.magnet$/i.test(URL)) {
+                } else if (/\.magnet$/i.test(requestURLNoQuery)) {
                     processMagnetLink(this.responseText);
-                } else if (!processOpdsData(this.responseText, URL, lang, subj, kiwixDate)) {
+                } else if (!processOpdsData(this.responseText, requestURLWithQuery, lang, subj, kiwixDate)) {
                     processXhttpData(this.responseText);
                 }
             } else if (this.status === 0) {
