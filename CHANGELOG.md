@@ -1,9 +1,10 @@
 # Changelog
 
-## Interim release 3.8.4
+## Interim release 3.8.45
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
+* UPDATE: Migrate Library to use OPDS endpoint instead of download.kiwix.org
 * UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
 * UPDATE: Replace Glyphicons with Font Awesome icons
 * UPDATE: Remove dependency on JQuery completely
