@@ -1,13 +1,13 @@
 #!/bin/bash
 # Script to upload macOS packages to download.kiwix.org
-target="/data/download/release/kiwix-js-electron"
+target="/data/kiwix/release/kiwix-js-electron"
 if [[ ${INPUT_TARGET} = "nightly" ]]; then
     CRON_LAUNCHED="1"
 fi
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     echo "This script was launched by the GitHub Cron process"
     CURRENT_DATE=$(date +'%Y-%m-%d')
-    target="/data/download/nightly/$CURRENT_DATE"
+    target="/data/kiwix/nightly/$CURRENT_DATE"
 fi
 echo "Uploading macOS packages to https://download.kiwix.org$target/"
 echo "mkdir ${target}" | sftp -P 30322 -o StrictHostKeyChecking=no -i ./scripts/ssh_key kiwix-js-pwa@master.download.kiwix.org
