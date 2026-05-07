@@ -92,6 +92,9 @@ if (window.electronAPI) {
     params['expressPort'] = 3000;
 }
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
+params['kiwixLibraryServer'] = 'https://library.kiwix.org';
+params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
+params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
 params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
