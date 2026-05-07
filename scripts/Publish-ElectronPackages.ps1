@@ -16,8 +16,8 @@ if ($overridetarget) {
     # If user overrode the INPUT_TARGET, use it
     $INPUT_TARGET = $overridetarget
 }
-$target = "/data/download/release/kiwix-js-electron"
-$win_target = "/data/download/release/kiwix-js-windows" # In future, consider changing to kiwix-js-pwa
+$target = "/data/kiwix/release/kiwix-js-electron"
+$win_target = "/data/kiwix/release/kiwix-js-windows" # In future, consider changing to kiwix-js-pwa
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
 
@@ -29,7 +29,7 @@ if ($INPUT_TARGET -eq "nightly") {
 if ($CRON_LAUNCHED) {
     "`nThis script was launched by the Github Cron prccess"
     $current_date = $(Get-Date -Format "yyyy-MM-dd")
-    $target = "/data/download/nightly/$current_date"
+    $target = "/data/kiwix/nightly/$current_date"
 }
 
 if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
