@@ -1797,7 +1797,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
-    kiwixServe.requestXhttpData(params.kiwixDownloadServer);
+    kiwixServe.requestXhttpData(params.kiwixCatalogCategories);
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {

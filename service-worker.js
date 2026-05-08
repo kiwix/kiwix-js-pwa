@@ -33,7 +33,7 @@
  * download and install a new copy; we have to hard code this here because it is needed before any other file
  * is cached in APP_CACHE
  */
-const appVersion = '3.8.4';
+const appVersion = '3.8.45';
 
 /**
  * The name of the Cache API cache in which assets defined in regexpCachedContentTypes will be stored
@@ -74,7 +74,7 @@ let imageDisplay = 'all';
 
 // Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpkiwixDownloadServers = /download\.kiwix\.org|api\.github\.com/i;
+const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|api\.github\.com/i;
 
 /**
  * A global Boolean that records whether the ReplayWorker is available
