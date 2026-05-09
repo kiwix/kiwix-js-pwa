@@ -1170,11 +1170,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
         var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
-        var isElectronApp = /Electron/.test(params.appType) && window.electronAPI && window.electronAPI.downloadToArchives;
-        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory') || isElectronApp) {
+        var isPackagedElectronApp = /Electron/.test(params.appType) && window.electronAPI && window.electronAPI.downloadToArchives && !!params.packagedFile;
+        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory') || isPackagedElectronApp) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System'
-                : isElectronApp ? ' to app\'s archives folder'
+                : isPackagedElectronApp ? ' to app\'s archives folder'
                 : ' to your ZIM folder';
             bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li>' +
                 '<a href="' + mirrorZimUrl + '" class="download" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download now</a> ' +
@@ -1211,13 +1211,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             return domain + file;
         });
         // If File System Access API or Electron API is available, add event listeners on download links to save to local storage
-        if (params.useOPFS || window.showSaveFilePicker || isElectronApp) {
+        if (params.useOPFS || window.showSaveFilePicker || isPackagedElectronApp) {
             var downloadUrls = document.getElementsByClassName('download');
             for (var j = 0; j < downloadUrls.length; j++) {
                 downloadUrls[j].addEventListener('click', function (e) {
                     e.preventDefault();
                     // For Electron apps, use the IPC-based download handler
-                    if (isElectronApp) {
+                    if (isPackagedElectronApp) {
                         if (downloadSize > 0) return; // Already downloading
                         var archiveUrl = mirrorZimUrl;
                         var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');

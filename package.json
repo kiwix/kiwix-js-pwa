@@ -142,6 +142,7 @@
     ]
   },
   "scripts": {
+    "test:electron": "node test-electron.cjs",
     "serve": "vite",
     "preview": "del-cli dist && npm run build-src && vite preview",
     "prebuild": "del-cli dist",
