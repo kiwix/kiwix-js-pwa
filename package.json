@@ -142,6 +142,7 @@
     ]
   },
   "scripts": {
+    "test:electron": "node test-electron.cjs",
     "serve": "vite",
     "preview": "del-cli dist && npm run build-src && vite preview",
     "prebuild": "del-cli dist",
@@ -200,6 +201,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "playwright": "^1.59.1",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^6.4.2"

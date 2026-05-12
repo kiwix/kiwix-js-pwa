@@ -1,4 +1,4 @@
-﻿/**
+/**
  * kiwixServe.js: Provides an AJAX request process for contacting the Kiwix Download Server
  * and manipulating the returned data for display in-app
  * Also provides an object literal (langCodes) for looking up the English-language names of
@@ -1170,9 +1170,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
         var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
-        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
+        var isPackagedElectronApp = /Electron/.test(params.appType) && window.electronAPI && window.electronAPI.downloadToArchives && !!params.packagedFile;
+        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory') || isPackagedElectronApp) {
             bodyDoc += '<p><b>Direct download';
-            bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
+            bodyDoc += params.useOPFS ? ' to Origin Private File System'
+                : isPackagedElectronApp ? ' to app\'s archives folder'
+                : ' to your ZIM folder';
             bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li>' +
                 '<a href="' + mirrorZimUrl + '" class="download" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download now</a> ' +
                 '<a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
@@ -1207,12 +1210,74 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             domain = domain.replace(/download/, 'library');
             return domain + file;
         });
-        // If File System Access API is available, add event listeners on download links to save to local storage
-        if (params.useOPFS || window.showSaveFilePicker) {
+        // If File System Access API or Electron API is available, add event listeners on download links to save to local storage
+        if (params.useOPFS || window.showSaveFilePicker || isPackagedElectronApp) {
             var downloadUrls = document.getElementsByClassName('download');
             for (var j = 0; j < downloadUrls.length; j++) {
                 downloadUrls[j].addEventListener('click', function (e) {
                     e.preventDefault();
+                    // For Electron apps, use the IPC-based download handler
+                    if (isPackagedElectronApp) {
+                        if (downloadSize > 0) return; // Already downloading
+                        var archiveUrl = mirrorZimUrl;
+                        var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
+                        var downloadArchiveElectron = function () {
+                            downloadSize = megabytes;
+                            uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Downloading archive... 0%', true);
+                            // Set up progress listener (only once)
+                            if (!window._electronDownloadProgressListenerSet) {
+                                window._electronDownloadProgressListenerSet = true;
+                                electronAPI.onDownloadProgress(function (data) {
+                                    reportDownloadProgress(data.receivedBytes, data.totalBytes);
+                                });
+                            }
+                            electronAPI.downloadToArchives(archiveName, archiveUrl).then(function (result) {
+                                if (result && result.success) {
+                                    reportDownloadProgress('completed');
+                                    uiUtil.systemAlert('<p>The archive <b>' + archiveName + '</b> has been downloaded to the app\'s archives folder.</p>' +
+                                        '<p><b>Reloading archive list...</b></p>', 'Download complete').then(function () {
+                                        // Refresh the archive list to include the newly downloaded file
+                                        settingsStore.setItem('lastSelectedArchive', archiveName, Infinity);
+                                        // Re-scan the archives folder and load the new archive
+                                        var archivesDir = electronAPI.__dirname.replace(/[/\\]app\.asar/, '') + '/archives';
+                                        settingsStore.removeItem('listOfArchives');
+                                        downloadSize = 0;
+                                        percentageComplete = 0;
+                                        // Use loadPackagedArchive or scanNodeFolderforArchives to refresh
+                                        if (typeof scanNodeFolderforArchives === 'function') {
+                                            scanNodeFolderforArchives(archivesDir, function () {
+                                                setLocalArchiveFromArchiveList(archiveName);
+                                            });
+                                        } else if (typeof loadPackagedArchive === 'function') {
+                                            loadPackagedArchive();
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    });
+                                }
+                            }).catch(function (err) {
+                                uiUtil.pollOpsPanel();
+                                console.error('Download error:', err);
+                                downloadSize = 0;
+                                percentageComplete = 0;
+                                uiUtil.systemAlert('<p>Unable to download the archive <b>' + archiveName + '</b> to the archives folder.</p>' +
+                                    '<p>Error: ' + (err.message || err) + '</p>' +
+                                    '<p>You can try using a browser-managed download link instead.</p>', 'Download failed');
+                            });
+                        };
+                        if (megabytes > 1000) {
+                            var message = '<p>Do you wish to download the following <b>large</b> archive to the app\'s archives folder' +
+                                '?</p><ul><li><i>' + archiveName + '</i> (<b>' + megabytes$ + ' MB</b>)</li></ul><p><b><i>If you proceed, do not close the app during the download.</i></b><p>' +
+                                '<p>If you prefer to download in the background, use a browser-managed download link instead.</p>';
+                            uiUtil.systemAlert(message, 'Download large archive to archives folder?', true, 'Cancel', 'Download').then(function (result) {
+                                if (result) downloadArchiveElectron();
+                            });
+                        } else {
+                            downloadArchiveElectron();
+                        }
+                        return;
+                    }
+                    // Non-Electron flow (OPFS / File System Access API)
                     if (!(params.pickedFolder && params.pickedFolder.kind === 'directory') || downloadSize > 0) return;
                     if (params.useOPFS) {
                         var quotaInMB = appstate.OPFSQuota / (1024 * 1024);
