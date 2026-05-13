@@ -3216,9 +3216,6 @@ function refreshAPIStatus () {
     // Add a warning colour to the API Status Panel if any of the above tests failed
     apiStatusPanel.classList.add(apiPanelClass);
 
-    // Set visibility of UI elements according to mode
-    document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
-
     // Set colour of contentInjectionMode div
     var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
     contentInjectionDiv.classList.remove('border-warning');
