@@ -621,12 +621,18 @@ function trim (str) {
     return str == null ? '' : String(str).replace(/^\s+|\s+$/g, '');
 }
 
-function resolveCatalogHref (href) {
+function resolveCatalogHref (href, referenceUrl) {
     if (!href) return '';
     if (/^https?:\/\//i.test(href)) return href;
     if (/^\/\//.test(href)) return window.location.protocol + href;
-    if (/^\//.test(href)) return params.kiwixLibraryServer + href;
-    return params.kiwixCatalogRoot.replace(/\/[^/]*$/, '/') + href;
+    var baseUrl = referenceUrl || params.kiwixCatalogRoot + '/';
+    if (/^\//.test(href)) {
+        var originMatch = baseUrl.match(/^(https?:\/\/[^/]+)/i);
+        return (originMatch ? originMatch[1] : params.kiwixLibraryServer) + href;
+    }
+    baseUrl = baseUrl.replace(/[?#].*$/, '');
+    if (!/\/$/.test(baseUrl)) baseUrl = baseUrl.replace(/\/[^/]*$/, '/');
+    return baseUrl + href;
 }
 
 function setQueryParameter (url, key, value) {
@@ -756,20 +762,68 @@ function isOpdsCategoryFeed (xml) {
     return !!firstLink;
 }
 
+// Keep OPDS category injection in sync with the legacy directory parser so developer folders
+// remain visible in both normal operation (OPDS) and fallback mode (legacy HTML parsing).
+function buildOpdsCategoryRows (entries, requestUrl) {
+    var rows = [];
+    for (var i = 0; i < entries.length; i++) {
+        var title = getDirectChildText(entries[i], 'title');
+        var link = getEntryLink(entries[i], 'subsection');
+        if (!title || !link) continue;
+        rows.push({
+            title: title,
+            href: setQueryParameter(resolveCatalogHref(link.getAttribute('href'), requestUrl), 'count', '-1')
+        });
+    }
+    return rows;
+}
+
+function injectDeveloperCategoryRows (categoryRows) {
+    var hasWikipedia = false;
+    var gutenbergIndex = -1;
+    for (var i = 0; i < categoryRows.length; i++) {
+        var title = trim(categoryRows[i].title).toLowerCase();
+        if (title === 'wikipedia') hasWikipedia = true;
+        if (title === 'gutenberg') gutenbergIndex = i;
+    }
+    if (!hasWikipedia) return categoryRows;
+
+    // var hiddenBase = params.kiwixhiddenDownloadServer + '.hidden/';
+    var devRows = [];
+    // The following directories are commented out pending confirmation of their new locations:
+    // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
+    // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
+    // if (!params.appCache) devRows.push({ title: 'custom_apps', href: hiddenBase + 'custom_apps/' });
+    // if (!params.appCache) devRows.push({ title: 'endless', href: hiddenBase + 'endless/' });
+    if (!params.appCache) devRows.push({ title: 'dev', href: params.kiwixDevCatalogEntries });
+
+    for (var j = 0; j < devRows.length; j++) {
+        var exists = false;
+        for (var k = 0; k < categoryRows.length; k++) {
+            if (trim(categoryRows[k].title).toLowerCase() === devRows[j].title) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            categoryRows.splice(~gutenbergIndex ? gutenbergIndex++ : 0, 0, devRows[j]);
+        }
+    }
+    return categoryRows;
+}
+
 function renderOpdsCategories (xml, requestUrl) {
     var entries = xml.getElementsByTagName('entry');
+    currentBrowseUrl = requestUrl;
+    var categoryRows = injectDeveloperCategoryRows(buildOpdsCategoryRows(entries, requestUrl));
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim</h3>' +
         '</div>' +
         '<div class="card border-success">' +
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">Name</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">';
-    for (var i = 0; i < entries.length; i++) {
-        var title = getDirectChildText(entries[i], 'title');
-        var link = getEntryLink(entries[i], 'subsection');
-        if (!title || !link) continue;
-        var href = setQueryParameter(resolveCatalogHref(link.getAttribute('href')), 'count', '-1');
-        bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(href) + '">' + escapeHtml(title) + '/</a></div>';
+    for (var i = 0; i < categoryRows.length; i++) {
+        bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
     }
     bodyDoc += '</div></div>';
     downloadLinks.innerHTML = bodyDoc;
@@ -785,7 +839,7 @@ function renderOpdsCategories (xml, requestUrl) {
     document.getElementById('indexHeader').scrollIntoView();
 }
 
-function parseOpdsEntries (xml) {
+function parseOpdsEntries (xml, requestUrl) {
     var feedEntries = xml.getElementsByTagName('entry');
     var parsedEntries = [];
     for (var i = 0; i < feedEntries.length; i++) {
@@ -813,8 +867,8 @@ function parseOpdsEntries (xml) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href')) : '',
-            previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href')) : '',
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
+            previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
             filename: ''
@@ -989,7 +1043,7 @@ function processOpdsData (docText, requestUrl, lang, subj, kiwixDate) {
         renderOpdsCategories(xml, requestUrl);
         return true;
     }
-    currentOpdsEntries = parseOpdsEntries(xml);
+    currentOpdsEntries = parseOpdsEntries(xml, requestUrl);
     currentOpdsCategory = currentOpdsEntries.length ? currentOpdsEntries[0].category : '';
     renderOpdsEntries(requestUrl, lang, subj, kiwixDate);
     return true;
@@ -1307,13 +1361,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Remove unused README file
             doc = doc.replace(/^<a\s+href\b[^<]+README.+$[\r\n]*/m, '');
         }
-        // Add in some directories for developers (other than custom_apps)
-        if (/wikipedia\//.test(doc)) {
-            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">archive/</a>    $3$1$2$3');
-            doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">custom_apps/</a>$3$1$2$3');
-            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">dev/</a>        $3$1$2$3');
-            if (!params.appCache) doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
-        }
         var stDoc; // Placeholder for standardized doc to be used to get arrays
         if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
             // Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
@@ -1545,8 +1592,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 var dateID = dateSel ? dateSel.value : '';
                 var subjID = subjSel ? subjSel.value : '';
                 var replaceURL = URL + this.dataset.kiwixDl;
-                replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixhiddenDownloadServer + '.hidden/' + this.text : replaceURL;
-                replaceURL = /(archive)\//.test(this.text) ? params.kiwixDownloadServer.replace(/\/zim\//, '/archive/zim/') : replaceURL;
                 // Allow both zim and zip format
                 if (/\.zi[mp]$/i.test(this.dataset.kiwixDl)) {
                     replaceURL = replaceURL + '.meta4';
