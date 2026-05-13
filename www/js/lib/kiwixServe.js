@@ -1136,8 +1136,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         if (/\.meta4$/i.test(URL)) {
             requestedURL = URL.replace(/\.meta4$/i, '');
             altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL)
-                ? requestedURL.replace(/(download\.kiwix\.org)/i, 'www.mirrorservice.org/sites/$1') : '';
-            torrentURL = URL.replace(/\.meta4$/i, '.torrent');
+                ? requestedURL.replace(/^https?:\/\/(?:[^/]*\.)?download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '';
+            torrentURL = URL.replace(/\.meta4$/i, '.torrent').replace(/^https?:\/\/[^/]*\.(download\.kiwix\.org)/i, 'https://$1');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
             if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
                 headerDoc = 'This file is only available via browser-managed download:';
