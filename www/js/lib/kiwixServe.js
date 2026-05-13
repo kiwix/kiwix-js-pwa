@@ -789,18 +789,20 @@ function injectDeveloperCategoryRows (categoryRows) {
     if (!hasWikipedia) return categoryRows;
 
     // var hiddenBase = params.kiwixhiddenDownloadServer + '.hidden/';
+    var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
-    // The following directories are commented out pending confirmation of their new locations:
+    // archive is commented out pending confirmation of its new location:
     // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
     // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
-    // if (!params.appCache) devRows.push({ title: 'custom_apps', href: hiddenBase + 'custom_apps/' });
-    // if (!params.appCache) devRows.push({ title: 'endless', href: hiddenBase + 'endless/' });
-    if (!params.appCache) devRows.push({ title: 'dev', href: params.kiwixDevCatalogEntries });
+    if (!params.appCache) devRows.push({ title: 'custom_apps', href: stagingBase + 'custom_apps/', external: true });
+    if (!params.appCache) devRows.push({ title: 'dev', href: stagingBase + 'dev/', external: true });
+    if (!params.appCache) devRows.push({ title: 'dev (OPDS)', href: params.kiwixDevCatalogEntries });
+    if (!params.appCache) devRows.push({ title: 'endless', href: stagingBase + 'endless/', external: true });
 
     for (var j = 0; j < devRows.length; j++) {
         var exists = false;
         for (var k = 0; k < categoryRows.length; k++) {
-            if (trim(categoryRows[k].title).toLowerCase() === devRows[j].title) {
+            if (trim(categoryRows[k].title).toLowerCase() === devRows[j].title.toLowerCase()) {
                 exists = true;
                 break;
             }
@@ -823,7 +825,11 @@ function renderOpdsCategories (xml, requestUrl) {
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">Name</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">';
     for (var i = 0; i < categoryRows.length; i++) {
-        bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+        if (categoryRows[i].external) {
+            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+        } else {
+            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+        }
     }
     bodyDoc += '</div></div>';
     downloadLinks.innerHTML = bodyDoc;
