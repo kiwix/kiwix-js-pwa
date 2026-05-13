@@ -1801,12 +1801,12 @@ document.getElementById('downloadTrigger').addEventListener('click', function ()
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {
-        if (this.value === 'jquery' && !params.appCache) {
-            uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to Restricted mode!');
-            this.checked = false;
-            document.getElementById('serviceworkerModeRadio').checked = true;
-            return;
-        }
+        // if (this.value === 'jquery' && !params.appCache) {
+        //     uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to Restricted mode!');
+        //     this.checked = false;
+        //     document.getElementById('serviceworkerModeRadio').checked = true;
+        //     return;
+        // }
         var returnDivs = document.getElementsByClassName('returntoArticle');
         for (var i = 0; i < returnDivs.length; i++) {
             returnDivs[i].innerHTML = '';
