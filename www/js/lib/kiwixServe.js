@@ -1135,9 +1135,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var requestedURL, altURL, torrentURL;
         if (/\.meta4$/i.test(URL)) {
             requestedURL = URL.replace(/\.meta4$/i, '');
-            altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL)
-                ? requestedURL.replace(/^https?:\/\/(?:[^/]*\.)?download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '';
-            torrentURL = URL.replace(/\.meta4$/i, '.torrent').replace(/^https?:\/\/[^/]*\.(download\.kiwix\.org)/i, 'https://$1');
+            // Only show mirror link for the exact production download server (not subdomains like staging.)
+            altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL) && /^https?:\/\/download\.kiwix\.org\//i.test(requestedURL)
+                ? requestedURL.replace(/^https?:\/\/download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '';
+            // Keep the torrent on the same domain as the original URL (staging files have staging torrents)
+            torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
             if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
                 headerDoc = 'This file is only available via browser-managed download:';
