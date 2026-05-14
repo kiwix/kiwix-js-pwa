@@ -95,9 +95,11 @@ params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last m
 params['kiwixLibraryServer'] = 'https://library.kiwix.org';
 params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
 params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
+params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
 params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
+params['kiwixStagingServer'] = 'https://staging.download.kiwix.org';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 // params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-pwa/dist/'; // Test server
