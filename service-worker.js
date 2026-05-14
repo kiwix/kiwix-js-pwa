@@ -74,7 +74,7 @@ let imageDisplay = 'all';
 
 // Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|dev\.library\.kiwix\.org|api\.github\.com/i;
+const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|api\.github\.com/i;
 
 /**
  * A global Boolean that records whether the ReplayWorker is available
