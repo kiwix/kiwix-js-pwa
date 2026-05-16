@@ -873,7 +873,10 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
+            // lbo.download.kiwix.org redirects to third-party mirrors that have no CORS headers, so
+            // we normalize to download.kiwix.org which serves directly with Access-Control-Allow-Origin: *
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl)
+                .replace(/^https:\/\/lbo\.download\.kiwix\.org(?=\/)/, 'https://download.kiwix.org') : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
