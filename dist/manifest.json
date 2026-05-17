@@ -1,0 +1,67 @@
+{
+  "dir": "ltr",
+  "lang": "en-GB",
+  "name": "Kiwix JS PWA Edition",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "edge_side_panel": { 
+    "preferred_width": 496 
+  },
+  "categories": ["reference", "books", "education"],
+  "iarc_rating_id": "3596f0d9-387e-4d64-a165-5fef16a6c8e3",
+  "start_url": ".",
+  "short_name": "Kiwix PWA",
+  "theme_color": "#2F4F4F",
+  "description": "Kiwix is an offline reader for content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other Web archives. It makes knowledge available to people with limited or no Internet access.",
+  "background_color": "#000",
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url": "https://apps.microsoft.com/detail/9P8SLZ4J979J",
+      "id": "9P8SLZ4J979J"
+    }
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "www/img/icons/kiwix-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-64.ico",
+      "sizes": "64x64",
+      "type": "image/ico"
+    },
+    {
+      "src": "www/img/icons/kiwix-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "www/index.html",
+      "accept": {
+        "application/octet-stream": [ ".zim" ]
+      },
+      "icons": [
+        {
+          "src": "www/img/icons/kiwix-256.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],"launch_type": "single-client"
+    }
+  ]
+}
