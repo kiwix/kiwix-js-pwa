@@ -4676,7 +4676,7 @@ function archiveReadyCallback (archive) {
             }
         } else {
             params.noWarning = true;
-            if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+            // if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
             params.noWarning = false;
             params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
@@ -5942,7 +5942,7 @@ var articleLoadedSW = function (dirEntry, container) {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
             }
-            if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
+            if (((params.zimType === 'open' && !params.isLandingPage) || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
                 images.prepareImagesServiceWorker(articleWindow);
             } else {
                 setTimeout(function () {
@@ -6663,8 +6663,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
                 // Remove any initial div containing user:.*kiwix
                 htmlArticle = htmlArticle.replace(/<div\b(?:[^<]|<(?!div|\/div>))+?user:[^<]*kiwix(?:[^<]|<(?!\/div>))+?<\/div>/i, '');
-                // Remove landing page scripts that don't work in SW mode
-                htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
             }
             // Remove wm_mobile_override script that intercepts all clicks and causes CORS errors
             htmlArticle = htmlArticle.replace(/<script\b[^>]+wm_mobile_override_script\.js[^<]*<\/script>/i, '');
@@ -6672,11 +6670,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             // Remove the script.js that closes top-level sections if user requested this
             if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, '');
-            // Deal with incorrectly sized masonry pages
-            htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
-            // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1662
-            // Put site.js in the correct position
-            htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes, also post-June 2025
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header|first-heading)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
@@ -6901,7 +6894,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Preload stylesheets [kiwix-js #149]
         console.log('Loading stylesheets...');
         // Set up blobArray of promises
-        var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
         var cssSource = params.cssSource;
