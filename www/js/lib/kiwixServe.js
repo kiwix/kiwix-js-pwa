@@ -873,10 +873,11 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            // lb(o).download.kiwix.org redirects to third-party mirrors that have no CORS headers, so
-            // we normalize to master.download.kiwix.org which serves directly with Access-Control-Allow-Origin: *
+            // lb(o).download.kiwix.org redirects to third-party mirrors that have no CORS headers, so we
+            // normalize to download.kiwix.org which serves .meta4 files directly with Access-Control-Allow-Origin: *
+            // NB: the OPFS ZIM fetch URL is then auto-derived as mirror.download.kiwix.org in processMetaLink
             acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl)
-                .replace(/^https:\/\/lbo?\.download\.kiwix\.org(?=\/)/, 'https://master.download.kiwix.org') : '',
+                .replace(/^https:\/\/lbo?\.download\.kiwix\.org(?=\/)/, 'https://download.kiwix.org') : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
