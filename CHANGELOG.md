@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.8.45
+## Release 3.8.5 / 3.8.6
 
 * ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
@@ -15,6 +15,7 @@
 * INFO: General app and project information update
 * INFO: Give instructions for installing AppImage on recent Ubuntu missing fuse2
 * REGRESSION: Fix broken printing support
+* REGRESSION: Fix broken display of masonry-style landing pages
 * REGRESSION: Fix critical error in IE11 preventing rendering of webp images
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * REGRESSION: Properly set initial express port value
@@ -30,13 +31,15 @@
 * FIX: Properly hide notice to download ZIM in packaged apps
 * FIX: Blank page on navigation with fragment or new tab (supports Single Page Applications)
 * FIX: Invalid HTML attribute causing Vite parsing error
+* DEV: Change "Bypass AppCache" option to "Developer Mode" (same functionality)
 * DEV: WikiMed builds now use S3 publishing
 * DEV: Add Docker Compose configuration for serving PWA locally
 * DEV: Fix broken macOS workflow in nightlies
 * DEV: Buid only appx version of UWP for GitHub releases
 * DEV: Service Worker now handles event passing
 * DEV: Fix broken invocation of wingetcreate
-* DEV: Bump Electron to 40.8.5 (for modern Electron builds)
+* DEV: Update location for Kiwix-hosted downloads of apps
+* DEV: Bump Electron to 42.0.0 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
 * DEV: Bump Electron Builder to 26.4.0
 * DEV: Security updates to many dependencies
