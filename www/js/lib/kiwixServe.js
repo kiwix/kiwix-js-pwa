@@ -788,7 +788,6 @@ function injectDeveloperCategoryRows (categoryRows) {
     }
     if (!hasWikipedia) return categoryRows;
 
-    // var hiddenBase = params.kiwixhiddenDownloadServer + '.hidden/';
     var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
     // archive is commented out pending confirmation of its new location:
@@ -873,11 +872,9 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            // lb(o).download.kiwix.org redirects to third-party mirrors that have no CORS headers, so we
-            // normalize to download.kiwix.org which serves .meta4 files directly with Access-Control-Allow-Origin: *
-            // NB: the OPFS ZIM fetch URL is then auto-derived as mirror.download.kiwix.org in processMetaLink
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl)
-                .replace(/^https:\/\/lbo?\.download\.kiwix\.org(?=\/)/, 'https://download.kiwix.org') : '',
+            // lb(o).download.kiwix.org serves .meta4 files directly with Access-Control-Allow-Origin: *;
+            // for OPFS/Fetch downloads the URL is transformed to mirror.download.kiwix.org in processMetaLink
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
@@ -1145,10 +1142,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Keep the torrent on the same domain as the original URL (staging files have staging torrents)
             torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
-            if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
-                headerDoc = 'This file is only available via browser-managed download:';
-                altURL = requestedURL.replace(/\/master\./i, '/mirror.');
-            }
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
@@ -1158,15 +1151,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
-            (~URL.indexOf(params.kiwixhiddenDownloadServer) ? ''
-                : '<p><b>Download with bittorrent:</b></p>' +
-                '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
+            '<p><b>Download with bittorrent:</b></p>' +
+            '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
             if (body) body.innerHTML = bodyDoc;
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
                 domain = domain.replace(/download/, 'library');
-                domain = domain.replace(/master/, 'dev');
                 return domain + file;
             });
             var langSel = document.getElementById('langs');
@@ -1235,7 +1226,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/(?:lbo?\.)?download\.kiwix\.org/, 'mirror.download.kiwix.org');
         if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
@@ -1609,8 +1600,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     replaceURL = replaceURL + '.meta4';
                 } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
                     replaceURL = URL.replace(/\/[^/]*\/$/i, '/');
-                    replaceURL = replaceURL.replace(params.kiwixhiddenDownloadServer, params.kiwixDownloadServer);
-                    replaceURL = replaceURL.replace(/\.hidden\//, '');
                     replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
                 } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                     replaceURL = this.getAttribute('href').replace(/;/g, '&');
