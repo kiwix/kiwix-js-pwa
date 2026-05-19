@@ -97,7 +97,7 @@ params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
 params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
 params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
-params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lbo.download.kiwix.org/zim/'];
+params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
 params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
 params['kiwixStagingServer'] = 'https://staging.download.kiwix.org';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
