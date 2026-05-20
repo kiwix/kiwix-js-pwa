@@ -65,6 +65,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getExternalAccessState: function () {
         return ipcRenderer.invoke('get-external-access-state');
     },
+    getArchivesPath: function () {
+        return ipcRenderer.invoke('get-archives-path');
+    },
+    downloadToArchives: function (archiveName, archiveUrl) {
+        return ipcRenderer.invoke('download-to-archives', archiveName, archiveUrl);
+    },
+    cancelDownloadToArchives: function (archiveName) {
+        return ipcRenderer.invoke('cancel-download-to-archives', archiveName);
+    },
+    onDownloadProgress: function (callback) {
+        ipcRenderer.on('download-to-archives-progress', function (_, data) {
+            callback(data);
+        });
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,
