@@ -1195,7 +1195,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
-        for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+        var kiwixMirrorUrl = '';
+        for (var i = 1; i < linkArray.length; i++) { // NB we're intentionally discarding first link to kiwix.org (not to zim)
+            var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
+            if (!kiwixMirrorUrl && urlMatch && /\.kiwix\.org\//i.test(urlMatch[1]) && !/(?:lbo?|lb)\.download\.kiwix\.org|\/\/download\.kiwix\.org/i.test(urlMatch[1])) {
+                kiwixMirrorUrl = urlMatch[1];
+            }
             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
@@ -1226,7 +1231,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/(?:lbo?\.)?download\.kiwix\.org/, 'mirror.download.kiwix.org');
+        var mirrorZimUrl = kiwixMirrorUrl || (params.kiwixMirrorServer + URL.replace(/\.meta4$/i, '').replace(/^https?:\/\/[^/]+/, ''));
         if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
