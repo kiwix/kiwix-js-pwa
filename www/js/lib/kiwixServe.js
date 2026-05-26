@@ -849,7 +849,8 @@ function parseOpdsEntries (xml, requestUrl) {
     var parsedEntries = [];
     for (var i = 0; i < feedEntries.length; i++) {
         var entry = feedEntries[i];
-        var acquisitionLink = getEntryLink(entry, 'http://opds-spec.org/acquisition/open-access', 'application/x-zim');
+        var acquisitionLink = getEntryLink(entry, '', 'application/x-zim') ||
+            getEntryLink(entry, '', 'application/metalink4+xml');
         var previewLink = getEntryLink(entry, '', 'text/html');
         var updated = getDirectChildText(entry, 'updated');
         var issued = getDirectChildText(entry, 'issued');
