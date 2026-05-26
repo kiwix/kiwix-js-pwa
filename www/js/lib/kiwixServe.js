@@ -872,9 +872,10 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            // lb(o).download.kiwix.org serves .meta4 files directly with Access-Control-Allow-Origin: *;
-            // for OPFS/Fetch downloads the URL is transformed to mirror.download.kiwix.org in processMetaLink
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
+            // OPDS acquisition links have type="application/x-zim" but href may currently point to a .zim or .meta4 URL;
+            // normalize to .meta4 so requestXhttpData always fetches the metalink (served inline with CORS by lb(o).download.kiwix.org),
+            // then processMetaLink() parses the mirror list and derives the OPFS download URL from any *.kiwix.org mirror listed
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl).replace(/\.meta4$/i, '') + '.meta4' : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
