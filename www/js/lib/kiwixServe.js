@@ -1198,10 +1198,17 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
         var kiwixMirrorUrl = '';
-        for (var i = 1; i < linkArray.length; i++) { // NB we're intentionally discarding first link to kiwix.org (not to zim)
+        var kiwixMirrorPriority = Infinity;
+        for (var i = 0; i < linkArray.length; i++) {
             var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
-            if (!kiwixMirrorUrl && urlMatch && /\.kiwix\.org\//i.test(urlMatch[1]) && !/lbo?\.download\.kiwix\.org|\/\/download\.kiwix\.org/i.test(urlMatch[1])) {
-                kiwixMirrorUrl = urlMatch[1];
+            if (urlMatch && /\.kiwix\.org\//i.test(urlMatch[1])) {
+                // Pick the *.kiwix.org URL with the lowest priority number (highest preference per meta4 spec)
+                var prioMatch = linkArray[i].match(/\bpriority="(\d+)"/i);
+                var prio = prioMatch ? parseInt(prioMatch[1], 10) : 999;
+                if (prio < kiwixMirrorPriority) {
+                    kiwixMirrorUrl = urlMatch[1];
+                    kiwixMirrorPriority = prio;
+                }
             }
             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
