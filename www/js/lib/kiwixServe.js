@@ -1200,7 +1200,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var kiwixMirrorUrl = '';
         for (var i = 1; i < linkArray.length; i++) { // NB we're intentionally discarding first link to kiwix.org (not to zim)
             var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
-            if (!kiwixMirrorUrl && urlMatch && /\.kiwix\.org\//i.test(urlMatch[1]) && !/(?:lbo?|lb)\.download\.kiwix\.org|\/\/download\.kiwix\.org/i.test(urlMatch[1])) {
+            if (!kiwixMirrorUrl && urlMatch && /\.kiwix\.org\//i.test(urlMatch[1]) && !/lbo?\.download\.kiwix\.org|\/\/download\.kiwix\.org/i.test(urlMatch[1])) {
                 kiwixMirrorUrl = urlMatch[1];
             }
             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
