@@ -1188,7 +1188,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
 
     function processMetaLink (doc) {
         // It's the metalink with download links
-        var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
+        var linkArray = doc.match(/<url\b[^>]*\bpriority="[^"]*"[^>]*>[^<]*<\/url>/ig);
         var size = doc.match(/<size>(\d+)<\/size>/i);
         // Filter value (add comma separators if required)
         size = size.length ? size[1] : '';
@@ -1201,7 +1201,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var kiwixMirrorPriority = Infinity;
         for (var i = 0; i < linkArray.length; i++) {
             var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
-            if (urlMatch && /\.kiwix\.org\//i.test(urlMatch[1])) {
+            if (urlMatch && /^https?:\/\/[^/]*\.kiwix\.org\//i.test(urlMatch[1])) {
                 // Pick the *.kiwix.org URL with the lowest priority number (highest preference per meta4 spec)
                 var prioMatch = linkArray[i].match(/\bpriority="(\d+)"/i);
                 var prio = prioMatch ? parseInt(prioMatch[1], 10) : 999;
