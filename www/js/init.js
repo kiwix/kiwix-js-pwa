@@ -68,7 +68,7 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.8.45'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.8.46'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
 params['packagedFile'] = getSetting('packagedFile') || ''; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
@@ -92,13 +92,13 @@ if (window.electronAPI) {
     params['expressPort'] = 3000;
 }
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
-params['kiwixLibraryServer'] = 'https://library.kiwix.org';
+params['kiwixLibraryServer'] = 'https://opds.library.kiwix.org';
 params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
 params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
 params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
-params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://library.kiwix.org'];
-params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/';
+params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
+params['kiwixMirrorServer'] = 'https://mirror.download.kiwix.org'; // CORS-enabled *.kiwix.org mirror; used as fallback for OPFS downloads if not found in meta4
 params['kiwixStagingServer'] = 'https://staging.download.kiwix.org';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server

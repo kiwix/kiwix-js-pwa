@@ -788,7 +788,6 @@ function injectDeveloperCategoryRows (categoryRows) {
     }
     if (!hasWikipedia) return categoryRows;
 
-    // var hiddenBase = params.kiwixhiddenDownloadServer + '.hidden/';
     var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
     // archive is commented out pending confirmation of its new location:
@@ -850,7 +849,8 @@ function parseOpdsEntries (xml, requestUrl) {
     var parsedEntries = [];
     for (var i = 0; i < feedEntries.length; i++) {
         var entry = feedEntries[i];
-        var acquisitionLink = getEntryLink(entry, 'http://opds-spec.org/acquisition/open-access', 'application/x-zim');
+        var acquisitionLink = getEntryLink(entry, '', 'application/x-zim') ||
+            getEntryLink(entry, '', 'application/metalink4+xml');
         var previewLink = getEntryLink(entry, '', 'text/html');
         var updated = getDirectChildText(entry, 'updated');
         var issued = getDirectChildText(entry, 'issued');
@@ -873,7 +873,10 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
+            // OPDS acquisition links have type="application/x-zim" but href may currently point to a .zim or .meta4 URL;
+            // normalize to .meta4 so requestXhttpData always fetches the metalink (served inline with CORS by lb(o).download.kiwix.org),
+            // then processMetaLink() parses the mirror list and derives the OPFS download URL from any *.kiwix.org mirror listed
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl).replace(/\.meta4$/i, '') + '.meta4' : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
@@ -1141,10 +1144,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Keep the torrent on the same domain as the original URL (staging files have staging torrents)
             torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
-            if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
-                headerDoc = 'This file is only available via browser-managed download:';
-                altURL = requestedURL.replace(/\/master\./i, '/mirror.');
-            }
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
@@ -1154,15 +1153,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
-            (~URL.indexOf(params.kiwixhiddenDownloadServer) ? ''
-                : '<p><b>Download with bittorrent:</b></p>' +
-                '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
+            '<p><b>Download with bittorrent:</b></p>' +
+            '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
             if (body) body.innerHTML = bodyDoc;
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
                 domain = domain.replace(/download/, 'library');
-                domain = domain.replace(/master/, 'dev');
                 return domain + file;
             });
             var langSel = document.getElementById('langs');
@@ -1200,7 +1197,19 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
-        for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+        var kiwixMirrorUrl = '';
+        var kiwixMirrorPriority = Infinity;
+        for (var i = 0; i < linkArray.length; i++) {
+            var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
+            if (urlMatch && /\.kiwix\.org\//i.test(urlMatch[1])) {
+                // Pick the *.kiwix.org URL with the lowest priority number (highest preference per meta4 spec)
+                var prioMatch = linkArray[i].match(/\bpriority="(\d+)"/i);
+                var prio = prioMatch ? parseInt(prioMatch[1], 10) : 999;
+                if (prio < kiwixMirrorPriority) {
+                    kiwixMirrorUrl = urlMatch[1];
+                    kiwixMirrorPriority = prio;
+                }
+            }
             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
@@ -1231,7 +1240,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+        var mirrorZimUrl = kiwixMirrorUrl || (params.kiwixMirrorServer + URL.replace(/\.meta4$/i, '').replace(/^https?:\/\/[^/]+/, ''));
         if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
@@ -1605,8 +1614,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     replaceURL = replaceURL + '.meta4';
                 } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
                     replaceURL = URL.replace(/\/[^/]*\/$/i, '/');
-                    replaceURL = replaceURL.replace(params.kiwixhiddenDownloadServer, params.kiwixDownloadServer);
-                    replaceURL = replaceURL.replace(/\.hidden\//, '');
                     replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
                 } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                     replaceURL = this.getAttribute('href').replace(/;/g, '&');
