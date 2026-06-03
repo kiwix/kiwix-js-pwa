@@ -1084,8 +1084,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         return;
     }
     var xhttp = new XMLHttpRequest();
-    // DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
-    var timeout = /\.magnet$/i.test(URL) ? 3000 : /\.meta4$/i.test(URL) ? 6000 : 20000;
+    // DEV: timeout set here to 20s for regular requests, 10s for meta4, 5s for magnet; if this isn't long enough for your target countries, increase
+    var timeout = /\.magnet$/i.test(URL) ? 5000 : /\.meta4$/i.test(URL) ? 10000 : 20000;
     var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
     function ajaxTimeout () {
         xhttp.abort();
@@ -1158,10 +1158,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             if (body) body.innerHTML = bodyDoc;
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
-            document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
-                domain = domain.replace(/download/, 'library');
-                return domain + file;
-            });
+            document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');
@@ -1188,10 +1185,10 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
 
     function processMetaLink (doc) {
         // It's the metalink with download links
-        var linkArray = doc.match(/<url\b[^>]*\bpriority="[^"]*"[^>]*>[^<]*<\/url>/ig);
+        var linkArray = doc.match(/<url\b[^>]*\bpriority="[^"]*"[^>]*>[^<]*<\/url>/ig) || [];
         var size = doc.match(/<size>(\d+)<\/size>/i);
         // Filter value (add comma separators if required)
-        size = size.length ? size[1] : '';
+        size = size ? size[1] : '';
         var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
         // Use the lookbehind reversal trick to add commas....
         size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
@@ -1274,10 +1271,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var returnLink = document.getElementById('returnLink');
         if (returnLink) returnLink.addEventListener('click', submitSelectValues);
         // Set up preview link
-        document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
-            domain = domain.replace(/download/, 'library');
-            return domain + file;
-        });
+        document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
         // If File System Access API is available, add event listeners on download links to save to local storage
         if (params.useOPFS || window.showSaveFilePicker) {
             var downloadUrls = document.getElementsByClassName('download');
