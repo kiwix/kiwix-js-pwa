@@ -1,0 +1,33 @@
+﻿html,
+img,
+video {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+img[class|="mwe-math-fallback-image"], img[class^="latex"] {
+    filter: hue-rotate(180deg);
+}
+
+body {
+    background: black !important;
+}
+
+::-webkit-scrollbar {
+    height: 10px;
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+    height: 30px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #3b3b3b;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #666;
+    border: 1px solid #eee;
+}
