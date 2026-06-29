@@ -1,0 +1,88 @@
+/**
+ * Custom style meant to match the design of mwoffliner mobile version to the mobile version of wikipedia
+ */
+/*.mw-body-content {
+    font-family: 'Helvetica Neue','Helvetica','Nimbus Sans L','Arial','Liberation Sans',sans-serif;
+    font-size: 16px;
+    line-height: 26px;
+}*/
+.mw-body-content p {
+    margin: 0.5em 0 1em 0;
+}
+
+.mw-body p { /*Added GK*/
+    margin: 0.5em 0 1em 0;
+}
+
+table.infobox th, table.infobox td { /*Added GK*/
+    border-bottom: 1px solid #eaecf0;
+    padding: 7px 10px;
+}
+
+.mw-body h2, .mw-body h3, .mw-body h4, .mw-body h5, .mw-body h6 {
+    padding: 0.5em 0 0;
+}
+.mw-body h3, .mw-body h2 {
+    /*clear: both;*/
+    /*width: 100%;*/
+    margin-bottom: 0.5em;
+    border-bottom: solid 1px #eaecf0;
+    font-family: 'Linux Libertine','Georgia','Times',serif;
+}
+
+.mw-body h1 {
+    border-bottom: 0 solid #eaecf0;
+    padding-top: 0.3em !important;
+    font-family: 'Linux Libertine','Georgia','Times',serif;
+}
+.mw-body h2 {
+    border-bottom: 0 solid #eaecf0;
+}
+.mw-body h3 {
+    border-bottom: 0 solid #eaecf0;
+    font-weight: bold;
+}
+.mw-body h4 {
+    border-bottom: 0 solid #eaecf0;
+}
+
+/* Remove unwanted line under heading in mobile style */
+.vector-page-titlebar::after {
+    height: 0px !important;
+}
+
+h1[tabindex="0"].collapsible-heading > .indicator {
+  display: none; /* hide the "v" icon for the main title */
+}
+
+@media all and (max-width:479px) {
+    body:not(.skin-minerva) .mw-parser-output .infobox {
+        width: 100% !important;
+        max-width: 99% !important;
+    }
+
+    body:not(.skin-minerva) .mw-parser-output .infobox th {
+        width: 50%;
+    }
+}
+
+@media all and (min-width:480px) {
+ body:not(.skin-minerva) .mw-parser-output .infobox {
+        max-width: 320px !important;
+    }
+}
+
+@media all and (min-width: 680px) {
+    .client-js .collapsible-heading .indicator {
+        display: none !important; /* this is to hide to "v" icone next to titles in desktop */
+    }
+    .float-right {
+        float: right;
+        margin-left: 10px;
+    }
+}
+@media all and (max-width: 679px) {
+    .mw-stack, .infobox, .vertical-navbox {
+        float: none !important;
+    }
+}
