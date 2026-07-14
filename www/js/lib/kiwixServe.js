@@ -793,7 +793,7 @@ function injectDeveloperCategoryRows (categoryRows) {
     // archive is commented out pending confirmation of its new location:
     // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
     // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
-    if (!params.appCache) devRows.push({ title: 'custom_apps', href: stagingBase + 'custom_apps/', external: true });
+    if (!params.appCache) devRows.push({ title: 'branded_apps', href: stagingBase + 'branded_apps/', external: true });
     if (!params.appCache) devRows.push({ title: 'dev', href: stagingBase + 'dev/', external: true });
     if (!params.appCache) devRows.push({ title: 'dev (OPDS)', href: params.kiwixStagingCatalogEntries });
     if (!params.appCache) devRows.push({ title: 'endless', href: stagingBase + 'endless/', external: true });
