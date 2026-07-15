@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "3.8.45-E",
+  "version": "3.8.46-E",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -182,7 +182,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "@babel/cli": "^7.21.5",
-    "@babel/core": "^7.21.5",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.21.5",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@rollup/plugin-babel": "^6.0.4",
@@ -202,7 +202,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.4.0",
-    "vite": "^6.4.2"
+    "vite": "^8.0.16"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
@@ -210,6 +210,6 @@
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.6.8",
-    "express": "^4.22.1"
+    "express": "^4.22.2"
   }
 }

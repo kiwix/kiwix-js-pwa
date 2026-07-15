@@ -206,7 +206,7 @@ tr[bgcolor], tr[style*="background-color: rgb"], tr[style*="background-color:#dd
     border-color: #555 !important;
   }
 
-table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[style*="background-color: #fff;"],
+table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, table.infobox, table.wikitable tr, tr[style*="background-color: #fff;"],
 .mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"], tr[style*="background:#EF"], tr[style*="background:#FF"],
 tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
 td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"],

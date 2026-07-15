@@ -500,6 +500,7 @@ var opdsLangCodeAliases = {
     mya: 'my',
     mlt: 'mt',
     nep: 'ne',
+    nhe: 'nah',
     nld: 'nl',
     nno: 'nn',
     nob: 'nb',
@@ -570,10 +571,17 @@ var opdsLangCodeAliases = {
     zul: 'zu'
 };
 
+// langCodes keys camelCase multi-part codes (e.g. roa-tara -> roaTara, nds-nl -> ndsNl),
+// but the OPDS pipeline canonicalizes to lowercase-hyphen form. Bridge the two for lookups.
+function toLangCodesKey (code) {
+    return code.replace(/-([a-z])/g, function (match, letter) { return letter.toUpperCase(); });
+}
+
 function getLanguageDisplayLabel (langCode) {
     var code = trim(langCode).toLowerCase();
     var aliasCode = opdsLangCodeAliases[code] || code;
-    var langName = langCodes[code] || langCodes[aliasCode];
+    var langName = langCodes[code] || langCodes[aliasCode] ||
+        langCodes[toLangCodesKey(aliasCode)] || langCodes[toLangCodesKey(code)];
     if (!langName) return langCode;
     return aliasCode + ' :  ' + langName;
 }
@@ -733,6 +741,26 @@ function deriveSubjectFromName (name, category) {
     return trim(parts.slice(2).join('_'));
 }
 
+// The OPDS <language> field cannot distinguish wiki dialects that share an ISO 639-3 code
+// (e.g. both wikipedia_nap_* and wikipedia_roa-tara_* report "nap"). The filename encodes the
+// wiki's own code as the second underscore-delimited segment, so prefer it when it structurally
+// looks like a language code, falling back to the OPDS language otherwise. This deliberately does
+// not depend on langCodes/opdsLangCodeAliases being complete: an unlisted language still yields a
+// dropdown entry (labelled with its bare code) and filters correctly.
+// Subject/flavour tokens that can occupy the language segment in malformed names but must not be
+// treated as languages:
+var nonLanguageSegments = /^(all|maxi|mini|nopic|nodet|novid)$/;
+function deriveLanguageFromName (name) {
+    if (!name) return '';
+    var parts = name.split('_');
+    if (parts.length < 2) return '';
+    var code = trim(parts[1]).toLowerCase();
+    if (nonLanguageSegments.test(code)) return '';
+    // Two-to-six letters, optionally followed by hyphen-delimited subtags (roa-tara, zh-min-nan)
+    if (/^[a-z]{2,6}(-[a-z]+)*$/.test(code)) return code;
+    return '';
+}
+
 function getOpdsFilename (entry) {
     var href = entry.acquisitionHref || '';
     if (href) {
@@ -788,13 +816,12 @@ function injectDeveloperCategoryRows (categoryRows) {
     }
     if (!hasWikipedia) return categoryRows;
 
-    // var hiddenBase = params.kiwixhiddenDownloadServer + '.hidden/';
     var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
     // archive is commented out pending confirmation of its new location:
     // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
     // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
-    if (!params.appCache) devRows.push({ title: 'custom_apps', href: stagingBase + 'custom_apps/', external: true });
+    if (!params.appCache) devRows.push({ title: 'branded_apps', href: stagingBase + 'branded_apps/', external: true });
     if (!params.appCache) devRows.push({ title: 'dev', href: stagingBase + 'dev/', external: true });
     if (!params.appCache) devRows.push({ title: 'dev (OPDS)', href: params.kiwixStagingCatalogEntries });
     if (!params.appCache) devRows.push({ title: 'endless', href: stagingBase + 'endless/', external: true });
@@ -850,7 +877,8 @@ function parseOpdsEntries (xml, requestUrl) {
     var parsedEntries = [];
     for (var i = 0; i < feedEntries.length; i++) {
         var entry = feedEntries[i];
-        var acquisitionLink = getEntryLink(entry, 'http://opds-spec.org/acquisition/open-access', 'application/x-zim');
+        var acquisitionLink = getEntryLink(entry, '', 'application/x-zim') ||
+            getEntryLink(entry, '', 'application/metalink4+xml');
         var previewLink = getEntryLink(entry, '', 'text/html');
         var updated = getDirectChildText(entry, 'updated');
         var issued = getDirectChildText(entry, 'issued');
@@ -863,7 +891,10 @@ function parseOpdsEntries (xml, requestUrl) {
             title: getDirectChildText(entry, 'title'),
             summary: getDirectChildText(entry, 'summary'),
             languageValue: languageValue,
-            languages: parseLanguages(languageValue),
+            languages: (function () {
+                var nameLang = deriveLanguageFromName(name);
+                return nameLang ? [nameLang] : parseLanguages(languageValue);
+            })(),
             name: name,
             flavour: getDirectChildText(entry, 'flavour'),
             category: category,
@@ -873,7 +904,10 @@ function parseOpdsEntries (xml, requestUrl) {
             date: getYearMonth(issued || updated),
             dateDisplay: getDateDisplay(updated || issued),
             subject: subject,
-            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl) : '',
+            // OPDS acquisition links have type="application/x-zim" but href may currently point to a .zim or .meta4 URL;
+            // normalize to .meta4 so requestXhttpData always fetches the metalink (served inline with CORS by lb(o).download.kiwix.org),
+            // then processMetaLink() parses the mirror list and derives the OPFS download URL from any *.kiwix.org mirror listed
+            acquisitionHref: acquisitionLink ? resolveCatalogHref(acquisitionLink.getAttribute('href'), requestUrl).replace(/\.meta4$/i, '') + '.meta4' : '',
             previewHref: previewLink ? resolveCatalogHref(previewLink.getAttribute('href'), requestUrl) : '',
             size: acquisitionLink ? acquisitionLink.getAttribute('length') || '' : '',
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
@@ -1081,8 +1115,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         return;
     }
     var xhttp = new XMLHttpRequest();
-    // DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
-    var timeout = /\.magnet$/i.test(URL) ? 3000 : /\.meta4$/i.test(URL) ? 6000 : 20000;
+    // DEV: timeout set here to 20s for regular requests, 10s for meta4, 5s for magnet; if this isn't long enough for your target countries, increase
+    var timeout = /\.magnet$/i.test(URL) ? 5000 : /\.meta4$/i.test(URL) ? 10000 : 20000;
     var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
     function ajaxTimeout () {
         xhttp.abort();
@@ -1141,10 +1175,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             // Keep the torrent on the same domain as the original URL (staging files have staging torrents)
             torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
-            if (~URL.indexOf(params.kiwixhiddenDownloadServer)) {
-                headerDoc = 'This file is only available via browser-managed download:';
-                altURL = requestedURL.replace(/\/master\./i, '/mirror.');
-            }
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
@@ -1154,17 +1184,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
-            (~URL.indexOf(params.kiwixhiddenDownloadServer) ? ''
-                : '<p><b>Download with bittorrent:</b></p>' +
-                '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
+            '<p><b>Download with bittorrent:</b></p>' +
+            '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
             if (body) body.innerHTML = bodyDoc;
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
-            document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
-                domain = domain.replace(/download/, 'library');
-                domain = domain.replace(/master/, 'dev');
-                return domain + file;
-            });
+            document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');
@@ -1191,16 +1216,28 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
 
     function processMetaLink (doc) {
         // It's the metalink with download links
-        var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
+        var linkArray = doc.match(/<url\b[^>]*\bpriority="[^"]*"[^>]*>[^<]*<\/url>/ig) || [];
         var size = doc.match(/<size>(\d+)<\/size>/i);
         // Filter value (add comma separators if required)
-        size = size.length ? size[1] : '';
+        size = size ? size[1] : '';
         var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
         // Use the lookbehind reversal trick to add commas....
         size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
-        for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+        var kiwixMirrorUrl = '';
+        var kiwixMirrorPriority = Infinity;
+        for (var i = 0; i < linkArray.length; i++) {
+            var urlMatch = linkArray[i].match(/<url\b[^>]*>([^<]*)<\/url>/i);
+            if (urlMatch && /^https?:\/\/[^/]*\.kiwix\.org\//i.test(urlMatch[1])) {
+                // Pick the *.kiwix.org URL with the lowest priority number (highest preference per meta4 spec)
+                var prioMatch = linkArray[i].match(/\bpriority="(\d+)"/i);
+                var prio = prioMatch ? parseInt(prioMatch[1], 10) : 999;
+                if (prio < kiwixMirrorPriority) {
+                    kiwixMirrorUrl = urlMatch[1];
+                    kiwixMirrorPriority = prio;
+                }
+            }
             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
@@ -1231,7 +1268,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+        var mirrorZimUrl = kiwixMirrorUrl || (params.kiwixMirrorServer + URL.replace(/\.meta4$/i, '').replace(/^https?:\/\/[^/]+/, ''));
         if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
@@ -1265,10 +1302,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var returnLink = document.getElementById('returnLink');
         if (returnLink) returnLink.addEventListener('click', submitSelectValues);
         // Set up preview link
-        document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
-            domain = domain.replace(/download/, 'library');
-            return domain + file;
-        });
+        document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
         // If File System Access API is available, add event listeners on download links to save to local storage
         if (params.useOPFS || window.showSaveFilePicker) {
             var downloadUrls = document.getElementsByClassName('download');
@@ -1605,8 +1639,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     replaceURL = replaceURL + '.meta4';
                 } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
                     replaceURL = URL.replace(/\/[^/]*\/$/i, '/');
-                    replaceURL = replaceURL.replace(params.kiwixhiddenDownloadServer, params.kiwixDownloadServer);
-                    replaceURL = replaceURL.replace(/\.hidden\//, '');
                     replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
                 } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                     replaceURL = this.getAttribute('href').replace(/;/g, '&');
