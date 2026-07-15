@@ -213,6 +213,11 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     background: darkslategrey;
 }
 
+.dark #upgradeAlert {
+    background: darkslategray;
+    color: aliceblue;
+}
+
 .snippet-container {
     border: none !important;
     padding: 0 !important;
