@@ -103,22 +103,25 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For updates since v3.7.8 please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md<img alt="external link" src="I/s/Icon_External_Link.png"></a></li>
-                                <li>Support new Wikimedia ZIM-provided auto dark/light theming system (SW mode only)</li>
-                                <li>Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
-                                <li>Migrated project to Bootstrap 4 and replaced Glyphicons with Font Awesome icons</li>
-                                <li>Removed dependency on JQuery completely</li>
-                                <li>Increased security of Electron app's Express server and provided controls for LAN access</li>
-                                <li>Added PWA installation guide for major browsers</li>
-                                <li>Added instructions for installing AppImage on recent Ubuntu missing fuse2</li>
-                                <li>Fixed broken printing support</li>
-                                <li>Fixed critical error in IE11 preventing rendering of webp images</li>
-                                <li>Fixed touch events for sliding away tool and navbars</li>
-                                <li>Unified all keyboard events under the same function</li>
-                                <li>Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
-                                <li>Prevent display of popovers on Wikivoyage custom landing page</li>
-                                <li>General app and project information updates</li>
-                                <li>Security updates to dependencies</li>
+                                <li>Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)</li>
+                                <li>New keyboard shortcuts for article search: <b>/</b>, <b>Ctrl-K</b> and <b>Home</b></li>
+                                <li>Faster, more reliable ZIM download library, now using the Kiwix catalogue service (OPDS)</li>
+                                <li>Fixed display of ISO language codes in library languages dropdown</li>
+                                <li>Modernized the app's user interface framework, making it lighter and faster</li>
+                                <li>Removed dependency on jQuery completely</li>
+                                <li>Improved security of the Electron app's local server, with new controls for access over your local network</li>
+                                <li>Fixed broken printing of articles</li>
+                                <li>Added guides for installing the PWA in major browsers on GitHub site</li>
+                                <li>Fixed blank page when opening an article in a new tab or following a link to a section</li>
+                                <li>Fixed display of grid-style (masonry) landing pages</li>
+                                <li>Prevent popovers on Wikivoyage custom landing page</li>
+                                <li>Various dark-mode display fixes</li>
+                                <li>Fixed touch gestures for sliding away the top and bottom bars</li>
+                                <li>App now responds faster when you are offline, instead of waiting for network timeouts</li>
+                                <li>Fix incorrect auto-update of custom apps to the base app</li>
+                                <li>Added Docker Compose configuration for easier local deployment</li>
+                                <li>New developer mode (Expert Settings) to facilitate debugging and development of the app</li>
+                                <li>Updated Electron and NWJS frameworks, plus many security updates to dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

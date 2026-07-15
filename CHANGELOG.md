@@ -48,7 +48,6 @@
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
 * DEV: Bump Electron Builder to 26.4.0
 * DEV: Security updates to many dependencies
-* DEV: Bump lodash
 
 ## Release 3.7.7 / 3.7.8
 
