@@ -500,6 +500,7 @@ var opdsLangCodeAliases = {
     mya: 'my',
     mlt: 'mt',
     nep: 'ne',
+    nhe: 'nah',
     nld: 'nl',
     nno: 'nn',
     nob: 'nb',
@@ -570,10 +571,17 @@ var opdsLangCodeAliases = {
     zul: 'zu'
 };
 
+// langCodes keys camelCase multi-part codes (e.g. roa-tara -> roaTara, nds-nl -> ndsNl),
+// but the OPDS pipeline canonicalizes to lowercase-hyphen form. Bridge the two for lookups.
+function toLangCodesKey (code) {
+    return code.replace(/-([a-z])/g, function (match, letter) { return letter.toUpperCase(); });
+}
+
 function getLanguageDisplayLabel (langCode) {
     var code = trim(langCode).toLowerCase();
     var aliasCode = opdsLangCodeAliases[code] || code;
-    var langName = langCodes[code] || langCodes[aliasCode];
+    var langName = langCodes[code] || langCodes[aliasCode] ||
+        langCodes[toLangCodesKey(aliasCode)] || langCodes[toLangCodesKey(code)];
     if (!langName) return langCode;
     return aliasCode + ' :  ' + langName;
 }
@@ -733,6 +741,26 @@ function deriveSubjectFromName (name, category) {
     return trim(parts.slice(2).join('_'));
 }
 
+// The OPDS <language> field cannot distinguish wiki dialects that share an ISO 639-3 code
+// (e.g. both wikipedia_nap_* and wikipedia_roa-tara_* report "nap"). The filename encodes the
+// wiki's own code as the second underscore-delimited segment, so prefer it when it structurally
+// looks like a language code, falling back to the OPDS language otherwise. This deliberately does
+// not depend on langCodes/opdsLangCodeAliases being complete: an unlisted language still yields a
+// dropdown entry (labelled with its bare code) and filters correctly.
+// Subject/flavour tokens that can occupy the language segment in malformed names but must not be
+// treated as languages:
+var nonLanguageSegments = /^(all|maxi|mini|nopic|nodet|novid)$/;
+function deriveLanguageFromName (name) {
+    if (!name) return '';
+    var parts = name.split('_');
+    if (parts.length < 2) return '';
+    var code = trim(parts[1]).toLowerCase();
+    if (nonLanguageSegments.test(code)) return '';
+    // Two-to-six letters, optionally followed by hyphen-delimited subtags (roa-tara, zh-min-nan)
+    if (/^[a-z]{2,6}(-[a-z]+)*$/.test(code)) return code;
+    return '';
+}
+
 function getOpdsFilename (entry) {
     var href = entry.acquisitionHref || '';
     if (href) {
@@ -863,7 +891,10 @@ function parseOpdsEntries (xml, requestUrl) {
             title: getDirectChildText(entry, 'title'),
             summary: getDirectChildText(entry, 'summary'),
             languageValue: languageValue,
-            languages: parseLanguages(languageValue),
+            languages: (function () {
+                var nameLang = deriveLanguageFromName(name);
+                return nameLang ? [nameLang] : parseLanguages(languageValue);
+            })(),
             name: name,
             flavour: getDirectChildText(entry, 'flavour'),
             category: category,
