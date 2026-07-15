@@ -44,9 +44,9 @@
 * DEV: Fix broken invocation of wingetcreate
 * DEV: Update location for Kiwix-hosted downloads of apps
 * DEV: Rename custom_apps to branded_apps
-* DEV: Bump Electron to 42.0.0 (for modern Electron builds)
-* DEV: Bump NWJS to 104.1 (for modern NWJS builds)
-* DEV: Bump Electron Builder to 26.4.0
+* DEV: Bump Electron to 43.1.1 (for modern Electron builds)
+* DEV: Bump NWJS to 113.0 (for modern NWJS builds)
+* DEV: Bump Electron Builder to 26.15.3
 * DEV: Security updates to many dependencies
 
 ## Release 3.7.7 / 3.7.8
