@@ -2,7 +2,7 @@
 
 ## Release 3.8.5 / 3.8.6
 
-* ENHANCEMENT: Support new auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
+* ENHANCEMENT: Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
 * UPDATE: Migrate Library to use OPDS endpoint instead of download.kiwix.org
 * UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
