@@ -19,7 +19,9 @@
 * REGRESSION: Fix critical error in IE11 preventing rendering of webp images
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * REGRESSION: Properly set initial express port value
-* REGRESSION: Fix blank page on 
+* REGRESSION: Fix blank page on fragment or new tab navigation
+* REGRESSION: Fix poor dark styling of Spanish Wikipedia when transforming to mobile style
+* REGRESSION: Fix display of ISO language codes in library languages dropdown
 * FIX: Touch events for sliding away tool and navbars
 * FIX: Unify all keyboard events under the same function
 * FIX: Set more reasonable product name for Linux Electron app
@@ -31,6 +33,8 @@
 * FIX: Properly hide notice to download ZIM in packaged apps
 * FIX: Blank page on navigation with fragment or new tab (supports Single Page Applications)
 * FIX: Invalid HTML attribute causing Vite parsing error
+* FIX: CSP blocking of ZIM download library
+* FIX: Dark mode display of upgrade alert box
 * DEV: Change "Bypass AppCache" option to "Developer Mode" (same functionality)
 * DEV: WikiMed builds now use S3 publishing
 * DEV: Add Docker Compose configuration for serving PWA locally
@@ -39,6 +43,7 @@
 * DEV: Service Worker now handles event passing
 * DEV: Fix broken invocation of wingetcreate
 * DEV: Update location for Kiwix-hosted downloads of apps
+* DEV: Rename custom_apps to branded_apps
 * DEV: Bump Electron to 42.0.0 (for modern Electron builds)
 * DEV: Bump NWJS to 104.1 (for modern NWJS builds)
 * DEV: Bump Electron Builder to 26.4.0
