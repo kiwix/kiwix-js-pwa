@@ -173,7 +173,9 @@ jobs:
         cp ./package.json ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
-        PUBLISH_FLAG="never"
+        # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
+        # for AWS S3, force always to override that policy
+        PUBLISH_FLAG="onTagOrDraft"
         if [[ "$PUBLISH_TO" == "aws" ]]; then
           PUBLISH_FLAG="always"
         fi
@@ -193,7 +195,9 @@ jobs:
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
-        PUBLISH_FLAG="never"
+        # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
+        # for AWS S3, force always to override that policy
+        PUBLISH_FLAG="onTagOrDraft"
         if [[ "$PUBLISH_TO" == "aws" ]]; then
           PUBLISH_FLAG="always"
         fi
