@@ -55,6 +55,7 @@
       ]
     },
     "mac": {
+      "appId": "org.kiwix.kiwixjs",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "notarize": true,
