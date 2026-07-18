@@ -55,6 +55,9 @@
       ]
     },
     "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "notarize": true,
       "asar": "true",
       "extraResources": {
         "from": "archives",

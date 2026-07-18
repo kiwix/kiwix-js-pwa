@@ -11,6 +11,12 @@ const unsignedConfig = {
         // Unfortunately, this option doesn't do anything (August 2025)
         // signAndEditExecutable: false
     },
+    mac: {
+        ...baseConfig.mac,
+        // identity: null forces electron-builder to skip macOS code signing
+        identity: null,
+        notarize: false
+    },
     // Remove top-level configs related to signing
     cscLink: undefined,
     cscKeyPassword: undefined

@@ -312,6 +312,14 @@ jobs:
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials. If the secrets are not
+        # set, these resolve to empty strings and electron-builder skips signing
+        # and notarization with a warning (safe no-op for PR/dev builds).
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       run: |
         # Save the original Electron version (just the version string, no quotes)
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/')
@@ -330,11 +338,7 @@ jobs:
         echo "Verifying installed Electron version..."
         npx electron --version
         echo "Building macOS packages for High Sierra/Mojave..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
-        else
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
-        fi
+        npx electron-builder --mac zip:x64 --publish never --projectDir dist
         echo "Renaming High Sierra package..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -357,6 +361,12 @@ jobs:
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials (see High Sierra step)
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
@@ -407,66 +417,95 @@ jobs:
         # rm -f *.blockmap
         cd ../../..
     - name: Smoke test Electron app
+      env:
+        # True when the macOS signing certificate secret exists: enables the
+        # codesign/stapler/spctl verification below. Deliberately does not
+        # expose the certificate itself to this step.
+        MAC_SIGNING_ENABLED: ${{ secrets.APPLE_DEVELOPER_ID_P12 != '' }}
       run: |
-        echo "Extracting macOS app for testing..."
         cd dist/bld/Electron
-        # Find the first zip file (prefer x64 if available)
-        ZIP_FILE=$(ls -1 *.zip | head -1)
-        echo "Found zip file: $ZIP_FILE"
-        # Extract the zip file
-        unzip -q "$ZIP_FILE"
-        # Find the .app bundle
-        APP_BUNDLE=$(find . -name "*.app" -type d | head -1)
-        echo "Found app bundle: $APP_BUNDLE"
-        if [ -z "$APP_BUNDLE" ]; then
-          echo "Error: No .app bundle found!"
+        if ! ls *.zip >/dev/null 2>&1; then
+          echo "Error: No zip packages found to test!"
           exit 1
         fi
-        # Remove quarantine attribute (required for CI)
-        xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
-        # Test basic app launch (verify it can start without crashing)
-        echo "Testing app launch..."
-        # Determine the executable name based on the app bundle name
-        APP_NAME=$(basename "$APP_BUNDLE" .app)
-        EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
-        echo "Using executable: $EXECUTABLE_PATH"
-        # Verify executable exists
-        if [ ! -f "$EXECUTABLE_PATH" ]; then
-          echo "Error: Executable not found at $EXECUTABLE_PATH"
-          ls -la "$APP_BUNDLE/Contents/MacOS/"
-          exit 1
-        fi
-        "$EXECUTABLE_PATH" \
-          --disable-gpu-sandbox \
-          --no-sandbox \
-          --disable-web-security \
-          --disable-dev-shm-usage \
-          --no-first-run \
-          --disable-default-apps &
-        APP_PID=$!
-        echo "Started app with PID: $APP_PID"
-        # Wait for app to start and check if process is running
-        sleep 8
-        if kill -0 $APP_PID 2>/dev/null; then
-          echo "✅ App process is running successfully"
-          # Check if app is responsive by looking at process details
-          echo "Process details:"
-          ps -p $APP_PID -o pid,ppid,time,command || true
-          echo "App is running and responsive"
-          # Kill app gracefully
-          kill -TERM $APP_PID 2>/dev/null || true
-          sleep 3
-          # Force kill if still running
-          if kill -0 $APP_PID 2>/dev/null; then
-            echo "Force killing app..."
-            kill -KILL $APP_PID 2>/dev/null || true
+        # Test every package (High Sierra x64, modern x64, arm64): a signing
+        # regression in just one variant is exactly the failure mode to catch
+        for ZIP_FILE in *.zip; do
+          echo "=========================================="
+          echo "Testing package: $ZIP_FILE"
+          echo "=========================================="
+          EXTRACT_DIR="smoketest"
+          rm -rf "$EXTRACT_DIR"
+          unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"
+          # Find the .app bundle
+          APP_BUNDLE=$(find "$EXTRACT_DIR" -name "*.app" -type d | head -1)
+          echo "Found app bundle: $APP_BUNDLE"
+          if [ -z "$APP_BUNDLE" ]; then
+            echo "Error: No .app bundle found in $ZIP_FILE!"
+            exit 1
           fi
-          echo "✅ App launched and terminated successfully"
-        else
-          echo "❌ App process failed to start or crashed immediately"
-          exit 1
-        fi
-        echo "Smoke test completed successfully"
+          if [[ "$MAC_SIGNING_ENABLED" == "true" ]]; then
+            echo "Verifying code signature, notarization ticket and Gatekeeper assessment..."
+            codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+            xcrun stapler validate "$APP_BUNDLE"
+            SPCTL_OUT=$(spctl -a -vv --type exec "$APP_BUNDLE" 2>&1) || { echo "$SPCTL_OUT"; echo "❌ Gatekeeper rejected the app"; exit 1; }
+            echo "$SPCTL_OUT"
+            if ! grep -q "Notarized Developer ID" <<<"$SPCTL_OUT"; then
+              echo "❌ App was accepted but is not notarized (expected source=Notarized Developer ID)"
+              exit 1
+            fi
+            echo "✅ Signature, staple and Gatekeeper checks passed"
+          else
+            echo "Signing secrets not present: skipping codesign/stapler/spctl verification"
+          fi
+          # Remove quarantine attribute (required for CI)
+          xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
+          # Test basic app launch (verify it can start without crashing)
+          echo "Testing app launch..."
+          # Determine the executable name based on the app bundle name
+          APP_NAME=$(basename "$APP_BUNDLE" .app)
+          EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+          echo "Using executable: $EXECUTABLE_PATH"
+          # Verify executable exists
+          if [ ! -f "$EXECUTABLE_PATH" ]; then
+            echo "Error: Executable not found at $EXECUTABLE_PATH"
+            ls -la "$APP_BUNDLE/Contents/MacOS/"
+            exit 1
+          fi
+          "$EXECUTABLE_PATH" \
+            --disable-gpu-sandbox \
+            --no-sandbox \
+            --disable-web-security \
+            --disable-dev-shm-usage \
+            --no-first-run \
+            --disable-default-apps &
+          APP_PID=$!
+          echo "Started app with PID: $APP_PID"
+          # Wait for app to start and check if process is running
+          sleep 8
+          if kill -0 $APP_PID 2>/dev/null; then
+            echo "✅ App process is running successfully"
+            # Check if app is responsive by looking at process details
+            echo "Process details:"
+            ps -p $APP_PID -o pid,ppid,time,command || true
+            echo "App is running and responsive"
+            # Kill app gracefully
+            kill -TERM $APP_PID 2>/dev/null || true
+            sleep 3
+            # Force kill if still running
+            if kill -0 $APP_PID 2>/dev/null; then
+              echo "Force killing app..."
+              kill -KILL $APP_PID 2>/dev/null || true
+            fi
+            echo "✅ App launched and terminated successfully"
+          else
+            echo "❌ App process failed to start or crashed immediately"
+            exit 1
+          fi
+          # Clean up so the extracted app is not picked up by later steps
+          rm -rf "$EXTRACT_DIR"
+        done
+        echo "Smoke test completed successfully for all packages"
 
     - name: Upload macOS builds to S3
       if: env.PUBLISH_TO == 'aws'
