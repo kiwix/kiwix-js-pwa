@@ -1751,6 +1751,8 @@ var downloadSize = 0;
 
 // State of any in-app BitTorrent download in progress ({ infoHash, name } or null)
 var activeTorrent = null;
+// A completed torrent that is still seeding in the background ({ infoHash, name } or null)
+var seedingTorrent = null;
 // A torrent start request that is waiting for the user to pick a download folder
 var pendingTorrentUrl = null;
 
@@ -1796,7 +1798,8 @@ function startTorrentDownload (torrentUrl, sizeMB) {
     torrentClient.resolveSavePath(params.pickedFolder).then(function (savePath) {
         var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
             (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
-            (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>'
+            (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
+                '<p><label><input type="checkbox" id="torrentPickNewFolder">&nbsp;Download to a different folder&hellip;</label></p>'
                 : '<p>You will be asked to choose the folder into which the archive should be downloaded (usually your ZIM folder).</p>') +
             '<p>The download can be resumed if it is interrupted. Your firewall may ask you (once) to allow the app to accept network connections: ' +
             'this is needed to exchange data with other BitTorrent users.</p>' +
@@ -1805,10 +1808,15 @@ function startTorrentDownload (torrentUrl, sizeMB) {
             '<p><b><i>Do not close the app during the download.</i></b></p>';
         uiUtil.systemAlert(message, 'Download via BitTorrent?', true, 'Cancel', 'Download').then(function (confirm) {
             if (!confirm) return;
-            if (savePath) {
+            // The modal's content is still in the DOM after it closes, so the checkbox
+            // (present only when a download path was derived) can be read here
+            var pickNewFolder = document.getElementById('torrentPickNewFolder');
+            if (savePath && !(pickNewFolder && pickNewFolder.checked)) {
                 beginTorrentDownload(torrentUrl, savePath);
             } else if (window.dialog) {
-                // Last resort: open the native (path-returning) folder picker directly
+                // No path could be derived, or the user asked to change folder: open the
+                // native (path-returning) folder picker, whose result is also stored as the
+                // new picked folder for subsequent downloads
                 pendingTorrentUrl = torrentUrl;
                 window.dialog.openDirectory();
             } else {
@@ -1826,13 +1834,24 @@ function startTorrentDownload (torrentUrl, sizeMB) {
 function beginTorrentDownload (torrentUrl, savePath) {
     downloadSize = 0;
     percentageComplete = 0;
+    // A torrent left seeding in the background must stop reporting to the status line now
+    // that a new download is taking it over (the old torrent goes on seeding regardless)
+    if (seedingTorrent) {
+        torrentClient.detach(seedingTorrent.infoHash);
+        seedingTorrent = null;
+    }
     // Guards against a race where a torrent completes (or fails) before the start Promise
     // resolves, e.g. when resuming a file that is already fully downloaded
     var finished = false;
     uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Starting BitTorrent download...', true);
     torrentClient.start(torrentUrl, savePath, {
         onProgress: function (s) {
-            if (!s.done) {
+            if (s.verifying) {
+                // The download has completed and the data written to disk is being hash-checked
+                serverResponse.style.display = 'inline';
+                serverResponse.style.setProperty('color', 'goldenrod', 'important');
+                serverResponse.innerHTML = 'Verifying downloaded data&hellip; ' + Math.round(s.progress * 100) + '%';
+            } else if (!s.done) {
                 reportDownloadProgress(s.received, s.total);
                 serverResponse.innerHTML += ' | ' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') +
                     ' | ' + (s.downloadSpeed / 1048576).toFixed(2) + ' MB/s';
@@ -1846,8 +1865,14 @@ function beginTorrentDownload (torrentUrl, savePath) {
         onDone: function (s) {
             finished = true;
             activeTorrent = null;
+            if (s.seeding) {
+                seedingTorrent = { infoHash: s.infoHash, name: s.name };
+            } else {
+                torrentClient.detach(s.infoHash);
+            }
             reportDownloadProgress('completed');
-            uiUtil.systemAlert('<p>The archive <i>' + s.name + '</i> has been downloaded to your device.</p>' +
+            uiUtil.systemAlert('<p>The archive <i>' + s.name + '</i> has been downloaded to your device' +
+                (s.verified ? ' and its data has been verified' : '') + '.</p>' +
                 (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : ''),
             'Download complete').then(function () {
                 var btnRefresh = document.getElementById('btnRefresh');

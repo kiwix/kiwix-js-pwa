@@ -21,24 +21,56 @@
 
 import settingsStore from './settingsStore.js';
 
-// The callbacks of the currently active download ({ onProgress, onDone, onError } or null).
-// The UI only starts one torrent at a time, so a single set of callbacks is sufficient.
-var activeCallbacks = null;
+// The callbacks of each download ({ onProgress, onDone, onError }), keyed by the torrent's
+// infoHash. A key holding null is a detached torrent (e.g. one left seeding after the UI has
+// moved on to a new download): its events are deliberately dropped, so that they cannot
+// interfere with the status reporting of the current download.
+var downloadCallbacks = {};
+
+// Events cannot be routed until start() resolves with the torrent's infoHash, but a torrent
+// that is already complete on disk fires 'done' almost immediately, so events for an unknown
+// infoHash are buffered while a start is in flight and flushed when it settles
+var startInFlight = false;
+var bufferedEvents = [];
 
 // Backend detection: 'electron' via the preload API; NWJS will be added here later
 // (e.g. window.nw && parseInt(nw.process.versions.node) >= 20)
 var backend = window.electronAPI && window.electronAPI.startTorrentDownload ? 'electron' : null;
 
+/**
+ * Routes a torrent event to the callbacks of the torrent it belongs to
+ * @param {String} type The callback name ('onProgress', 'onDone' or 'onError')
+ * @param {String} infoHash The infoHash the event belongs to (may be null for some errors)
+ * @param {Object|String} arg The argument to pass to the callback
+ */
+function dispatchEvent (type, infoHash, arg) {
+    if (infoHash && infoHash in downloadCallbacks) {
+        var callbacks = downloadCallbacks[infoHash];
+        if (callbacks && callbacks[type]) callbacks[type](arg);
+    } else if (startInFlight) {
+        bufferedEvents.push({ type: type, infoHash: infoHash, arg: arg });
+    } else if (!infoHash && type === 'onError') {
+        // An error that could not be attributed to a torrent: report it to all downloads
+        Object.keys(downloadCallbacks).forEach(function (hash) {
+            var callbacks = downloadCallbacks[hash];
+            if (callbacks && callbacks.onError) callbacks.onError(arg);
+        });
+    }
+}
+
 if (backend === 'electron') {
-    // Register the IPC event listeners once; they dispatch to whichever download is active
+    // Register the IPC event listeners once; each event is routed by infoHash
     window.electronAPI.on('torrent-progress', function (status) {
-        if (activeCallbacks && activeCallbacks.onProgress) activeCallbacks.onProgress(status);
+        dispatchEvent('onProgress', status.infoHash, status);
     });
     window.electronAPI.on('torrent-done', function (status) {
-        if (activeCallbacks && activeCallbacks.onDone) activeCallbacks.onDone(status);
+        dispatchEvent('onDone', status.infoHash, status);
     });
-    window.electronAPI.on('torrent-error', function (message) {
-        if (activeCallbacks && activeCallbacks.onError) activeCallbacks.onError(message);
+    window.electronAPI.on('torrent-error', function (payload) {
+        // Errors are sent as { infoHash, message }; infoHash is null if the torrent failed
+        // before it was registered
+        var message = payload && payload.message ? payload.message : String(payload);
+        dispatchEvent('onError', payload && payload.infoHash, message);
     });
 }
 
@@ -61,16 +93,27 @@ function isAvailable () {
  *   total, ... }), rejected with an Error if the torrent could not be started
  */
 function start (torrentUrl, savePath, callbacks) {
-    activeCallbacks = callbacks || null;
+    startInFlight = true;
     return window.electronAPI.startTorrentDownload({
         torrentUrl: torrentUrl,
         savePath: savePath
     }).then(function (result) {
-        if (!result.ok) {
-            activeCallbacks = null;
-            throw new Error(result.error);
-        }
+        startInFlight = false;
+        var buffered = bufferedEvents;
+        bufferedEvents = [];
+        if (!result.ok) throw new Error(result.error);
+        downloadCallbacks[result.status.infoHash] = callbacks || null;
+        // Deliver any events for this torrent that arrived before its infoHash was known
+        buffered.forEach(function (event) {
+            if (event.infoHash === result.status.infoHash || (!event.infoHash && event.type === 'onError')) {
+                dispatchEvent(event.type, result.status.infoHash, event.arg);
+            }
+        });
         return result.status;
+    }, function (err) {
+        startInFlight = false;
+        bufferedEvents = [];
+        throw err;
     });
 }
 
@@ -82,8 +125,18 @@ function start (torrentUrl, savePath, callbacks) {
  * @returns {Promise<Boolean>} A Promise resolving true if a torrent was found and stopped
  */
 function stop (infoHash, deletePartial) {
-    activeCallbacks = null;
+    detach(infoHash);
     return window.electronAPI.stopTorrentDownload(infoHash, deletePartial);
+}
+
+/**
+ * Detaches the callbacks of a torrent so that its further events are silently dropped;
+ * the torrent itself is unaffected (used to leave a completed torrent seeding in the
+ * background without it writing over the status reports of a newer download)
+ * @param {String} infoHash The infoHash of the torrent to detach
+ */
+function detach (infoHash) {
+    if (infoHash) downloadCallbacks[infoHash] = null;
 }
 
 /**
@@ -165,6 +218,7 @@ export default {
     isAvailable: isAvailable,
     start: start,
     stop: stop,
+    detach: detach,
     getStatus: getStatus,
     setSeeding: setSeeding,
     resolveSavePath: resolveSavePath

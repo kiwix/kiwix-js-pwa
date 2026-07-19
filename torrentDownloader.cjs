@@ -124,6 +124,7 @@ async function getClient () {
  * @returns {Object} The status of the torrent
  */
 function makeStatus (torrent) {
+    const record = downloads.get(torrent.infoHash);
     return {
         infoHash: torrent.infoHash,
         name: torrent.name,
@@ -135,8 +136,30 @@ function makeStatus (torrent) {
         uploaded: torrent.uploaded,
         numPeers: torrent.numPeers,
         done: torrent.done,
-        seeding: !!(torrent.done && !torrent.destroyed)
+        verifying: !!(record && record.verifying),
+        seeding: !!(torrent.done && !torrent.destroyed && !(record && record.verifying))
     };
+}
+
+/**
+ * Checks whether the drive containing savePath has enough free space for the part of the
+ * torrent that remains to be downloaded (bytes already on disk and verified need no new space)
+ * @param {Object} torrent The torrent, which must be ready (so that progress reflects any
+ *   existing data on disk that has been verified)
+ * @param {String} savePath The directory the torrent is downloading into
+ * @returns {Promise<Number>} A Promise for the shortfall in bytes (zero or negative if there
+ *   is enough space, or if free space cannot be determined on this platform)
+ */
+function checkFreeSpace (torrent, savePath) {
+    if (!fs.promises.statfs) return Promise.resolve(0);
+    return fs.promises.statfs(savePath).then(function (stats) {
+        const free = stats.bsize * stats.bavail;
+        const needed = Math.round(torrent.length * (1 - torrent.progress));
+        return needed - free;
+    }, function () {
+        // If free space cannot be determined, do not block the download
+        return 0;
+    });
 }
 
 /**
@@ -152,10 +175,17 @@ function makeStatus (torrent) {
  */
 async function startDownload (args, callbacks) {
     callbacks = callbacks || {};
-    // Prevent a duplicate add of a torrent that is already in progress
-    for (const record of downloads.values()) {
+    // If the same torrent has already finished downloading and is merely seeding, stop it
+    // (keeping the file) so that the fresh add below hash-checks the file on disk and repairs
+    // it if needed; a torrent that is still downloading or verifying is a genuine duplicate
+    for (const [infoHash, record] of downloads) {
         if (record.torrentUrl === args.torrentUrl) {
-            throw new Error('This torrent is already being downloaded');
+            if (record.torrent.done && !record.verifying) {
+                await stopTorrent(infoHash, false);
+            } else {
+                throw new Error('This torrent is already being downloaded');
+            }
+            break;
         }
     }
     // Check that the download folder exists before we start (clearer error than the store's)
@@ -176,43 +206,94 @@ async function startDownload (args, callbacks) {
     const torrentBuffer = Buffer.from(await response.arrayBuffer());
     return new Promise(function (resolve, reject) {
         let settled = false;
-        const torrent = cl.add(torrentBuffer, { path: args.savePath, store: TolerantStore });
-        torrent.on('error', function (err) {
-            console.error('[torrentDownloader] Torrent error: ' + (err.message || err));
-            removeRecord(torrent.infoHash);
-            if (!settled) {
-                settled = true;
-                reject(err instanceof Error ? err : new Error(String(err)));
-            } else if (callbacks.onError) {
-                callbacks.onError(err instanceof Error ? err : new Error(String(err)));
-            }
-        });
-        torrent.on('ready', function () {
-            const record = {
-                torrent: torrent,
-                torrentUrl: args.torrentUrl,
-                callbacks: callbacks,
-                progressTimer: setInterval(function () {
-                    if (callbacks.onProgress) callbacks.onProgress(makeStatus(torrent));
-                }, PROGRESS_INTERVAL)
-            };
-            downloads.set(torrent.infoHash, record);
-            console.log('[torrentDownloader] Added torrent ' + torrent.name + ' (' + torrent.infoHash + '), saving to ' + args.savePath);
-            if (!settled) {
-                settled = true;
-                resolve(makeStatus(torrent));
-            }
-        });
-        torrent.on('done', function () {
-            console.log('[torrentDownloader] Download complete: ' + torrent.name);
-            const status = makeStatus(torrent);
-            if (!keepSeeding) {
-                // Destroy the torrent but keep the completed file on disk
-                stopTorrent(torrent.infoHash, false);
-                status.seeding = false;
-            }
-            if (callbacks.onDone) callbacks.onDone(status);
-        });
+        let record = null;
+        // The torrent is added in up to two phases. The 'download' phase gets the data; on
+        // completion, the torrent is removed (keeping the file) and re-added in a 'verify'
+        // phase, which forces WebTorrent to hash-check the data actually written to disk:
+        // pieces are verified in memory as they are received, but writes are never read back,
+        // so a failing or full disk can corrupt a download without WebTorrent noticing. Any
+        // pieces that fail the check are automatically downloaded again.
+        addTorrent('download');
+        function addTorrent (phase) {
+            const torrent = cl.add(torrentBuffer, { path: args.savePath, store: TolerantStore });
+            // In the verify phase the record already exists: point it at the re-added torrent
+            // straight away, so that progress reports and stop requests track the hash check
+            if (phase === 'verify' && record) record.torrent = torrent;
+            torrent.on('error', function (err) {
+                console.error('[torrentDownloader] Torrent error: ' + (err.message || err));
+                removeRecord(torrent.infoHash);
+                if (!settled) {
+                    settled = true;
+                    reject(err instanceof Error ? err : new Error(String(err)));
+                } else if (callbacks.onError) {
+                    callbacks.onError(err instanceof Error ? err : new Error(String(err)));
+                }
+            });
+            torrent.on('ready', function () {
+                if (phase === 'verify') return;
+                record = {
+                    torrent: torrent,
+                    torrentUrl: args.torrentUrl,
+                    callbacks: callbacks,
+                    verifying: false,
+                    progressTimer: setInterval(function () {
+                        if (callbacks.onProgress && !record.torrent.destroyed) {
+                            callbacks.onProgress(makeStatus(record.torrent));
+                        }
+                    }, PROGRESS_INTERVAL)
+                };
+                downloads.set(torrent.infoHash, record);
+                console.log('[torrentDownloader] Added torrent ' + torrent.name + ' (' + torrent.infoHash + '), saving to ' + args.savePath);
+                // 'ready' fires after any existing on-disk data has been verified, so
+                // torrent.progress now tells us how much remains to be downloaded
+                checkFreeSpace(torrent, args.savePath).then(function (shortfall) {
+                    if (shortfall > 0 && downloads.has(torrent.infoHash)) {
+                        const err = new Error('There is not enough free space on the destination drive: the download needs about ' +
+                            Math.ceil(shortfall / 1048576) + ' MB more than is available. Free up some space and try again.');
+                        console.error('[torrentDownloader] ' + err.message);
+                        stopTorrent(torrent.infoHash, false);
+                        if (!settled) {
+                            settled = true;
+                            reject(err);
+                        } else if (callbacks.onError) {
+                            callbacks.onError(err);
+                        }
+                    } else if (!settled) {
+                        settled = true;
+                        resolve(makeStatus(torrent));
+                    }
+                });
+            });
+            torrent.on('done', function () {
+                const infoHash = torrent.infoHash;
+                const rec = downloads.get(infoHash);
+                if (!rec || rec.torrent !== torrent) return; // Stopped or superseded meanwhile
+                if (phase === 'download' && torrent.downloaded > 0) {
+                    // Data was received in this session, so the file on disk needs checking
+                    // (when nothing was downloaded, everything on disk was already verified
+                    // during the add and a second check would be redundant)
+                    console.log('[torrentDownloader] Download complete; verifying on-disk data: ' + torrent.name);
+                    rec.verifying = true;
+                    torrent.destroy({ destroyStore: false }, function () {
+                        if (!downloads.has(infoHash)) return; // Stopped during the destroy
+                        addTorrent('verify');
+                    });
+                    return;
+                }
+                rec.verifying = false;
+                console.log('[torrentDownloader] Download complete' + (phase === 'verify' ? ' and verified: ' : ': ') + torrent.name);
+                const status = makeStatus(torrent);
+                // Either every piece passed the verify phase's hash check, or (if nothing was
+                // downloaded this session) the whole file was verified when the torrent was added
+                status.verified = true;
+                if (!keepSeeding) {
+                    // Destroy the torrent but keep the completed file on disk
+                    stopTorrent(infoHash, false);
+                    status.seeding = false;
+                }
+                if (callbacks.onDone) callbacks.onDone(status);
+            });
+        }
     });
 }
 

@@ -205,12 +205,16 @@ function registerListeners () {
         }
     };
     ipcMain.handle('torrent-start', async (event, args) => {
+        // The infoHash of this download, once known: it lets the renderer route the error
+        // event to the right torrent (progress and done statuses carry their own infoHash)
+        let infoHash = null;
         try {
             const status = await torrentDownloader.startDownload(args, {
                 onProgress: (s) => sendToRenderer('torrent-progress', s),
                 onDone: (s) => sendToRenderer('torrent-done', s),
-                onError: (err) => sendToRenderer('torrent-error', err.message)
+                onError: (err) => sendToRenderer('torrent-error', { infoHash: infoHash, message: err.message })
             });
+            infoHash = status.infoHash;
             return { ok: true, status: status };
         } catch (err) {
             console.error('Torrent start failed:', err);
