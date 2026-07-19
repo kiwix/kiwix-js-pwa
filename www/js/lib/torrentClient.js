@@ -19,6 +19,8 @@
 
 'use strict';
 
+import settingsStore from './settingsStore.js';
+
 // The callbacks of the currently active download ({ onProgress, onDone, onError } or null).
 // The UI only starts one torrent at a time, so a single set of callbacks is sufficient.
 var activeCallbacks = null;
@@ -102,10 +104,68 @@ function setSeeding (value) {
     if (backend === 'electron') window.electronAPI.setTorrentSeeding(value);
 }
 
+/**
+ * Derives the real filesystem path of the folder to download into, so that the torrent
+ * backend (which runs in the Node context) can write to the user's chosen folder without
+ * the app having to leave the File System Access API pathway:
+ * - if pickedFolder is already a path string (native Electron folder picking), it is used;
+ * - if it is an FSA directory handle, no path can be read from it directly (Chromium/Electron
+ *   deliberately do not expose real paths for FSA handles or the File objects they produce),
+ *   but the app stores a folder path string whenever a folder is picked with the native
+ *   dialogue, so if a file from the handle exists at that stored path, the stored path and
+ *   the handle demonstrably refer to the same folder and the path can be used.
+ * If neither works, null is returned and the caller should open the native folder picker
+ * (whose result is stored, making this a once-only event per configuration reset).
+ * @param {String|FileSystemDirectoryHandle} pickedFolder The current picked folder
+ * @returns {Promise<String|null>} A Promise for the folder path, or null if it could not
+ *   be derived
+ */
+function resolveSavePath (pickedFolder) {
+    if (typeof pickedFolder === 'string' && pickedFolder) {
+        return Promise.resolve(pickedFolder);
+    }
+    if (!pickedFolder || pickedFolder.kind !== 'directory' || !(window.fs && window.fs.stat)) {
+        return Promise.resolve(null);
+    }
+    var stored = settingsStore.getItem('pickedFolder');
+    if (!stored) return Promise.resolve(null);
+    var candidate = stored.replace(/[\\/]+$/, '');
+    // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash; other
+    // paths are used without a trailing slash
+    if (/^[A-Za-z]:$/.test(candidate)) candidate += '/';
+    // Find the name of any file inside the handle (skipping subdirectories) with which to
+    // verify the stored path
+    var iterator = pickedFolder.values();
+    var findFileName = function () {
+        return iterator.next().then(function (result) {
+            if (result.done) return null;
+            return result.value.kind === 'file' ? result.value.name : findFileName();
+        });
+    };
+    return findFileName().then(function (fileName) {
+        // An empty folder cannot be verified against the stored path
+        if (!fileName) return null;
+        return new Promise(function (resolve) {
+            window.fs.stat(candidate.replace(/\/$/, '') + '/' + fileName, function (err, stats) {
+                if (!err && stats) {
+                    console.debug('[torrentClient] Using stored folder path verified against the directory handle: ' + candidate);
+                    resolve(candidate);
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+    }).catch(function (err) {
+        console.warn('[torrentClient] Could not derive a filesystem path from the directory handle', err);
+        return null;
+    });
+}
+
 export default {
     isAvailable: isAvailable,
     start: start,
     stop: stop,
     getStatus: getStatus,
-    setSeeding: setSeeding
+    setSeeding: setSeeding,
+    resolveSavePath: resolveSavePath
 };

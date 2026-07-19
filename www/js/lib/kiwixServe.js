@@ -1789,25 +1789,32 @@ function startTorrentDownload (torrentUrl, sizeMB) {
         });
         return;
     }
-    var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
-        (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
-        '<p>The download can be resumed if it is interrupted. Your firewall may ask you (once) to allow the app to accept network connections: ' +
-        'this is needed to exchange data with other BitTorrent users.</p>' +
-        (params.keepTorrentSeeding ? '<p><i>After the download completes, the app will continue to share (seed) the archive with other users until you close the app. ' +
-            'You can turn this off under Download library in Configuration.</i></p>' : '') +
-        '<p><b><i>Do not close the app during the download.</i></b></p>';
-    uiUtil.systemAlert(message, 'Download via BitTorrent?', true, 'Cancel', 'Download').then(function (confirm) {
-        if (!confirm) return;
-        if (typeof params.pickedFolder === 'string' && params.pickedFolder) {
-            beginTorrentDownload(torrentUrl, params.pickedFolder);
-        } else {
-            // The torrent client runs in the Node context and needs a real filesystem path
-            uiUtil.systemAlert('<p>Please choose the folder to which the archive should be downloaded (usually your ZIM archive folder).</p>',
-                'Choose download folder').then(function () {
+    // The torrent backend runs in the Node context and needs a real filesystem path, which is
+    // derived from the picked folder (including FSA directory handles) where possible; we
+    // resolve it before showing the dialogue so the destination (or the need to pick one) can
+    // be stated up front
+    torrentClient.resolveSavePath(params.pickedFolder).then(function (savePath) {
+        var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
+            (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
+            (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>'
+                : '<p>You will be asked to choose the folder into which the archive should be downloaded (usually your ZIM folder).</p>') +
+            '<p>The download can be resumed if it is interrupted. Your firewall may ask you (once) to allow the app to accept network connections: ' +
+            'this is needed to exchange data with other BitTorrent users.</p>' +
+            (params.keepTorrentSeeding ? '<p><i>After the download completes, the app will continue to share (seed) the archive with other users until you close the app. ' +
+                'You can turn this off under Download library in Configuration.</i></p>' : '') +
+            '<p><b><i>Do not close the app during the download.</i></b></p>';
+        uiUtil.systemAlert(message, 'Download via BitTorrent?', true, 'Cancel', 'Download').then(function (confirm) {
+            if (!confirm) return;
+            if (savePath) {
+                beginTorrentDownload(torrentUrl, savePath);
+            } else if (window.dialog) {
+                // Last resort: open the native (path-returning) folder picker directly
                 pendingTorrentUrl = torrentUrl;
                 window.dialog.openDirectory();
-            });
-        }
+            } else {
+                uiUtil.systemAlert('<p>Unable to establish a folder to download the archive into. Please pick your ZIM folder in Configuration first.</p>', 'No download folder');
+            }
+        });
     });
 }
 

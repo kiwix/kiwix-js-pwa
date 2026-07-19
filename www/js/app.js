@@ -1226,6 +1226,14 @@ function getNativeFSHandle (callback) {
     }
     console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
+        // Self-heal: if something other than a file system handle was stored (e.g. a path
+        // string), remove it and proceed as if no handle had been stored, or else every app
+        // launch would fail to restore the picked file or folder
+        if (val && typeof val.queryPermission !== 'function') {
+            console.warn('Removing an invalid stored file system handle:', val);
+            cache.idxDB('delete', 'pickedFSHandle', function () {});
+            val = null;
+        }
         if (val) {
             var handle = val;
             return cache.verifyPermission(handle, false).then(function (accessible) {
@@ -1331,6 +1339,12 @@ function selectArchive (list) {
     // If nothing was selected, user will have to click again
     if (!list.target.value) return;
     selectFired = true;
+    // Watchdog: selectFired debounces the duplicate change/click events fired by the list, but
+    // if an archive load fails in a code path that never resets the flag, the list would become
+    // permanently unresponsive, so reset it after ample time for any load to have completed
+    setTimeout(function () {
+        selectFired = false;
+    }, 10000);
     var selected = list.target.value;
     // Void any previous picked file to prevent it launching
     params.storedFile = selected;
@@ -1786,7 +1800,10 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
                 btnArchiveFile.click();
             }
         } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
-    } else if (window.showOpenFilePicker || params.useOPFS) {
+    } else if ((window.showOpenFilePicker || params.useOPFS) && params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        // Note we check the type of pickedFolder above, not just the API availability, because in
+        // Electron pickedFolder may be a path string (e.g. from the folder dialogue) even though
+        // the File System Access API is available
         processNativeDirHandle(params.pickedFolder);
         if (params.useOPFS) cache.populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
@@ -4358,10 +4375,13 @@ function pickFolderNativeFS () {
 function processNativeFileHandle (fileHandle) {
     // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
-    // Serialize fileHandle to indexedDB
-    cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize fileHandle to indexedDB (only if it is a genuine file system handle: a path
+    // string or other object stored here would break handle restoration on every app launch)
+    if (fileHandle && fileHandle.kind === 'file') {
+        cache.idxDB('pickedFSHandle', fileHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
     params.pickedFolder = null;
@@ -4412,10 +4432,14 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
 
 function processNativeDirHandle (dirHandle, callback) {
     // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
-    // Serialize dirHandle to indexedDB
-    cache.idxDB('pickedFSHandle', dirHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize dirHandle to indexedDB (only if it is a genuine directory handle: a path
+    // string stored here, e.g. from the Electron folder dialogue, would break handle
+    // restoration on every app launch)
+    if (dirHandle && dirHandle.kind === 'directory') {
+        cache.idxDB('pickedFSHandle', dirHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     params.pickedFolder = dirHandle;
     params.pickedFile = '';
     var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
