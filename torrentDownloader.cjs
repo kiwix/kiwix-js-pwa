@@ -81,10 +81,29 @@ async function getClient () {
             constructor (chunkLength, opts) {
                 super(chunkLength, opts);
                 const self = this;
+                // When true, file handles are (re)opened without write access: random-access-file
+                // opens files read-write by default, and on Windows an open read-write handle
+                // blocks any other opener that does not grant write sharing - including the app's
+                // own File System Access reads of the completed archive, and tools like
+                // Get-FileHash - so a torrent that is only seeding must hold read-only handles
+                this.readOnly = false;
+                this._handleClosers = [];
                 this.files.forEach(function (file) {
                     let opened = null; // Memoized result; reset on failure so a retry is possible
+                    let openedReadOnly = false; // The access mode of the memoized handle
+                    const closeHandle = function () {
+                        if (!opened) return;
+                        const prev = opened;
+                        opened = null;
+                        // random-access-storage queues the close behind any reads in flight
+                        prev.then(function (raf) { raf.close(function () {}); }, function () {});
+                    };
+                    self._handleClosers.push(closeHandle);
                     file.open = function (cb) {
+                        // If the required access mode has changed, close and reopen the file
+                        if (opened && openedReadOnly !== self.readOnly) closeHandle();
                         if (!opened) {
+                            openedReadOnly = self.readOnly;
                             opened = new Promise(function (resolve, reject) {
                                 if (self.closed) return reject(new Error('Storage is closed'));
                                 const dir = path.dirname(file.path);
@@ -95,7 +114,7 @@ async function getClient () {
                                     }, function () { throw err; });
                                 }).then(function () {
                                     if (self.closed) throw new Error('Storage is closed');
-                                    resolve(new RAF(file.path));
+                                    resolve(new RAF(file.path, { writable: !openedReadOnly }));
                                 }).catch(reject);
                             });
                             opened.catch(function () { opened = null; });
@@ -103,6 +122,14 @@ async function getClient () {
                         opened.then(function (raf) { cb(null, raf); }, function (err) { cb(err); });
                     };
                 });
+            }
+
+            // Closes all open file handles and reopens subsequent access read-only; call this
+            // once the torrent is complete and verified, so that seeding does not keep the
+            // archive locked against readers (see the readOnly comment above)
+            setReadOnly () {
+                this.readOnly = true;
+                this._handleClosers.forEach(function (closeHandle) { closeHandle(); });
             }
         };
     }
@@ -139,6 +166,25 @@ function makeStatus (torrent) {
         verifying: !!(record && record.verifying),
         seeding: !!(torrent.done && !torrent.destroyed && !(record && record.verifying))
     };
+}
+
+/**
+ * Switches a completed torrent's chunk store to read-only file handles. Seeding only ever
+ * reads, but the store's handles were opened read-write for the download, and on Windows an
+ * open read-write handle blocks other openers of the archive (including the app itself
+ * trying to load it); WebTorrent wraps the raw store in caching layers, so this walks down
+ * the .store chain to find the TolerantStore and asks it to reopen its files read-only
+ * @param {Object} torrent The completed torrent whose store should stop holding write access
+ */
+function releaseWriteHandles (torrent) {
+    let store = torrent.store;
+    while (store && store.store && !(TolerantStore && store instanceof TolerantStore)) {
+        store = store.store;
+    }
+    if (TolerantStore && store instanceof TolerantStore) {
+        store.setReadOnly();
+        console.log('[torrentDownloader] Reopened ' + torrent.name + ' read-only for seeding');
+    }
 }
 
 /**
@@ -290,6 +336,10 @@ async function startDownload (args, callbacks) {
                     // Destroy the torrent but keep the completed file on disk
                     stopTorrent(infoHash, false);
                     status.seeding = false;
+                } else {
+                    // Give up write access to the archive so the app (and anything else) can
+                    // open it while it goes on seeding
+                    releaseWriteHandles(torrent);
                 }
                 if (callbacks.onDone) callbacks.onDone(status);
             });
