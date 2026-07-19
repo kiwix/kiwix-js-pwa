@@ -1258,9 +1258,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 URL.replace(/\.meta4$/, '.magnet') + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
         }
         if (megabytes > 200 && torrentClient.isAvailable() && /\.zim\.meta4$/i.test(URL)) {
-            bodyDoc += '<p><b>In-app BitTorrent download, for larger archives:</b> (<i>downloads to your ZIM folder, and can be resumed if interrupted</i>)</p><ul>\r\n<li>' +
+            bodyDoc += '<p><b>In-app BitTorrent download, for larger archives (downloads to your selected ZIM folder):</b></p><ul>\r\n<li>' +
                 '<a href="#" id="torrentDownloadLink" data-kiwix-torrent="' + escapeHtml(URL.replace(/\.meta4$/, '.torrent')) +
-                '" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a></li></ul>\r\n';
+                '" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a> (<i><b>recommended</b>: resumes automatically, even if interrupted by closing the app)</i></li></ul>\r\n';
         }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
             bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
@@ -1865,11 +1865,10 @@ function startTorrentDownload (torrentUrl, sizeMB) {
             (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
                 '<p><label><input type="checkbox" id="torrentPickNewFolder">&nbsp;Download to a different folder&hellip;</label></p>'
                 : '<p>You will be asked to choose the folder into which the archive should be downloaded (usually your ZIM folder).</p>') +
-            '<p>The download can be resumed if it is interrupted. Your firewall may ask you (once) to allow the app to accept network connections: ' +
-            'this is needed to exchange data with other BitTorrent users.</p>' +
+            '<p>The download can be resumed if it is interrupted — even by closing the app: you will be offered to continue it the next time you open the app. ' +
+            'Your firewall may ask you (once) to allow the app to accept network connections: this is needed to exchange data with other BitTorrent users.</p>' +
             (params.keepTorrentSeeding ? '<p><i>After the download completes, the app will continue to share (seed) the archive with other users until you close the app. ' +
-                'You can turn this off under Download library in Configuration.</i></p>' : '') +
-            '<p><b><i>Do not close the app during the download.</i></b></p>';
+                'You can turn this off under Download library in Configuration.</i></p>' : '');
         uiUtil.systemAlert(message, 'Download via BitTorrent?', true, 'Cancel', 'Download').then(function (confirm) {
             if (!confirm) return;
             // The modal's content is still in the DOM after it closes, so the checkbox
