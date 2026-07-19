@@ -4767,18 +4767,24 @@ function archiveReadyCallback (archive) {
         params.lastPageHTML = '';
     }
     // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-    if (appstate.filesDropped && params.storedFilePath) {
-        params.pickedFolder = null;
-        params.pickedFile = params.storedFilePath;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
-        populateDropDownListOfArchives([params.storedFile], true);
-        settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
-        // We have to remove the file handle to prevent it from launching next time
-        cache.idxDB('delete', 'pickedFSHandle', function () {
-            console.debug('File handle deleted');
-        });
+    if (appstate.filesDropped) {
+        // Always clear the flag on the load that follows the drop: a file dropped without a
+        // path (e.g. one loaded through a File System Access handle) would otherwise leave it
+        // set, and every subsequent archive loaded from the archive list with a path would then
+        // wrongly enter the block below, collapsing the list and voiding the picked folder
         appstate.filesDropped = false;
+        if (params.storedFilePath) {
+            params.pickedFolder = null;
+            params.pickedFile = params.storedFilePath;
+            settingsStore.setItem('pickedFolder', '', Infinity);
+            settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
+            populateDropDownListOfArchives([params.storedFile], true);
+            settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
+            // We have to remove the file handle to prevent it from launching next time
+            cache.idxDB('delete', 'pickedFSHandle', function () {
+                console.debug('File handle deleted');
+            });
+        }
     }
     var reloadLink = document.getElementById('reloadPackagedArchive');
     if (reloadLink) {
