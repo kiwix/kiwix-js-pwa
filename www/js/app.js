@@ -1414,60 +1414,90 @@ function selectArchive (list) {
             return setLocalArchiveFromFileList([params.pickedFile], true);
         }
     }
-    if (window.showOpenFilePicker || params.useOPFS) {
-        return getNativeFSHandle(function (handle) {
-            resetUI();
-            if (!handle) {
-                if (window.fs && params.storedFilePath) {
-                    // Fall back to using the Electron APIs
-                    params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
-                    return setLocalArchiveFromArchiveList(selected);
-                }
-                console.error('No handle was retrieved');
-                document.getElementById('openLocalFiles').style.display = 'block';
-                document.getElementById('rescanStorage').style.display = 'none';
-                return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
-                    'This is probably because the contents of the folder have changed. Please try picking it again.');
-            }
-            if (handle.kind === 'directory') {
-                params.pickedFolder = handle;
-                return setLocalArchiveFromArchiveList(params.storedFile);
-            } else if (handle.kind === 'file') {
-                return handle.getFile().then(function (file) {
-                    params.pickedFile = file;
-                    params.pickedFile.handle = handle;
-                    return setLocalArchiveFromArchiveList(selected);
-                }).catch(function (err) {
-                    console.error('Unable to read previously picked file!', err);
-                    uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+    var selectViaFSHandles = function () {
+        if (window.showOpenFilePicker || params.useOPFS) {
+            return getNativeFSHandle(function (handle) {
+                resetUI();
+                if (!handle) {
+                    if (window.fs && params.storedFilePath) {
+                        // Fall back to using the Electron APIs
+                        params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
+                        return setLocalArchiveFromArchiveList(selected);
+                    }
+                    console.error('No handle was retrieved');
                     document.getElementById('openLocalFiles').style.display = 'block';
                     document.getElementById('rescanStorage').style.display = 'none';
-                });
-            }
-        });
-    } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
-        // If we don't have any picked files or directories...
-        if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
-            appstate.waitForFileSelect = selected;
-            // No files are set, so we need to ask user to select the file or directory again
-            if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
-                archiveDirLegacy.click();
+                    return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
+                        'This is probably because the contents of the folder have changed. Please try picking it again.');
+                }
+                if (handle.kind === 'directory') {
+                    params.pickedFolder = handle;
+                    return setLocalArchiveFromArchiveList(params.storedFile);
+                } else if (handle.kind === 'file') {
+                    return handle.getFile().then(function (file) {
+                        params.pickedFile = file;
+                        params.pickedFile.handle = handle;
+                        return setLocalArchiveFromArchiveList(selected);
+                    }).catch(function (err) {
+                        console.error('Unable to read previously picked file!', err);
+                        uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+                        document.getElementById('openLocalFiles').style.display = 'block';
+                        document.getElementById('rescanStorage').style.display = 'none';
+                    });
+                }
+            });
+        } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
+            // If we don't have any picked files or directories...
+            if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
+                appstate.waitForFileSelect = selected;
+                // No files are set, so we need to ask user to select the file or directory again
+                if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
+                    archiveDirLegacy.click();
+                } else {
+                    archiveFilesLegacy.click();
+                }
             } else {
-                archiveFilesLegacy.click();
+                console.debug('Files are set, attempting to select ' + selected);
+                params.pickedFile = selected;
+                if (archiveDirLegacy.files.length) {
+                    params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+                    params.pickedFile = '';
+                }
+                setLocalArchiveFromArchiveList(selected);
             }
         } else {
-            console.debug('Files are set, attempting to select ' + selected);
-            params.pickedFile = selected;
-            if (archiveDirLegacy.files.length) {
-                params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
-                params.pickedFile = '';
-            }
             setLocalArchiveFromArchiveList(selected);
         }
-    } else {
-        setLocalArchiveFromArchiveList(selected);
+        setTimeout(resetUI, 0);
+    };
+    // In Electron or NWJS, prefer to load the archive with Node fs methods whenever a real
+    // path to the selected file can be verified: loading through a File System Access handle
+    // is less reliable in these frameworks (Chromium File snapshots can be invalidated on
+    // Windows by concurrent access to the underlying file), and the stored handle can be
+    // stale (e.g. after the download folder was changed with the native folder dialogue,
+    // which returns a path rather than a handle)
+    if (window.fs && !params.useOPFS) {
+        var candidateFolder = typeof params.pickedFolder === 'string' && params.pickedFolder
+            ? params.pickedFolder : settingsStore.getItem('pickedFolder');
+        if (candidateFolder && typeof candidateFolder === 'string') {
+            var folderPath = candidateFolder.replace(/[\\/]+$/, '');
+            // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash
+            if (/^[A-Za-z]:$/.test(folderPath)) folderPath += '/';
+            window.fs.stat(folderPath.replace(/\/$/, '') + '/' + selected, function (err, stats) {
+                if (!err && stats) {
+                    console.debug('Loading ' + selected + ' with Node fs from verified folder path: ' + folderPath);
+                    params.pickedFolder = folderPath;
+                    setLocalArchiveFromArchiveList(selected);
+                    setTimeout(resetUI, 0);
+                } else {
+                    // The selected archive is not at the candidate path: fall back to handles
+                    selectViaFSHandles();
+                }
+            });
+            return;
+        }
     }
-    setTimeout(resetUI, 0);
+    selectViaFSHandles();
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
@@ -4332,6 +4362,10 @@ if (window.dialog) {
     dialog.on('dir-dialog', function (fullPath) {
         console.log('Path: ' + fullPath);
         fullPath = fullPath.replace(/\\/g, '/');
+        // The natively picked folder supersedes any previously picked FSA folder, so delete
+        // the stored directory handle: it would otherwise resurrect the previous folder when
+        // the archive list is refreshed or the app is relaunched
+        cache.idxDB('delete', 'pickedFSHandle', function () {});
         scanNodeFolderforArchives(fullPath);
     });
 }
