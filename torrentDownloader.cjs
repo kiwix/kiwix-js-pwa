@@ -110,7 +110,10 @@ async function getClient () {
     // seeding: note that this causes a one-time firewall prompt on Windows
     client = new WebTorrent();
     client.on('error', function (err) {
+        // Client-level errors are frequently benign on Windows (e.g. a UDP operation refused
+        // by the firewall); they do not stop the torrents, so we log rather than surface them
         console.error('[torrentDownloader] Client error: ' + (err.message || err));
+        if (err && err.stack) console.error(err.stack);
     });
     return client;
 }
