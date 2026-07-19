@@ -1470,32 +1470,29 @@ function selectArchive (list) {
         }
         setTimeout(resetUI, 0);
     };
-    // In Electron or NWJS, prefer to load the archive with Node fs methods whenever a real
-    // path to the selected file can be verified: loading through a File System Access handle
-    // is less reliable in these frameworks (Chromium File snapshots can be invalidated on
-    // Windows by concurrent access to the underlying file), and the stored handle can be
-    // stale (e.g. after the download folder was changed with the native folder dialogue,
-    // which returns a path rather than a handle)
-    if (window.fs && !params.useOPFS) {
-        var candidateFolder = typeof params.pickedFolder === 'string' && params.pickedFolder
-            ? params.pickedFolder : settingsStore.getItem('pickedFolder');
-        if (candidateFolder && typeof candidateFolder === 'string') {
-            var folderPath = candidateFolder.replace(/[\\/]+$/, '');
-            // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash
-            if (/^[A-Za-z]:$/.test(folderPath)) folderPath += '/';
-            window.fs.stat(folderPath.replace(/\/$/, '') + '/' + selected, function (err, stats) {
-                if (!err && stats) {
-                    console.debug('Loading ' + selected + ' with Node fs from verified folder path: ' + folderPath);
-                    params.pickedFolder = folderPath;
-                    setLocalArchiveFromArchiveList(selected);
-                    setTimeout(resetUI, 0);
-                } else {
-                    // The selected archive is not at the candidate path: fall back to handles
-                    selectViaFSHandles();
-                }
-            });
-            return;
-        }
+    // In Electron or NWJS, prefer to load the archive with Node fs methods whenever the current
+    // folder is known by a real path (e.g. it was picked with the native folder dialogue, which
+    // returns a path rather than a handle, or restored from a stored path at launch): loading
+    // through a File System Access handle is less reliable in these frameworks (Chromium File
+    // snapshots can be invalidated on Windows by concurrent access to the underlying file).
+    // DEV: do not substitute a stored path when params.pickedFolder is an FSA handle: the stored
+    // path may point to a different folder containing a same-named (e.g. partially downloaded)
+    // copy of the selected archive, which would then be loaded silently in place of the right one
+    if (window.fs && !params.useOPFS && params.pickedFolder && typeof params.pickedFolder === 'string') {
+        var folderPath = params.pickedFolder.replace(/[\\/]+$/, '');
+        // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash
+        if (/^[A-Za-z]:$/.test(folderPath)) folderPath += '/';
+        window.fs.stat(folderPath.replace(/\/$/, '') + '/' + selected, function (err, stats) {
+            if (!err && stats) {
+                console.debug('Loading ' + selected + ' with Node fs from verified folder path: ' + folderPath);
+                setLocalArchiveFromArchiveList(selected);
+                setTimeout(resetUI, 0);
+            } else {
+                // The selected archive is not at the known path: fall back to handles
+                selectViaFSHandles();
+            }
+        });
+        return;
     }
     selectViaFSHandles();
 }
