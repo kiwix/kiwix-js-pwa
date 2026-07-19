@@ -206,6 +206,9 @@
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^8.0.16"
   },
+  "overrides": {
+    "ip": "npm:neoip@2.1.0"
+  },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
     "core-js": "3.30.2",
