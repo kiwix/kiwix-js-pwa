@@ -4047,7 +4047,7 @@ function setLocalArchiveFromArchiveList (archive) {
                                 if (appstate.selectedArchive && appstate.selectedArchive.file._files[0].name === selectedFiles[0].name) {
                                     document.getElementById('btnHome').click();
                                 } else {
-                                    setLocalArchiveFromFileList(selectedFiles);
+                                    setLocalArchiveFromFileList(selectedFiles, true);
                                 }
                             }).catch(function (err) {
                                 console.error(err);
