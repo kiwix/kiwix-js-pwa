@@ -7,13 +7,50 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 let WebTorrent = null; // Lazily imported WebTorrent constructor
+let TolerantStore = null; // Chunk-store class that fixes downloads to a drive root (see getClient)
 let client = null; // Singleton WebTorrent client (created on first download)
 let keepSeeding = true; // Whether to go on seeding a completed torrent until the app quits
 const downloads = new Map(); // infoHash -> { torrent, progressTimer, callbacks, torrentUrl }
 
 // Interval in ms between progress reports to the caller
 const PROGRESS_INTERVAL = 1000;
+
+let mkdirPatched = false;
+
+/**
+ * Corrects the callback form of fs.mkdir for Windows drive roots: Node's recursive mkdir
+ * wrongly reports EPERM on a drive root such as 'W:\' even though the directory exists
+ * (long-standing Node issue), and WebTorrent's storage layer (fs-chunk-store and
+ * random-access-file) recursively mkdirs the containing directory of every download, so
+ * saving an archive directly to the root of a drive always failed. The wrapper only
+ * intervenes when a recursive call errors with EPERM/EACCES and the target does in fact
+ * exist as a directory (i.e. cases where the documented behaviour is success); every other
+ * call and error path is passed through unchanged.
+ */
+function patchMkdirForDriveRoots () {
+    if (mkdirPatched) return;
+    mkdirPatched = true;
+    const realMkdir = fs.mkdir;
+    fs.mkdir = function (target, options, callback) {
+        if (typeof options === 'function' || !(options && options.recursive)) {
+            return realMkdir.apply(fs, arguments);
+        }
+        return realMkdir.call(fs, target, options, function (err) {
+            const args = arguments;
+            if (err && (err.code === 'EPERM' || err.code === 'EACCES')) {
+                return fs.stat(target, function (statErr, stats) {
+                    if (!statErr && stats.isDirectory()) return callback(null);
+                    callback(err);
+                });
+            }
+            callback.apply(null, args);
+        });
+    };
+}
 
 /**
  * Lazily imports WebTorrent and creates the singleton client
@@ -26,7 +63,48 @@ async function getClient () {
         throw new Error('In-app BitTorrent downloads require Node 20+, but this runtime has Node ' + process.versions.node);
     }
     if (!WebTorrent) {
+        // Apply the drive-root mkdir correction before WebTorrent (and its storage
+        // dependencies) are loaded, so that all of them see the corrected behaviour
+        patchMkdirForDriveRoots();
         WebTorrent = (await import('webtorrent')).default;
+        // fs-chunk-store and random-access-file are webtorrent's own dependencies (kept in step
+        // with it by the lockfile); we need them to build a store that can save to a drive root
+        const FSChunkStore = (await import('fs-chunk-store')).default;
+        const RAF = (await import('random-access-file')).default;
+        // DEV: fs-chunk-store unconditionally does a recursive mkdir of the directory containing
+        // each file, but Node's recursive mkdir throws EPERM (instead of reporting success) on a
+        // Windows drive root such as 'W:\', even though it exists (nodejs/node issue). This
+        // subclass re-wraps each file's open function with one that tolerates a failed mkdir
+        // whenever the directory does in fact exist, so that archives can be downloaded directly
+        // to the root of a drive.
+        TolerantStore = class extends FSChunkStore {
+            constructor (chunkLength, opts) {
+                super(chunkLength, opts);
+                const self = this;
+                this.files.forEach(function (file) {
+                    let opened = null; // Memoized result; reset on failure so a retry is possible
+                    file.open = function (cb) {
+                        if (!opened) {
+                            opened = new Promise(function (resolve, reject) {
+                                if (self.closed) return reject(new Error('Storage is closed'));
+                                const dir = path.dirname(file.path);
+                                fs.promises.mkdir(dir, { recursive: true }).catch(function (err) {
+                                    // Ignore the error if the directory already exists
+                                    return fs.promises.stat(dir).then(function (stats) {
+                                        if (!stats.isDirectory()) throw err;
+                                    }, function () { throw err; });
+                                }).then(function () {
+                                    if (self.closed) throw new Error('Storage is closed');
+                                    resolve(new RAF(file.path));
+                                }).catch(reject);
+                            });
+                            opened.catch(function () { opened = null; });
+                        }
+                        opened.then(function (raf) { cb(null, raf); }, function (err) { cb(err); });
+                    };
+                });
+            }
+        };
     }
     // Incoming peer connections are accepted (default), for better connectivity and effective
     // seeding: note that this causes a one-time firewall prompt on Windows
@@ -77,6 +155,16 @@ async function startDownload (args, callbacks) {
             throw new Error('This torrent is already being downloaded');
         }
     }
+    // Check that the download folder exists before we start (clearer error than the store's)
+    let savePathStats = null;
+    try {
+        savePathStats = await fs.promises.stat(args.savePath);
+    } catch (err) {
+        throw new Error('The download folder does not exist or cannot be accessed: ' + args.savePath);
+    }
+    if (!savePathStats.isDirectory()) {
+        throw new Error('The download location is not a folder: ' + args.savePath);
+    }
     const cl = await getClient();
     const response = await fetch(args.torrentUrl);
     if (!response.ok) {
@@ -85,7 +173,7 @@ async function startDownload (args, callbacks) {
     const torrentBuffer = Buffer.from(await response.arrayBuffer());
     return new Promise(function (resolve, reject) {
         let settled = false;
-        const torrent = cl.add(torrentBuffer, { path: args.savePath });
+        const torrent = cl.add(torrentBuffer, { path: args.savePath, store: TolerantStore });
         torrent.on('error', function (err) {
             console.error('[torrentDownloader] Torrent error: ' + (err.message || err));
             removeRecord(torrent.infoHash);
