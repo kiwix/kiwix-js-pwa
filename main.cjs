@@ -231,6 +231,14 @@ function registerListeners () {
         console.log('Setting torrent seeding to ' + value);
         torrentDownloader.setKeepSeeding(value);
     });
+    ipcMain.handle('torrent-delete-partial', async (event, savePath, name) => {
+        try {
+            return { ok: true, deleted: await torrentDownloader.deletePartialFile(savePath, name) };
+        } catch (err) {
+            console.error('Torrent partial-file delete failed:', err);
+            return { ok: false, error: err.message };
+        }
+    });
     // Registers listener for download events
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
         // Set the save path, making Electron not to prompt a save dialog.

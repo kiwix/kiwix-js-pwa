@@ -348,6 +348,30 @@ async function startDownload (args, callbacks) {
 }
 
 /**
+ * Deletes an abandoned partial (or completed) download from disk by its save path and name,
+ * without needing to add the torrent back to the client first: this is used to discard a
+ * download that was left in progress when the app was previously closed, so no WebTorrent
+ * instance for it exists in this session yet. ZIM archives are always single-file torrents, so
+ * the on-disk data is a single file directly inside savePath, named after the torrent.
+ * @param {String} savePath The directory the torrent was downloading into
+ * @param {String} name The torrent's name (i.e. the downloaded file's name)
+ * @returns {Promise<Boolean>} A Promise resolving true if a file was found and deleted, or
+ *   false if there was nothing to delete
+ */
+async function deletePartialFile (savePath, name) {
+    if (!savePath || !name) return false;
+    const target = path.join(savePath, name);
+    try {
+        await fs.promises.unlink(target);
+        console.log('[torrentDownloader] Deleted discarded partial download: ' + target);
+        return true;
+    } catch (err) {
+        if (err.code === 'ENOENT') return false;
+        throw err;
+    }
+}
+
+/**
  * Clears the progress timer for a download and forgets it
  * @param {String} infoHash The infoHash of the torrent to forget
  */
@@ -432,6 +456,7 @@ function destroyAll () {
 module.exports = {
     startDownload: startDownload,
     stopTorrent: stopTorrent,
+    deletePartialFile: deletePartialFile,
     getStatus: getStatus,
     setKeepSeeding: setKeepSeeding,
     destroyAll: destroyAll

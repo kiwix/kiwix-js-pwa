@@ -80,6 +80,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setTorrentSeeding: function (value) {
         ipcRenderer.send('torrent-set-seeding', value);
     },
+    deletePartialTorrentFile: function (savePath, name) {
+        return ipcRenderer.invoke('torrent-delete-partial', savePath, name);
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,

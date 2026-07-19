@@ -1756,6 +1756,35 @@ var seedingTorrent = null;
 // A torrent start request that is waiting for the user to pick a download folder
 var pendingTorrentUrl = null;
 
+// settingsStore key remembering a BitTorrent download that is (or was) in progress, so that if
+// the app is closed or crashes before it finishes, the user can be offered to resume it on the
+// next launch. The partial data itself is always kept on disk regardless of this record; it
+// only remembers where to find it again. Cleared as soon as the download finishes, fails, or is
+// stopped by the user.
+var ACTIVE_TORRENT_KEY = 'activeTorrentDownload';
+
+/**
+ * Remembers an in-progress BitTorrent download across app restarts
+ * @param {String} torrentUrl The URL of the .torrent file being downloaded
+ * @param {String} savePath The absolute path of the folder it is being saved into
+ * @param {String} [name] The archive's name, once known, for a friendlier resume prompt
+ */
+function persistActiveTorrent (torrentUrl, savePath, name) {
+    settingsStore.setItem(ACTIVE_TORRENT_KEY, JSON.stringify({
+        torrentUrl: torrentUrl,
+        savePath: savePath,
+        name: name || null
+    }), Infinity);
+}
+
+/**
+ * Forgets any remembered in-progress BitTorrent download (called once it finishes, fails, or
+ * is explicitly stopped, so that it is no longer offered for resumption on a future launch)
+ */
+function clearActiveTorrent () {
+    settingsStore.removeItem(ACTIVE_TORRENT_KEY);
+}
+
 // If the user had to pick a folder before a torrent could start, the chosen path arrives
 // here (as well as in app.js, which scans the folder and sets params.pickedFolder)
 if (window.dialog && torrentClient.isAvailable()) {
@@ -1765,6 +1794,40 @@ if (window.dialog && torrentClient.isAvailable()) {
             pendingTorrentUrl = null;
             beginTorrentDownload(torrentUrl, fullPath.replace(/\\/g, '/'));
         }
+    });
+}
+
+// If a BitTorrent download was still in progress when the app last quit (or crashed), offer to
+// resume it now. Deferred to DOMContentLoaded, and further delayed with setTimeout, because the
+// modal dialogue depends on bootstrap/jQuery having been injected, which is not guaranteed yet
+// at this point on all platforms (see the similar splash-screen modal delay in app.js)
+if (torrentClient.isAvailable()) {
+    document.addEventListener('DOMContentLoaded', function () {
+        var pendingResumeJSON = settingsStore.getItem(ACTIVE_TORRENT_KEY);
+        var pendingResume = null;
+        if (pendingResumeJSON) {
+            try {
+                pendingResume = JSON.parse(pendingResumeJSON);
+            } catch (e) {
+                pendingResume = null;
+            }
+        }
+        if (!pendingResume || !pendingResume.torrentUrl || !pendingResume.savePath) return;
+        setTimeout(function () {
+            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + (pendingResume.name || 'an archive') +
+                '</i> did not finish because the app was closed.</p>' +
+                '<p>Do you want to resume it now? (<i>The data already downloaded has been kept.</i>)</p>',
+            'Resume BitTorrent download?', true, 'Discard', 'Resume').then(function (resume) {
+                if (resume) {
+                    beginTorrentDownload(pendingResume.torrentUrl, pendingResume.savePath);
+                } else {
+                    clearActiveTorrent();
+                    torrentClient.deletePartial(pendingResume.savePath, pendingResume.name).catch(function (err) {
+                        console.warn('[kiwixServe] Could not delete discarded partial download', err);
+                    });
+                }
+            });
+        }, 1500);
     });
 }
 
@@ -1785,6 +1848,7 @@ function startTorrentDownload (torrentUrl, sizeMB) {
                 activeTorrent = null;
                 downloadSize = 0;
                 percentageComplete = 0;
+                clearActiveTorrent();
                 uiUtil.pollOpsPanel();
                 serverResponse.style.display = 'none';
             }
@@ -1843,6 +1907,9 @@ function beginTorrentDownload (torrentUrl, savePath) {
     // Guards against a race where a torrent completes (or fails) before the start Promise
     // resolves, e.g. when resuming a file that is already fully downloaded
     var finished = false;
+    // Remembered now (before the name is known) so that even a crash during the initial fetch
+    // or hash-check of on-disk data is still offered for resumption on the next launch
+    persistActiveTorrent(torrentUrl, savePath);
     uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Starting BitTorrent download...', true);
     torrentClient.start(torrentUrl, savePath, {
         onProgress: function (s) {
@@ -1865,6 +1932,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
         onDone: function (s) {
             finished = true;
             activeTorrent = null;
+            clearActiveTorrent();
             if (s.seeding) {
                 seedingTorrent = { infoHash: s.infoHash, name: s.name };
             } else {
@@ -1884,16 +1952,23 @@ function beginTorrentDownload (torrentUrl, savePath) {
             activeTorrent = null;
             downloadSize = 0;
             percentageComplete = 0;
+            clearActiveTorrent();
             uiUtil.pollOpsPanel();
             uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + message +
                 '</p><p>Any partially downloaded data will be reused if you try again.</p>', 'Download failed');
         }
     }).then(function (status) {
-        if (!finished) activeTorrent = { infoHash: status.infoHash, name: status.name };
+        if (!finished) {
+            activeTorrent = { infoHash: status.infoHash, name: status.name };
+            // Update the remembered record with the archive's real name for a friendlier
+            // resume prompt (a plain retry of the same call is cheap: settingsStore is local)
+            persistActiveTorrent(torrentUrl, savePath, status.name);
+        }
     }).catch(function (err) {
         activeTorrent = null;
         downloadSize = 0;
         percentageComplete = 0;
+        clearActiveTorrent();
         uiUtil.pollOpsPanel();
         uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + (err.message || err) + '</p>', 'Download failed');
     });

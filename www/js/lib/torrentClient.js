@@ -149,6 +149,21 @@ function getStatus (infoHash) {
 }
 
 /**
+ * Deletes an abandoned partial download from disk (used when the user discards a download
+ * that was left in progress when the app was last closed, rather than resuming it)
+ * @param {String} savePath The directory the torrent was downloading into
+ * @param {String} name The torrent's name (i.e. the downloaded file's name)
+ * @returns {Promise<Boolean>} A Promise resolving true if a file was found and deleted
+ */
+function deletePartial (savePath, name) {
+    if (backend !== 'electron') return Promise.resolve(false);
+    return window.electronAPI.deletePartialTorrentFile(savePath, name).then(function (result) {
+        if (!result.ok) throw new Error(result.error);
+        return result.deleted;
+    });
+}
+
+/**
  * Sets whether completed torrents keep seeding until the app quits; turning this off also
  * stops any torrent that is currently seeding
  * @param {Boolean} value Whether to keep seeding completed torrents
@@ -221,5 +236,6 @@ export default {
     detach: detach,
     getStatus: getStatus,
     setSeeding: setSeeding,
-    resolveSavePath: resolveSavePath
+    resolveSavePath: resolveSavePath,
+    deletePartial: deletePartial
 };
