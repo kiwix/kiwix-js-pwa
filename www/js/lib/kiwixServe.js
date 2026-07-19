@@ -1257,10 +1257,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
              '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, '.magnet') + '"' + target + '>' +
                 URL.replace(/\.meta4$/, '.magnet') + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
         }
-        if (megabytes > 200 && torrentClient.isAvailable() && /\.zim\.meta4$/i.test(URL)) {
+        var torrentDownloadAvailable = megabytes > 200 && torrentClient.isAvailable() && /\.zim\.meta4$/i.test(URL);
+        if (torrentDownloadAvailable) {
             bodyDoc += '<p><b>In-app BitTorrent download, for larger archives (downloads to your selected ZIM folder):</b></p><ul>\r\n<li>' +
                 '<a href="#" id="torrentDownloadLink" data-kiwix-torrent="' + escapeHtml(URL.replace(/\.meta4$/, '.torrent')) +
-                '" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a> (<i><b>recommended</b>: resumes automatically, even if interrupted by closing the app)</i></li></ul>\r\n';
+                '" style="background-color: green; color: yellow !important; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a> (<i><b>recommended</b>: resumes automatically, even if interrupted by closing the app)</i></li></ul>\r\n';
         }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
             bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
@@ -1279,7 +1280,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
             bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li>' +
-                '<a href="' + mirrorZimUrl + '" class="download" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download now</a> ' +
+                '<a href="' + mirrorZimUrl + '" class="download" style="background-color: ' + (torrentDownloadAvailable ? 'goldenrod; color: navy !important' : 'green; color: yellow !important') +
+                '; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Direct download</a> ' +
                 '<a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
             bodyDoc += '<p><b>Browser-managed download from mirrors, for larger archives:</b>';
         } else {
