@@ -964,6 +964,13 @@
                                             <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
                                         </label>
                                     </div>
+                                    <div id="torrentSettingsDiv" class="row" style="display: none; margin: 0.5em;">
+                                        <label class="checkbox" title="After an in-app BitTorrent download completes, the app can continue to upload (seed) the archive to other users until you close the app. This helps the Kiwix community distribute archives. Turn it off if you are on a metered or slow connection.">
+                                            <input type="checkbox" name="keepTorrentSeeding" id="keepTorrentSeedingCheck" checked>
+                                            <span class="checkmark"></span>
+                                            <b>Keep seeding BitTorrent downloads</b> (<i>until app closes; helps other users</i>)
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
                                 <pre id="serverResponse" class="card-footer" style="display:none;"></pre>

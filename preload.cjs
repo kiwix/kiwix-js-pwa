@@ -65,6 +65,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getExternalAccessState: function () {
         return ipcRenderer.invoke('get-external-access-state');
     },
+    // In-app BitTorrent download API (implemented in torrentDownloader.cjs, wired in main.cjs);
+    // progress/completion events arrive via the generic 'on' listener below, on the channels
+    // 'torrent-progress', 'torrent-done' and 'torrent-error'
+    startTorrentDownload: function (args) {
+        return ipcRenderer.invoke('torrent-start', args);
+    },
+    stopTorrentDownload: function (infoHash, deletePartial) {
+        return ipcRenderer.invoke('torrent-stop', infoHash, deletePartial);
+    },
+    getTorrentStatus: function (infoHash) {
+        return ipcRenderer.invoke('torrent-status', infoHash);
+    },
+    setTorrentSeeding: function (value) {
+        ipcRenderer.send('torrent-set-seeding', value);
+    },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,

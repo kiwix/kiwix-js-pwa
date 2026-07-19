@@ -7,6 +7,8 @@ const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
 const fs = require('fs');
 const os = require('os');
+// In-app BitTorrent downloader (lazily imports WebTorrent on first use)
+const torrentDownloader = require('./torrentDownloader.cjs');
 // const https = require('https');
 
 const store = new Store();
@@ -194,6 +196,36 @@ function registerListeners () {
         const localIP = isExternal ? getLocalIPAddress() : null;
         console.log(`Get external access state: ${isExternal} (binding: ${currentBinding})`);
         return { enabled: isExternal, binding: currentBinding, localIP: localIP };
+    });
+    // In-app BitTorrent download handlers: these wrap torrentDownloader.cjs, relaying progress
+    // and completion events to the renderer over IPC
+    const sendToRenderer = function (channel, data) {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send(channel, data);
+        }
+    };
+    ipcMain.handle('torrent-start', async (event, args) => {
+        try {
+            const status = await torrentDownloader.startDownload(args, {
+                onProgress: (s) => sendToRenderer('torrent-progress', s),
+                onDone: (s) => sendToRenderer('torrent-done', s),
+                onError: (err) => sendToRenderer('torrent-error', err.message)
+            });
+            return { ok: true, status: status };
+        } catch (err) {
+            console.error('Torrent start failed:', err);
+            return { ok: false, error: err.message };
+        }
+    });
+    ipcMain.handle('torrent-stop', async (event, infoHash, deletePartial) => {
+        return torrentDownloader.stopTorrent(infoHash, deletePartial);
+    });
+    ipcMain.handle('torrent-status', (event, infoHash) => {
+        return torrentDownloader.getStatus(infoHash);
+    });
+    ipcMain.on('torrent-set-seeding', (event, value) => {
+        console.log('Setting torrent seeding to ' + value);
+        torrentDownloader.setKeepSeeding(value);
     });
     // Registers listener for download events
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
@@ -449,6 +481,8 @@ app.on('window-all-closed', function () {
 
 // Explicit shutdown of the Express server for security
 app.on('before-quit', () => {
+    // Stop any active or seeding torrents (partial downloads are kept on disk for later resume)
+    torrentDownloader.destroyAll();
     if (expressServer) {
         console.log('Shutting down server...');
         // Forcefully close all active connections

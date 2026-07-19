@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* ENHANCEMENT: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
+
 ## Release 3.8.5 / 3.8.6
 
 * ENHANCEMENT: Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)

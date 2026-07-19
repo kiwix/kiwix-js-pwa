@@ -38,6 +38,7 @@ import settingsStore from './lib/settingsStore.js';
 import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
+import torrentClient from './lib/torrentClient.js';
 import updater from './lib/updater.js';
 import resetApp from './lib/resetApp.js';
 
@@ -2229,6 +2230,20 @@ document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('cha
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
 });
+// In-app BitTorrent download settings (only shown where the capability exists, i.e. Electron/NWJS)
+if (torrentClient.isAvailable()) {
+    document.getElementById('torrentSettingsDiv').style.display = 'block';
+    var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
+    keepTorrentSeedingCheck.checked = params.keepTorrentSeeding;
+    // Communicate the stored setting to the torrent backend
+    torrentClient.setSeeding(params.keepTorrentSeeding);
+    keepTorrentSeedingCheck.addEventListener('change', function () {
+        params.keepTorrentSeeding = this.checked;
+        settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+        // Turning this off also stops any torrent that is currently seeding
+        torrentClient.setSeeding(params.keepTorrentSeeding);
+    });
+}
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
     params.windowOpener = this.checked ? 'tab' : false;
     if (!params.windowOpener && !params.noWarning) {
