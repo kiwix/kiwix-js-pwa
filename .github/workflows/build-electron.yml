@@ -180,11 +180,23 @@ jobs:
           PUBLISH_FLAG="always"
         fi
         echo "Building 64bit packages for ref_name=$REF_NAME..."
+        # Build the x64 targets first, using the runner's native linux-x64 node-datachannel binary.
+        # electron-builder has npmRebuild:false, so it packages whatever single binary is on disk
+        # into every arch it builds — building arm64 in the same pass would ship the x64 binary in
+        # the arm64 AppImage (dlopen would fail on ARM). So after the x64 targets, swap in the
+        # linux-arm64 prebuild (a plain N-API download via prebuild-install, no compilation) and
+        # build the arm64 AppImage separately. The node -e form invokes prebuild-install from the
+        # package dir so it reads node-datachannel's own package.json, hoisting-agnostic.
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
+          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
+          npx electron-builder --linux AppImage:x64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
         fi
+        echo "Swapping node-datachannel to its linux-arm64 prebuild for the ARM AppImage..."
+        ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=arm64','--platform=linux'); require('prebuild-install/bin.js')" )
+        file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
+        echo "Building arm64 AppImage (with the linux-arm64 binary swapped in)..."
+        npx electron-builder --linux AppImage:arm64 --publish $PUBLISH_FLAG --projectDir dist
     - name: Build and publish 32bit
       env:
         USE_HARD_LINKS: false
