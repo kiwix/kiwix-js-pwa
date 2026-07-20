@@ -13,9 +13,9 @@
     "icon": "www/img/icons/kiwix-256.png"
   },
   "scripts": {
-    "start": "run --x86 --mirror https://dl.nwjs.io/ .",
-    "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
-    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
+    "start": "run --x86 --mirror https://dl.nwjs.io .",
+    "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io .",
+    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io .",
     "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build-NWJS.ps1"
   },
   "build-xp": {
@@ -92,6 +92,8 @@
     "nwjs-builder-phoenix": "^1.15.0"
   },
   "dependencies": {
-    "@types/fs-extra": "^9.0.11"
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "@types/fs-extra": "^9.0.11",
+    "bootstrap": "^4.6.2"
   }
 }
