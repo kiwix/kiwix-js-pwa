@@ -6035,6 +6035,8 @@ function handleClickOnReplayLink (ev, anchor) {
     if (normalizedAnchorProtocol && normalizedAnchorProtocol !== normalizedDocumentProtocol) {
         // DEV: Monitor whether you need to handle /blob:|data:|file:/ as well (probably not, as they would be blocked by the sandbox if loaded into iframe)
         if (/about:|javascript:/i.test(anchor.protocol) || ev.ctrlKey || ev.metaKey || ev.button === 1) return;
+        // In some browsers, the chrome-extension: protocol is used for extensions, so if the link is relative, we can allow it through
+        if (/chrome-extension:/i.test(normalizedDocumentProtocol) && /http:/.test(normalizedAnchorProtocol)) return;
         // So it's probably a URI scheme or protocol like mailto: that would violate the CSP, so we need to open it explicitly in a new tab
         ev.preventDefault();
         ev.stopPropagation();

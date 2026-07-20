@@ -24,7 +24,7 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@main
       # Set up secret files from encrypted secrets
       - name: Set up secret files
         env:
