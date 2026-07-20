@@ -19,7 +19,10 @@ const unsignedConfig = {
     },
     // Remove top-level configs related to signing
     cscLink: undefined,
-    cscKeyPassword: undefined
+    cscKeyPassword: undefined,
+    // Per-arch fix for the Windows nsis-web build's native node-datachannel binary (see
+    // afterPack.cjs). A no-op on non-Windows targets and where the module isn't packaged.
+    afterPack: require('./afterPack.cjs').default
 };
 
 // Remove properties if they exist

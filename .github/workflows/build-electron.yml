@@ -81,8 +81,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == ''
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -180,11 +180,23 @@ jobs:
           PUBLISH_FLAG="always"
         fi
         echo "Building 64bit packages for ref_name=$REF_NAME..."
+        # Build the x64 targets first, using the runner's native linux-x64 node-datachannel binary.
+        # electron-builder has npmRebuild:false, so it packages whatever single binary is on disk
+        # into every arch it builds — building arm64 in the same pass would ship the x64 binary in
+        # the arm64 AppImage (dlopen would fail on ARM). So after the x64 targets, swap in the
+        # linux-arm64 prebuild (a plain N-API download via prebuild-install, no compilation) and
+        # build the arm64 AppImage separately. The node -e form invokes prebuild-install from the
+        # package dir so it reads node-datachannel's own package.json, hoisting-agnostic.
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
+          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
+          npx electron-builder --linux AppImage:x64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
         fi
+        echo "Swapping node-datachannel to its linux-arm64 prebuild for the ARM AppImage..."
+        ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=arm64','--platform=linux'); require('prebuild-install/bin.js')" )
+        file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
+        echo "Building arm64 AppImage (with the linux-arm64 binary swapped in)..."
+        npx electron-builder --linux AppImage:arm64 --publish $PUBLISH_FLAG --projectDir dist
     - name: Build and publish 32bit
       env:
         USE_HARD_LINKS: false
@@ -193,6 +205,11 @@ jobs:
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
+        # Strip webtorrent: unusable on this target (Electron 18 = Node 16, below WebTorrent's Node
+        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
+        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
         # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
@@ -216,7 +233,7 @@ jobs:
         ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_linux
         path: |
@@ -228,8 +245,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == ''
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -332,6 +349,13 @@ jobs:
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this legacy target (Electron 26 = Node 18, below
+        # WebTorrent's Node 20 requirement), so it would only ship as dead weight (~9 MB of
+        # webtorrent + node-datachannel). The in-app torrent feature is already gated off for
+        # this runtime (see preload.cjs), so removing it changes nothing user-facing. Only the
+        # dist copy is stripped; the modern build step later restores the full package.json.
+        echo "Removing webtorrent from dist before install (unsupported on legacy macOS / Node 18)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
         npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
@@ -390,7 +414,21 @@ jobs:
           echo "✓ Electron versions verified successfully"
         fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
-        npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
+        # The arm64 macos-latest runner's npm install placed a darwin-arm64 node-datachannel
+        # binary in dist. electron-builder has npmRebuild:false, so it packages whatever single
+        # binary is on disk into EVERY arch it builds — a combined "zip:x64 zip:arm64" would ship
+        # the arm64 binary inside the Intel package too (dlopen fails: "incompatible architecture,
+        # have 'arm64', need 'x86_64'"). So build arm64 from the native binary, then swap in the
+        # darwin-x64 prebuild (a plain N-API download via prebuild-install, no compilation) and
+        # build x64 separately. The node -e form invokes prebuild-install from the package dir so
+        # it reads node-datachannel's own package.json, and resolves regardless of npm hoisting.
+        echo "Building macOS arm64 (native node-datachannel binary already in place)..."
+        npx electron-builder --mac zip:arm64 --publish never --projectDir dist
+        echo "Swapping node-datachannel to its darwin-x64 prebuild for the Intel build..."
+        ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=x64','--platform=darwin'); require('prebuild-install/bin.js')" )
+        file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
+        echo "Building macOS x64 (with the darwin-x64 binary swapped in)..."
+        npx electron-builder --mac zip:x64 --publish never --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -539,7 +577,7 @@ jobs:
         ./scripts/publish_macos_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_macos
         path: |
@@ -549,8 +587,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win7' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Find and set signtool.exe path
       if: github.event.inputs.sign == 'true'
       shell: powershell
@@ -737,6 +775,11 @@ jobs:
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this target (Electron 22 = Node 16, below WebTorrent's Node
+        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
+        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on Win7 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
@@ -862,7 +905,10 @@ jobs:
         $phase1Targets = @()
         if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
         if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
-        $phase1Targets += 'appx'
+        # Pin appx to x64: in a combined --win list electron-builder applies the archs collected from
+        # the other targets (here ia32) to any bare target, and appx has no ia32 build, so a bare
+        # 'appx' aborts phase 1 with "Unsupported arch ia32 appx". An explicit arch avoids that.
+        $phase1Targets += 'appx:x64'
         $PHASE1_TARGETS = $phase1Targets -join ' '
         echo "Phase 1 build targets: $PHASE1_TARGETS"
 
@@ -877,7 +923,7 @@ jobs:
                     if (!$INPUT_SIGN) {
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     } else {
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
                 }
                 'appx' {
@@ -895,7 +941,7 @@ jobs:
                     } else {
                         npx electron-builder build --win $PHASE1_TARGETS --publish always --projectDir dist
                         node scripts/delete-latest-yml.js
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
                 }
             }
@@ -906,7 +952,7 @@ jobs:
                     if (!$INPUT_SIGN) {
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     } else {
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     }
                 }
                 'appx' {
@@ -924,7 +970,7 @@ jobs:
                     } else {
                         npx electron-builder build --win $PHASE1_TARGETS --projectDir dist
                         node scripts/delete-latest-yml.js
-                        npx electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     }
                 }
             }
@@ -978,7 +1024,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_windows
         path: |
@@ -992,8 +1038,8 @@ jobs:
     if: github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == '')
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4      
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main      
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Build production code
@@ -1062,7 +1108,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-nwjs_windows
         path: dist/bld/nwjs/*.zip
