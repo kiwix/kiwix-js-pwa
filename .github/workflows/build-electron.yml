@@ -81,8 +81,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == ''
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -221,7 +221,7 @@ jobs:
         ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_linux
         path: |
@@ -233,8 +233,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == ''
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -505,7 +505,7 @@ jobs:
         ./scripts/publish_macos_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_macos
         path: |
@@ -515,8 +515,8 @@ jobs:
     if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win7' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Find and set signtool.exe path
       if: github.event.inputs.sign == 'true'
       shell: powershell
@@ -949,7 +949,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_windows
         path: |
@@ -963,8 +963,8 @@ jobs:
     if: github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == '')
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4      
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main      
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Build production code
@@ -1033,7 +1033,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-nwjs_windows
         path: dist/bld/nwjs/*.zip
