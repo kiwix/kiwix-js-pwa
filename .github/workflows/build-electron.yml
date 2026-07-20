@@ -329,6 +329,13 @@ jobs:
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this legacy target (Electron 26 = Node 18, below
+        # WebTorrent's Node 20 requirement), so it would only ship as dead weight (~9 MB of
+        # webtorrent + node-datachannel). The in-app torrent feature is already gated off for
+        # this runtime (see preload.cjs), so removing it changes nothing user-facing. Only the
+        # dist copy is stripped; the modern build step later restores the full package.json.
+        echo "Removing webtorrent from dist before install (unsupported on legacy macOS / Node 18)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
         npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
