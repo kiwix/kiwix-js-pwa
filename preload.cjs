@@ -65,6 +65,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getExternalAccessState: function () {
         return ipcRenderer.invoke('get-external-access-state');
     },
+    // In-app BitTorrent needs WebTorrent 3.x (Node 20+) and the native node-datachannel WebRTC
+    // addon, which ships no 32-bit (ia32) prebuild. Older Electron builds — the 18.3.15 pinned
+    // for 32-bit Linux, and the legacy Electron used for Windows 7 — bundle Node < 20, and 32-bit
+    // builds lack the native module, so the feature is unavailable there. The renderer gates on
+    // this flag (see torrentClient.js) so those builds never offer a download that would fail.
+    torrentSupported: parseInt(process.versions.node, 10) >= 20 && process.arch !== 'ia32',
     // In-app BitTorrent download API (implemented in torrentDownloader.cjs, wired in main.cjs);
     // progress/completion events arrive via the generic 'on' listener below, on the channels
     // 'torrent-progress', 'torrent-done' and 'torrent-error'

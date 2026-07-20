@@ -193,6 +193,11 @@ jobs:
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
+        # Strip webtorrent: unusable on this target (Electron 18 = Node 16, below WebTorrent's Node
+        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
+        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
         # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
@@ -698,6 +703,11 @@ jobs:
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this target (Electron 22 = Node 16, below WebTorrent's Node
+        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
+        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on Win7 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
