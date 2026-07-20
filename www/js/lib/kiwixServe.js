@@ -2019,8 +2019,27 @@ function reportDownloadProgress (received, total) {
     }
 }
 
+/**
+ * Clears the "Seeding ..." status line when the user turns off "Keep seeding". The backend
+ * stops the completed torrent, but that also ends the onProgress events that drive the line,
+ * so the renderer must detach the torrent and clear the now-frozen message itself. Has no
+ * effect if nothing is currently seeding.
+ */
+function clearSeedingStatus () {
+    if (!seedingTorrent) return;
+    torrentClient.detach(seedingTorrent.infoHash);
+    seedingTorrent = null;
+    serverResponse.style.removeProperty('color');
+    if (document.getElementById('downloadLinks').style.display === 'none') {
+        serverResponse.style.display = 'none';
+    } else {
+        serverResponse.innerHTML = '';
+    }
+}
+
 export default {
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
-    reportDownloadProgress: reportDownloadProgress
+    reportDownloadProgress: reportDownloadProgress,
+    clearSeedingStatus: clearSeedingStatus
 };

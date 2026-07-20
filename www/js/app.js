@@ -2286,6 +2286,8 @@ if (torrentClient.isAvailable()) {
         settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
         // Turning this off also stops any torrent that is currently seeding
         torrentClient.setSeeding(params.keepTorrentSeeding);
+        // ... and clears the now-stale "Seeding ..." status line the stopped torrent left behind
+        if (!params.keepTorrentSeeding) kiwixServe.clearSeedingStatus();
     });
 }
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
