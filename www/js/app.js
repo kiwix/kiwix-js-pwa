@@ -1197,6 +1197,9 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         document.getElementById('downloadLinks').style.display = 'none';
         document.getElementById('serverResponse').style.display = 'none';
         document.getElementById('myModal').style.display = 'none';
+        // If a completed torrent is still seeding in the background, show its status so the user
+        // can monitor it here (the line above hid it; this restores it only while seeding)
+        kiwixServe.showSeedingStatus();
         refreshAPIStatus();
         // Re-enable top-level scrolling
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';

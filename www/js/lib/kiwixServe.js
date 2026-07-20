@@ -2020,6 +2020,24 @@ function reportDownloadProgress (received, total) {
 }
 
 /**
+ * (Re)populates the "Seeding ..." status line from the torrent's current status and makes it
+ * visible, so the user can monitor an ongoing background seed whenever they open the Library
+ * panel (which otherwise hides the line). Subsequent live onProgress events then keep it current
+ * while the panel is open. A no-op if nothing is currently seeding.
+ */
+function showSeedingStatus () {
+    if (!seedingTorrent) return;
+    torrentClient.getStatus(seedingTorrent.infoHash).then(function (s) {
+        // The torrent may have been stopped in the meantime (e.g. seeding turned off)
+        if (!s || !s.seeding || !seedingTorrent) return;
+        serverResponse.style.display = 'inline';
+        serverResponse.style.setProperty('color', 'green', 'important');
+        serverResponse.innerHTML = 'Seeding ' + s.name + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+            ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
+    });
+}
+
+/**
  * Clears the "Seeding ..." status line when the user turns off "Keep seeding". The backend
  * stops the completed torrent, but that also ends the onProgress events that drive the line,
  * so the renderer must detach the torrent and clear the now-frozen message itself. Has no
@@ -2041,5 +2059,6 @@ export default {
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
     reportDownloadProgress: reportDownloadProgress,
-    clearSeedingStatus: clearSeedingStatus
+    clearSeedingStatus: clearSeedingStatus,
+    showSeedingStatus: showSeedingStatus
 };
