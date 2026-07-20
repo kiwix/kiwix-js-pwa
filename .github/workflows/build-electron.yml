@@ -866,7 +866,10 @@ jobs:
         $phase1Targets = @()
         if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
         if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
-        $phase1Targets += 'appx'
+        # Pin appx to x64: in a combined --win list electron-builder applies the archs collected from
+        # the other targets (here ia32) to any bare target, and appx has no ia32 build, so a bare
+        # 'appx' aborts phase 1 with "Unsupported arch ia32 appx". An explicit arch avoids that.
+        $phase1Targets += 'appx:x64'
         $PHASE1_TARGETS = $phase1Targets -join ' '
         echo "Phase 1 build targets: $PHASE1_TARGETS"
 
