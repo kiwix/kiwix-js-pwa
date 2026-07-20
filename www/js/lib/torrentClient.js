@@ -95,6 +95,7 @@ function isAvailable () {
  *   total, ... }), rejected with an Error if the torrent could not be started
  */
 function start (torrentUrl, savePath, callbacks) {
+    if (backend !== 'electron') return Promise.reject(new Error('In-app BitTorrent downloading is not available in this runtime'));
     startInFlight = true;
     return window.electronAPI.startTorrentDownload({
         torrentUrl: torrentUrl,
@@ -127,6 +128,7 @@ function start (torrentUrl, savePath, callbacks) {
  * @returns {Promise<Boolean>} A Promise resolving true if a torrent was found and stopped
  */
 function stop (infoHash, deletePartial) {
+    if (backend !== 'electron') return Promise.resolve(false);
     detach(infoHash);
     return window.electronAPI.stopTorrentDownload(infoHash, deletePartial);
 }
@@ -147,6 +149,7 @@ function detach (infoHash) {
  * @returns {Promise<Object|Array|null>} A Promise for the status
  */
 function getStatus (infoHash) {
+    if (backend !== 'electron') return Promise.resolve(null);
     return window.electronAPI.getTorrentStatus(infoHash);
 }
 

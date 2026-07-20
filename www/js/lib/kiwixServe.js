@@ -1816,7 +1816,7 @@ if (torrentClient.isAvailable()) {
         }
         if (!pendingResume || !pendingResume.torrentUrl || !pendingResume.savePath) return;
         setTimeout(function () {
-            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + (pendingResume.name || 'an archive') +
+            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + escapeHtml(pendingResume.name || 'an archive') +
                 '</i> did not finish because the app was closed.</p>' +
                 '<p>Do you want to resume it now? (<i>The data already downloaded has been kept.</i>)</p>',
             'Resume BitTorrent download?', true, 'Discard', 'Resume').then(function (resume) {
@@ -1842,7 +1842,7 @@ if (torrentClient.isAvailable()) {
  */
 function startTorrentDownload (torrentUrl, sizeMB) {
     if (activeTorrent) {
-        uiUtil.systemAlert('<p>A BitTorrent download is already in progress:</p><ul><li><i>' + activeTorrent.name + '</i></li></ul>' +
+        uiUtil.systemAlert('<p>A BitTorrent download is already in progress:</p><ul><li><i>' + escapeHtml(activeTorrent.name) + '</i></li></ul>' +
             '<p>Do you wish to stop it? (<i>Partially downloaded data will be kept, so the download can be resumed later.</i>)</p>',
         'Stop BitTorrent download?', true, 'Continue downloading', 'Stop download').then(function (result) {
             if (result && activeTorrent) {
@@ -1926,7 +1926,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
             } else if (s.seeding && serverResponse.style.display !== 'none') {
                 // The download has completed, but we are still seeding the archive
                 serverResponse.style.setProperty('color', 'green', 'important');
-                serverResponse.innerHTML = 'Seeding ' + s.name + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+                serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
                     ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
             }
         },
@@ -1940,7 +1940,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
                 torrentClient.detach(s.infoHash);
             }
             reportDownloadProgress('completed');
-            uiUtil.systemAlert('<p>The archive <i>' + s.name + '</i> has been downloaded to your device' +
+            uiUtil.systemAlert('<p>The archive <i>' + escapeHtml(s.name) + '</i> has been downloaded to your device' +
                 (s.verified ? ' and its data has been verified' : '') + '.</p>' +
                 (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : ''),
             'Download complete').then(function () {
@@ -1955,7 +1955,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
             percentageComplete = 0;
             clearActiveTorrent();
             uiUtil.pollOpsPanel();
-            uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + message +
+            uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + escapeHtml(message) +
                 '</p><p>Any partially downloaded data will be reused if you try again.</p>', 'Download failed');
         }
     }).then(function (status) {
@@ -1971,7 +1971,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
         percentageComplete = 0;
         clearActiveTorrent();
         uiUtil.pollOpsPanel();
-        uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + (err.message || err) + '</p>', 'Download failed');
+        uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + escapeHtml(err.message || err) + '</p>', 'Download failed');
     });
 }
 
@@ -2032,8 +2032,10 @@ function showSeedingStatus () {
         if (!s || !s.seeding || !seedingTorrent) return;
         serverResponse.style.display = 'inline';
         serverResponse.style.setProperty('color', 'green', 'important');
-        serverResponse.innerHTML = 'Seeding ' + s.name + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+        serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
             ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
+    }).catch(function (err) {
+        console.warn('[kiwixServe] Could not refresh seeding status', err);
     });
 }
 
