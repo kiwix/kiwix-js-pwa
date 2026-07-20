@@ -874,7 +874,7 @@
                     </div>
                     <div id="hideFileSelectors">
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                            <div id="archivesFound" class="row">
+                            <div id="archivesFound" class="row" style="width: 100%;">
                                 <div class="col-12">
                                     <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 </div>
@@ -962,6 +962,13 @@
                                             <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
                                             <span class="checkmark"></span>
                                             <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
+                                        </label>
+                                    </div>
+                                    <div id="torrentSettingsDiv" class="row" style="display: none; margin: 0.5em;">
+                                        <label class="checkbox" title="After an in-app BitTorrent download completes, the app can continue to upload (seed) the archive to other users until you close the app. This helps the Kiwix community distribute archives. Turn it off if you are on a metered or slow connection.">
+                                            <input type="checkbox" name="keepTorrentSeeding" id="keepTorrentSeedingCheck" checked>
+                                            <span class="checkmark"></span>
+                                            <b>Keep seeding BitTorrent downloads</b> (<i>until app closes; helps other users</i>)
                                         </label>
                                     </div>
                                 </div>

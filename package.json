@@ -7,6 +7,7 @@
   "type": "module",
   "build": {
     "appId": "kiwix.js.electron",
+    "npmRebuild": false,
     "productName": "Kiwix JS Electron",
     "directories": {
       "output": "bld/Electron",
@@ -138,6 +139,7 @@
       "www/**",
       "preload.cjs",
       "main.cjs",
+      "torrentDownloader.cjs",
       "!**/*.dev.{js,wasm}"
     ]
   },
@@ -204,12 +206,16 @@
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^8.0.16"
   },
+  "overrides": {
+    "ip": "npm:neoip@2.1.0"
+  },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
     "core-js": "3.30.2",
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.6.8",
-    "express": "^4.22.2"
+    "express": "^4.22.2",
+    "webtorrent": "3.0.16"
   }
 }

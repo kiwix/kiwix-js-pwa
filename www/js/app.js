@@ -38,6 +38,7 @@ import settingsStore from './lib/settingsStore.js';
 import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
+import torrentClient from './lib/torrentClient.js';
 import updater from './lib/updater.js';
 import resetApp from './lib/resetApp.js';
 
@@ -1196,6 +1197,9 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         document.getElementById('downloadLinks').style.display = 'none';
         document.getElementById('serverResponse').style.display = 'none';
         document.getElementById('myModal').style.display = 'none';
+        // If a completed torrent is still seeding in the background, show its status so the user
+        // can monitor it here (the line above hid it; this restores it only while seeding)
+        kiwixServe.showSeedingStatus();
         refreshAPIStatus();
         // Re-enable top-level scrolling
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -1225,6 +1229,14 @@ function getNativeFSHandle (callback) {
     }
     console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
+        // Self-heal: if something other than a file system handle was stored (e.g. a path
+        // string), remove it and proceed as if no handle had been stored, or else every app
+        // launch would fail to restore the picked file or folder
+        if (val && typeof val.queryPermission !== 'function') {
+            console.warn('Removing an invalid stored file system handle:', val);
+            cache.idxDB('delete', 'pickedFSHandle', function () {});
+            val = null;
+        }
         if (val) {
             var handle = val;
             return cache.verifyPermission(handle, false).then(function (accessible) {
@@ -1330,6 +1342,12 @@ function selectArchive (list) {
     // If nothing was selected, user will have to click again
     if (!list.target.value) return;
     selectFired = true;
+    // Watchdog: selectFired debounces the duplicate change/click events fired by the list, but
+    // if an archive load fails in a code path that never resets the flag, the list would become
+    // permanently unresponsive, so reset it after ample time for any load to have completed
+    setTimeout(function () {
+        selectFired = false;
+    }, 10000);
     var selected = list.target.value;
     // Void any previous picked file to prevent it launching
     params.storedFile = selected;
@@ -1399,60 +1417,87 @@ function selectArchive (list) {
             return setLocalArchiveFromFileList([params.pickedFile], true);
         }
     }
-    if (window.showOpenFilePicker || params.useOPFS) {
-        return getNativeFSHandle(function (handle) {
-            resetUI();
-            if (!handle) {
-                if (window.fs && params.storedFilePath) {
-                    // Fall back to using the Electron APIs
-                    params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
-                    return setLocalArchiveFromArchiveList(selected);
-                }
-                console.error('No handle was retrieved');
-                document.getElementById('openLocalFiles').style.display = 'block';
-                document.getElementById('rescanStorage').style.display = 'none';
-                return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
-                    'This is probably because the contents of the folder have changed. Please try picking it again.');
-            }
-            if (handle.kind === 'directory') {
-                params.pickedFolder = handle;
-                return setLocalArchiveFromArchiveList(params.storedFile);
-            } else if (handle.kind === 'file') {
-                return handle.getFile().then(function (file) {
-                    params.pickedFile = file;
-                    params.pickedFile.handle = handle;
-                    return setLocalArchiveFromArchiveList(selected);
-                }).catch(function (err) {
-                    console.error('Unable to read previously picked file!', err);
-                    uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+    var selectViaFSHandles = function () {
+        if (window.showOpenFilePicker || params.useOPFS) {
+            return getNativeFSHandle(function (handle) {
+                resetUI();
+                if (!handle) {
+                    if (window.fs && params.storedFilePath) {
+                        // Fall back to using the Electron APIs
+                        params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
+                        return setLocalArchiveFromArchiveList(selected);
+                    }
+                    console.error('No handle was retrieved');
                     document.getElementById('openLocalFiles').style.display = 'block';
                     document.getElementById('rescanStorage').style.display = 'none';
-                });
-            }
-        });
-    } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
-        // If we don't have any picked files or directories...
-        if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
-            appstate.waitForFileSelect = selected;
-            // No files are set, so we need to ask user to select the file or directory again
-            if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
-                archiveDirLegacy.click();
+                    return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
+                        'This is probably because the contents of the folder have changed. Please try picking it again.');
+                }
+                if (handle.kind === 'directory') {
+                    params.pickedFolder = handle;
+                    return setLocalArchiveFromArchiveList(params.storedFile);
+                } else if (handle.kind === 'file') {
+                    return handle.getFile().then(function (file) {
+                        params.pickedFile = file;
+                        params.pickedFile.handle = handle;
+                        return setLocalArchiveFromArchiveList(selected);
+                    }).catch(function (err) {
+                        console.error('Unable to read previously picked file!', err);
+                        uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+                        document.getElementById('openLocalFiles').style.display = 'block';
+                        document.getElementById('rescanStorage').style.display = 'none';
+                    });
+                }
+            });
+        } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
+            // If we don't have any picked files or directories...
+            if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
+                appstate.waitForFileSelect = selected;
+                // No files are set, so we need to ask user to select the file or directory again
+                if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
+                    archiveDirLegacy.click();
+                } else {
+                    archiveFilesLegacy.click();
+                }
             } else {
-                archiveFilesLegacy.click();
+                console.debug('Files are set, attempting to select ' + selected);
+                params.pickedFile = selected;
+                if (archiveDirLegacy.files.length) {
+                    params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+                    params.pickedFile = '';
+                }
+                setLocalArchiveFromArchiveList(selected);
             }
         } else {
-            console.debug('Files are set, attempting to select ' + selected);
-            params.pickedFile = selected;
-            if (archiveDirLegacy.files.length) {
-                params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
-                params.pickedFile = '';
-            }
             setLocalArchiveFromArchiveList(selected);
         }
-    } else {
-        setLocalArchiveFromArchiveList(selected);
+        setTimeout(resetUI, 0);
+    };
+    // In Electron or NWJS, prefer to load the archive with Node fs methods whenever the current
+    // folder is known by a real path (e.g. it was picked with the native folder dialogue, which
+    // returns a path rather than a handle, or restored from a stored path at launch): loading
+    // through a File System Access handle is less reliable in these frameworks (Chromium File
+    // snapshots can be invalidated on Windows by concurrent access to the underlying file).
+    // DEV: do not substitute a stored path when params.pickedFolder is an FSA handle: the stored
+    // path may point to a different folder containing a same-named (e.g. partially downloaded)
+    // copy of the selected archive, which would then be loaded silently in place of the right one
+    if (window.fs && !params.useOPFS && params.pickedFolder && typeof params.pickedFolder === 'string') {
+        var folderPath = params.pickedFolder.replace(/[\\/]+$/, '');
+        // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash
+        if (/^[A-Za-z]:$/.test(folderPath)) folderPath += '/';
+        window.fs.stat(folderPath.replace(/\/$/, '') + '/' + selected, function (err, stats) {
+            if (!err && stats) {
+                console.debug('Loading ' + selected + ' with Node fs from verified folder path: ' + folderPath);
+                setLocalArchiveFromArchiveList(selected);
+                setTimeout(resetUI, 0);
+            } else {
+                // The selected archive is not at the known path: fall back to handles
+                selectViaFSHandles();
+            }
+        });
+        return;
     }
-    setTimeout(resetUI, 0);
+    selectViaFSHandles();
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
@@ -1785,7 +1830,10 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
                 btnArchiveFile.click();
             }
         } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
-    } else if (window.showOpenFilePicker || params.useOPFS) {
+    } else if ((window.showOpenFilePicker || params.useOPFS) && params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        // Note we check the type of pickedFolder above, not just the API availability, because in
+        // Electron pickedFolder may be a path string (e.g. from the folder dialogue) even though
+        // the File System Access API is available
         processNativeDirHandle(params.pickedFolder);
         if (params.useOPFS) cache.populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
@@ -2229,6 +2277,22 @@ document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('cha
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
 });
+// In-app BitTorrent download settings (only shown where the capability exists, i.e. Electron/NWJS)
+if (torrentClient.isAvailable()) {
+    document.getElementById('torrentSettingsDiv').style.display = 'block';
+    var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
+    keepTorrentSeedingCheck.checked = params.keepTorrentSeeding;
+    // Communicate the stored setting to the torrent backend
+    torrentClient.setSeeding(params.keepTorrentSeeding);
+    keepTorrentSeedingCheck.addEventListener('change', function () {
+        params.keepTorrentSeeding = this.checked;
+        settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+        // Turning this off also stops any torrent that is currently seeding
+        torrentClient.setSeeding(params.keepTorrentSeeding);
+        // ... and clears the now-stale "Seeding ..." status line the stopped torrent left behind
+        if (!params.keepTorrentSeeding) kiwixServe.clearSeedingStatus();
+    });
+}
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
     params.windowOpener = this.checked ? 'tab' : false;
     if (!params.windowOpener && !params.noWarning) {
@@ -3985,7 +4049,7 @@ function setLocalArchiveFromArchiveList (archive) {
                                 if (appstate.selectedArchive && appstate.selectedArchive.file._files[0].name === selectedFiles[0].name) {
                                     document.getElementById('btnHome').click();
                                 } else {
-                                    setLocalArchiveFromFileList(selectedFiles);
+                                    setLocalArchiveFromFileList(selectedFiles, true);
                                 }
                             }).catch(function (err) {
                                 console.error(err);
@@ -4300,6 +4364,10 @@ if (window.dialog) {
     dialog.on('dir-dialog', function (fullPath) {
         console.log('Path: ' + fullPath);
         fullPath = fullPath.replace(/\\/g, '/');
+        // The natively picked folder supersedes any previously picked FSA folder, so delete
+        // the stored directory handle: it would otherwise resurrect the previous folder when
+        // the archive list is refreshed or the app is relaunched
+        cache.idxDB('delete', 'pickedFSHandle', function () {});
         scanNodeFolderforArchives(fullPath);
     });
 }
@@ -4343,10 +4411,13 @@ function pickFolderNativeFS () {
 function processNativeFileHandle (fileHandle) {
     // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
-    // Serialize fileHandle to indexedDB
-    cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize fileHandle to indexedDB (only if it is a genuine file system handle: a path
+    // string or other object stored here would break handle restoration on every app launch)
+    if (fileHandle && fileHandle.kind === 'file') {
+        cache.idxDB('pickedFSHandle', fileHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
     params.pickedFolder = null;
@@ -4397,10 +4468,14 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
 
 function processNativeDirHandle (dirHandle, callback) {
     // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
-    // Serialize dirHandle to indexedDB
-    cache.idxDB('pickedFSHandle', dirHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize dirHandle to indexedDB (only if it is a genuine directory handle: a path
+    // string stored here, e.g. from the Electron folder dialogue, would break handle
+    // restoration on every app launch)
+    if (dirHandle && dirHandle.kind === 'directory') {
+        cache.idxDB('pickedFSHandle', dirHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     params.pickedFolder = dirHandle;
     params.pickedFile = '';
     var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
@@ -4697,18 +4772,24 @@ function archiveReadyCallback (archive) {
         params.lastPageHTML = '';
     }
     // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-    if (appstate.filesDropped && params.storedFilePath) {
-        params.pickedFolder = null;
-        params.pickedFile = params.storedFilePath;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
-        populateDropDownListOfArchives([params.storedFile], true);
-        settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
-        // We have to remove the file handle to prevent it from launching next time
-        cache.idxDB('delete', 'pickedFSHandle', function () {
-            console.debug('File handle deleted');
-        });
+    if (appstate.filesDropped) {
+        // Always clear the flag on the load that follows the drop: a file dropped without a
+        // path (e.g. one loaded through a File System Access handle) would otherwise leave it
+        // set, and every subsequent archive loaded from the archive list with a path would then
+        // wrongly enter the block below, collapsing the list and voiding the picked folder
         appstate.filesDropped = false;
+        if (params.storedFilePath) {
+            params.pickedFolder = null;
+            params.pickedFile = params.storedFilePath;
+            settingsStore.setItem('pickedFolder', '', Infinity);
+            settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
+            populateDropDownListOfArchives([params.storedFile], true);
+            settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
+            // We have to remove the file handle to prevent it from launching next time
+            cache.idxDB('delete', 'pickedFSHandle', function () {
+                console.debug('File handle deleted');
+            });
+        }
     }
     var reloadLink = document.getElementById('reloadPackagedArchive');
     if (reloadLink) {

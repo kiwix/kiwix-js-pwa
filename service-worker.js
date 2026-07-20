@@ -206,6 +206,7 @@ const precacheFiles = [
     'www/js/lib/popovers.js',
     'www/js/lib/resetApp.js',
     'www/js/lib/settingsStore.js',
+    'www/js/lib/torrentClient.js',
     'www/js/lib/transformStyles.js',
     'www/js/lib/transformZimit.js',
     'www/js/lib/uiUtil.js',

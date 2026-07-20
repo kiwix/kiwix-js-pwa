@@ -37,6 +37,7 @@
 import cache from './cache.js';
 import uiUtil from './uiUtil.js';
 import settingsStore from './settingsStore.js';
+import torrentClient from './torrentClient.js';
 
 /* globals params, appstate */
 
@@ -1256,6 +1257,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
              '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, '.magnet') + '"' + target + '>' +
                 URL.replace(/\.meta4$/, '.magnet') + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
         }
+        var torrentDownloadAvailable = megabytes > 200 && torrentClient.isAvailable() && /\.zim\.meta4$/i.test(URL);
+        if (torrentDownloadAvailable) {
+            bodyDoc += '<p><b>In-app BitTorrent download, for larger archives (downloads to your selected ZIM folder):</b></p><ul>\r\n<li>' +
+                '<a href="#" id="torrentDownloadLink" data-kiwix-torrent="' + escapeHtml(URL.replace(/\.meta4$/, '.torrent')) +
+                '" style="background-color: green; color: yellow !important; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a> (<i><b>recommended</b>: resumes automatically, even if interrupted by closing the app)</i></li></ul>\r\n';
+        }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
             bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
             // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
@@ -1273,7 +1280,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             bodyDoc += '<p><b>Direct download';
             bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
             bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li>' +
-                '<a href="' + mirrorZimUrl + '" class="download" style="background-color: green; color: white; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download now</a> ' +
+                '<a href="' + mirrorZimUrl + '" class="download" style="background-color: ' + (torrentDownloadAvailable ? 'goldenrod; color: navy !important' : 'green; color: yellow !important') +
+                '; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Direct download</a> ' +
                 '<a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
             bodyDoc += '<p><b>Browser-managed download from mirrors, for larger archives:</b>';
         } else {
@@ -1301,6 +1309,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Add event listener for click on return link, to go back to list of archives
         var returnLink = document.getElementById('returnLink');
         if (returnLink) returnLink.addEventListener('click', submitSelectValues);
+        // Add event listener for the in-app BitTorrent download link (Electron / NWJS only)
+        var torrentLink = document.getElementById('torrentDownloadLink');
+        if (torrentLink) {
+            torrentLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                startTorrentDownload(torrentLink.dataset.kiwixTorrent, megabytes$);
+            });
+        }
         // Set up preview link
         document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
         // If File System Access API is available, add event listeners on download links to save to local storage
@@ -1735,6 +1751,230 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
 var percentageComplete = 0;
 var downloadSize = 0;
 
+// State of any in-app BitTorrent download in progress ({ infoHash, name } or null)
+var activeTorrent = null;
+// A completed torrent that is still seeding in the background ({ infoHash, name } or null)
+var seedingTorrent = null;
+// A torrent start request that is waiting for the user to pick a download folder
+var pendingTorrentUrl = null;
+
+// settingsStore key remembering a BitTorrent download that is (or was) in progress, so that if
+// the app is closed or crashes before it finishes, the user can be offered to resume it on the
+// next launch. The partial data itself is always kept on disk regardless of this record; it
+// only remembers where to find it again. Cleared as soon as the download finishes, fails, or is
+// stopped by the user.
+var ACTIVE_TORRENT_KEY = 'activeTorrentDownload';
+
+/**
+ * Remembers an in-progress BitTorrent download across app restarts
+ * @param {String} torrentUrl The URL of the .torrent file being downloaded
+ * @param {String} savePath The absolute path of the folder it is being saved into
+ * @param {String} [name] The archive's name, once known, for a friendlier resume prompt
+ */
+function persistActiveTorrent (torrentUrl, savePath, name) {
+    settingsStore.setItem(ACTIVE_TORRENT_KEY, JSON.stringify({
+        torrentUrl: torrentUrl,
+        savePath: savePath,
+        name: name || null
+    }), Infinity);
+}
+
+/**
+ * Forgets any remembered in-progress BitTorrent download (called once it finishes, fails, or
+ * is explicitly stopped, so that it is no longer offered for resumption on a future launch)
+ */
+function clearActiveTorrent () {
+    settingsStore.removeItem(ACTIVE_TORRENT_KEY);
+}
+
+// If the user had to pick a folder before a torrent could start, the chosen path arrives
+// here (as well as in app.js, which scans the folder and sets params.pickedFolder)
+if (window.dialog && torrentClient.isAvailable()) {
+    window.dialog.on('dir-dialog', function (fullPath) {
+        if (pendingTorrentUrl && fullPath) {
+            var torrentUrl = pendingTorrentUrl;
+            pendingTorrentUrl = null;
+            beginTorrentDownload(torrentUrl, fullPath.replace(/\\/g, '/'));
+        }
+    });
+}
+
+// If a BitTorrent download was still in progress when the app last quit (or crashed), offer to
+// resume it now. Deferred to DOMContentLoaded, and further delayed with setTimeout, because the
+// modal dialogue depends on bootstrap/jQuery having been injected, which is not guaranteed yet
+// at this point on all platforms (see the similar splash-screen modal delay in app.js)
+if (torrentClient.isAvailable()) {
+    document.addEventListener('DOMContentLoaded', function () {
+        var pendingResumeJSON = settingsStore.getItem(ACTIVE_TORRENT_KEY);
+        var pendingResume = null;
+        if (pendingResumeJSON) {
+            try {
+                pendingResume = JSON.parse(pendingResumeJSON);
+            } catch (e) {
+                pendingResume = null;
+            }
+        }
+        if (!pendingResume || !pendingResume.torrentUrl || !pendingResume.savePath) return;
+        setTimeout(function () {
+            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + escapeHtml(pendingResume.name || 'an archive') +
+                '</i> did not finish because the app was closed.</p>' +
+                '<p>Do you want to resume it now? (<i>The data already downloaded has been kept.</i>)</p>',
+            'Resume BitTorrent download?', true, 'Discard', 'Resume').then(function (resume) {
+                if (resume) {
+                    beginTorrentDownload(pendingResume.torrentUrl, pendingResume.savePath);
+                } else {
+                    clearActiveTorrent();
+                    torrentClient.deletePartial(pendingResume.savePath, pendingResume.name).catch(function (err) {
+                        console.warn('[kiwixServe] Could not delete discarded partial download', err);
+                    });
+                }
+            });
+        }, 1500);
+    });
+}
+
+/**
+ * Entry point for the in-app BitTorrent download link: confirms with the user, obtains a
+ * real filesystem path to download to, and starts the download; if a download is already
+ * in progress, offers to stop it instead
+ * @param {String} torrentUrl The URL of the .torrent file for the archive
+ * @param {String} sizeMB The formatted size of the archive in MB (for display only)
+ */
+function startTorrentDownload (torrentUrl, sizeMB) {
+    if (activeTorrent) {
+        uiUtil.systemAlert('<p>A BitTorrent download is already in progress:</p><ul><li><i>' + escapeHtml(activeTorrent.name) + '</i></li></ul>' +
+            '<p>Do you wish to stop it? (<i>Partially downloaded data will be kept, so the download can be resumed later.</i>)</p>',
+        'Stop BitTorrent download?', true, 'Continue downloading', 'Stop download').then(function (result) {
+            if (result && activeTorrent) {
+                torrentClient.stop(activeTorrent.infoHash, false);
+                activeTorrent = null;
+                downloadSize = 0;
+                percentageComplete = 0;
+                clearActiveTorrent();
+                uiUtil.pollOpsPanel();
+                serverResponse.style.display = 'none';
+            }
+        });
+        return;
+    }
+    // The torrent backend runs in the Node context and needs a real filesystem path, which is
+    // derived from the picked folder (including FSA directory handles) where possible; we
+    // resolve it before showing the dialogue so the destination (or the need to pick one) can
+    // be stated up front
+    torrentClient.resolveSavePath(params.pickedFolder).then(function (savePath) {
+        var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
+            (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
+            (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
+                '<p><label><input type="checkbox" id="torrentPickNewFolder">&nbsp;Download to a different folder&hellip;</label></p>'
+                : '<p>You will be asked to choose the folder into which the archive should be downloaded (usually your ZIM folder).</p>') +
+            '<p>The download can be resumed if it is interrupted — even by closing the app: you will be offered to continue it the next time you open the app. ' +
+            'Your firewall may ask you (once) to allow the app to accept network connections: this is needed to exchange data with other BitTorrent users.</p>' +
+            (params.keepTorrentSeeding ? '<p><i>After the download completes, the app will continue to share (seed) the archive with other users until you close the app. ' +
+                'You can turn this off under Download library in Configuration.</i></p>' : '');
+        uiUtil.systemAlert(message, 'Download via BitTorrent?', true, 'Cancel', 'Download').then(function (confirm) {
+            if (!confirm) return;
+            // The modal's content is still in the DOM after it closes, so the checkbox
+            // (present only when a download path was derived) can be read here
+            var pickNewFolder = document.getElementById('torrentPickNewFolder');
+            if (savePath && !(pickNewFolder && pickNewFolder.checked)) {
+                beginTorrentDownload(torrentUrl, savePath);
+            } else if (window.dialog) {
+                // No path could be derived, or the user asked to change folder: open the
+                // native (path-returning) folder picker, whose result is also stored as the
+                // new picked folder for subsequent downloads
+                pendingTorrentUrl = torrentUrl;
+                window.dialog.openDirectory();
+            } else {
+                uiUtil.systemAlert('<p>Unable to establish a folder to download the archive into. Please pick your ZIM folder in Configuration first.</p>', 'No download folder');
+            }
+        });
+    });
+}
+
+/**
+ * Starts the torrent download and wires its progress, completion and error events to the UI
+ * @param {String} torrentUrl The URL of the .torrent file for the archive
+ * @param {String} savePath The absolute path of the folder to download into
+ */
+function beginTorrentDownload (torrentUrl, savePath) {
+    downloadSize = 0;
+    percentageComplete = 0;
+    // A torrent left seeding in the background must stop reporting to the status line now
+    // that a new download is taking it over (the old torrent goes on seeding regardless)
+    if (seedingTorrent) {
+        torrentClient.detach(seedingTorrent.infoHash);
+        seedingTorrent = null;
+    }
+    // Guards against a race where a torrent completes (or fails) before the start Promise
+    // resolves, e.g. when resuming a file that is already fully downloaded
+    var finished = false;
+    // Remembered now (before the name is known) so that even a crash during the initial fetch
+    // or hash-check of on-disk data is still offered for resumption on the next launch
+    persistActiveTorrent(torrentUrl, savePath);
+    uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Starting BitTorrent download...', true);
+    torrentClient.start(torrentUrl, savePath, {
+        onProgress: function (s) {
+            if (s.verifying) {
+                // The download has completed and the data written to disk is being hash-checked
+                serverResponse.style.display = 'inline';
+                serverResponse.style.setProperty('color', 'goldenrod', 'important');
+                serverResponse.innerHTML = 'Verifying downloaded data&hellip; ' + Math.round(s.progress * 100) + '%';
+            } else if (!s.done) {
+                reportDownloadProgress(s.received, s.total);
+                serverResponse.innerHTML += ' | ' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') +
+                    ' | ' + (s.downloadSpeed / 1048576).toFixed(2) + ' MB/s';
+            } else if (s.seeding && serverResponse.style.display !== 'none') {
+                // The download has completed, but we are still seeding the archive
+                serverResponse.style.setProperty('color', 'green', 'important');
+                serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+                    ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
+            }
+        },
+        onDone: function (s) {
+            finished = true;
+            activeTorrent = null;
+            clearActiveTorrent();
+            if (s.seeding) {
+                seedingTorrent = { infoHash: s.infoHash, name: s.name };
+            } else {
+                torrentClient.detach(s.infoHash);
+            }
+            reportDownloadProgress('completed');
+            uiUtil.systemAlert('<p>The archive <i>' + escapeHtml(s.name) + '</i> has been downloaded to your device' +
+                (s.verified ? ' and its data has been verified' : '') + '.</p>' +
+                (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : ''),
+            'Download complete').then(function () {
+                var btnRefresh = document.getElementById('btnRefresh');
+                if (btnRefresh) btnRefresh.click();
+            });
+        },
+        onError: function (message) {
+            finished = true;
+            activeTorrent = null;
+            downloadSize = 0;
+            percentageComplete = 0;
+            clearActiveTorrent();
+            uiUtil.pollOpsPanel();
+            uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + escapeHtml(message) +
+                '</p><p>Any partially downloaded data will be reused if you try again.</p>', 'Download failed');
+        }
+    }).then(function (status) {
+        if (!finished) {
+            activeTorrent = { infoHash: status.infoHash, name: status.name };
+            // Update the remembered record with the archive's real name for a friendlier
+            // resume prompt (a plain retry of the same call is cheap: settingsStore is local)
+            persistActiveTorrent(torrentUrl, savePath, status.name);
+        }
+    }).catch(function (err) {
+        activeTorrent = null;
+        downloadSize = 0;
+        percentageComplete = 0;
+        clearActiveTorrent();
+        uiUtil.pollOpsPanel();
+        uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + escapeHtml(err.message || err) + '</p>', 'Download failed');
+    });
+}
+
 /**
  * Reports download progress to the serverResponse panel
  *
@@ -1779,8 +2019,48 @@ function reportDownloadProgress (received, total) {
     }
 }
 
+/**
+ * (Re)populates the "Seeding ..." status line from the torrent's current status and makes it
+ * visible, so the user can monitor an ongoing background seed whenever they open the Library
+ * panel (which otherwise hides the line). Subsequent live onProgress events then keep it current
+ * while the panel is open. A no-op if nothing is currently seeding.
+ */
+function showSeedingStatus () {
+    if (!seedingTorrent) return;
+    torrentClient.getStatus(seedingTorrent.infoHash).then(function (s) {
+        // The torrent may have been stopped in the meantime (e.g. seeding turned off)
+        if (!s || !s.seeding || !seedingTorrent) return;
+        serverResponse.style.display = 'inline';
+        serverResponse.style.setProperty('color', 'green', 'important');
+        serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+            ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
+    }).catch(function (err) {
+        console.warn('[kiwixServe] Could not refresh seeding status', err);
+    });
+}
+
+/**
+ * Clears the "Seeding ..." status line when the user turns off "Keep seeding". The backend
+ * stops the completed torrent, but that also ends the onProgress events that drive the line,
+ * so the renderer must detach the torrent and clear the now-frozen message itself. Has no
+ * effect if nothing is currently seeding.
+ */
+function clearSeedingStatus () {
+    if (!seedingTorrent) return;
+    torrentClient.detach(seedingTorrent.infoHash);
+    seedingTorrent = null;
+    serverResponse.style.removeProperty('color');
+    if (document.getElementById('downloadLinks').style.display === 'none') {
+        serverResponse.style.display = 'none';
+    } else {
+        serverResponse.innerHTML = '';
+    }
+}
+
 export default {
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
-    reportDownloadProgress: reportDownloadProgress
+    reportDownloadProgress: reportDownloadProgress,
+    clearSeedingStatus: clearSeedingStatus,
+    showSeedingStatus: showSeedingStatus
 };
