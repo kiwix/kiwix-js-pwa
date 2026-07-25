@@ -1894,7 +1894,17 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
                 }
             }
         }
-        params.themeChanged = true; // This will reload the page
+        // Reload the currently displayed article straight away, so that anchor click handling
+        // (which differs between Restricted and Service Worker mode) is applied to the page that
+        // is already open, instead of only taking effect on the next navigation
+        if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
+            if (params.lastPageVisit) {
+                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            } else {
+                goToMainArticle();
+            }
+        }
+        params.themeChanged = false;
     });
 });
 document.getElementById('allowInternetAccessCheck').addEventListener('change', function () {
