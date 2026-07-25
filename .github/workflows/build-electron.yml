@@ -247,6 +247,55 @@ jobs:
     steps:
     - uses: actions/checkout@main
     - uses: actions/setup-node@main
+    # Runs first so a credential problem is reported in seconds rather than after
+    # a full build plus a notarization round trip. Prints only the certificate's
+    # common name and expiry date, both of which are public information present
+    # in every signed binary; never the certificate itself or any password.
+    - name: Check macOS signing certificate
+      env:
+        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+      run: |
+        if [[ -z "$CSC_LINK" ]]; then
+          echo "No signing certificate secret is available: macOS packages will be built UNSIGNED."
+          exit 0
+        fi
+        CERT_FILE="$RUNNER_TEMP/signing_cert.p12"
+        # CSC_LINK holds the certificate base64-encoded; decode via openssl for
+        # portability (BSD and GNU base64 disagree on the decode flag)
+        printf '%s' "$CSC_LINK" | tr -d '\n' | openssl base64 -d -A > "$CERT_FILE"
+        # -legacy is needed for p12 files using older ciphers, but is rejected by
+        # LibreSSL, so try the plain invocation first
+        PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts 2>/dev/null) || true
+        if [[ -z "$PEM" ]]; then
+          PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts -legacy 2>/dev/null) || true
+        fi
+        rm -f "$CERT_FILE"
+        if [[ -z "$PEM" ]]; then
+          echo "⚠️  Could not read the certificate (openssl could not parse it, or the password does not match)."
+          echo "    Continuing: the build and the verification step below will report the true outcome."
+          exit 0
+        fi
+        SUBJECT=$(openssl x509 -noout -subject <<<"$PEM")
+        ENDDATE=$(openssl x509 -noout -enddate <<<"$PEM" | sed 's/^notAfter=//')
+        # Handles both subject formats: "CN = x, OU = y" (OpenSSL) and "/CN=x/OU=y" (LibreSSL)
+        CN=$(sed -E 's/.*CN ?= ?//; s/,.*//; s%/[A-Za-z]+=.*%%' <<<"$SUBJECT")
+        echo "Certificate:  $CN"
+        echo "Expires:      $ENDDATE"
+        if [[ "$CN" == "Developer ID Application"* ]]; then
+          echo "✅ Correct certificate type for notarized distribution outside the Mac App Store."
+        else
+          echo "❌ Wrong certificate type for this use case."
+          echo "   Found:    $CN"
+          echo "   Required: Developer ID Application: ..."
+          echo ""
+          echo "   Apps distributed outside the Mac App Store must be signed with a"
+          echo "   'Developer ID Application' certificate. An 'Apple Distribution'"
+          echo "   certificate is only valid for App Store submission, and Gatekeeper"
+          echo "   will reject apps signed with it when downloaded from a website."
+          echo "   Ask for the Developer ID Application certificate to be added as a secret."
+          exit 1
+        fi
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -329,14 +378,16 @@ jobs:
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
-        # macOS code signing and notarization credentials. If the secrets are not
-        # set, these resolve to empty strings and electron-builder skips signing
-        # and notarization with a warning (safe no-op for PR/dev builds).
-        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
-        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
-        APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        # macOS code signing and notarization credentials. These are Kiwix
+        # org-level secrets shared with kiwix-apple, hence the names: they are
+        # mapped here onto the variables electron-builder expects. If the secrets
+        # are not set, these resolve to empty strings and electron-builder skips
+        # signing and notarization with a warning (safe no-op for PR/dev builds).
+        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         # Save the original Electron version (just the version string, no quotes)
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/')
@@ -361,8 +412,15 @@ jobs:
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
         echo "Verifying installed Electron version..."
         npx electron --version
+        # When credentials are present, require signing to succeed: by default
+        # electron-builder only warns and emits an unsigned package, which would
+        # otherwise be published as if it were signed
+        SIGN_FLAGS=""
+        if [[ -n "$CSC_LINK" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
+        fi
         echo "Building macOS packages for High Sierra/Mojave..."
-        npx electron-builder --mac zip:x64 --publish never --projectDir dist
+        npx electron-builder --mac zip:x64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Renaming High Sierra package..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -386,11 +444,11 @@ jobs:
       env:
         USE_HARD_LINKS: false
         # macOS code signing and notarization credentials (see High Sierra step)
-        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
-        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
-        APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
@@ -413,6 +471,11 @@ jobs:
         else
           echo "✓ Electron versions verified successfully"
         fi
+        # Require signing to succeed when credentials are present (see High Sierra step)
+        SIGN_FLAGS=""
+        if [[ -n "$CSC_LINK" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
+        fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         # The arm64 macos-latest runner's npm install placed a darwin-arm64 node-datachannel
         # binary in dist. electron-builder has npmRebuild:false, so it packages whatever single
@@ -423,12 +486,12 @@ jobs:
         # build x64 separately. The node -e form invokes prebuild-install from the package dir so
         # it reads node-datachannel's own package.json, and resolves regardless of npm hoisting.
         echo "Building macOS arm64 (native node-datachannel binary already in place)..."
-        npx electron-builder --mac zip:arm64 --publish never --projectDir dist
+        npx electron-builder --mac zip:arm64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Swapping node-datachannel to its darwin-x64 prebuild for the Intel build..."
         ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=x64','--platform=darwin'); require('prebuild-install/bin.js')" )
         file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
         echo "Building macOS x64 (with the darwin-x64 binary swapped in)..."
-        npx electron-builder --mac zip:x64 --publish never --projectDir dist
+        npx electron-builder --mac zip:x64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -459,7 +522,7 @@ jobs:
         # True when the macOS signing certificate secret exists: enables the
         # codesign/stapler/spctl verification below. Deliberately does not
         # expose the certificate itself to this step.
-        MAC_SIGNING_ENABLED: ${{ secrets.APPLE_DEVELOPER_ID_P12 != '' }}
+        MAC_SIGNING_ENABLED: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE != '' }}
       run: |
         cd dist/bld/Electron
         if ! ls *.zip >/dev/null 2>&1; then
