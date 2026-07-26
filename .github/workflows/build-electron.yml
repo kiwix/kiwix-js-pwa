@@ -259,11 +259,14 @@ jobs:
     # it exports MAC_SIGNING_ACTIVE for the build and verification steps below.
     - name: Check macOS signing certificate
       env:
-        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
-        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
       run: |
-        # Default to off, and turn on only once the credentials look usable
-        echo "MAC_SIGNING_ACTIVE=false" >> "$GITHUB_ENV"
+        # Default to off, and turn on only once the credentials look usable. The
+        # flag is exported exactly once, on exit by whichever path we take, so
+        # nothing depends on how duplicate keys in $GITHUB_ENV are resolved.
+        ACTIVE=false
+        trap 'echo "MAC_SIGNING_ACTIVE=$ACTIVE" >> "$GITHUB_ENV"' EXIT
         if [[ "$INPUT_SIGN" != "true" ]]; then
           echo "Signing was not requested for this build (sign: false, or a nightly build)."
           echo "macOS packages will be built UNSIGNED."
@@ -288,7 +291,7 @@ jobs:
           echo "⚠️  Could not read the certificate (openssl could not parse it, or the password does not match)."
           echo "    This may just be an openssl quirk, so signing is left enabled: the build"
           echo "    and the verification step below will report the true outcome."
-          echo "MAC_SIGNING_ACTIVE=true" >> "$GITHUB_ENV"
+          ACTIVE=true
           exit 0
         fi
         SUBJECT=$(openssl x509 -noout -subject <<<"$PEM")
@@ -299,7 +302,7 @@ jobs:
         echo "Expires:      $ENDDATE"
         if [[ "$CN" == "Developer ID Application"* ]]; then
           echo "✅ Correct certificate type for notarized distribution outside the Mac App Store."
-          echo "MAC_SIGNING_ACTIVE=true" >> "$GITHUB_ENV"
+          ACTIVE=true
           exit 0
         fi
         echo "❌ Wrong certificate type for this use case."
@@ -403,13 +406,18 @@ jobs:
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
-        # macOS code signing and notarization credentials. These are Kiwix
-        # org-level secrets shared with kiwix-apple, hence the names: they are
-        # mapped here onto the variables electron-builder expects. If the secrets
-        # are not set, these resolve to empty strings and electron-builder skips
-        # signing and notarization with a warning (safe no-op for PR/dev builds).
-        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
-        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+        # macOS code signing and notarization credentials. These are Kiwix secrets
+        # shared with kiwix-apple, hence the names: they are mapped here onto the
+        # variables electron-builder expects. The notarization ones are org-level
+        # and already available here; the certificate pair currently exists only as
+        # repository secrets on kiwix-apple and is pending being shared with this
+        # repo (see https://github.com/kiwix/operations/issues/501). Until then
+        # CSC_LINK is empty, and the certificate check at the start of this job
+        # turns signing off, so builds are simply unsigned.
+        # NB the certificate must be a Developer ID Application certificate, not
+        # the Apple Distribution one used for App Store submission.
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
         APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
@@ -474,8 +482,8 @@ jobs:
       env:
         USE_HARD_LINKS: false
         # macOS code signing and notarization credentials (see High Sierra step)
-        CSC_LINK: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_CERTIFICATE }}
-        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_SIGNING_P12_PASSWORD }}
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
         APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
