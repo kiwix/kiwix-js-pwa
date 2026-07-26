@@ -23,7 +23,10 @@ const config = {
             babelHelpers: 'bundled'
         }),
         // Needed to get rid of residual "requires" left in the code by Babel...
-        commonjs(),
+        // NB strictRequires defaulted to 'auto' before plugin-commonjs v27; the v27+ default of
+        // true wraps every CommonJS module (incl. all core-js polyfills) in lazy init functions,
+        // which changes polyfill initialisation order and adds ~100KB to the unminified bundle
+        commonjs({ strictRequires: 'auto' }),
         // Resolves references to node_modules packages
         resolve({
             browser: true
