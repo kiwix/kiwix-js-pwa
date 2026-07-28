@@ -3,6 +3,11 @@
 ## Unreleased
 
 * ENHANCEMENT: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
+* ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
+* INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
+* DEV: Enable Hardened Runtime and add an entitlements file for macOS Electron builds
+* DEV: Sign and notarize macOS packages in CI, verifying signature, notarization ticket and Gatekeeper assessment before publication
+* DEV: Single workflow dispatch option now controls signing of both Windows and macOS packages; nightlies are always unsigned
 
 ## Release 3.8.5 / 3.8.6
 

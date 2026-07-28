@@ -43,13 +43,13 @@ on:
           - appx
         default: 'all'
       sign:
-        description: Do you wish to sign the Windows packages?
+        description: Do you wish to sign the Windows and macOS packages? (Nightly builds are always unsigned)
         type: choice
         required: false
         options:
           - true
           - false
-        default: 'false'
+        default: 'true'
       publish_to:
         description: Publish to GitHub releases or AWS S3?
         type: choice
@@ -62,7 +62,11 @@ env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
-  INPUT_SIGN: ${{ github.event.inputs.sign || 'false' }}
+  # Canonical signing flag for both Windows and macOS. Signing is on for manually
+  # dispatched builds unless explicitly turned off, and always off for nightlies,
+  # which are published unsigned (cron-launched, or dispatched with target:
+  # nightly). Resolves to the string 'true' or 'false'.
+  INPUT_SIGN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sign != 'false' && github.event.inputs.target != 'nightly' }}
   BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'all' }}
   WIN11_PACKAGES: ${{ github.event.inputs.win11packages }}
   PUBLISH_TO: ${{ github.event.inputs.publish_to }}
@@ -247,6 +251,93 @@ jobs:
     steps:
     - uses: actions/checkout@main
     - uses: actions/setup-node@main
+    # Runs first so a credential problem is reported in seconds rather than after
+    # a full build plus a notarization round trip. Prints only the certificate's
+    # common name and expiry date, both of which are public information present
+    # in every signed binary; never the certificate itself or any password.
+    # This step is the single place that decides whether macOS signing is active:
+    # it exports MAC_SIGNING_ACTIVE for the build and verification steps below.
+    - name: Check macOS signing certificate
+      env:
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+      run: |
+        # Default to off, and turn on only once the credentials look usable. The
+        # flag is exported exactly once, on exit by whichever path we take, so
+        # nothing depends on how duplicate keys in $GITHUB_ENV are resolved.
+        ACTIVE=false
+        trap 'echo "MAC_SIGNING_ACTIVE=$ACTIVE" >> "$GITHUB_ENV"' EXIT
+        # Anything other than a pure artefacts test build ends up in front of users,
+        # so a silently unsigned package would contradict our own release notes.
+        # Such builds fail below rather than publish; artefacts builds carry on
+        # unsigned, so macOS packages can still be produced when signing is broken.
+        WOULD_PUBLISH=true
+        if [[ "$INPUT_TARGET" == "artefacts" && "$PUBLISH_TO" != "aws" ]]; then
+          WOULD_PUBLISH=false
+        fi
+        if [[ "$INPUT_SIGN" != "true" ]]; then
+          echo "Signing was not requested for this build (sign: false, or a nightly build)."
+          echo "macOS packages will be built UNSIGNED."
+          exit 0
+        fi
+        if [[ -z "$CSC_LINK" ]]; then
+          echo "❌ Signing was requested, but no signing certificate secret is available."
+          echo "   Check that this repository still has access to the org-level secret"
+          echo "   APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE (see kiwix/operations#501)."
+          if [[ "$WOULD_PUBLISH" == "true" ]]; then
+            echo "   This build would be published, so failing rather than publishing packages"
+            echo "   that are unsigned while the installation instructions say they are signed."
+            echo "   Re-run with sign: false if you deliberately want unsigned packages."
+            exit 1
+          fi
+          echo "   This is a test build that is not published, so continuing UNSIGNED."
+          exit 0
+        fi
+        CERT_FILE="$RUNNER_TEMP/signing_cert.p12"
+        # CSC_LINK holds the certificate base64-encoded; decode via openssl for
+        # portability (BSD and GNU base64 disagree on the decode flag)
+        printf '%s' "$CSC_LINK" | tr -d '\n' | openssl base64 -d -A > "$CERT_FILE"
+        # -legacy is needed for p12 files using older ciphers, but is rejected by
+        # LibreSSL, so try the plain invocation first
+        PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts 2>/dev/null) || true
+        if [[ -z "$PEM" ]]; then
+          PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts -legacy 2>/dev/null) || true
+        fi
+        rm -f "$CERT_FILE"
+        if [[ -z "$PEM" ]]; then
+          echo "⚠️  Could not read the certificate (openssl could not parse it, or the password does not match)."
+          echo "    This may just be an openssl quirk, so signing is left enabled: the build"
+          echo "    and the verification step below will report the true outcome."
+          ACTIVE=true
+          exit 0
+        fi
+        SUBJECT=$(openssl x509 -noout -subject <<<"$PEM")
+        ENDDATE=$(openssl x509 -noout -enddate <<<"$PEM" | sed 's/^notAfter=//')
+        # Handles both subject formats: "CN = x, OU = y" (OpenSSL) and "/CN=x/OU=y" (LibreSSL)
+        CN=$(sed -E 's/.*CN ?= ?//; s/,.*//; s%/[A-Za-z]+=.*%%' <<<"$SUBJECT")
+        echo "Certificate:  $CN"
+        echo "Expires:      $ENDDATE"
+        if [[ "$CN" == "Developer ID Application"* ]]; then
+          echo "✅ Correct certificate type for notarized distribution outside the Mac App Store."
+          ACTIVE=true
+          exit 0
+        fi
+        echo "❌ Wrong certificate type for this use case."
+        echo "   Found:    $CN"
+        echo "   Required: Developer ID Application: ..."
+        echo ""
+        echo "   Apps distributed outside the Mac App Store must be signed with a"
+        echo "   'Developer ID Application' certificate. An 'Apple Distribution'"
+        echo "   certificate is only valid for App Store submission, and Gatekeeper"
+        echo "   will reject apps signed with it when downloaded from a website."
+        echo "   Ask for the Developer ID Application certificate to be added as a secret."
+        echo ""
+        if [[ "$WOULD_PUBLISH" == "true" ]]; then
+          echo "   This build would be published, so failing rather than publishing"
+          echo "   packages that are not signed. Re-run with sign: false to build unsigned."
+          exit 1
+        fi
+        echo "   This is a test build that is not published, so continuing UNSIGNED."
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -329,6 +420,21 @@ jobs:
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials. These are Kiwix secrets
+        # shared with kiwix-apple, hence the names: they are mapped here onto the
+        # variables electron-builder expects. The notarization ones are org-level
+        # and already available here; the certificate pair currently exists only as
+        # repository secrets on kiwix-apple and is pending being shared with this
+        # repo (see https://github.com/kiwix/operations/issues/501). Until then
+        # CSC_LINK is empty, and the certificate check at the start of this job
+        # turns signing off, so builds are simply unsigned.
+        # NB the certificate must be a Developer ID Application certificate, not
+        # the Apple Distribution one used for App Store submission.
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         # Save the original Electron version (just the version string, no quotes)
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/')
@@ -353,12 +459,20 @@ jobs:
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
         echo "Verifying installed Electron version..."
         npx electron --version
-        echo "Building macOS packages for High Sierra/Mojave..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
+        # MAC_SIGNING_ACTIVE is decided by the certificate check at the start of the
+        # job. When signing is off, drop the credentials so electron-builder cannot
+        # pick them up; when it is on, require signing to succeed, since by default
+        # electron-builder only warns and emits an unsigned package, which would
+        # otherwise be published as if it were signed.
+        SIGN_FLAGS=""
+        if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
         else
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
+          echo "Signing is not active for this build: building unsigned."
+          unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
         fi
+        echo "Building macOS packages for High Sierra/Mojave..."
+        npx electron-builder --mac zip:x64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Renaming High Sierra package..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -381,6 +495,12 @@ jobs:
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials (see High Sierra step)
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
@@ -403,6 +523,14 @@ jobs:
         else
           echo "✓ Electron versions verified successfully"
         fi
+        # Honour the signing decision made by the certificate check (see High Sierra step)
+        SIGN_FLAGS=""
+        if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
+        else
+          echo "Signing is not active for this build: building unsigned."
+          unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+        fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
         # The arm64 macos-latest runner's npm install placed a darwin-arm64 node-datachannel
         # binary in dist. electron-builder has npmRebuild:false, so it packages whatever single
@@ -413,12 +541,12 @@ jobs:
         # build x64 separately. The node -e form invokes prebuild-install from the package dir so
         # it reads node-datachannel's own package.json, and resolves regardless of npm hoisting.
         echo "Building macOS arm64 (native node-datachannel binary already in place)..."
-        npx electron-builder --mac zip:arm64 --publish never --projectDir dist
+        npx electron-builder --mac zip:arm64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Swapping node-datachannel to its darwin-x64 prebuild for the Intel build..."
         ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=x64','--platform=darwin'); require('prebuild-install/bin.js')" )
         file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
         echo "Building macOS x64 (with the darwin-x64 binary swapped in)..."
-        npx electron-builder --mac zip:x64 --publish never --projectDir dist
+        npx electron-builder --mac zip:x64 $SIGN_FLAGS --publish never --projectDir dist
         echo "Renaming modern macOS packages to avoid conflicts..."
         cd dist/bld/Electron
         for file in *.zip; do
@@ -444,67 +572,94 @@ jobs:
         # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
         # rm -f *.blockmap
         cd ../../..
+    # MAC_SIGNING_ACTIVE comes from the certificate check at the start of the job
+    # and gates the signature verification below. The certificate itself is
+    # deliberately not exposed to this step.
     - name: Smoke test Electron app
       run: |
-        echo "Extracting macOS app for testing..."
         cd dist/bld/Electron
-        # Find the first zip file (prefer x64 if available)
-        ZIP_FILE=$(ls -1 *.zip | head -1)
-        echo "Found zip file: $ZIP_FILE"
-        # Extract the zip file
-        unzip -q "$ZIP_FILE"
-        # Find the .app bundle
-        APP_BUNDLE=$(find . -name "*.app" -type d | head -1)
-        echo "Found app bundle: $APP_BUNDLE"
-        if [ -z "$APP_BUNDLE" ]; then
-          echo "Error: No .app bundle found!"
+        if ! ls *.zip >/dev/null 2>&1; then
+          echo "Error: No zip packages found to test!"
           exit 1
         fi
-        # Remove quarantine attribute (required for CI)
-        xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
-        # Test basic app launch (verify it can start without crashing)
-        echo "Testing app launch..."
-        # Determine the executable name based on the app bundle name
-        APP_NAME=$(basename "$APP_BUNDLE" .app)
-        EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
-        echo "Using executable: $EXECUTABLE_PATH"
-        # Verify executable exists
-        if [ ! -f "$EXECUTABLE_PATH" ]; then
-          echo "Error: Executable not found at $EXECUTABLE_PATH"
-          ls -la "$APP_BUNDLE/Contents/MacOS/"
-          exit 1
-        fi
-        "$EXECUTABLE_PATH" \
-          --disable-gpu-sandbox \
-          --no-sandbox \
-          --disable-web-security \
-          --disable-dev-shm-usage \
-          --no-first-run \
-          --disable-default-apps &
-        APP_PID=$!
-        echo "Started app with PID: $APP_PID"
-        # Wait for app to start and check if process is running
-        sleep 8
-        if kill -0 $APP_PID 2>/dev/null; then
-          echo "✅ App process is running successfully"
-          # Check if app is responsive by looking at process details
-          echo "Process details:"
-          ps -p $APP_PID -o pid,ppid,time,command || true
-          echo "App is running and responsive"
-          # Kill app gracefully
-          kill -TERM $APP_PID 2>/dev/null || true
-          sleep 3
-          # Force kill if still running
-          if kill -0 $APP_PID 2>/dev/null; then
-            echo "Force killing app..."
-            kill -KILL $APP_PID 2>/dev/null || true
+        # Test every package (High Sierra x64, modern x64, arm64): a signing
+        # regression in just one variant is exactly the failure mode to catch
+        for ZIP_FILE in *.zip; do
+          echo "=========================================="
+          echo "Testing package: $ZIP_FILE"
+          echo "=========================================="
+          EXTRACT_DIR="smoketest"
+          rm -rf "$EXTRACT_DIR"
+          unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"
+          # Find the .app bundle
+          APP_BUNDLE=$(find "$EXTRACT_DIR" -name "*.app" -type d | head -1)
+          echo "Found app bundle: $APP_BUNDLE"
+          if [ -z "$APP_BUNDLE" ]; then
+            echo "Error: No .app bundle found in $ZIP_FILE!"
+            exit 1
           fi
-          echo "✅ App launched and terminated successfully"
-        else
-          echo "❌ App process failed to start or crashed immediately"
-          exit 1
-        fi
-        echo "Smoke test completed successfully"
+          if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+            echo "Verifying code signature, notarization ticket and Gatekeeper assessment..."
+            codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+            xcrun stapler validate "$APP_BUNDLE"
+            SPCTL_OUT=$(spctl -a -vv --type exec "$APP_BUNDLE" 2>&1) || { echo "$SPCTL_OUT"; echo "❌ Gatekeeper rejected the app"; exit 1; }
+            echo "$SPCTL_OUT"
+            if ! grep -q "Notarized Developer ID" <<<"$SPCTL_OUT"; then
+              echo "❌ App was accepted but is not notarized (expected source=Notarized Developer ID)"
+              exit 1
+            fi
+            echo "✅ Signature, staple and Gatekeeper checks passed"
+          else
+            echo "Signing not active for this build: skipping codesign/stapler/spctl verification"
+          fi
+          # Remove quarantine attribute (required for CI)
+          xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
+          # Test basic app launch (verify it can start without crashing)
+          echo "Testing app launch..."
+          # Determine the executable name based on the app bundle name
+          APP_NAME=$(basename "$APP_BUNDLE" .app)
+          EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+          echo "Using executable: $EXECUTABLE_PATH"
+          # Verify executable exists
+          if [ ! -f "$EXECUTABLE_PATH" ]; then
+            echo "Error: Executable not found at $EXECUTABLE_PATH"
+            ls -la "$APP_BUNDLE/Contents/MacOS/"
+            exit 1
+          fi
+          "$EXECUTABLE_PATH" \
+            --disable-gpu-sandbox \
+            --no-sandbox \
+            --disable-web-security \
+            --disable-dev-shm-usage \
+            --no-first-run \
+            --disable-default-apps &
+          APP_PID=$!
+          echo "Started app with PID: $APP_PID"
+          # Wait for app to start and check if process is running
+          sleep 8
+          if kill -0 $APP_PID 2>/dev/null; then
+            echo "✅ App process is running successfully"
+            # Check if app is responsive by looking at process details
+            echo "Process details:"
+            ps -p $APP_PID -o pid,ppid,time,command || true
+            echo "App is running and responsive"
+            # Kill app gracefully
+            kill -TERM $APP_PID 2>/dev/null || true
+            sleep 3
+            # Force kill if still running
+            if kill -0 $APP_PID 2>/dev/null; then
+              echo "Force killing app..."
+              kill -KILL $APP_PID 2>/dev/null || true
+            fi
+            echo "✅ App launched and terminated successfully"
+          else
+            echo "❌ App process failed to start or crashed immediately"
+            exit 1
+          fi
+          # Clean up so the extracted app is not picked up by later steps
+          rm -rf "$EXTRACT_DIR"
+        done
+        echo "Smoke test completed successfully for all packages"
 
     - name: Upload macOS builds to S3
       if: env.PUBLISH_TO == 'aws'
@@ -551,7 +706,7 @@ jobs:
     - uses: actions/checkout@main
     - uses: actions/setup-node@main
     - name: Find and set signtool.exe path
-      if: github.event.inputs.sign == 'true'
+      if: env.INPUT_SIGN == 'true'
       shell: powershell
       run: |
         # Find the latest available Windows SDK version with signtool
@@ -632,7 +787,7 @@ jobs:
         }
 
     - name: Install and configure eSigner CKA and Windows SDK
-      if: github.event.inputs.sign == 'true'
+      if: env.INPUT_SIGN == 'true'
       env:
         ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.7/SSL.COM-eSigner-CKA_1.0.7.zip
       run: |
