@@ -4,7 +4,7 @@ Kiwix is an offline browser of archival content from Wikipedia, Project Gutenber
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218414297-a087c014-fe79-4a3d-a60a-87690732dc91.png)
 
-To use this app, download your choice of free content in-app from the Download Library on the Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows, Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE), and experimentally on macOS.
+To use this app, download your choice of free content in-app from the Download Library on the Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows, Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE), and macOS (Apple Silicon and Intel).
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -42,9 +42,9 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + [Electron] Windows 10/11 32bit (also runs on 64bit): just unzip to any drive or folder - [Kiwix-JS-Electron-<<numeric_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.zip) (for Win7/8/8.1, please use the Win7 installer above)
     + [NWJS] Windows 10/11 64bit: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-x64.zip)
 
-* **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
-  - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+* **macOS** (signed and notarized by Apple - _see installation instructions below screenshot_):
+  - **Portable (Electron)**
+    + macOS 10.15+ Apple Silicon (M1/M2/M3/M4): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
     + macOS 10.15+ Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip)
     + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip)
 
@@ -70,25 +70,15 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
   + **_OpenSUSE_**: download the correct `.rpm` package. You may get a better installation experience if you first install Chrome or another Chromium browser, as the Electron app has the same dependencies as Chrome. Then open a Terminal with superuser privileges, navigate to the directory containing the `.rpm` package, and type `zypper install  kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). If you are informed about missing dependencies, try "Solution 2: break kiwix-js-electron... by ignoring some of its dependencies'. You will also be warned that the app is not signed. You can ignore this, if you trust this repository. See above for commandline switches in older versions of OpenSUSE.
 
 ### Apple Mac
-* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon, Intel, or High Sierra/Mojave). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it._ **These builds are unsigned and require additional steps to run**:
-    1. **Remove quarantine flag from ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
-       - Open Terminal (Applications > Utilities > Terminal)
-       - Run the following command:
-       ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Kiwix-JS-Electron-*.zip
-       ```
-       - Then extract the ZIP file by double-clicking it
-    2. **Safari users only**: The app (`Kiwix JS Electron.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag (not necessary if you did Step 1):
-       ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Kiwix\ JS\ Electron.app
-       ```
-    3. **Launch** the app by double-clicking it - it should now open normally
+* **For macOS builds**: download the correct ZIP file for your Mac's architecture (Apple Silicon, Intel, or High Sierra/Mojave). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file for you to extract by double-clicking it._ Then simply double-click `Kiwix JS Electron.app` to launch it. **No Terminal commands are needed.**
+  + **The first time you launch**, macOS will ask whether you are sure you want to open an app downloaded from the Internet, and will confirm that "Apple checked it for malicious software and none was detected". Click **Open**. You will only see this once: macOS will not ask again on subsequent launches.
+  + **Security note:** these builds are **signed with a Developer ID Application certificate and notarized by Apple**. If macOS instead tells you the app is damaged, or that the developer cannot be verified, then you do not have an official release build - please download again from the Assets on this page.
   + **Architecture Selection:**
-    + **Apple Silicon Macs** (M1/M2/M3): Use the ARM64 version for optimal performance
-    + **Intel Macs**: Use the x64 version
-    + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3" (Apple Silicon) or "Intel" in the processor information
-  + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
-* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs.  _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, and install the PWA from Configuration._
+    + **Apple Silicon Macs** (M1/M2/M3/M4): Use the ARM64 version for optimal performance
+    + **Intel Macs** (macOS 10.15+): Use the x64 version
+    + **macOS 10.13 High Sierra / 10.14 Mojave**: Use the HighSierra version
+    + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3/M4" (Apple Silicon) or "Intel" in the processor information
+* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. Note that **nightly builds are deliberately not signed**, and need extra steps to run: see [Running unsigned macOS builds](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#running-unsigned-macos-builds-nightlies-and-test-builds).
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
