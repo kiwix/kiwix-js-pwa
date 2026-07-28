@@ -59,7 +59,7 @@ are signed with a Developer ID Application certificate and notarized by Apple. J
 and click **Open** at the one-time prompt confirming that the app was downloaded from the Internet and checked by Apple.
 
 **Nightly builds are deliberately unsigned**, as are packages you build yourself, so that nightlies do not consume notarization capacity.
-macOS quarantines any app downloaded from the Internet, and for an unsigned app it will refuse to launch it, usually reporting that the app
+MacOS quarantines any app downloaded from the Internet, and for an unsigned app it will refuse to launch it, usually reporting that the app
 "is damaged and can't be opened", or that the developer cannot be verified. If you trust the source of the build, you can clear the quarantine
 flag yourself:
 
