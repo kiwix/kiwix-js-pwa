@@ -625,7 +625,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "Signing app package for release on GitHub..."
       $certthumb = Get-Content -Raw $PSScriptRoot\master_key_thumbprint.txt
       if (-Not $dryrun) {
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /fd SHA256 /a /sha1 `"$certthumb`" /tr http://ts.ssl.com /td SHA256 `"$ReleaseBundle`" "
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /debug /fd SHA256 /a /sha1 `"$certthumb`" /tr http://ts.ssl.com /td SHA256 `"$ReleaseBundle`" "
       } else {
         'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /sha1 ' + $certthumb + ' /tr http://ts.ssl.com /td SHA256 ' + $ReleaseBundle + ' "'
       }
