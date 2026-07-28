@@ -267,13 +267,30 @@ jobs:
         # nothing depends on how duplicate keys in $GITHUB_ENV are resolved.
         ACTIVE=false
         trap 'echo "MAC_SIGNING_ACTIVE=$ACTIVE" >> "$GITHUB_ENV"' EXIT
+        # Anything other than a pure artefacts test build ends up in front of users,
+        # so a silently unsigned package would contradict our own release notes.
+        # Such builds fail below rather than publish; artefacts builds carry on
+        # unsigned, so macOS packages can still be produced when signing is broken.
+        WOULD_PUBLISH=true
+        if [[ "$INPUT_TARGET" == "artefacts" && "$PUBLISH_TO" != "aws" ]]; then
+          WOULD_PUBLISH=false
+        fi
         if [[ "$INPUT_SIGN" != "true" ]]; then
           echo "Signing was not requested for this build (sign: false, or a nightly build)."
           echo "macOS packages will be built UNSIGNED."
           exit 0
         fi
         if [[ -z "$CSC_LINK" ]]; then
-          echo "No signing certificate secret is available: macOS packages will be built UNSIGNED."
+          echo "❌ Signing was requested, but no signing certificate secret is available."
+          echo "   Check that this repository still has access to the org-level secret"
+          echo "   APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE (see kiwix/operations#501)."
+          if [[ "$WOULD_PUBLISH" == "true" ]]; then
+            echo "   This build would be published, so failing rather than publishing packages"
+            echo "   that are unsigned while the installation instructions say they are signed."
+            echo "   Re-run with sign: false if you deliberately want unsigned packages."
+            exit 1
+          fi
+          echo "   This is a test build that is not published, so continuing UNSIGNED."
           exit 0
         fi
         CERT_FILE="$RUNNER_TEMP/signing_cert.p12"
@@ -315,10 +332,7 @@ jobs:
         echo "   will reject apps signed with it when downloaded from a website."
         echo "   Ask for the Developer ID Application certificate to be added as a secret."
         echo ""
-        # Only a build that gets published can mislead anyone, so fail those. A pure
-        # test build (target: artefacts, not uploaded to S3) continues unsigned, so
-        # that macOS packages can still be produced while the certificate is sorted out.
-        if [[ "$INPUT_TARGET" != "artefacts" || "$PUBLISH_TO" == "aws" ]]; then
+        if [[ "$WOULD_PUBLISH" == "true" ]]; then
           echo "   This build would be published, so failing rather than publishing"
           echo "   packages that are not signed. Re-run with sign: false to build unsigned."
           exit 1
