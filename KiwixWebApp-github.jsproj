@@ -166,6 +166,7 @@
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\cache.js" />
+    <Content Include="www\js\lib\popovers.js" />
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />
