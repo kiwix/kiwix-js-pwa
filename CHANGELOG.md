@@ -5,6 +5,7 @@
 * ENHANCEMENT: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
+* INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js 
 * FIX: Reload current article immediately when switching Content Injection Mode
 * REGRESSION: Fix error clicking Zimit-style links in NWJS app
 * DEV: Enable Hardened Runtime and add an entitlements file for macOS Electron builds
