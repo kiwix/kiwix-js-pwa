@@ -1963,7 +1963,7 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
     if (torrentClient.isAvailable()) {
         if (params.allowInternetAccess) {
             // Restore the value, which we may have temporarily changed to false when the user disabled Internet access
-            params.keepTorrentSeeding = settingsStore.getItem('keepTorrentSeeding');
+            params.keepTorrentSeeding = settingsStore.getItem('keepTorrentSeeding') === 'true';
         } else {
             // Temporarily disable seeding if the user has disabled Internet access
             params.keepTorrentSeeding = false;
