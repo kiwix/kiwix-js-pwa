@@ -37,7 +37,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.113.0",
+    "nwVersion": "0.114.0",
     "output": "bld/nwjs/win-x64",
     "files": [
       "replayWorker.js",
