@@ -1964,16 +1964,13 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
         if (params.allowInternetAccess) {
             // Restore the value, which we may have temporarily changed to false when the user disabled Internet access
             params.keepTorrentSeeding = settingsStore.getItem('keepTorrentSeeding');
-            if (!keepTorrentSeedingCheck.checked) {
-                keepTorrentSeedingCheck.click();
-            }
         } else {
             // Temporarily disable seeding if the user has disabled Internet access
             params.keepTorrentSeeding = false;
-            keepTorrentSeedingCheck.checked = false; // Don't click the value, because that would change the stored value in Settings
-            torrentClient.setSeeding(false);
-            kiwixServe.clearSeedingStatus();
         }
+        keepTorrentSeedingCheck.checked = params.keepTorrentSeeding; // Don't click the value, because that would change the stored value in Settings if temporarily disabled
+        kiwixServe.clearSeedingStatus();
+        torrentClient.setSeeding(params.keepTorrentSeeding);
     }
 });
 document.getElementById('cssCacheModeCheck').addEventListener('change', function () {

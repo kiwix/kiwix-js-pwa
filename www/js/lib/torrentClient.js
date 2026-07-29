@@ -175,6 +175,7 @@ function deletePartial (savePath, name) {
  */
 function setSeeding (value) {
     if (backend === 'electron') window.electronAPI.setTorrentSeeding(value);
+    console.log('[torrentClient] Seeding of completed torrents is now ' + (value ? 'enabled' : 'disabled'));
 }
 
 /**
