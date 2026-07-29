@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Release 3.8.7 / 3.8.8
 
 * ENHANCEMENT: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
