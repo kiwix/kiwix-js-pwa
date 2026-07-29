@@ -1959,6 +1959,22 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
     settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
     library.style.borderColor = '';
     library.style.borderStyle = '';
+    // Turn on BitTorrent seeding if the value in Settings is set to true, and the user has allowed Internet access
+    if (torrentClient.isAvailable()) {
+        if (params.allowInternetAccess) {
+            // Restore the value, which we may have temporarily changed to false when the user disabled Internet access
+            params.keepTorrentSeeding = settingsStore.getItem('keepTorrentSeeding');
+            if (!keepTorrentSeedingCheck.checked) {
+                keepTorrentSeedingCheck.click();
+            }
+        } else {
+            // Temporarily disable seeding if the user has disabled Internet access
+            params.keepTorrentSeeding = false;
+            keepTorrentSeedingCheck.checked = false; // Don't click the value, because that would change the stored value in Settings
+            torrentClient.setSeeding(false);
+            kiwixServe.clearSeedingStatus();
+        }
+    }
 });
 document.getElementById('cssCacheModeCheck').addEventListener('change', function () {
     params.cssCache = this.checked;
@@ -2288,19 +2304,29 @@ document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('cha
     params.themeChanged = true;
 });
 // In-app BitTorrent download settings (only shown where the capability exists, i.e. Electron/NWJS)
+var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
 if (torrentClient.isAvailable()) {
     document.getElementById('torrentSettingsDiv').style.display = 'block';
-    var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
+    if (!params.allowInternetAccess) { params.keepTorrentSeeding = false; }
     keepTorrentSeedingCheck.checked = params.keepTorrentSeeding;
     // Communicate the stored setting to the torrent backend
     torrentClient.setSeeding(params.keepTorrentSeeding);
     keepTorrentSeedingCheck.addEventListener('change', function () {
-        params.keepTorrentSeeding = this.checked;
-        settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
-        // Turning this off also stops any torrent that is currently seeding
-        torrentClient.setSeeding(params.keepTorrentSeeding);
-        // ... and clears the now-stale "Seeding ..." status line the stopped torrent left behind
-        if (!params.keepTorrentSeeding) kiwixServe.clearSeedingStatus();
+        if (params.allowInternetAccess) {
+            params.keepTorrentSeeding = this.checked;
+            settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+            // Turning this off also stops any torrent that is currently seeding
+            torrentClient.setSeeding(params.keepTorrentSeeding);
+            // ... and clears the now-stale "Seeding ..." status line the stopped torrent left behind
+            if (!params.keepTorrentSeeding) kiwixServe.clearSeedingStatus();
+        } else {
+            uiUtil.systemAlert('You must allow Internet access to use the torrent seeding feature!');
+            this.checked = false;
+            params.keepTorrentSeeding = false;
+            // settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+            // Because the user has not allowed Internet access, they may not wish to disable torrent seeding for future sessions, so we don't save the setting.
+            // This allows the user to quickly enable Internet access with the seeding re-enabled according to the Settings Store value, without having to re-enable it manually.
+        }
     });
 }
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
