@@ -2,7 +2,7 @@
 
 ## Release 3.8.7 / 3.8.8
 
-* ENHANCEMENT: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
+* FEATURE: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js 
@@ -19,7 +19,7 @@
 
 ## Release 3.8.5 / 3.8.6
 
-* ENHANCEMENT: Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
+* FEATURE: Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: Add keyboard shortcuts /, Ctrl-K and Home for article search
 * UPDATE: Migrate Library to use OPDS endpoint instead of download.kiwix.org
 * UPDATE: Migrate project to Bootstrap 4 and fix display glitches introduced by migration
