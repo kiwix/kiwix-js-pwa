@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * scripts/afterPack.cjs — electron-builder afterPack hook for the Windows nsis-web build.
+ * scripts/afterPack.cjs — electron-builder afterPack hook for the Windows builds.
  *
  * WHY THIS EXISTS
  * The Windows nsis-web installer is built in a single `--ia32 --x64 --arm64` pass, and it has to
@@ -14,13 +14,21 @@
  * between; nsis-web can't, so we correct each arch here, where the hook fires once per arch with the
  * packed output dir (context.appOutDir), before the package is compressed into its .nsis.7z.
  *
+ * The same correction is needed for the ia32 NSIS Setup and portable targets, which are likewise
+ * packed from the runner's x64 binary, so every Windows build must run with a config that carries
+ * this hook (a JSON `build` field cannot hold a function, hence electronBuilder-signed.cjs).
+ *
  * WHAT IT DOES (Windows only — macOS/Linux keep their per-step swaps and return early here)
- * - ia32: no node-datachannel prebuild exists and the torrent feature is gated off on ia32 (see
- *   preload.cjs `torrentSupported`), so the wrong-arch binary is deleted rather than shipped dead.
- * - x64 / arm64: downloads node-datachannel's win32-<arch> N-API prebuild (a download, no compile)
- *   and overwrites the packed binary, then reads its PE machine type and throws on any mismatch, so
- *   a wrong-arch package can never be published — our CI arch-check, since Windows on ARM cannot be
- *   tested on-device here.
+ * - Downloads node-datachannel's win32-<arch> N-API prebuild (a download, no compile) for the arch
+ *   being packed and overwrites the packed binary, then reads its PE machine type and throws on any
+ *   mismatch, so a wrong-arch package can never be published — our CI arch-check, since neither
+ *   Windows on ARM nor 32-bit Windows is testable on the runner.
+ * - ia32 must request its prebuild as "x86": node-datachannel publishes the 32-bit Windows binary
+ *   under that name, while prebuild-install substitutes the arch into the asset filename verbatim,
+ *   so asking for "ia32" 404s. The x86 asset is a true 32-bit PE (machine 0x014c), which is what
+ *   makes the in-app torrent feature workable on 32-bit Windows 10/11 (see preload.cjs
+ *   `torrentSupported`). Legacy Win7/32-bit-Linux/old-macOS builds are excluded separately, by
+ *   Electron versions whose Node is below WebTorrent's Node 20 floor.
  */
 
 const { execFileSync } = require('child_process');
@@ -36,6 +44,12 @@ const REL_BINARY = path.join('resources', 'app.asar.unpacked', 'node_modules',
 
 // PE (Windows executable) machine-type identifiers, read from the COFF header of the binary.
 const PE_MACHINE = { ia32: 0x014c, x64: 0x8664, arm64: 0xaa64 };
+
+// node-datachannel names its 32-bit Windows release asset "x86", not Node's "ia32" spelling, and
+// prebuild-install interpolates whatever arch string it is given straight into the asset filename
+// ({name}-v{version}-{runtime}-v{abi}-{platform}-{arch}.tar.gz), so ia32 has to be translated here
+// or the download 404s. The other two archs match their Node names.
+const PREBUILD_ARCH = { ia32: 'x86', x64: 'x64', arm64: 'arm64' };
 
 /**
  * Reads the machine type from a Windows PE binary: the 2-byte COFF Machine field immediately after
@@ -68,19 +82,16 @@ exports.default = async function afterPack (context) {
     // there is no node-datachannel binary to fix.
     if (!fs.existsSync(packed)) return;
 
-    if (arch === 'ia32') {
-        fs.rmSync(packed, { force: true });
-        console.log('[afterPack] removed node-datachannel from the ia32 package (no prebuild; feature gated off)');
-        return;
-    }
+    const prebuildArch = PREBUILD_ARCH[arch];
+    if (!prebuildArch) throw new Error('[afterPack] no known node-datachannel prebuild for arch ' + arch);
 
     const ndcDir = path.join(context.packager.projectDir, 'node_modules', 'node-datachannel');
     const prebuildInstall = require.resolve('prebuild-install/bin.js', { paths: [ndcDir] });
-    console.log('[afterPack] downloading node-datachannel win32-' + arch + ' prebuild...');
+    console.log('[afterPack] downloading node-datachannel win32-' + prebuildArch + ' prebuild for ' + arch + '...');
     // prebuild-install must run as a child process (it calls process.exit); cwd must be the
     // node-datachannel dir so it reads that package's manifest and writes to its build/Release.
     execFileSync(process.execPath,
-        [prebuildInstall, '-r', 'napi', '--arch', arch, '--platform', 'win32'],
+        [prebuildInstall, '-r', 'napi', '--arch', prebuildArch, '--platform', 'win32'],
         { cwd: ndcDir, stdio: 'inherit' });
     fs.copyFileSync(path.join(ndcDir, 'build', 'Release', 'node_datachannel.node'), packed);
 
