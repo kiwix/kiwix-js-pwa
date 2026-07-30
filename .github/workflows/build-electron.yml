@@ -887,7 +887,14 @@ jobs:
         $ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
-        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
+        # NB the range must be matched with "[^"]+" so that prefixes like ^ or ~ are handled: a
+        # pattern anchored on a digit silently no-ops and we then build Win7 against modern Electron
+        (Get-Content ./package.json) -replace '("electron"\s*:\s*)"[^"]+"', '$1"22.3.25"' | Set-Content ./package.json
+        # Fail loudly rather than shipping a Win7 package built against the wrong runtime
+        $PINNED_ELECTRON_VERSION = (Get-Content ./package.json | ConvertFrom-Json).devDependencies.electron
+        if ($PINNED_ELECTRON_VERSION -ne '22.3.25') {
+          throw "Failed to pin the Electron version for the Win 7/8/8.1 build: package.json still requests '$PINNED_ELECTRON_VERSION'"
+        }
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
@@ -989,7 +996,7 @@ jobs:
         $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
         if (![string]::IsNullOrEmpty($ORIGINAL_ELECTRON_VERSION)) {
           echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
-          (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
+          (Get-Content ./package.json) -replace '("electron"\s*:\s*)"[^"]+"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
         } else {
           echo "Using Electron version defined in package.json"
         }
