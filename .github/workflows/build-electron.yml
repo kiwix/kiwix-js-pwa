@@ -898,9 +898,10 @@ jobs:
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
-        # Strip webtorrent: unusable on this target (Electron 22 = Node 16, below WebTorrent's Node
-        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
-        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        # Strip webtorrent: unusable on this target because Electron 22 is Node 16, below WebTorrent's
+        # Node 20 floor, so it would only ship as dead weight. (Not an arch limitation — 32-bit
+        # Windows does have a node-datachannel prebuild, which the modern ia32 builds now use; it is
+        # purely the Node version.) The feature is already gated off here (see preload.cjs).
         echo "Removing webtorrent from dist before install (unsupported on Win7 32-bit / Node 16)"
         node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in root and dist"
@@ -1072,7 +1073,10 @@ jobs:
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     } else {
-                        npx electron-builder build --win $phase1Targets --publish always --projectDir dist
+                        # electronBuilder-signed.cjs is the unmodified signing config plus the
+                        # afterPack hook, which the ia32 targets need to receive the 32-bit
+                        # node-datachannel binary (a JSON build field cannot carry a function)
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --publish always --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
@@ -1106,7 +1110,10 @@ jobs:
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     } else {
-                        npx electron-builder build --win $phase1Targets --projectDir dist
+                        # electronBuilder-signed.cjs is the unmodified signing config plus the
+                        # afterPack hook, which the ia32 targets need to receive the 32-bit
+                        # node-datachannel binary (a JSON build field cannot carry a function)
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist

@@ -7,6 +7,8 @@
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js 
 * FIX: Reload current article immediately when switching Content Injection Mode
+* REGRESSION: Fixed Windows Setup and self-extracting portable packages failing to decompress during installation
+* REGRESSION: Fixed the Windows 7/8/8.1 package which was built against an incompatible Electron version
 * REGRESSION: Fix error clicking Zimit-style links in NWJS app
 * DEV: Enable Hardened Runtime and add an entitlements file for macOS Electron builds
 * DEV: Sign and notarize macOS packages in CI, verifying signature, notarization ticket and Gatekeeper assessment before publication
