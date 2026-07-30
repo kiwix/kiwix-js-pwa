@@ -1020,6 +1020,13 @@ jobs:
             echo "********************"
         }
 
+        # A failing native command does not abort the script ($ErrorActionPreference only governs
+        # cmdlets), and the exit code GitHub tests is the one left by the LAST command in the step,
+        # so without this an electron-builder failure passes unnoticed with artefacts missing
+        function Assert-BuildOk($stage) {
+          if ($LASTEXITCODE -ne 0) { throw "electron-builder failed during $stage (exit code $LASTEXITCODE)" }
+        }
+
         # Determine phase 1 build targets based on app type
         # WikiMed: skip NSIS Setup (too large for signtool) and portable (too large to self-extract)
         # Wikivoyage: skip portable (too large to self-extract) but keep NSIS Setup
@@ -1028,12 +1035,12 @@ jobs:
         $phase1Targets = @()
         if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
         if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
-        # Pin appx to x64: in a combined --win list electron-builder applies the archs collected from
-        # the other targets (here ia32) to any bare target, and appx has no ia32 build, so a bare
-        # 'appx' aborts phase 1 with "Unsupported arch ia32 appx". An explicit arch avoids that.
+        # appx is pinned to x64 because there is no ia32 appx build.
         $phase1Targets += 'appx:x64'
-        $PHASE1_TARGETS = $phase1Targets -join ' '
-        echo "Phase 1 build targets: $PHASE1_TARGETS"
+        # NB always pass the array, never a joined string: PowerShell gives a native command a string
+        # containing spaces as ONE argument, so electron-builder would take the whole list as a single
+        # target name ("Unknown target: nsis:ia32 portable:ia32 appx") and build nothing in phase 1
+        echo "Phase 1 build targets: $($phase1Targets -join ' ')"
 
         # Build and publish to configured target (GitHub or S3)
         # The publish target was configured in package.json by the previous step
@@ -1048,6 +1055,7 @@ jobs:
                     } else {
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
+                    Assert-BuildOk 'nsis-web'
                 }
                 'appx' {
                     if (!$INPUT_SIGN) {
@@ -1055,17 +1063,21 @@ jobs:
                     } else {
                         npx electron-builder build --win appx --publish always --projectDir dist
                     }
+                    Assert-BuildOk 'appx'
                 }
                 default {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --publish always --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --publish always --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     } else {
-                        npx electron-builder build --win $PHASE1_TARGETS --publish always --projectDir dist
+                        npx electron-builder build --win $phase1Targets --publish always --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
+                    Assert-BuildOk 'phase 2 (nsis-web)'
                 }
             }
         } else {
@@ -1077,6 +1089,7 @@ jobs:
                     } else {
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     }
+                    Assert-BuildOk 'nsis-web'
                 }
                 'appx' {
                     if (!$INPUT_SIGN) {
@@ -1084,17 +1097,21 @@ jobs:
                     } else {
                         npx electron-builder build --win appx --projectDir dist
                     }
+                    Assert-BuildOk 'appx'
                 }
                 default {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $PHASE1_TARGETS --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     } else {
-                        npx electron-builder build --win $PHASE1_TARGETS --projectDir dist
+                        npx electron-builder build --win $phase1Targets --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
                         node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
                     }
+                    Assert-BuildOk 'phase 2 (nsis-web)'
                 }
             }
         }
