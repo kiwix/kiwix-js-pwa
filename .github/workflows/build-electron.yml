@@ -32,6 +32,7 @@ on:
           - windows
           - win7
           - win11
+          - nwjs
         default: 'all'
       win11packages:
         description: For Windows 11 builds, select which packages to build
@@ -1182,7 +1183,10 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z
 
   Release_NWJS:
-    if: github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == '')
+    # Picking 'nwjs' explicitly runs this job on its own, from any branch, so the NWJS
+    # packages can be tested without also rebuilding every Electron target. The implicit
+    # cases ('all', and the empty input from a cron-launched nightly) stay main-only.
+    if: github.event.inputs.build_platform == 'nwjs' || (github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == ''))
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@main      
