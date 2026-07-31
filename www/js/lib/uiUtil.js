@@ -1055,7 +1055,7 @@ function showUpgradeReady (ver, type, url) {
     if (type === 'progress') {
         persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
     } else {
-        const reloadLink = (/load|deploy/.test(type)
+        const reloadLink = (/^(?:load|deploy)$/.test(type)
             ? ', or <a href="#" id="reloadNowLink" style="color:white;text-decoration:underline;">reload now</a>'
             : '') + '.)';
         persistentMessage.innerHTML = 'Version ' + ver +
@@ -1064,7 +1064,7 @@ function showUpgradeReady (ver, type, url) {
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
-        if (/load|deploy/.test(type)) {
+        if (/^(?:load|deploy)$/.test(type)) {
             if (!params.autoUpdatePWA || type === 'deploy') {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
