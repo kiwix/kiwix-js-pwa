@@ -16,6 +16,7 @@
 * DEV: Single workflow dispatch option now controls signing of both Windows and macOS packages; nightlies are always unsigned
 * DEV: Update Windows Code Signing for new certificate 2026-27
 * DEV: Update workflows with latest versions of Node, Checkout, and Upload Artefact
+* DEV: Allow dispatching just NWJS builds from Biuild-Electron workflow
 * DEV: Update Electron to 43.2.0 and Electron Builder to 26.15.7
 * DEV: Update Rollup to 29.0.3 and fix syntax change for strict require
 * DEV: Several security updates to dependencies 
