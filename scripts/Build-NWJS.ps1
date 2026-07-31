@@ -3,7 +3,7 @@ param (
     [switch]$only32bit = $false,
     [switch]$usesdk = $false,
     [ValidateSet("win-ia32", "win-x64", "win-xp")]
-    [string[]]$builds = @("win-ia32", "win-xp")
+    [string[]]$builds = @("win-x64", "win-xp")
 )
 if ($only32bit) {
     $builds = @("win-ia32", "win-xp")

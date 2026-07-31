@@ -10,6 +10,7 @@
 * REGRESSION: Fixed Windows Setup and self-extracting portable packages failing to decompress during installation
 * REGRESSION: Fixed the Windows 7/8/8.1 package which was built against an incompatible Electron version
 * REGRESSION: Fix error clicking Zimit-style links in NWJS app
+* REGRESSION: Fix NWJS build script defaulting to ia32 instead of x64
 * DEV: Enable Hardened Runtime and add an entitlements file for macOS Electron builds
 * DEV: Sign and notarize macOS packages in CI, verifying signature, notarization ticket and Gatekeeper assessment before publication
 * DEV: Single workflow dispatch option now controls signing of both Windows and macOS packages; nightlies are always unsigned
