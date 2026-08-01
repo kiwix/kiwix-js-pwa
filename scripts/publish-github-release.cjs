@@ -50,6 +50,15 @@ const CHANNEL_BODY = 'Autoupdate files ONLY. Please go to https://kiwix.github.i
  * tag (PublishManager.computeDownloadUrl); that URL cannot be redirected afterwards. But
  * Kiwix users on poor connections also install offline, from a USB stick holding the stub
  * and the fragments side by side, so the same files must be visible on the human release.
+ *
+ * Keeping them on the channel release matters for a third, less obvious reason. The in-app
+ * update sniffer (www/js/lib/updater.js) scans release *asset filenames* for its baseApp
+ * pattern - 'windows|electron|kiwixwebapp_' for the main app - to decide which release
+ * belongs to this flavour's channel. If the channel release held nothing but ymls, no asset
+ * would match, the sniffer's channelMatchedTag would stay undefined, and it would fall back
+ * to the non-channel release. Both these entries carry "electron" in their names and so keep
+ * that match alive. Do not reduce the channel release to metadata alone without checking
+ * updater.js first.
  */
 const ROUTES = [
     { pattern: /^builder-debug\.yml$/i, to: 'skip' }, // build diagnostics, never published
@@ -167,19 +176,26 @@ function findDraft (humanTag, repo, skipIfMissing) {
 }
 
 function ensureChannelRelease (tag, repo, target) {
-    try {
-        gh(['release', 'view', tag, '--repo', repo], { stdio: 'pipe' });
+    // Listed rather than `gh release view`, which resolves a tag through an API endpoint
+    // that only returns published releases - it would miss the draft we create below and
+    // try to create it again on every run.
+    const raw = gh(['release', 'list', '--repo', repo, '--limit', '30', '--json', 'tagName'], { stdio: 'pipe' });
+    if (JSON.parse(raw).some(function (release) { return release.tagName === tag; })) {
         console.log('Channel release ' + tag + ' already exists.');
         return;
-    } catch (err) {
-        // `gh release view` exits non-zero when the release is absent, which is the only
-        // case we act on; any other failure resurfaces from the create below.
-        console.log('Creating channel release ' + tag + '...');
     }
-    // --prerelease keeps this release out of GitHub's "Latest" badge, so humans browsing the
-    // repo still land on the real release. electron-updater finds it regardless, because it
-    // reads the atom feed, which includes prereleases.
-    const args = ['release', 'create', tag, '--repo', repo, '--prerelease', '--title', CHANNEL_TITLE, '--notes', CHANNEL_BODY];
+    console.log('Creating channel release ' + tag + ' as a draft...');
+    // --draft matters as much as anything else here. A published channel release is live
+    // the instant it exists: it enters the atom feed, and every installed app at a lower
+    // version starts chasing its artefacts. During a test build those artefacts sit in an
+    // unpublished draft, so users would be offered an update that 404s. Creating it as a
+    // draft also means no git tag is cut until the release is actually published, so a
+    // test run leaves nothing behind. Publish it by hand alongside the human release.
+    //
+    // --prerelease is what it becomes on publication: it keeps the channel release out of
+    // GitHub's "Latest" badge so humans browsing the repo land on the real release.
+    // electron-updater finds it regardless, because the atom feed includes prereleases.
+    const args = ['release', 'create', tag, '--repo', repo, '--draft', '--prerelease', '--title', CHANNEL_TITLE, '--notes', CHANNEL_BODY];
     // Tag the commit that was actually built, not wherever the default branch has moved to
     if (target) args.push('--target', target);
     gh(args, { stdio: 'inherit' });
