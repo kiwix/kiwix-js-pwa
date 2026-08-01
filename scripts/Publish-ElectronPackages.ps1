@@ -32,7 +32,15 @@ if ($CRON_LAUNCHED) {
     $target = "/data/kiwix/nightly/$current_date"
 }
 
+# $publish_dir and $publish_extra mirror the $Packages selection below, and are passed to
+# publish-github-release.cjs so that it looks at the same artefacts this script does.
+$publish_dir = 'dist/bld/Electron'
+$publish_extra = @()
 if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
+    # NWJS is not built by electron-builder and has no updater, so there are no channel
+    # files and nothing belongs on the -E release
+    $publish_dir = 'dist/bld/NWJS'
+    $publish_extra = @('--no-channel')
     if (Test-Path "dist/bld/NWJS") {
         $Packages = @(Get-ChildItem dist/bld/NWJS/*.*)
     } else {
@@ -40,6 +48,9 @@ if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
         $Packages = @()
     }
 } elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version (Electron)
+    # This job shares the Electron output directory, so restrict the publish to its own
+    # artefacts. Its channel file is renamed to latest-win7.yml, which the filter also matches.
+    $publish_extra = @('--only', 'Win7')
     if (Test-Path "dist/bld/Electron") {
         $Packages = @(Get-ChildItem dist/bld/Electron/*Win7*.*)
     } else {
@@ -76,7 +87,7 @@ if (-not $CRON_LAUNCHED) {
             $Env:GH_TOKEN = (Get-Content -Raw "$PSScriptRoot/github_token").Trim()
         }
     }
-    $publish_args = @('--version', $INPUT_VERSION)
+    $publish_args = @('--version', $INPUT_VERSION, '--dir', $publish_dir, '--skip-if-no-draft') + $publish_extra
     if ($portableonly) {
         # This path publishes a single portable zip and emits no update metadata
         $publish_args += @('--only', '\.zip$', '--no-channel')

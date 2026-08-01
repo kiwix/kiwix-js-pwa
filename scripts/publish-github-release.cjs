@@ -21,6 +21,8 @@
  *   --target <ref>   Commit to tag if the channel release must be created ($GITHUB_SHA)
  *   --only <regex>   Publish only artefacts whose filename matches (partial publishes)
  *   --no-channel     Publish to the human release only, leaving the channel untouched
+ *   --skip-if-no-draft  Exit quietly when no draft release exists, mirroring the
+ *                    electron-builder "onTagOrDraft" policy this replaces
  *   --upload         Actually create the release and upload; omit for a dry run
  *
  * A dry run is the default so local builds can exercise this same code path with no risk
@@ -67,6 +69,7 @@ function parseArgs (argv) {
         const arg = argv[i];
         if (arg === '--upload') opts.upload = true;
         else if (arg === '--no-channel') opts.noChannel = true;
+        else if (arg === '--skip-if-no-draft') opts.skipIfNoDraft = true;
         else if (arg === '--version') opts.version = argv[++i];
         else if (arg === '--dir') opts.dir = argv[++i];
         else if (arg === '--repo') opts.repo = argv[++i];
@@ -150,13 +153,17 @@ function gh (args, opts) {
 }
 
 /** Locates the human-facing draft release, which keeps its plain vX.Y.Z tag throughout. */
-function findDraft (humanTag, repo) {
+function findDraft (humanTag, repo, skipIfMissing) {
     const raw = gh(['release', 'list', '--repo', repo, '--limit', '30', '--json', 'tagName,isDraft'], { stdio: 'pipe' });
     const match = JSON.parse(raw).find(function (release) {
         return release.isDraft && release.tagName.indexOf(humanTag) === 0;
     });
-    if (!match) throw new Error('No draft release found whose tag starts with ' + humanTag + '. Create it first with Create-DraftRelease.ps1.');
-    return match.tagName;
+    if (match) return match.tagName;
+    if (skipIfMissing) {
+        console.log('\nNo draft release found whose tag starts with ' + humanTag + ' - nothing to publish.');
+        return null;
+    }
+    throw new Error('No draft release found whose tag starts with ' + humanTag + '. Create it first with Create-DraftRelease.ps1.');
 }
 
 function ensureChannelRelease (tag, repo, target) {
@@ -250,7 +257,8 @@ function main () {
         return;
     }
 
-    const draftTag = findDraft(tags.human, opts.repo);
+    const draftTag = findDraft(tags.human, opts.repo, opts.skipIfNoDraft);
+    if (!draftTag) return;
     upload(draftTag, opts.repo, humanUploads);
     if (channelUploads.length) {
         ensureChannelRelease(tags.channel, opts.repo, opts.target);
