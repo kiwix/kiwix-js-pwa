@@ -63,94 +63,32 @@ if ($test) {
 }
 
 if (-not $CRON_LAUNCHED) {
-    "`nChecking for a draft publishing target on GitHub..."
-    if (-not $GITHUB_TOKEN) {
-        $GITHUB_TOKEN = Get-Content -Raw "$PSScriptRoot/github_token"
-    }
-    $draft_release_params = @{
-        Uri = "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases"
-        Method = 'GET'
-        Headers = @{
-            'Authorization' = "token $GITHUB_TOKEN"
-            'Accept' = 'application/vnd.github.v3+json'
-        }
-        ContentType = "application/json"
-    }
-    $releases = Invoke-RestMethod @draft_release_params
-    $release_found = $false
-    $release = $null
-    $base_input = $INPUT_VERSION -replace '^(v[0-9.]+).*', '$1'
-    $releases | Where-Object { $release_found -eq $False } | % {
-        $release = $_
-        if (($release.draft -eq $true) -and ($release.tag_name -match $base_input)) {
-            $release_found = $true
+    # GitHub publishing is delegated to publish-github-release.cjs, which routes every
+    # artefact to the human release, to the -E auto-update channel release, or to both,
+    # and rewrites the channel ymls to match. Keeping that logic in one place is what
+    # stops the local and CI paths drifting apart. The download.kiwix.org sync below is
+    # unaffected and still works from $Packages.
+    if (-not $Env:GH_TOKEN -and -not $Env:GITHUB_TOKEN) {
+        # Preserve the existing local auth route: gh reads GH_TOKEN or GITHUB_TOKEN
+        if ($GITHUB_TOKEN) {
+            $Env:GH_TOKEN = $GITHUB_TOKEN
+        } elseif (Test-Path "$PSScriptRoot/github_token") {
+            $Env:GH_TOKEN = (Get-Content -Raw "$PSScriptRoot/github_token").Trim()
         }
     }
-    if ($release_found) {
-        if ($dryrun) {
-            $release_json = $release | ConvertTo-Json
-            "[DRYRUN:] Draft release found: `n$release_json"
-        }
-        $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
-        "`nUploading assets to: $upload_uri..."
-        # The updater payload (channel ymls and nsis-web .7z fragments) is published to the
-        # -E channel release by publish-supplementary-release.cjs, so it is deliberately not
-        # uploaded here: the human release carries only what people download directly. Note
-        # this affects the GitHub upload only; the download.kiwix.org sync below is unchanged.
-        $filter = '\.(exe|zip|msix|appx)$'
-        if ($portableonly) {
-            $filter = '\.(zip)$'
-        }
-        ForEach($asset in $Packages) {
-            if (-Not $asset) { Continue }
-            if (-Not ($asset -match $filter)) { Continue }
-            # Replace backslash with forward slash
-            $asset_name = $asset -replace '^.*[\\/]([^\\/]+)$', '$1'
-            # Replace spaces with hyphens
-            $asset_name = $asset_name -replace '\s', '-';
-            # Establish upload params
-            $upload_params = @{
-                Uri = $upload_uri + "?name=$asset_name"
-                Method = 'POST'
-                Headers = @{
-                    'Authorization' = "token $GITHUB_TOKEN"
-                    'Accept' = 'application/vnd.github.v3+json'
-                }
-                # Body = [System.IO.File]::ReadAllBytes($upload_file)
-                InFile = $asset
-                ContentType = 'application/octet-stream'
-            }
-            "`n*** Uploading $asset..."
-            # Upload asset to the release server
-            # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
-            if (-Not $dryrun) {
-                # Disable progress because it causes high CPU usage on large files, and slows down upload
-                $ProgressPreference = 'SilentlyContinue'
-                $upload = Invoke-RestMethod @upload_params
-            }
-            if ($dryrun -or $upload.name -eq ($asset_name -replace '\s', '.')) {
-                if (-Not $dryrun) {
-                    "Upload successfully posted as " + $upload.url
-                    "Full details:"
-                    echo $upload
-                } else {
-                    echo "DRYRUN with these upload parameters:`n" + @upload_params 
-                }
-            } else {
-                "`nI'm sorry, this upload appears to have failed! Please upload manually or try again..."
-                if ($upload) {
-                    "`nThe server returned:"
-                    echo $upload
-                } else {
-                    "The server did not respond."
-                }
-            }
-        }
-    } else {
-        "No draft release matching the tag $INPUT_VERSION was found."
+    $publish_args = @('--version', $INPUT_VERSION)
+    if ($portableonly) {
+        # This path publishes a single portable zip and emits no update metadata
+        $publish_args += @('--only', '\.zip$', '--no-channel')
     }
-
-}  
+    if ($test) {
+        $publish_args += @('--only', [regex]::Escape((Split-Path $test -Leaf)), '--no-channel')
+    }
+    if (-not $dryrun) { $publish_args += '--upload' }
+    "`nPublishing packages to GitHub..."
+    & node "$PSScriptRoot/publish-github-release.cjs" @publish_args
+    if ($LASTEXITCODE -ne 0) { throw "publish-github-release.cjs failed with exit code $LASTEXITCODE" }
+}
 
 if (-not $githubonly) {
     "`nUploading packages to https://master.download.kiwix.org$target/ ...`n"
