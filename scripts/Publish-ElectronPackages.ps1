@@ -93,7 +93,11 @@ if (-not $CRON_LAUNCHED) {
         }
         $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
         "`nUploading assets to: $upload_uri..."
-        $filter = '\.(exe|zip|msix|appx|7z|yml)$'
+        # The updater payload (channel ymls and nsis-web .7z fragments) is published to the
+        # -E channel release by publish-supplementary-release.cjs, so it is deliberately not
+        # uploaded here: the human release carries only what people download directly. Note
+        # this affects the GitHub upload only; the download.kiwix.org sync below is unchanged.
+        $filter = '\.(exe|zip|msix|appx)$'
         if ($portableonly) {
             $filter = '\.(zip)$'
         }
