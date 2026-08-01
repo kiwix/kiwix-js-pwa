@@ -319,7 +319,7 @@ if ($updatewinget) {
   if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appx(?!bundle))') {
     $package_urls = @($matches[0])
   } 
-  if ($release_body -match 'https:(?![^)]+Web-Setup)[^)]+?\.(?:exe)') {
+  if ($release_body -match 'https:(?![^)]+(?:Win7|Web)-Setup)[^)]+?\.(?:exe)') {
     $package_urls += $matches[0]
   } else {
     "`nUnable to find the package URL!"
