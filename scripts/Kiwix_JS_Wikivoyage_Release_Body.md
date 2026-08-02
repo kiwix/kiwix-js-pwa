@@ -35,9 +35,9 @@ Please choose the correct version:
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
-    + macOS 12 Monterey or later, Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12 Monterey or later, Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13 High Sierra to 11 Big Sur (x64, and Apple Silicon via Rosetta): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
 
 ## Installation Instructions - Electron
 
@@ -73,7 +73,7 @@ Please choose the correct version:
   + **Architecture Selection:**
     + **Apple Silicon Macs** (M1/M2/M3) on **macOS 12 Monterey or later**: Use the ARM64 version for optimal performance
     + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 version
-    + **macOS 10.13 High Sierra to 11 Big Sur**: Use the HighSierra version. This is built with an older version of Electron so that it still runs on these systems, and it also runs on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
+    + **macOS 10.13-11 (High Sierra, Mojave to Big Sur)**: Use the HighSierra version. This is built with an older version of Electron so that it still runs on these systems, and it also runs (slowly) on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
     + If unsure, click the Apple menu > About This Mac - it shows both your macOS version and, in the processor information, "Apple M1/M2/M3" (Apple Silicon) or "Intel"
   + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
 * **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, install the PWA from Configuration, and then download the Wikivoyage archive in-app._
