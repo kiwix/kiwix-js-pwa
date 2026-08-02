@@ -73,7 +73,7 @@
 ## Release 3.7.7 / 3.7.8
 
 * ENHANCEMENT: PWA now auto-updates when new version is detected (can be turned off)
-* ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)
+* ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 12+), and x64 legacy (macOS 10.13-11)
 * ENHANECEMENT: Enter key selects first search result
 * ENHANCEMENT: Prevent user selecting contradictory settings for page style
 * ENHANCEMENT: Provide new persistent FS permissions handler (allows upgrade to latest Electron)
