@@ -36,7 +36,7 @@ params.updateServer = {
 
 // A RegExp prototype string to match the current app's releases
 const baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
-    : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
+    : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
         : 'windows|electron|kiwixwebapp_'; // Default value
 
 // A RegExp to match download URLs of releases
@@ -97,8 +97,14 @@ function getLatestUpdates (callback) {
             matchedRelease = regexpMatchGitHubReleases.exec(releases);
         }
         // We should now have a list of all candidate updates, and candidate channel update
-        // Compare the channel-matched update wiht the update, and if they are same underlying version number, choose channel match
-        if (updateTag && updateTag.replace(/^v?([\d.]+).*/, '$1') === channelMatchedTag.replace(/^v?([\d.]+).*/, '$1')) {
+        // Compare the channel-matched update with the update, and if they are the same underlying
+        // version number, choose the channel match.
+        // channelMatchedTag stays undefined whenever no newer release in this app's own channel
+        // carries an asset matching baseApp, so it has to be tested before use: a newer release
+        // with no channel counterpart would otherwise throw a TypeError here and take the whole
+        // update check down with it. Falling through leaves updateTag as the non-channel match,
+        // which is the best answer available.
+        if (updateTag && channelMatchedTag && updateTag.replace(/^v?([\d.]+).*/, '$1') === channelMatchedTag.replace(/^v?([\d.]+).*/, '$1')) {
             updateTag = channelMatchedTag;
             updateUrl = channelMatchedUpdateUrl;
         }

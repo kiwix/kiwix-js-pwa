@@ -6,23 +6,51 @@ set -e
 
 echo "Searching for draft release matching version $INPUT_VERSION..."
 
-# Extract base version (e.g., v3.7.8 from v3.7.8-E)
-base_input=$(echo "$INPUT_VERSION" | sed -E 's/^(v[0-9.]+).*/\1/')
+# Extract base version (e.g., v3.7.8 from v3.7.8-E). The workflow input is legitimately
+# blank on a nightly or a plain rebuild, in which case fall back to the version in
+# package.json - the field electron-builder named these artefacts after, so it cannot
+# disagree with them. Without this an empty base_input matches every draft indiscriminately.
+version="${INPUT_VERSION:-$(node -p "require('./package.json').version")}"
+base_input=$(echo "$version" | sed -E 's/^v?([0-9.]+[0-9]).*/v\1/')
+echo "Resolved base version: $base_input"
 
-# Find draft release matching the version using gh CLI
-tag_name=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true and (.tagName | contains(\"$base_input\"))) | .tagName" | head -1)
+# Find draft release matching the version using gh CLI.
+# The "-E" auto-update release created by publish-github-release.cjs is a draft too, and its
+# tag contains the base version, so it has to be excluded explicitly - `gh release list`
+# returns newest first, so it would otherwise win the `head -1` and swallow the macOS
+# artefacts that belong on the human release. An exact match on the base tag is preferred,
+# with the substring match kept as a fallback for branded tags (vX.Y.Z-WikiMed).
+drafts=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true) | .tagName" | grep -Fxv -- "${base_input}-E" || true)
+tag_name=$(echo "$drafts" | grep -Fx -- "$base_input" | head -1)
+if [[ -z "$tag_name" ]]; then
+  tag_name=$(echo "$drafts" | grep -F -- "$base_input" | head -1)
+fi
 
 if [[ -z "$tag_name" ]]; then
-  echo "ERROR: No draft release found matching version $INPUT_VERSION (base: $base_input)"
-  echo "Available draft releases:"
+  # A no-op rather than a failure, matching --skip-if-no-draft in
+  # publish-github-release.cjs, which the Windows and Linux jobs use: a build with no draft
+  # release waiting should not turn the whole run red on one platform only. Nothing is left
+  # behind either way, since the upload is what would have created anything.
+  echo "No draft release found whose tag starts with $base_input - nothing to publish."
+  echo "Draft releases that do exist:"
   gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq '.[] | select(.isDraft == true) | .tagName'
-  exit 1
+  exit 0
 fi
 
 echo "Found draft release: $tag_name"
 
-# Upload all zip, blockmap, and yml files from dist/bld/Electron
-for file in ./dist/bld/Electron/*.{zip,blockmap} ./dist/bld/Electron/latest-mac*.yml; do
+# Upload the zips and their blockmaps. latest-mac.yml is deliberately NOT uploaded.
+#
+# The three macOS builds (HighSierra, x64, arm64) run sequentially and each overwrites the
+# previous one's latest-mac.yml, so the file left on disk describes only the last build - and
+# it names the zip by its pre-rename filename (Kiwix-JS-Electron-X.Y.Z-E-mac.zip), which is
+# not what ends up on the release. Uploading it put a channel file that resolves to nothing
+# onto the human release, where it does not belong in any case: update metadata goes on the
+# -E release, with urls rewritten to point back here (see publish-github-release.cjs).
+# Producing one correct, merged latest-mac.yml needs a per-invocation artifactName so the
+# builds stop colliding, which is the next PR. Until then macOS simply has no auto-update,
+# exactly as before - better than shipping metadata that 404s.
+for file in ./dist/bld/Electron/*.{zip,blockmap}; do
   if [[ -f "$file" ]]; then
     # Extract original filename
     original_filename=$(basename "$file")

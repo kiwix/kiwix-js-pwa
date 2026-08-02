@@ -277,12 +277,11 @@ if (($flavour -match '_E') -or $plus_electron) {
       $electronbuild = 'local'
     }
   }
-  if (-Not ($release_tag_name -cmatch '-E$') -and ($electronbuild -eq 'cloud')) {
-    $original_release_tag_name = $release_tag_name
-    $release_tag_name = $release_tag_name -creplace '-?E$|-WikiMed|-Wikivoyage', ''
-    $release_tag_name = $release_tag_name + '-E' 
-    "Changing release tag name to $release_tag_name"
-  }
+  # The draft release used to be renamed to a -E tag here, purely so electron-builder's
+  # own publisher would upload to it, and then renamed back by hand afterwards. Publishing
+  # now goes through publish-github-release.cjs, which derives both the human (vX.Y.Z) and
+  # channel (vX.Y.Z-E) tags itself, so the draft keeps its plain tag throughout and
+  # $original_release_tag_name is never set.
 } else {
   $electronbuild = 'local'
 }
@@ -361,7 +360,7 @@ if (-Not ($dryrun -or $buildonly)) {
   "[DRYRUN] Release Body:`n$release_body"
 }
 
-if (-Not $nobundle) {
+if (-Not ($nobundle -or $draftonly)) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
     & npm run build-min 
@@ -793,26 +792,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   "Cleaning up..."
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
   "`nDone.`n"
-  if ($original_release_tag_name) {
-    "*** WARNING: The Release Tag Name was changed to enable Electron cloud building! ***"
-    if ($wingetprompt -imatch 'N') {
-      "Be sure to change it back to $original_release_tag_name before publishing!`n"
-    } else {
-      $revert_release_tag_check = Read-Host "Would you like to revert the draft tag to ${original_release_tag_name}?`nWARNING WAIT TILL ALL BUILDS HAVE FINISHED BEFORE ANSWERING Yes! (Y/N)"
-      $revert_release_tag_check = $revert_release_tag_check -imatch 'y'
-      if ($revert_release_tag_check) {
-        "Changing tag from $release_tag_name to $original_release_tag_name..."
-        if (-not $dryrun) {
-          & $PSScriptRoot/Rewrite-DraftReleaseTag -from $release_tag_name -to $original_release_tag_name
-        } else {
-          & $PSScriptRoot/Rewrite-DraftReleaseTag -dryrun -from $release_tag_name -to $original_release_tag_name
-        }
-      } else {
-        "We did NOT change the release tag! Be sure to do it before publishing!"
-      }
-    }
-    $release_tag_name = $original_release_tag_name
-  }
+  # The prompt to revert the draft tag used to live here. It is gone with the rename that
+  # made it necessary: the draft now carries its plain tag from creation to publication.
   # Now update winget manifest if we are not building NWJS or Electron
   if ($flavour -eq '' -or $flavour -eq '_E') {
     if ($wingetprompt) {

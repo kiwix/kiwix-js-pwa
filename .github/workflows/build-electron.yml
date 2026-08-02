@@ -178,9 +178,11 @@ jobs:
         cp ./package.json ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
-        # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
-        # for AWS S3, force always to override that policy
-        PUBLISH_FLAG="onTagOrDraft"
+        # For GitHub we build only: publish-github-release.cjs uploads afterwards, so that
+        # the channel ymls can be rewritten and each artefact routed to the human release,
+        # the -E auto-update release, or both. For AWS S3 nothing changes - electron-builder
+        # still publishes directly, and branded builds have auto-update disabled anyway.
+        PUBLISH_FLAG="never"
         if [[ "$PUBLISH_TO" == "aws" ]]; then
           PUBLISH_FLAG="always"
         fi
@@ -217,9 +219,11 @@ jobs:
         node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
-        # For GitHub, use onTagOrDraft so packages publish to an existing draft release;
-        # for AWS S3, force always to override that policy
-        PUBLISH_FLAG="onTagOrDraft"
+        # For GitHub we build only: publish-github-release.cjs uploads afterwards, so that
+        # the channel ymls can be rewritten and each artefact routed to the human release,
+        # the -E auto-update release, or both. For AWS S3 nothing changes - electron-builder
+        # still publishes directly, and branded builds have auto-update disabled anyway.
+        PUBLISH_FLAG="never"
         if [[ "$PUBLISH_TO" == "aws" ]]; then
           PUBLISH_FLAG="always"
         fi
@@ -229,6 +233,19 @@ jobs:
         else
           npx electron-builder --linux AppImage:ia32 --publish $PUBLISH_FLAG --projectDir dist
         fi
+    - name: Publish packages to GitHub
+      if: github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # --skip-if-no-draft reproduces the electron-builder "onTagOrDraft" policy this
+        # replaces: a build with no draft release waiting is a no-op rather than a failure.
+        # --version is omitted when the workflow input is blank, so that the script falls
+        # back to the version in package.json - the field electron-builder named these
+        # artefacts after, so the tags cannot end up disagreeing with the filenames.
+        VERSION_ARG=()
+        if [[ -n "$INPUT_VERSION" ]]; then VERSION_ARG=(--version "$INPUT_VERSION"); fi
+        node ./scripts/publish-github-release.cjs "${VERSION_ARG[@]}" --upload --skip-if-no-draft
     - name: Upload packages to Kiwix
       if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
@@ -884,7 +901,6 @@ jobs:
         } else {
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
         $ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
@@ -981,7 +997,6 @@ jobs:
             & ./scripts/Publish-ElectronPackages.ps1 -githubonly
           }
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
 
     - name: Run electron builder for Win 10/11
       if: github.event.inputs.build_platform != 'win7'
@@ -1002,7 +1017,6 @@ jobs:
         } else {
           echo "Using Electron version defined in package.json"
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Copying the rewritten package.json to dist"
@@ -1071,7 +1085,6 @@ jobs:
                     if (!$INPUT_SIGN) {
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --publish always --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
-                        node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     } else {
                         # electronBuilder-signed.cjs is the unmodified signing config plus the
@@ -1079,51 +1092,58 @@ jobs:
                         # node-datachannel binary (a JSON build field cannot carry a function)
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --publish always --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
-                        node scripts/delete-latest-yml.js
                         npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
                     }
                     Assert-BuildOk 'phase 2 (nsis-web)'
                 }
             }
         } else {
-            # GitHub publishing - use default onTagOrDraft policy
+            # GitHub: build only. publish-github-release.cjs uploads afterwards so that each
+            # artefact can be routed to the human release, the -E auto-update release, or
+            # both, and the channel ymls rewritten to match.
+            #
+            # Both phase 1 (nsis) and phase 2 (nsis-web) emit a latest.yml, but to different
+            # places: phase 1 to the root of the output directory, phase 2 into nsis-web/
+            # beside its own fragments. Neither overwrites the other, so both survive to the
+            # publish step, which picks nsis-web's - the one carrying the `packages` block
+            # that makes updates differential (see collectFiles in publish-github-release.cjs).
+            # The publish step must therefore still run after phase 2. (This is what
+            # scripts/delete-latest-yml.js used to work around, back when each phase uploaded
+            # its own copy as it went.)
             switch ($WIN11_PACKAGES) {
                 'nsisweb' {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
                     } else {
-                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
                     }
                     Assert-BuildOk 'nsis-web'
                 }
                 'appx' {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
                     } else {
-                        npx electron-builder build --win appx --projectDir dist
+                        npx electron-builder build --win appx --publish never --projectDir dist
                     }
                     Assert-BuildOk 'appx'
                 }
                 default {
                     if (!$INPUT_SIGN) {
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --publish never --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
-                        node scripts/delete-latest-yml.js
-                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
                     } else {
                         # electronBuilder-signed.cjs is the unmodified signing config plus the
                         # afterPack hook, which the ia32 targets need to receive the 32-bit
                         # node-datachannel binary (a JSON build field cannot carry a function)
-                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --publish never --projectDir dist
                         Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
-                        node scripts/delete-latest-yml.js
-                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --projectDir dist
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
                     }
                     Assert-BuildOk 'phase 2 (nsis-web)'
                 }
             }
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
       if: github.event.inputs.build_platform != 'win7' && github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
       env:
@@ -1164,11 +1184,15 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        # This step now publishes every Windows artefact, not just the portable zip:
+        # electron-builder no longer uploads the nsis/nsis-web/appx output itself, so this
+        # is the single point at which the Windows job reaches GitHub. It runs after both
+        # the electron-builder step and the portable build, so the whole set is on disk.
         if ($Env:REF_NAME -eq "main") {
-          ./scripts/Publish-ElectronPackages.ps1 -portableonly
+          ./scripts/Publish-ElectronPackages.ps1
         } else {
           echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
-          ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+          ./scripts/Publish-ElectronPackages.ps1 -githubonly
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'

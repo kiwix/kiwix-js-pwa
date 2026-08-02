@@ -163,9 +163,9 @@
     "dist-win-nisis-x64": "electron-builder build --win NSIS:x64 --publish never --projectDir dist",
     "dist-linux": "electron-builder build --linux --projectDir dist",
     "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
-    "publish": "npm run publish-setup && node scripts/delete-latest-yml.js && npm run publish-nsis-web",
-    "publish-setup": "electron-builder build --win NSIS:ia32 portable:ia32 appx --projectDir dist",
-    "publish-nsis-web": "electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist",
+    "publish": "npm run publish-setup && npm run publish-nsis-web",
+    "publish-setup": "electron-builder build --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist",
+    "publish-nsis-web": "electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist",
     "build-skipsigning": "electron-builder build  --config ../scripts/electronBuilder.cjs --publish never --projectDir dist",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-pwa-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-pwa-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
@@ -204,6 +204,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "js-yaml": "^4.1.0",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^8.0.16"
