@@ -55,31 +55,33 @@ Enable Developer mode on your device (Settings / Updates and security / For deve
 ## Running unsigned macOS builds (nightlies and test builds)
 
 **You do not need this procedure for release builds.** The macOS packages attached to a [Release](https://github.com/kiwix/kiwix-js-pwa/releases)
-are signed with a Developer ID Application certificate and notarized by Apple. Just extract the ZIP, double-click `Kiwix JS Electron.app`,
-and click **Open** at the one-time prompt confirming that the app was downloaded from the Internet and checked by Apple.
+are signed with a Developer ID Application certificate and notarized by Apple. Just open the disk image, drag **Kiwix JS Electron** onto the
+**Applications** shortcut, and click **Open** at the one-time prompt confirming that the app was downloaded from the Internet and checked by Apple.
 
 **Nightly builds are deliberately unsigned**, as are packages you build yourself, so that nightlies do not consume notarization capacity.
 Any app downloaded from the Internet is quarantined by macOS, which will refuse to launch an unsigned app, usually reporting that it
 "is damaged and can't be opened", or that the developer cannot be verified. If you trust the source of the build, you can clear the quarantine
 flag yourself:
 
-1. **Remove the quarantine flag from the ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
+1. **Remove the quarantine flag from the disk image, before you open it.** macOS passes the flag on to anything you copy out of a quarantined
+   image, so clearing it here saves clearing it from the app afterwards:
    - Open Terminal (Applications > Utilities > Terminal)
-   - Run the following command (nightly packages are named `kiwix-js-electron_macos-*`, while packages from a workflow run are named `Kiwix-JS-Electron-*`):
+   - Run the following command, substituting the name of the file you actually downloaded. Nightly packages are named
+     `kiwix-js-electron_macos-*`, while packages downloaded from a workflow run keep the spaces in their names, as `Kiwix JS Electron-*`:
      ```bash
-     xattr -d com.apple.quarantine ~/Downloads/kiwix-js-electron_macos-*.zip
+     xattr -d com.apple.quarantine ~/Downloads/kiwix-js-electron_macos-*.dmg
      ```
-   - Then extract the ZIP file by double-clicking it. Note that whatever the ZIP is called, the app inside it is always named
-     `Kiwix JS Electron.app`, with spaces - which is why the commands below escape those spaces with backslashes
-2. **Safari users only**: Safari extracts the ZIP on download, so the app (`Kiwix JS Electron.app`) is already in your Downloads folder, and you
-   need to remove the quarantine flag from the app itself instead (not necessary if you did step 1):
-   ```bash
-   xattr -d com.apple.quarantine ~/Downloads/Kiwix\ JS\ Electron.app
-   ```
+2. **Open the disk image** by double-clicking it, then drag **Kiwix JS Electron** onto the **Applications** shortcut beside it. If you do not
+   have administrator rights on the machine, drag it to your home folder or the Desktop instead - it runs the same way from either.
 3. **Launch** the app by double-clicking it - it should now open normally. You will not need to repeat these steps for this copy of the app.
 
-If Terminal reports `No such xattr`, then the flag has already been cleared, and you can simply launch the app. If macOS still refuses to open it,
-clear all extended attributes recursively with `xattr -cr ~/Downloads/Kiwix\ JS\ Electron.app`.
+If Terminal reports `No such xattr`, then the flag has already been cleared, and you can carry on from step 2. If you opened the image before
+clearing the flag, or macOS still refuses to launch the app, clear all extended attributes from the copy you dragged out. Note that whatever the
+disk image is called, the app inside is always named `Kiwix JS Electron.app`, with spaces, which the backslashes below escape:
+
+```bash
+xattr -cr /Applications/Kiwix\ JS\ Electron.app
+```
 
 If you would prefer not to run an unsigned app, use a signed build from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases), or visit
 https://pwa.kiwix.org in a Chromium browser and install the PWA from Configuration.
