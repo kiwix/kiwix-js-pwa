@@ -35,9 +35,9 @@ Please choose the correct version:
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
   - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 10.15+ Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
 
 ## Installation Instructions - Electron
 
@@ -57,7 +57,7 @@ Please choose the correct version:
   + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikivoyage` and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
 
 ### Apple Mac
-* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon, Intel, or High Sierra/Mojave). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it._ **These builds are unsigned and require additional steps to run**:
+* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it._ **These builds are unsigned and require additional steps to run**:
     1. **Remove quarantine flag from ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
        - Open Terminal (Applications > Utilities > Terminal)
        - Run the following command:
@@ -71,9 +71,10 @@ Please choose the correct version:
        ```
     3. **Launch** the app by double-clicking it - it should now open normally
   + **Architecture Selection:**
-    + **Apple Silicon Macs** (M1/M2/M3): Use the ARM64 version for optimal performance
-    + **Intel Macs**: Use the x64 version
-    + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3" (Apple Silicon) or "Intel" in the processor information
+    + **Apple Silicon Macs** (M1/M2/M3) on **macOS 12 Monterey or later**: Use the ARM64 version for optimal performance
+    + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 version
+    + **macOS 10.13-11 (High Sierra, Mojave to Big Sur)**: Use the HighSierra version. This is built with an older version of Electron so that it still runs on these systems, and it also runs (slowly) on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
+    + If unsure, click the Apple menu > About This Mac - it shows both your macOS version and, in the processor information, "Apple M1/M2/M3" (Apple Silicon) or "Intel"
   + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
 * **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, install the PWA from Configuration, and then download the Wikivoyage archive in-app._
 

@@ -148,8 +148,8 @@ foreground and see logs. You can also change the host port in [`docker-compose.y
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 and legacy High
-Sierra/Mojave) are available from [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable
+Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 on 12+, and a
+legacy build for 10.13-11) are available from [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable
 [nightly builds](https://download.kiwix.org/nightly/) of the Electron and NWJS apps are available together with a
 [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be buggy and change rapidly. Additionally, nightly
 Windows binaries are **unsigned**.
