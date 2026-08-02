@@ -6,11 +6,25 @@ set -e
 
 echo "Searching for draft release matching version $INPUT_VERSION..."
 
-# Extract base version (e.g., v3.7.8 from v3.7.8-E)
-base_input=$(echo "$INPUT_VERSION" | sed -E 's/^(v[0-9.]+).*/\1/')
+# Extract base version (e.g., v3.7.8 from v3.7.8-E). The workflow input is legitimately
+# blank on a nightly or a plain rebuild, in which case fall back to the version in
+# package.json - the field electron-builder named these artefacts after, so it cannot
+# disagree with them. Without this an empty base_input matches every draft indiscriminately.
+version="${INPUT_VERSION:-$(node -p "require('./package.json').version")}"
+base_input=$(echo "$version" | sed -E 's/^v?([0-9.]+[0-9]).*/v\1/')
+echo "Resolved base version: $base_input"
 
-# Find draft release matching the version using gh CLI
-tag_name=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true and (.tagName | contains(\"$base_input\"))) | .tagName" | head -1)
+# Find draft release matching the version using gh CLI.
+# The "-E" auto-update release created by publish-github-release.cjs is a draft too, and its
+# tag contains the base version, so it has to be excluded explicitly - `gh release list`
+# returns newest first, so it would otherwise win the `head -1` and swallow the macOS
+# artefacts that belong on the human release. An exact match on the base tag is preferred,
+# with the substring match kept as a fallback for branded tags (vX.Y.Z-WikiMed).
+drafts=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true) | .tagName" | grep -v "^${base_input}-E$" || true)
+tag_name=$(echo "$drafts" | grep -Fx -- "$base_input" | head -1)
+if [[ -z "$tag_name" ]]; then
+  tag_name=$(echo "$drafts" | grep -F -- "$base_input" | head -1)
+fi
 
 if [[ -z "$tag_name" ]]; then
   echo "ERROR: No draft release found matching version $INPUT_VERSION (base: $base_input)"

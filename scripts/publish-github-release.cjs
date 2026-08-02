@@ -15,7 +15,9 @@
  * Usage:
  *   node scripts/publish-github-release.cjs --version v3.8.8 [options]
  *
- *   --version <tag>  Release version, with or without the -E suffix (required)
+ *   --version <tag>  Release version, with or without the -E suffix. Defaults to the
+ *                    version in package.json, which is what electron-builder named the
+ *                    artefacts after, so the tags and the filenames cannot disagree.
  *   --dir <path>     Build output directory (default: dist/bld/Electron)
  *   --repo <o/r>     Target repository (default: kiwix/kiwix-js-pwa)
  *   --target <ref>   Commit to tag if the channel release must be created ($GITHUB_SHA)
@@ -74,20 +76,46 @@ const PUBLISHABLE = /\.(exe|zip|msix|appx|appxbundle|7z|yml|blockmap|deb|rpm|App
 
 function parseArgs (argv) {
     const opts = { dir: 'dist/bld/Electron', repo: 'kiwix/kiwix-js-pwa', target: process.env.GITHUB_SHA || '', upload: false };
-    for (let i = 0; i < argv.length; i++) {
+    let i = 0;
+    // Takes the next argv entry as a value, unless it is empty or is itself the next flag, in
+    // which case none was given and it is left for the loop to read as a flag. Callers pass
+    // "--version $INPUT_VERSION" from a workflow input that is legitimately blank on a nightly
+    // or a plain rebuild, and a naive read would silently swallow the flag that follows.
+    const value = function () {
+        const next = argv[i + 1];
+        if (!next || /^--/.test(next)) return '';
+        i++;
+        return next;
+    };
+    for (; i < argv.length; i++) {
         const arg = argv[i];
+        if (!arg) continue; // an empty value left behind by a blank workflow input
         if (arg === '--upload') opts.upload = true;
         else if (arg === '--no-channel') opts.noChannel = true;
         else if (arg === '--skip-if-no-draft') opts.skipIfNoDraft = true;
-        else if (arg === '--version') opts.version = argv[++i];
-        else if (arg === '--dir') opts.dir = argv[++i];
-        else if (arg === '--repo') opts.repo = argv[++i];
-        else if (arg === '--target') opts.target = argv[++i];
-        else if (arg === '--only') opts.only = new RegExp(argv[++i], 'i');
+        else if (arg === '--version') opts.version = value();
+        else if (arg === '--dir') opts.dir = value() || opts.dir;
+        else if (arg === '--repo') opts.repo = value() || opts.repo;
+        else if (arg === '--target') opts.target = value();
+        else if (arg === '--only') opts.only = new RegExp(value() || '.', 'i');
         else throw new Error('Unrecognized argument: ' + arg);
     }
-    if (!opts.version) throw new Error('--version is required, e.g. --version v3.8.8');
+    if (!opts.version) opts.version = versionFromPackageJson();
     return opts;
+}
+
+/**
+ * The fallback when no version was passed. electron-builder derives every artefact name from
+ * this same field, so reading it here is what guarantees the release tags line up with the
+ * files being uploaded - deriving it from init.js or a workflow input could not promise that.
+ */
+function versionFromPackageJson () {
+    const file = path.resolve('package.json');
+    if (!fs.existsSync(file)) throw new Error('No --version given and no package.json in ' + process.cwd() + ' to fall back on');
+    const version = JSON.parse(fs.readFileSync(file, 'utf8')).version;
+    if (!version) throw new Error('No --version given and package.json has no "version" field');
+    console.log('No --version given; using the version in package.json: ' + version);
+    return version;
 }
 
 /**
@@ -103,13 +131,34 @@ function resolveTags (version) {
 }
 
 /**
- * The name an artefact ends up with as a release asset. Spaces become hyphens both on
- * upload and when electron-updater resolves a url, so we normalise the same way here.
+ * The name an artefact ends up with as a release asset. electron-builder's own GitHub
+ * publisher replaced spaces with hyphens, so every release to date carries names like
+ * Kiwix-JS-Electron-Setup-3.8.8-E.exe, and the urls inside the channel ymls have to match.
  * Taking the basename also strips any prefix a previous run added, which is what makes
  * rewriting a channel file idempotent.
  */
 function assetName (url) {
     return path.posix.basename(String(url).replace(/\\/g, '/')).replace(/ /g, '-');
+}
+
+/**
+ * Renames artefacts on disk to the names they must carry as release assets.
+ *
+ * This is not cosmetic. `gh release upload` posts the basename verbatim and GitHub replaces
+ * each space with a *dot*, giving Kiwix.JS.Electron.Setup.3.8.9-E.exe - whereas
+ * electron-builder, which used to do the uploading, replaced spaces with hyphens. Renaming
+ * first keeps the asset names identical to every previous release, and keeps them matching
+ * the urls assetName writes into the rewritten channel ymls; without it the updater would
+ * fetch a url that 404s. Both download.kiwix.org sync scripts collapse spaces and hyphens
+ * to underscores alike and re-glob the directory, so neither notices the change.
+ */
+function normaliseNames (files) {
+    return files.map(function (file) {
+        const target = path.join(path.dirname(file), assetName(file));
+        if (target === file) return file;
+        fs.renameSync(file, target);
+        return target;
+    });
 }
 
 function routeFor (name) {
@@ -120,11 +169,25 @@ function routeFor (name) {
 
 function collectFiles (dir) {
     const found = [];
+    // Release assets are keyed by name, so two files sharing one basename can never both be
+    // uploaded - and passing both to `gh release upload --clobber` makes it delete the asset
+    // it just created and fail with a 404. nsis-web writes its own copy of latest.yml next to
+    // the fragments, so this is the normal case, not a corner one. The root directory is
+    // scanned first and wins, because that is the copy electron-builder leaves as
+    // authoritative and the one the download.kiwix.org sync in Publish-ElectronPackages sees.
+    const seen = new Set();
     // The nsis-web target writes its fragments to a subdirectory; everything else is flat
     [dir, path.join(dir, 'nsis-web')].forEach(function (searchDir) {
         if (!fs.existsSync(searchDir)) return;
         fs.readdirSync(searchDir, { withFileTypes: true }).forEach(function (entry) {
-            if (entry.isFile() && PUBLISHABLE.test(entry.name)) found.push(path.join(searchDir, entry.name));
+            if (!entry.isFile() || !PUBLISHABLE.test(entry.name)) return;
+            const key = assetName(entry.name).toLowerCase();
+            if (seen.has(key)) {
+                console.log('Ignoring duplicate ' + path.join(searchDir, entry.name) + ' (already found in ' + dir + ')');
+                return;
+            }
+            seen.add(key);
+            found.push(path.join(searchDir, entry.name));
         });
     });
     return found;
@@ -161,12 +224,22 @@ function gh (args, opts) {
     return execFileSync('gh', args, Object.assign({ encoding: 'utf8' }, opts));
 }
 
-/** Locates the human-facing draft release, which keeps its plain vX.Y.Z tag throughout. */
-function findDraft (humanTag, repo, skipIfMissing) {
+/**
+ * Locates the human-facing draft release, which keeps its plain vX.Y.Z tag throughout.
+ *
+ * The prefix match is for branded flavours, whose draft is tagged vX.Y.Z-WikiMed or
+ * -Wikivoyage. It has to exclude the channel tag explicitly: "v3.8.9-E" also starts with
+ * "v3.8.9", the channel release is a draft too, and `gh release list` returns newest first -
+ * so once this run has created the channel release, every later job in the same build would
+ * otherwise pick it up as "the draft" and upload the human artefacts into it.
+ */
+function findDraft (humanTag, channelTag, repo, skipIfMissing) {
     const raw = gh(['release', 'list', '--repo', repo, '--limit', '30', '--json', 'tagName,isDraft'], { stdio: 'pipe' });
-    const match = JSON.parse(raw).find(function (release) {
-        return release.isDraft && release.tagName.indexOf(humanTag) === 0;
+    const drafts = JSON.parse(raw).filter(function (release) {
+        return release.isDraft && release.tagName !== channelTag;
     });
+    const match = drafts.find(function (release) { return release.tagName === humanTag; }) ||
+        drafts.find(function (release) { return release.tagName.indexOf(humanTag) === 0; });
     if (match) return match.tagName;
     if (skipIfMissing) {
         console.log('\nNo draft release found whose tag starts with ' + humanTag + ' - nothing to publish.');
@@ -175,12 +248,20 @@ function findDraft (humanTag, repo, skipIfMissing) {
     throw new Error('No draft release found whose tag starts with ' + humanTag + '. Create it first with Create-DraftRelease.ps1.');
 }
 
-function ensureChannelRelease (tag, repo, target) {
-    // Listed rather than `gh release view`, which resolves a tag through an API endpoint
-    // that only returns published releases - it would miss the draft we create below and
-    // try to create it again on every run.
+/**
+ * Counts releases carrying this tag. Listed rather than `gh release view`, which resolves a
+ * tag through an API endpoint that only returns published releases - it would miss the draft
+ * created below and try to create it again on every run. A count rather than a boolean
+ * because GitHub does allow two *drafts* to share a tag name (no git ref exists until
+ * publication), and this build's jobs run in parallel.
+ */
+function countReleases (tag, repo) {
     const raw = gh(['release', 'list', '--repo', repo, '--limit', '30', '--json', 'tagName'], { stdio: 'pipe' });
-    if (JSON.parse(raw).some(function (release) { return release.tagName === tag; })) {
+    return JSON.parse(raw).filter(function (release) { return release.tagName === tag; }).length;
+}
+
+function ensureChannelRelease (tag, repo, target) {
+    if (countReleases(tag, repo)) {
         console.log('Channel release ' + tag + ' already exists.');
         return;
     }
@@ -199,6 +280,13 @@ function ensureChannelRelease (tag, repo, target) {
     // Tag the commit that was actually built, not wherever the default branch has moved to
     if (target) args.push('--target', target);
     gh(args, { stdio: 'inherit' });
+    // The Windows, Linux and macOS jobs run concurrently and each publishes for itself, so
+    // two of them can pass the check above before either creates. GitHub accepts both, and
+    // the assets then split silently across two identically tagged drafts. Fail loudly here
+    // instead: it is trivial to fix by hand and near-impossible to spot afterwards.
+    if (countReleases(tag, repo) > 1) {
+        throw new Error('Two draft releases are now tagged ' + tag + ', created by concurrent jobs. Delete the empty one on GitHub and re-run this job.');
+    }
 }
 
 function upload (tag, repo, files) {
@@ -214,13 +302,22 @@ function main () {
     const dir = path.resolve(opts.dir);
     if (!fs.existsSync(dir)) throw new Error('Build directory not found: ' + dir);
 
-    const buckets = { human: [], channel: [], both: [], skip: [] };
-    collectFiles(dir).forEach(function (file) {
-        // --only supports jobs that build more than they publish, such as the branded and
-        // nightly portable paths, which put a single zip on GitHub and nothing else
-        if (opts.only && !opts.only.test(path.basename(file))) return;
-        buckets[routeFor(path.basename(file))].push(file);
+    // --only supports jobs that build more than they publish, such as the branded and
+    // nightly portable paths, which put a single zip on GitHub and nothing else. It is
+    // matched against the on-disk name, before any renaming, so that a caller can pass a
+    // literal filename it has just built (Publish-ElectronPackages -test does exactly that).
+    let files = collectFiles(dir).filter(function (file) {
+        return !opts.only || opts.only.test(path.basename(file));
     });
+    // Renaming only when actually uploading keeps a dry run read-only; the listing below
+    // reports asset names either way, so a dry run still shows what would be published.
+    if (opts.upload) files = normaliseNames(files);
+
+    const buckets = { human: [], channel: [], both: [], skip: [] };
+    // Routed on the asset name rather than the on-disk name, so that a pattern written the
+    // way the file appears on the release ("Web-Setup") matches a build output that spells
+    // it with spaces ("Kiwix JS Electron Web Setup 3.8.9-E.exe")
+    files.forEach(function (file) { buckets[routeFor(assetName(file))].push(file); });
     if (opts.noChannel) {
         buckets.human = buckets.human.concat(buckets.both);
         buckets.channel = [];
@@ -264,7 +361,7 @@ function main () {
     ['human', 'channel', 'both', 'skip'].forEach(function (route) {
         if (!buckets[route].length) return;
         console.log('\nRouted to ' + route + ':');
-        buckets[route].forEach(function (f) { console.log('  ' + path.basename(f)); });
+        buckets[route].forEach(function (f) { console.log('  ' + assetName(f)); });
     });
 
     if (!opts.upload) {
@@ -273,7 +370,7 @@ function main () {
         return;
     }
 
-    const draftTag = findDraft(tags.human, opts.repo, opts.skipIfNoDraft);
+    const draftTag = findDraft(tags.human, tags.channel, opts.repo, opts.skipIfNoDraft);
     if (!draftTag) return;
     upload(draftTag, opts.repo, humanUploads);
     if (channelUploads.length) {

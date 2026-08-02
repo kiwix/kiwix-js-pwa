@@ -240,7 +240,12 @@ jobs:
       run: |
         # --skip-if-no-draft reproduces the electron-builder "onTagOrDraft" policy this
         # replaces: a build with no draft release waiting is a no-op rather than a failure.
-        node ./scripts/publish-github-release.cjs --version "$INPUT_VERSION" --upload --skip-if-no-draft
+        # --version is omitted when the workflow input is blank, so that the script falls
+        # back to the version in package.json - the field electron-builder named these
+        # artefacts after, so the tags cannot end up disagreeing with the filenames.
+        VERSION_ARG=()
+        if [[ -n "$INPUT_VERSION" ]]; then VERSION_ARG=(--version "$INPUT_VERSION"); fi
+        node ./scripts/publish-github-release.cjs "${VERSION_ARG[@]}" --upload --skip-if-no-draft
     - name: Upload packages to Kiwix
       if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |

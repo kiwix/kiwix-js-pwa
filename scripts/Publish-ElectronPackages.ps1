@@ -32,45 +32,24 @@ if ($CRON_LAUNCHED) {
     $target = "/data/kiwix/nightly/$current_date"
 }
 
-# $publish_dir and $publish_extra mirror the $Packages selection below, and are passed to
-# publish-github-release.cjs so that it looks at the same artefacts this script does.
+# Which build this is. $publish_dir and $publish_extra steer publish-github-release.cjs at the
+# same artefacts the download.kiwix.org sync picks up further down.
 $publish_dir = 'dist/bld/Electron'
 $publish_extra = @()
+$package_glob = @('dist/bld/Electron/*.*')
 if ((Get-Content ./package.json) -match 'nwVersion') { # NWJS
     # NWJS is not built by electron-builder and has no updater, so there are no channel
     # files and nothing belongs on the -E release
     $publish_dir = 'dist/bld/NWJS'
     $publish_extra = @('--no-channel')
-    if (Test-Path "dist/bld/NWJS") {
-        $Packages = @(Get-ChildItem dist/bld/NWJS/*.*)
-    } else {
-        Write-Warning "NWJS build directory not found: dist/bld/NWJS"
-        $Packages = @()
-    }
+    $package_glob = @('dist/bld/NWJS/*.*')
 } elseif ((Get-Content ./package.json) -match '"22\.3\.25"') { # Windows 7 version (Electron)
     # This job shares the Electron output directory, so restrict the publish to its own
     # artefacts. Its channel file is renamed to latest-win7.yml, which the filter also matches.
     $publish_extra = @('--only', 'Win7')
-    if (Test-Path "dist/bld/Electron") {
-        $Packages = @(Get-ChildItem dist/bld/Electron/*Win7*.*)
-    } else {
-        Write-Warning "Electron build directory not found: dist/bld/Electron"
-        $Packages = @()
-    }
+    $package_glob = @('dist/bld/Electron/*Win7*.*')
 } else {
-    $Packages = @()
-    if (Test-Path "dist/bld/Electron") {
-        $Packages += @(Get-ChildItem dist/bld/Electron/*.*)
-        if (Test-Path "dist/bld/Electron/nsis-web") {
-            $Packages += @(Get-ChildItem dist/bld/Electron/nsis-web/*.exe)
-            $Packages += @(Get-ChildItem dist/bld/Electron/nsis-web/*.nsis.7z)
-        }
-    } else {
-        Write-Warning "Electron build directory not found: dist/bld/Electron"
-    }
-}
-if ($test) {
-    $Packages = @($test)
+    $package_glob += @('dist/bld/Electron/nsis-web/*.exe', 'dist/bld/Electron/nsis-web/*.nsis.7z')
 }
 
 if (-not $CRON_LAUNCHED) {
@@ -87,7 +66,11 @@ if (-not $CRON_LAUNCHED) {
             $Env:GH_TOKEN = (Get-Content -Raw "$PSScriptRoot/github_token").Trim()
         }
     }
-    $publish_args = @('--version', $INPUT_VERSION, '--dir', $publish_dir, '--skip-if-no-draft') + $publish_extra
+    # Only pass --version when we actually have one: nightlies and plain rebuilds leave it
+    # blank, and the script then falls back to the version in package.json, which is the
+    # field electron-builder named the artefacts after
+    $publish_args = @('--dir', $publish_dir, '--skip-if-no-draft') + $publish_extra
+    if ($INPUT_VERSION) { $publish_args = @('--version', $INPUT_VERSION) + $publish_args }
     if ($portableonly) {
         # This path publishes a single portable zip and emits no update metadata
         $publish_args += @('--only', '\.zip$', '--no-channel')
@@ -99,6 +82,24 @@ if (-not $CRON_LAUNCHED) {
     "`nPublishing packages to GitHub..."
     & node "$PSScriptRoot/publish-github-release.cjs" @publish_args
     if ($LASTEXITCODE -ne 0) { throw "publish-github-release.cjs failed with exit code $LASTEXITCODE" }
+}
+
+# Enumerated only now, after the GitHub publish, because that step renames artefacts whose
+# names contain spaces (see normaliseNames in publish-github-release.cjs). Globbing earlier
+# would leave this loop holding paths that no longer exist. The renaming is invisible to the
+# rules below, which collapse spaces and hyphens to underscores alike.
+$Packages = @()
+if ($test) {
+    $Packages = @($test)
+} else {
+    foreach ($glob in $package_glob) {
+        $glob_dir = Split-Path $glob -Parent
+        if (Test-Path $glob_dir) {
+            $Packages += @(Get-ChildItem $glob -ErrorAction SilentlyContinue)
+        } else {
+            Write-Warning "Build directory not found: $glob_dir"
+        }
+    }
 }
 
 if (-not $githubonly) {
