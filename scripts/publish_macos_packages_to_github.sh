@@ -27,10 +27,14 @@ if [[ -z "$tag_name" ]]; then
 fi
 
 if [[ -z "$tag_name" ]]; then
-  echo "ERROR: No draft release found matching version $INPUT_VERSION (base: $base_input)"
-  echo "Available draft releases:"
+  # A no-op rather than a failure, matching --skip-if-no-draft in
+  # publish-github-release.cjs, which the Windows and Linux jobs use: a build with no draft
+  # release waiting should not turn the whole run red on one platform only. Nothing is left
+  # behind either way, since the upload is what would have created anything.
+  echo "No draft release found whose tag starts with $base_input - nothing to publish."
+  echo "Draft releases that do exist:"
   gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq '.[] | select(.isDraft == true) | .tagName'
-  exit 1
+  exit 0
 fi
 
 echo "Found draft release: $tag_name"
