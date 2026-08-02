@@ -35,8 +35,18 @@ fi
 
 echo "Found draft release: $tag_name"
 
-# Upload all zip, blockmap, and yml files from dist/bld/Electron
-for file in ./dist/bld/Electron/*.{zip,blockmap} ./dist/bld/Electron/latest-mac*.yml; do
+# Upload the zips and their blockmaps. latest-mac.yml is deliberately NOT uploaded.
+#
+# The three macOS builds (HighSierra, x64, arm64) run sequentially and each overwrites the
+# previous one's latest-mac.yml, so the file left on disk describes only the last build - and
+# it names the zip by its pre-rename filename (Kiwix-JS-Electron-X.Y.Z-E-mac.zip), which is
+# not what ends up on the release. Uploading it put a channel file that resolves to nothing
+# onto the human release, where it does not belong in any case: update metadata goes on the
+# -E release, with urls rewritten to point back here (see publish-github-release.cjs).
+# Producing one correct, merged latest-mac.yml needs a per-invocation artifactName so the
+# builds stop colliding, which is the next PR. Until then macOS simply has no auto-update,
+# exactly as before - better than shipping metadata that 404s.
+for file in ./dist/bld/Electron/*.{zip,blockmap}; do
   if [[ -f "$file" ]]; then
     # Extract original filename
     original_filename=$(basename "$file")

@@ -171,19 +171,26 @@ function collectFiles (dir) {
     const found = [];
     // Release assets are keyed by name, so two files sharing one basename can never both be
     // uploaded - and passing both to `gh release upload --clobber` makes it delete the asset
-    // it just created and fail with a 404. nsis-web writes its own copy of latest.yml next to
-    // the fragments, so this is the normal case, not a corner one. The root directory is
-    // scanned first and wins, because that is the copy electron-builder leaves as
-    // authoritative and the one the download.kiwix.org sync in Publish-ElectronPackages sees.
+    // it just created and fail with a 404.
+    //
+    // In practice the collision is always latest.yml, and which copy wins decides how every
+    // Windows user updates. Phase 1 (NSIS) writes one to the root describing the full
+    // installer; phase 2 (nsis-web) writes its own into the subdirectory, carrying the
+    // `packages` block that points at the .7z fragments. Contrary to what one might expect,
+    // phase 2 does NOT overwrite the root copy - it writes alongside its own output - so
+    // nsis-web is scanned FIRST here to make its copy win. Publishing the root copy instead
+    // sends every user down the full-installer path and leaves the fragments unreferenced,
+    // which is a ~110MB download per update rather than a differential one. Every release to
+    // date publishes the nsis-web copy (compare v3.8.8-E's latest.yml).
     const seen = new Set();
     // The nsis-web target writes its fragments to a subdirectory; everything else is flat
-    [dir, path.join(dir, 'nsis-web')].forEach(function (searchDir) {
+    [path.join(dir, 'nsis-web'), dir].forEach(function (searchDir) {
         if (!fs.existsSync(searchDir)) return;
         fs.readdirSync(searchDir, { withFileTypes: true }).forEach(function (entry) {
             if (!entry.isFile() || !PUBLISHABLE.test(entry.name)) return;
             const key = assetName(entry.name).toLowerCase();
             if (seen.has(key)) {
-                console.log('Ignoring duplicate ' + path.join(searchDir, entry.name) + ' (already found in ' + dir + ')');
+                console.log('Ignoring ' + path.join(searchDir, entry.name) + ' - superseded by the copy already found');
                 return;
             }
             seen.add(key);

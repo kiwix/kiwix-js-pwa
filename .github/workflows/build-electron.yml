@@ -1102,12 +1102,14 @@ jobs:
             # artefact can be routed to the human release, the -E auto-update release, or
             # both, and the channel ymls rewritten to match.
             #
-            # Both phase 1 (nsis) and phase 2 (nsis-web) emit a latest.yml, and the second
-            # overwrites the first on disk. That is deliberate - nsis-web's is the one we
-            # publish, and its metadata serves NSIS installs too - but it does mean the
-            # publish step must run after phase 2. Reordering these would silently ship the
-            # wrong update metadata. (This is what scripts/delete-latest-yml.js used to work
-            # around, back when each phase uploaded its own copy as it went.)
+            # Both phase 1 (nsis) and phase 2 (nsis-web) emit a latest.yml, but to different
+            # places: phase 1 to the root of the output directory, phase 2 into nsis-web/
+            # beside its own fragments. Neither overwrites the other, so both survive to the
+            # publish step, which picks nsis-web's - the one carrying the `packages` block
+            # that makes updates differential (see collectFiles in publish-github-release.cjs).
+            # The publish step must therefore still run after phase 2. (This is what
+            # scripts/delete-latest-yml.js used to work around, back when each phase uploaded
+            # its own copy as it went.)
             switch ($WIN11_PACKAGES) {
                 'nsisweb' {
                     if (!$INPUT_SIGN) {
