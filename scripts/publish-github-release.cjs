@@ -56,6 +56,15 @@ const CHANNEL_BODY = 'Autoupdate files ONLY. Please go to https://kiwix.github.i
 const MAC_MINIMUM_DARWIN_VERSION = '21.0.0';
 
 /**
+ * The modern macOS variants the build produces, x64 first so that the legacy top-level
+ * path/sha512 - which mirror files[0] and are all a pre-arm64 client reads - describe the
+ * Intel build. All of them must be present before a channel file is published; see
+ * mergeMacChannelDocs. Kept in step by hand with the electron-builder invocations in
+ * .github/workflows/build-electron.yml, which name the latest-mac-<variant>.yml files.
+ */
+const MAC_MODERN_VARIANTS = ['x64', 'arm64'];
+
+/**
  * Where each artefact goes. First match wins; anything unmatched defaults to 'human', so
  * a newly added target type shows up for users rather than silently vanishing into the
  * channel release. A '.blockmap' is routed with its parent artefact, because the updater
@@ -316,16 +325,25 @@ function macMinimumSystemVersion (dir) {
  * version it holds, and why writing "11.0.0" here would be a silent no-op.
  */
 function mergeMacChannelDocs (variants, dir) {
-    const isModern = function (entry) { return /^(x64|arm64)$/i.test(entry.variant); };
-    variants.filter(function (entry) { return !isModern(entry); }).forEach(function (entry) {
+    const named = function (name) {
+        return variants.find(function (entry) { return entry.variant.toLowerCase() === name; });
+    };
+    const modern = MAC_MODERN_VARIANTS.map(named);
+    // Every modern variant must be present. A merged file missing one would still look
+    // healthy, which is the danger: MacUpdater.filterFilesForArch falls back to the non-arm64
+    // entries when the list holds no arm64 one, so losing latest-mac-arm64.yml would hand
+    // every Apple Silicon user the Intel build under Rosetta - working, permanent, and
+    // invisible. The build step only warns when a channel file fails to appear, because an
+    // artefacts-only run has nothing to publish; this is where that warning becomes an error.
+    const missing = MAC_MODERN_VARIANTS.filter(function (name) { return !named(name); });
+    if (missing.length) {
+        throw new Error('Missing macOS channel file(s): ' + missing.map(function (name) { return 'latest-mac-' + name + '.yml'; }).join(', ') +
+            '. Found: ' + (variants.map(function (entry) { return entry.variant; }).join(', ') || 'none') +
+            '. Publishing a merged latest-mac.yml without every architecture would silently mis-route those users, so re-run the macOS build instead.');
+    }
+    variants.filter(function (entry) { return MAC_MODERN_VARIANTS.indexOf(entry.variant.toLowerCase()) === -1; }).forEach(function (entry) {
         console.log('  excluding latest-mac-' + entry.variant + '.yml: not a modern build, so not an auto-update target');
     });
-    // x64 first, so that the legacy top-level path/sha512 - which mirror files[0] and are all
-    // a pre-arm64 client reads - describe the Intel build
-    const modern = variants.filter(isModern).sort(function (a, b) {
-        return /^x64$/i.test(a.variant) ? -1 : /^x64$/i.test(b.variant) ? 1 : 0;
-    });
-    if (!modern.length) throw new Error('No modern macOS channel file found among: ' + variants.map(function (e) { return e.variant; }).join(', '));
     const merged = Object.assign({}, modern[0].doc);
     const seen = new Set();
     merged.files = [];

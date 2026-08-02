@@ -1126,7 +1126,7 @@ function checkUpdateServer () {
     if (window.electronAPI) {
         var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
         // Auto-update is embargoed for the deprecated-platform builds. Their Electron is pinned to an
-        // old major precisely so the app still runs on Windows 7/8/8.1 or macOS 10.13/10.14, but every
+        // old major precisely so the app still runs on Windows 7/8/8.1 or macOS 10.13 to 11, but every
         // package the updater could offer them is built against a modern Electron that needs a newer
         // OS - installing one would leave the user unable to launch the app at all. They are still told
         // about the new release by the GitHub check below, and can install it by hand if their system
