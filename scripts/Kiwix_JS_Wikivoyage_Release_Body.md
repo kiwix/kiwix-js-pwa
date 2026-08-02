@@ -34,10 +34,10 @@ Please choose the correct version:
     + Windows 10/11 32bit (also runs on 64bit): [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip) (for Win7/8/8.1, please use the Win7 installer above)
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
-  - **Portable (Electron)** - *experimental*
-    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12+ (Monterey or later) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+  - **Disk images (Electron)** - *experimental*
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ## Installation Instructions - Electron
 

@@ -43,10 +43,10 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + [NWJS] Windows 10/11 64bit: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-x64.zip)
 
 * **macOS** (signed and notarized by Apple - _see installation instructions below screenshot_):
-  - **Portable (Electron)**
-    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3/M4): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12+ (Monterey or later) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip)
+  - **Disk images (Electron)**
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3/M4): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 

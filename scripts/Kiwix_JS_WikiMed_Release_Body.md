@@ -33,10 +33,10 @@ Please choose the correct version:
     + Windows 7/8/8.1 32bit (also runs on 64bit): [WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip)
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
-  - **Portable (Electron)** - *experimental*
-    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12+ (Monterey or later) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+  - **Disk images (Electron)** - *experimental*
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ## Installation Instructions - Electron
 
