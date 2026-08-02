@@ -360,7 +360,7 @@ if (-Not ($dryrun -or $buildonly)) {
   "[DRYRUN] Release Body:`n$release_body"
 }
 
-if (-Not $nobundle) {
+if (-Not ($nobundle -or $draftonly)) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
     & npm run build-min 
