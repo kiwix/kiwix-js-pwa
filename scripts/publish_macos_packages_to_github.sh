@@ -20,7 +20,7 @@ echo "Resolved base version: $base_input"
 # returns newest first, so it would otherwise win the `head -1` and swallow the macOS
 # artefacts that belong on the human release. An exact match on the base tag is preferred,
 # with the substring match kept as a fallback for branded tags (vX.Y.Z-WikiMed).
-drafts=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true) | .tagName" | grep -v "^${base_input}-E$" || true)
+drafts=$(gh release list --repo kiwix/kiwix-js-pwa --json tagName,isDraft --jq ".[] | select(.isDraft == true) | .tagName" | grep -Fxv -- "${base_input}-E" || true)
 tag_name=$(echo "$drafts" | grep -Fx -- "$base_input" | head -1)
 if [[ -z "$tag_name" ]]; then
   tag_name=$(echo "$drafts" | grep -F -- "$base_input" | head -1)
