@@ -501,7 +501,7 @@ jobs:
         # one overwrites it, so take this one aside under a variant name. This copy exists to
         # be inspected, not published: publish-github-release.cjs merges the two modern
         # variants into one latest-mac.yml and deliberately excludes this one, because
-        # offering an Electron 43 build (macOS 11+) to a 10.13/10.14 user would brick the app.
+        # offering an Electron 43 build (macOS 12+) to a 10.13/10.14 user would brick the app.
         # A missing file is only a warning here so that an artefacts-only build still finishes;
         # the publish step fails loudly on its own if no channel file was produced.
         mv dist/bld/Electron/latest-mac.yml dist/bld/Electron/latest-mac-HighSierra.yml || echo "WARNING: no latest-mac.yml was written for the High Sierra build"

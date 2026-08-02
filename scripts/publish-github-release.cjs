@@ -42,14 +42,18 @@ const CHANNEL_BODY = 'Autoupdate files ONLY. Please go to https://kiwix.github.i
 
 /**
  * The oldest macOS that may ever be offered the modern macOS build, as a Darwin kernel
- * version: Darwin 20 is macOS 11 Big Sur, the floor of the Electron we currently ship.
+ * version: Darwin 21 is macOS 12 Monterey, the floor of the Electron we currently ship.
  *
  * This is a floor, not a fixed value. The real figure is read from the built app below and
- * the higher of the two wins, so a future Electron that drops Big Sur raises it by itself;
- * the constant only takes over if that read fails, and must never be lowered below the
- * oldest macOS a modern build actually runs on.
+ * the higher of the two wins, so an Electron that raises its own floor is followed
+ * automatically; the constant only takes over if that read fails, and must never be lowered
+ * below the oldest macOS a modern build actually runs on.
+ *
+ * Do not assume this tracks whatever the release notes claim. It was first written as 20.0.0
+ * on the documented belief that Electron 43 needed only Big Sur; the build reported macOS
+ * 12.0, and the derivation is what caught it.
  */
-const MAC_MINIMUM_DARWIN_VERSION = '20.0.0';
+const MAC_MINIMUM_DARWIN_VERSION = '21.0.0';
 
 /**
  * Where each artefact goes. First match wins; anything unmatched defaults to 'human', so
@@ -264,8 +268,8 @@ function darwinVersionFor (productVersion) {
  *
  * Highest rather than first because the legacy build writes its app into the same "mac"
  * directory as the modern x64 one, and only the ordering of the build steps decides which
- * survives. Reading the legacy app's 10.13 by mistake would produce a channel file that
- * offers a macOS 11+ binary to High Sierra, which is the exact failure this guards against;
+ * survives. Reading the legacy app's 10.13 by mistake would produce a channel file offering
+ * a Monterey-only binary to High Sierra, which is the exact failure this guards against;
  * taking the maximum, floored by the constant, cannot fail in that direction.
  *
  * electron-builder rewrites these plists with the `plist` package, which emits XML, so a
@@ -302,7 +306,7 @@ function macMinimumSystemVersion (dir) {
  * both modern builds serves both architectures.
  *
  * The High Sierra variant is excluded, and that exclusion is the point of the exercise. Its
- * Electron 26 build runs on macOS 10.13, but the modern build needs macOS 11, and the app's
+ * Electron 26 build runs on macOS 10.13, but the modern build needs macOS 12, and the app's
  * own auto-update guard only embargoes the Windows 7 Electron - so those clients would
  * happily install an app that cannot launch. minimumSystemVersion is checked by
  * AppUpdater.checkIfUpdateSupported before anything is downloaded, and has been honoured
