@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+* ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
+* FIX: Auto-updates now enabled for the macOS Electron app
+* INFO: Update the macOS installation instructions for disk images
+* INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
+* INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
+* DEV: Publish releases with a new script instead of electron-builder's GitHub publisher, usig smart routing for human vs autoupdate releases
+* DEV: Derive `minimumSystemVersion` from the built app rather than hardcoding it
+* DEV: Fail the publish if any modern macOS variant is missing
+* DEV: Verify each disk image in CI by mounting it and re-checking the signature, notarization, etc.
+* DEV: Publish disk images rather than zips to download.kiwix.org and S3
+
 ## Release 3.8.7 / 3.8.8
 
 * FEATURE: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
