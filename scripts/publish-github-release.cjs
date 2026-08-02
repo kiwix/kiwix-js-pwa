@@ -41,6 +41,17 @@ const CHANNEL_TITLE = 'Supplementary installation files for Kiwix JS Electron';
 const CHANNEL_BODY = 'Autoupdate files ONLY. Please go to https://kiwix.github.io/kiwix-js-pwa/app for the main release.';
 
 /**
+ * The oldest macOS that may ever be offered the modern macOS build, as a Darwin kernel
+ * version: Darwin 20 is macOS 11 Big Sur, the floor of the Electron we currently ship.
+ *
+ * This is a floor, not a fixed value. The real figure is read from the built app below and
+ * the higher of the two wins, so a future Electron that drops Big Sur raises it by itself;
+ * the constant only takes over if that read fails, and must never be lowered below the
+ * oldest macOS a modern build actually runs on.
+ */
+const MAC_MINIMUM_DARWIN_VERSION = '20.0.0';
+
+/**
  * Where each artefact goes. First match wins; anything unmatched defaults to 'human', so
  * a newly added target type shows up for users rather than silently vanishing into the
  * channel release. A '.blockmap' is routed with its parent artefact, because the updater
@@ -67,7 +78,9 @@ const ROUTES = [
     { pattern: /^latest.*\.yml$/i, to: 'channel' }, // update metadata, rewritten below
     { pattern: /\.nsis\.7z$/i, to: 'both' }, // see note above
     { pattern: /Web-Setup.*\.exe$/i, to: 'both' }, // ditto, and NsisUpdater fetches the stub
-    { pattern: /-macOS-(?:x64|arm64)\.zip$/i, to: 'channel' } // mac update payload; humans get the .dmg
+    // The macOS zips are the update payload, but they are also what a human downloads today,
+    // since there is no .dmg yet. Once one exists these become channel-only.
+    { pattern: /-macOS-(?:x64|arm64)\.zip$/i, to: 'both' }
 ];
 
 // The build directory also holds unpacked trees and assorted intermediates. Only these
@@ -227,6 +240,126 @@ function rewriteChannelFile (doc, localNames, prefix) {
     return doc;
 }
 
+/**
+ * Converts a macOS product version, as written in a bundle's LSMinimumSystemVersion, into
+ * the Darwin kernel version that os.release() reports on it.
+ *
+ * The two numbering schemes are unrelated: macOS 11 runs Darwin 20, and they have moved in
+ * step since, while the whole 10.x line mapped off the minor number (10.13 High Sierra is
+ * Darwin 17). The patch level is dropped, so 11.x of any point release qualifies.
+ */
+function darwinVersionFor (productVersion) {
+    const parts = /^(\d+)(?:\.(\d+))?/.exec(String(productVersion).trim());
+    if (!parts) return null;
+    const major = Number(parts[1]);
+    const minor = Number(parts[2] || 0);
+    if (major >= 11) return (major + 9) + '.0.0';
+    if (major === 10) return (minor + 4) + '.0.0';
+    return null;
+}
+
+/**
+ * Reads LSMinimumSystemVersion out of every packaged .app under <dir>/mac*, and returns the
+ * highest as a Darwin version - never lower than MAC_MINIMUM_DARWIN_VERSION.
+ *
+ * Highest rather than first because the legacy build writes its app into the same "mac"
+ * directory as the modern x64 one, and only the ordering of the build steps decides which
+ * survives. Reading the legacy app's 10.13 by mistake would produce a channel file that
+ * offers a macOS 11+ binary to High Sierra, which is the exact failure this guards against;
+ * taking the maximum, floored by the constant, cannot fail in that direction.
+ *
+ * electron-builder rewrites these plists with the `plist` package, which emits XML, so a
+ * text match suffices and no plist parser has to be added as a dependency.
+ */
+function macMinimumSystemVersion (dir) {
+    let best = MAC_MINIMUM_DARWIN_VERSION;
+    const consider = function (plist) {
+        if (!fs.existsSync(plist)) return;
+        const match = /<key>LSMinimumSystemVersion<\/key>\s*<string>([^<]+)<\/string>/.exec(fs.readFileSync(plist, 'utf8'));
+        if (!match) return;
+        const darwin = darwinVersionFor(match[1]);
+        if (!darwin) return;
+        console.log('  ' + path.relative(dir, plist) + ': macOS ' + match[1].trim() + ' = Darwin ' + darwin);
+        if (parseInt(darwin, 10) > parseInt(best, 10)) best = darwin;
+    };
+    fs.readdirSync(dir, { withFileTypes: true }).forEach(function (entry) {
+        if (!entry.isDirectory() || !/^mac/i.test(entry.name)) return;
+        fs.readdirSync(path.join(dir, entry.name), { withFileTypes: true }).forEach(function (app) {
+            if (app.isDirectory() && /\.app$/i.test(app.name)) consider(path.join(dir, entry.name, app.name, 'Contents', 'Info.plist'));
+        });
+    });
+    return best;
+}
+
+/**
+ * Builds the one latest-mac.yml the updater asks for out of the per-variant files the macOS
+ * job leaves behind, and puts a floor on the OS that may accept it.
+ *
+ * Two things make this necessary. Each electron-builder invocation writes its own
+ * latest-mac.yml over the last one's, so the job renames each aside as latest-mac-<variant>.yml
+ * and they are recombined here; and MacUpdater picks an entry out of files[] purely by
+ * whether its url contains the substring "arm64" (filterFilesForArch), so one file listing
+ * both modern builds serves both architectures.
+ *
+ * The High Sierra variant is excluded, and that exclusion is the point of the exercise. Its
+ * Electron 26 build runs on macOS 10.13, but the modern build needs macOS 11, and the app's
+ * own auto-update guard only embargoes the Windows 7 Electron - so those clients would
+ * happily install an app that cannot launch. minimumSystemVersion is checked by
+ * AppUpdater.checkIfUpdateSupported before anything is downloaded, and has been honoured
+ * since electron-updater 6.3; older clients than that predate signing and were shipped as
+ * experimental. Note it is a *kernel* version (upstream's own type doc: "Same with
+ * os.release() value"), which is why electron-builder cannot emit it from the product
+ * version it holds, and why writing "11.0.0" here would be a silent no-op.
+ */
+function mergeMacChannelDocs (variants, dir) {
+    const isModern = function (entry) { return /^(x64|arm64)$/i.test(entry.variant); };
+    variants.filter(function (entry) { return !isModern(entry); }).forEach(function (entry) {
+        console.log('  excluding latest-mac-' + entry.variant + '.yml: not a modern build, so not an auto-update target');
+    });
+    // x64 first, so that the legacy top-level path/sha512 - which mirror files[0] and are all
+    // a pre-arm64 client reads - describe the Intel build
+    const modern = variants.filter(isModern).sort(function (a, b) {
+        return /^x64$/i.test(a.variant) ? -1 : /^x64$/i.test(b.variant) ? 1 : 0;
+    });
+    if (!modern.length) throw new Error('No modern macOS channel file found among: ' + variants.map(function (e) { return e.variant; }).join(', '));
+    const merged = Object.assign({}, modern[0].doc);
+    const seen = new Set();
+    merged.files = [];
+    modern.forEach(function (entry) {
+        console.log('  including latest-mac-' + entry.variant + '.yml');
+        (entry.doc.files || []).forEach(function (file) {
+            const key = assetName(file.url).toLowerCase();
+            if (seen.has(key)) return;
+            seen.add(key);
+            merged.files.push(file);
+        });
+    });
+    merged.minimumSystemVersion = macMinimumSystemVersion(dir);
+    console.log('  minimumSystemVersion: ' + merged.minimumSystemVersion + ' (Darwin)');
+    return merged;
+}
+
+/**
+ * Loads the channel files as { name, doc } pairs, collapsing any latest-mac-<variant>.yml
+ * into a single latest-mac.yml. A no-op on the Windows and Linux jobs, which produce no such
+ * files.
+ */
+function loadChannelDocs (ymls, dir) {
+    const docs = [];
+    const macVariants = [];
+    ymls.forEach(function (file) {
+        const doc = yaml.load(fs.readFileSync(file, 'utf8'));
+        const variant = /^latest-mac-(.+)\.yml$/i.exec(path.basename(file));
+        if (variant) macVariants.push({ variant: variant[1], doc: doc });
+        else docs.push({ name: path.basename(file), doc: doc });
+    });
+    if (macVariants.length) {
+        console.log('\nMerging the macOS channel files into latest-mac.yml:');
+        docs.push({ name: 'latest-mac.yml', doc: mergeMacChannelDocs(macVariants, dir) });
+    }
+    return docs;
+}
+
 function gh (args, opts) {
     return execFileSync('gh', args, Object.assign({ encoding: 'utf8' }, opts));
 }
@@ -344,12 +477,11 @@ function main () {
 
     const stagingDir = path.join(dir, 'channel');
     fs.mkdirSync(stagingDir, { recursive: true });
-    const staged = ymls.map(function (file) {
-        const doc = yaml.load(fs.readFileSync(file, 'utf8'));
-        const out = path.join(stagingDir, path.basename(file));
+    const staged = loadChannelDocs(ymls, dir).map(function (entry) {
+        const out = path.join(stagingDir, entry.name);
         // Staged rather than edited in place: the download.kiwix.org sync still scans the
         // build directory and should not see rewritten urls. Its glob is non-recursive.
-        fs.writeFileSync(out, yaml.dump(rewriteChannelFile(doc, localNames, prefix), { lineWidth: -1 }));
+        fs.writeFileSync(out, yaml.dump(rewriteChannelFile(entry.doc, localNames, prefix), { lineWidth: -1 }));
         return out;
     });
 
@@ -366,9 +498,13 @@ function main () {
         Object.keys(doc.packages || {}).forEach(function (arch) { console.log('      pkg[' + arch + ']  ' + doc.packages[arch].path); });
     });
     ['human', 'channel', 'both', 'skip'].forEach(function (route) {
-        if (!buckets[route].length) return;
+        // Channel ymls are omitted here because the section above already lists them under the
+        // names they are published as, which is not always what they were called on disk - the
+        // macOS variants are merged into a single latest-mac.yml
+        const listed = buckets[route].filter(function (f) { return route !== 'channel' || !/\.yml$/i.test(f); });
+        if (!listed.length) return;
         console.log('\nRouted to ' + route + ':');
-        buckets[route].forEach(function (f) { console.log('  ' + assetName(f)); });
+        listed.forEach(function (f) { console.log('  ' + assetName(f)); });
     });
 
     if (!opts.upload) {

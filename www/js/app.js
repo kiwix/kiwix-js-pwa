@@ -1125,7 +1125,17 @@ function checkUpdateServer () {
     // Electron updates
     if (window.electronAPI) {
         var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
-        var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
+        // Auto-update is embargoed for the deprecated-platform builds. Their Electron is pinned to an
+        // old major precisely so the app still runs on Windows 7/8/8.1 or macOS 10.13/10.14, but every
+        // package the updater could offer them is built against a modern Electron that needs a newer
+        // OS - installing one would leave the user unable to launch the app at all. They are still told
+        // about the new release by the GitHub check below, and can install it by hand if their system
+        // has moved on since. The published channel files carry the same embargo for clients already in
+        // the field (minimumSystemVersion; see scripts/publish-github-release.cjs); this guard is what
+        // stops future builds from even asking.
+        var isUpdateableElectronVersion = ![params.win7ElectronVersion, params.macLegacyElectronVersion].some(function (embargoed) {
+            return embargoed && electronVersion.startsWith(embargoed);
+        });
         var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
             : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
                 : 'electron';
@@ -1135,7 +1145,7 @@ function checkUpdateServer () {
         } else {
             console.log('Auto-update: ' + (params.isAppxOrMSIX ? 'APPX/MSIX packages cannot be'
               : isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
-              : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
+              : 'Versions for deprecated operating systems cannot be') + ' auto-updated.');
         }
     }
     // GitHub updates
