@@ -91,9 +91,14 @@ const ROUTES = [
     { pattern: /^latest.*\.yml$/i, to: 'channel' }, // update metadata, rewritten below
     { pattern: /\.nsis\.7z$/i, to: 'both' }, // see note above
     { pattern: /Web-Setup.*\.exe$/i, to: 'both' }, // ditto, and NsisUpdater fetches the stub
-    // The macOS zips are the update payload, but they are also what a human downloads today,
-    // since there is no .dmg yet. Once one exists these become channel-only.
-    { pattern: /-macOS-(?:x64|arm64)\.zip$/i, to: 'both' }
+    // A macOS zip is the electron-updater payload and nothing else now: the human download is
+    // the .dmg below. The High Sierra zip is not even that, since its variant is deliberately
+    // kept out of latest-mac.yml (see mergeMacChannelDocs). It is still built, because the
+    // smoke test launches every zip and the legacy variant - a different Electron generation -
+    // is the one most likely to break; it just goes nowhere afterwards.
+    { pattern: /-macOS-HighSierra\.zip$/i, to: 'skip' },
+    { pattern: /-macOS-(?:x64|arm64)\.zip$/i, to: 'channel' },
+    { pattern: /\.dmg$/i, to: 'human' } // the default, but this is the macOS download, so say it
 ];
 
 // The build directory also holds unpacked trees and assorted intermediates. Only these
@@ -349,12 +354,28 @@ function mergeMacChannelDocs (variants, dir) {
     merged.files = [];
     modern.forEach(function (entry) {
         console.log('  including latest-mac-' + entry.variant + '.yml');
+        const before = merged.files.length;
         (entry.doc.files || []).forEach(function (file) {
             const key = assetName(file.url).toLowerCase();
+            // Zips only. MacUpdater asks for one by name - findFile(files, 'zip', ['pkg',
+            // 'dmg']) - so anything else is an entry no client will ever choose, which
+            // rewriteChannelFile would nonetheless turn into a cross-release url pointing at
+            // the human release. The dmg target is built with writeUpdateInfo=false so none
+            // should reach here; this keeps the publisher right on its own if that changes.
+            if (!/\.zip$/.test(key)) {
+                console.log('    excluding ' + assetName(file.url) + ': the updater downloads the zip');
+                return;
+            }
             if (seen.has(key)) return;
             seen.add(key);
             merged.files.push(file);
         });
+        // Same reasoning as the missing-variant check above: a variant that contributes no zip
+        // leaves that architecture out of files[] and filterFilesForArch silently falls back.
+        if (merged.files.length === before) {
+            throw new Error('latest-mac-' + entry.variant + '.yml lists no .zip for the updater to download, so the merged channel file would leave ' +
+                entry.variant + ' Macs to fall back on the other architecture. Re-run the macOS build.');
+        }
     });
     merged.minimumSystemVersion = macMinimumSystemVersion(dir);
     console.log('  minimumSystemVersion: ' + merged.minimumSystemVersion + ' (Darwin)');

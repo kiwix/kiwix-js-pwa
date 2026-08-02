@@ -33,10 +33,10 @@ Please choose the correct version:
     + Windows 7/8/8.1 32bit (also runs on 64bit): [WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed-by-Kiwix-Win7-<<numeric_tag>>-E.zip)
 
 * **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
-  - **Portable (Electron)** - *experimental*
-    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12+ (Monterey or later) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-HighSierra.zip)
+  - **Disk images (Electron)** - *experimental*
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [WikiMed-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ## Installation Instructions - Electron
 
@@ -56,19 +56,15 @@ Please choose the correct version:
   + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikimed` and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
 
 ### Apple Mac
-* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it._ **These builds are unsigned and require additional steps to run**:
-    1. **Remove quarantine flag from ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
+* **For macOS builds**: If you trust this Repository, download the correct disk image (`.dmg`) for your Mac architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). **These builds are unsigned and require additional steps to run**:
+    1. **Remove the quarantine flag from the disk image, before you open it** (macOS passes the flag on to anything you copy out of a quarantined image):
        - Open Terminal (Applications > Utilities > Terminal)
        - Run the following command:
        ```bash
-       xattr -d com.apple.quarantine ~/Downloads/WikiMed*.zip
+       xattr -d com.apple.quarantine ~/Downloads/WikiMed*.dmg
        ```
-       - Then extract the ZIP file by double-clicking it
-    2. **Safari users only**: The app (`WikiMed by Kiwix.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag (not necessary if you did Step 1):
-       ```bash
-       xattr -d com.apple.quarantine ~/Downloads/WikiMed\ by\ Kiwix.app
-       ```
-    3. **Launch** the app by double-clicking it - it should now open normally
+    2. **Open the disk image** by double-clicking it, then drag **WikiMed by Kiwix** onto the **Applications** shortcut beside it. If you do not have administrator rights on the machine, drag it to your home folder or the Desktop instead - it runs the same way from either
+    3. **Launch** the app by double-clicking it - it should now open normally. If macOS still refuses, clear all extended attributes from the copy you dragged out, giving the folder you actually dragged it to: `xattr -cr /Applications/WikiMed\ by\ Kiwix.app` (or, for example, `xattr -cr ~/Desktop/WikiMed\ by\ Kiwix.app`)
   + **Architecture Selection:**
     + **Apple Silicon Macs** (M1/M2/M3) on **macOS 12 Monterey or later**: Use the ARM64 version for optimal performance
     + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 version

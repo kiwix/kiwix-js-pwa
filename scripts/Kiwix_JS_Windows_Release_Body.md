@@ -43,10 +43,10 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + [NWJS] Windows 10/11 64bit: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-x64.zip)
 
 * **macOS** (signed and notarized by Apple - _see installation instructions below screenshot_):
-  - **Portable (Electron)**
-    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3/M4): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 12+ (Monterey or later) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.zip)
-    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.zip)
+  - **Disk images (Electron)**
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3/M4): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 
@@ -70,13 +70,15 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
   + **_OpenSUSE_**: download the correct `.rpm` package. You may get a better installation experience if you first install Chrome or another Chromium browser, as the Electron app has the same dependencies as Chrome. Then open a Terminal with superuser privileges, navigate to the directory containing the `.rpm` package, and type `zypper install  kiwix-js-electron-*.rpm` (you may need to do `chmod a+x kiwix-js-electron-*.rpm` first). If you are informed about missing dependencies, try "Solution 2: break kiwix-js-electron... by ignoring some of its dependencies'. You will also be warned that the app is not signed. You can ignore this, if you trust this repository. See above for commandline switches in older versions of OpenSUSE.
 
 ### Apple Mac
-* **For macOS builds**: download the correct ZIP file for your Mac's architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file for you to extract by double-clicking it._ Then simply double-click `Kiwix JS Electron.app` to launch it. **No Terminal commands are needed.**
+* **For macOS builds**: download the correct disk image (`.dmg`) for your Mac's architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). Double-click it to open, then drag **Kiwix JS Electron** onto the **Applications** shortcut in the window that appears. **No Terminal commands are needed.**
+  + **If you do not have administrator rights** on the Mac (a work, school or hosted machine), drag the app to your home folder or to the Desktop instead. It runs exactly the same way from there, and no password is needed.
+  + **Please do drag it somewhere first**, rather than running it straight from the disk image. The OS runs a freshly downloaded app from a temporary, randomised location until you move it with the Finder, and an app running that way cannot update itself.
   + **The first time you launch**, macOS will ask whether you are sure you want to open an app downloaded from the Internet, and will confirm that "Apple checked it for malicious software and none was detected". Click **Open**. You will only see this once: macOS will not ask again on subsequent launches.
   + **Security note:** these builds are **signed with a Developer ID Application certificate and notarized by Apple**. If macOS instead tells you the app is damaged, or that the developer cannot be verified, then you do not have an official release build - please download again from the Assets on this page.
   + **Architecture Selection:**
-    + **Apple Silicon Macs** (M1/M2/M3/M4) on **macOS 12 Monterey or later**: Use the ARM64 version for optimal performance
-    + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 version
-    + **macOS 10.13 High Sierra to 11 Big Sur**: Use the HighSierra version. This is built with an older version of Electron so that it still runs on these systems, and it also runs on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
+    + **Apple Silicon Macs** (M1/M2/M3/M4) on **macOS 12 Monterey or later**: Use the ARM64 image for optimal performance
+    + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 image
+    + **macOS 10.13 to 11 (High Sierra, Mojave to Big Sur)**: Use the HighSierra image. This is built with an older version of Electron so that it still runs on these systems, and it also runs on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
     + If unsure, click the Apple menu > About This Mac - it shows both your macOS version and, in the processor information, "Apple M1/M2/M3/M4" (Apple Silicon) or "Intel"
 * **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. Note that **nightly builds are deliberately not signed**, and need extra steps to run: see [Running unsigned macOS builds](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#running-unsigned-macos-builds-nightlies-and-test-builds).
 
