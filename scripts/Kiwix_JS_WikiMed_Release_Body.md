@@ -64,7 +64,7 @@ Please choose the correct version:
        xattr -d com.apple.quarantine ~/Downloads/WikiMed*.dmg
        ```
     2. **Open the disk image** by double-clicking it, then drag **WikiMed by Kiwix** onto the **Applications** shortcut beside it. If you do not have administrator rights on the machine, drag it to your home folder or the Desktop instead - it runs the same way from either
-    3. **Launch** the app by double-clicking it - it should now open normally. If macOS still refuses, clear all extended attributes from the copy you dragged out: `xattr -cr /Applications/WikiMed\ by\ Kiwix.app`
+    3. **Launch** the app by double-clicking it - it should now open normally. If macOS still refuses, clear all extended attributes from the copy you dragged out, giving the folder you actually dragged it to: `xattr -cr /Applications/WikiMed\ by\ Kiwix.app` (or, for example, `xattr -cr ~/Desktop/WikiMed\ by\ Kiwix.app`)
   + **Architecture Selection:**
     + **Apple Silicon Macs** (M1/M2/M3) on **macOS 12 Monterey or later**: Use the ARM64 version for optimal performance
     + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 version

@@ -76,11 +76,14 @@ flag yourself:
 3. **Launch** the app by double-clicking it - it should now open normally. You will not need to repeat these steps for this copy of the app.
 
 If Terminal reports `No such xattr`, then the flag has already been cleared, and you can carry on from step 2. If you opened the image before
-clearing the flag, or macOS still refuses to launch the app, clear all extended attributes from the copy you dragged out. Note that whatever the
-disk image is called, the app inside is always named `Kiwix JS Electron.app`, with spaces, which the backslashes below escape:
+clearing the flag, or macOS still refuses to launch the app, clear all extended attributes from the copy you dragged out, giving the folder you
+actually dragged it to. Note that whatever the disk image is called, the app inside is always named `Kiwix JS Electron.app`, with spaces, which
+the backslashes below escape:
 
 ```bash
 xattr -cr /Applications/Kiwix\ JS\ Electron.app
+# ...or, if you dragged it somewhere else:
+xattr -cr ~/Desktop/Kiwix\ JS\ Electron.app
 ```
 
 If you would prefer not to run an unsigned app, use a signed build from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases), or visit
