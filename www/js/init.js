@@ -92,6 +92,7 @@ if (window.electronAPI) {
     params['expressPort'] = 3000;
 }
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
+params['macLegacyElectronVersion'] = '26.6'; // KEEP UP TO DATE!!! This is the last minor version whose macOS floor is 10.13, which is why the legacy build (serving 10.13 to 11) is pinned to it. Auto-update is embargoed for values starting with this.
 params['kiwixLibraryServer'] = 'https://opds.library.kiwix.org';
 params['kiwixLibraryBrowser'] = 'https://browse.library.kiwix.org';
 params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
