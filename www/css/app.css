@@ -613,6 +613,62 @@ html:not(.no-wco) #navbar #row > .input-group {
     app-region: no-drag;
 }
 
+/* The emulated title bar. Chromium gives us the whole window when the overlay is on and offers no way
+   to ask for the real title bar back, so when the user wants one we draw it ourselves in the strip the
+   overlay occupies and let the navbar sit below it. Its height comes from titlebar-area-height, which
+   means that if the overlay is switched off at browser level the strip collapses to nothing by itself:
+   the user can never end up with our title bar stacked on top of a real one. It lives inside the navbar
+   so that setNavbarHeight can account for it the same way it already accounts for the find-in-article
+   row, and it inherits the navbar's drag region, making it a proper handle for moving the window */
+#wcoTitleBar {
+    height: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    user-select: none;
+    /* .navbar is a flex container, so the bar is a flex item and would otherwise shrink to the width of
+       its own text. It has to span the window for the overlay to sit in it rather than beside it, and
+       taking a whole flex line of its own is what pushes the search row below it. The width is a
+       fallback for the case where .navbar is not laid out as flex */
+    box-sizing: border-box;
+    flex: 0 0 100%;
+    width: 100%;
+}
+
+/* .navbar is a wrapping flex container whose height we set explicitly in setNavbarHeight, so its default
+   align-content of stretch distributes any leftover pixels around the flex lines, including above the
+   first one. That exposes a sliver of the navbar's own background along the top of the black title bar,
+   where it does not line up with the window frame beside it. Packing the lines to the start sends that
+   slack to the bottom instead, where the navbar colour is what belongs anyway */
+html.show-titlebar:not(.no-wco) .navbar {
+    align-content: flex-start;
+}
+
+html.show-titlebar:not(.no-wco) #wcoTitleBar {
+    height: env(titlebar-area-height, 0px);
+    /* Clear the window buttons, which are on the left on macOS */
+    padding-left: calc(env(titlebar-area-x, 0px) + 10px);
+    /* Black in both themes, deliberately: it reads as a title bar rather than as part of the app in
+       light mode, and disappears into the app in dark mode, where a lit strip would be unwelcome. The
+       window buttons beside it are painted by the browser from theme-color, which uiUtil keeps in step */
+    background-color: #000;
+    color: whitesmoke;
+}
+
+/* With a title bar of its own, the navbar is clear of the window buttons, so it takes back the full
+   width and the home button keeps the padding that the grab strip would otherwise have borrowed */
+html.show-titlebar:not(.no-wco) #navbar #row {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+html.show-titlebar:not(.no-wco) #navbar #row #btnHome {
+    padding-left: 1em !important;
+}
+
 /* Take the grab strip out of the home button's own generous padding instead of adding it to the bar,
    so the icon stays put and the row loses no width to it. The button keeps whatever padding is left
    over, and gets its full 1em back when there is no overlay to make room for. The !important is

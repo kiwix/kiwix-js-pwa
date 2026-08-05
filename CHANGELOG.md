@@ -4,6 +4,7 @@
 
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * FIX: Auto-updates now enabled for the macOS Electron app
+* FEATURE: New setting to show a title bar when the browser draws the window controls overlay over the app, restoring the choice that recent versions of Edge removed
 * REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
 * ENHANCEMENT: The top navigation bar now matches the height of the window controls overlay, and follows it when the user shows or hides the title bar
 * REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown

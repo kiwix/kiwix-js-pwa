@@ -1382,16 +1382,40 @@ function windowControlsOverlayIsVisible () {
  * the Window Controls Overlay, which is drawn over our content rather than behind it. If the two do not
  * match, the buttons sit in a contrasting block that does not line up with the navbar (most obvious in
  * light mode, where the navbar is pale but the declared theme-color is black). Reading the colour back
- * from the navbar rather than hardcoding it means this keeps working if the UI theme colours change
+ * from the navbar rather than hardcoding it means this keeps working if the UI theme colours change.
+ * The exception is when the user has asked for an emulated title bar, which is deliberately black in
+ * both themes, and which the buttons should therefore sit in rather than beside
  */
 function setThemeColorFromNavbar () {
     var meta = document.querySelector('meta[name="theme-color"]');
     var navbar = document.getElementById('navbar');
     if (!meta || !navbar) return;
-    var colour = getComputedStyle(navbar).backgroundColor;
+    // When we are drawing our own title bar the frame should match that bar rather than the navbar, so
+    // that the window buttons sit in the same black strip (see the #wcoTitleBar rules in app.css)
+    var colour = params.showTitleBar && windowControlsOverlayIsVisible() ? 'rgb(0, 0, 0)'
+        : getComputedStyle(navbar).backgroundColor;
     // A transparent navbar would make the window buttons unreadable, so leave the declared colour alone
     if (!colour || /^rgba\(0, 0, 0, 0\)$|^transparent$/.test(colour)) return;
     meta.setAttribute('content', colour);
+}
+
+/**
+ * Applies the user's emulated title bar preference, and shows or hides the setting that controls it. The
+ * setting is only meaningful while Chromium is drawing the Window Controls Overlay: without an overlay
+ * there is either a real title bar already (standalone mode, Electron, NWJS) or none to be had (a browser
+ * tab), and in both cases an emulated one would be dead space, so we hide the control rather than leave
+ * the user a switch that does nothing. Note that the CSS collapses the emulated bar to zero height
+ * whenever the overlay is absent, so the preference can safely stay set while it is inapplicable.
+ * Call this on startup, whenever the preference changes, and on the overlay's geometrychange event
+ */
+function setTitleBarState () {
+    document.documentElement.classList.toggle('show-titlebar', params.showTitleBar);
+    document.getElementById('showTitleBarLabel').style.display =
+        windowControlsOverlayIsVisible() ? 'block' : 'none';
+    document.getElementById('wcoTitleBarText').textContent = document.title;
+    // The frame colour depends on whether we are drawing a title bar, so it has to be re-evaluated here
+    // as well as on a change of theme
+    setThemeColorFromNavbar();
 }
 
 /**
@@ -1803,6 +1827,7 @@ export default {
     appIsFullScreen: appIsFullScreen,
     windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
     setThemeColorFromNavbar: setThemeColorFromNavbar,
+    setTitleBarState: setTitleBarState,
     lockDisplayOrientation: lockDisplayOrientation,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,

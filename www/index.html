@@ -236,6 +236,8 @@
     <section id="search-article" role="region">
         <header id="top">
             <nav id="navbar" class="navbar navbar-light" role="navigation">
+                <!-- Emulated title bar, shown only when the browser draws the window controls overlay over the app and the user has asked for a title bar -->
+                <div id="wcoTitleBar"><span id="wcoTitleBarText"></span></div>
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch" role="search" aria-label="Search articles">
@@ -1144,6 +1146,12 @@
                                             <input type="checkbox" name="navButtonsPos" id="navButtonsPosCheck">
                                             <span class="checkmark"></span>
                                             <b>Move navigation buttons to top toolbar</b> (note that Kiwix icon acts as Home button)
+                                        </label>
+                                        <!-- Only shown while the browser is drawing the window buttons over the app: see setTitleBarState() in app.js -->
+                                        <label class="checkbox" id="showTitleBarLabel" style="display: none;">
+                                            <input type="checkbox" name="showTitleBar" id="showTitleBarCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Show a title bar</b> (your browser is drawing the window buttons over this app instead of giving it a title bar, so the app can supply one of its own)
                                         </label>
                                         <div class="row">
                                             <div class="col-sm-12">

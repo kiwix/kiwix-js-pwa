@@ -797,13 +797,28 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
 function setNavbarHeight (height, relativeUIFontSize) {
     const navbar = document.getElementById('navbar');
     let scaledHeight = height * (relativeUIFontSize / 100);
-    if (uiUtil.windowControlsOverlayIsVisible()) {
-        // The navbar is doubling as the title bar, so it must be at least as tall as the window buttons
-        // drawn over it, or they visibly overhang the article below
-        scaledHeight = Math.max(scaledHeight, navigator.windowControlsOverlay.getTitlebarAreaRect().height);
+    const titleBarHeight = uiUtil.windowControlsOverlayIsVisible()
+        ? navigator.windowControlsOverlay.getTitlebarAreaRect().height : 0;
+    if (titleBarHeight) {
+        scaledHeight = params.showTitleBar
+            // Our emulated title bar sits above the search row, so the navbar has to accommodate both
+            ? scaledHeight + titleBarHeight
+            // Otherwise the navbar is doubling as the title bar, so it must be at least as tall as the
+            // window buttons drawn over it, or they visibly overhang the article below
+            : Math.max(scaledHeight, titleBarHeight);
     }
     navbar.style.height = scaledHeight + 'px';
 }
+
+uiUtil.setTitleBarState();
+
+document.getElementById('showTitleBarCheck').addEventListener('change', function (e) {
+    params.showTitleBar = e.target.checked;
+    settingsStore.setItem('showTitleBar', params.showTitleBar, Infinity);
+    uiUtil.setTitleBarState();
+    setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
+    resizeIFrame();
+});
 
 // The user can show or hide the title bar at any moment, and the overlay geometry also changes when the
 // window is resized, snapped, or moved to a monitor with a different scaling, so re-apply the height on
@@ -814,6 +829,7 @@ if (params.useWindowControlsOverlay && navigator.windowControlsOverlay) {
     navigator.windowControlsOverlay.addEventListener('geometrychange', function () {
         clearTimeout(wcoTimeout);
         wcoTimeout = setTimeout(function () {
+            uiUtil.setTitleBarState();
             // The find-in-article row adds 35px to the base navbar height (see the findText handler)
             const findRowShowing = document.getElementById('row2').style.display !== 'none';
             setNavbarHeight(params.navbarHeight + (findRowShowing ? 35 : 0), params.relativeUIFontSize);
