@@ -846,6 +846,13 @@ function renderOpdsCategories (xml, requestUrl) {
     var entries = xml.getElementsByTagName('entry');
     currentBrowseUrl = requestUrl;
     var categoryRows = injectDeveloperCategoryRows(buildOpdsCategoryRows(entries, requestUrl));
+    // Browsing by category alone cannot reach archives whose ZIM declares no Category, so offer the
+    // catalogue-wide feed as well. Rows with a label render verbatim (no trailing directory slash).
+    categoryRows.unshift({
+        title: 'All entries',
+        label: 'All entries (whole catalogue)',
+        href: params.kiwixCatalogEntries
+    });
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim</h3>' +
         '</div>' +
@@ -853,10 +860,11 @@ function renderOpdsCategories (xml, requestUrl) {
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">Name</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">';
     for (var i = 0; i < categoryRows.length; i++) {
+        var rowLabel = escapeHtml(categoryRows[i].label || categoryRows[i].title + '/');
         if (categoryRows[i].external) {
-            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + rowLabel + '</a></div>';
         } else {
-            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + rowLabel + '</a></div>';
         }
     }
     bodyDoc += '</div></div>';
@@ -945,7 +953,21 @@ function getOpdsLangArray (entries) {
     return ['All'].concat(sortAlphaNumeric(langs.slice(1)));
 }
 
+// Returns the category shared by every entry, or '' if the feed mixes categories (the all-entries
+// catalogue) or is empty. Callers treat '' as "no single category to key presentation to".
+function getCommonCategory (entries) {
+    if (!entries.length) return '';
+    var category = entries[0].category;
+    for (var i = 1; i < entries.length; i++) {
+        if (entries[i].category !== category) return '';
+    }
+    return category;
+}
+
 function getOpdsSubjectArray (entries, category) {
+    // Subjects are only comparable within a category, and a mixed feed yields ~1000 of them, which is
+    // not a usable dropdown. Per-entry subjects are still set, so the data attributes stay meaningful.
+    if (!category) return null;
     if (/^(mooc|phet|zimit|videos|other|dev)$/i.test(category)) return null;
     var seen = {};
     var subjects = [];
@@ -1013,7 +1035,8 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var dropdownSubj = buildDropdown('subjects', subjectArray, 'subject');
     var dropdownDate = buildDropdown('dates', dateArray, 'date');
     var bodyDoc = '<div style="padding:0 8px;">' +
-        '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim/' + escapeHtml(currentOpdsCategory) + '</h3>';
+        '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim' +
+        (currentOpdsCategory ? '/' + escapeHtml(currentOpdsCategory) : ' (all entries)') + '</h3>';
     if (dropdownLang || dropdownSubj || dropdownDate) {
         bodyDoc += '<div class="row" style="margin-left:0; margin-right:0;">';
         if (dropdownLang) bodyDoc += '<div class="col-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>';
@@ -1085,7 +1108,7 @@ function processOpdsData (docText, requestUrl, lang, subj, kiwixDate) {
         return true;
     }
     currentOpdsEntries = parseOpdsEntries(xml, requestUrl);
-    currentOpdsCategory = currentOpdsEntries.length ? currentOpdsEntries[0].category : '';
+    currentOpdsCategory = getCommonCategory(currentOpdsEntries);
     renderOpdsEntries(requestUrl, lang, subj, kiwixDate);
     return true;
 }

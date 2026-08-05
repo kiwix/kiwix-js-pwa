@@ -97,6 +97,10 @@ params['kiwixLibraryServer'] = 'https://opds.library.kiwix.org';
 params['kiwixLibraryBrowser'] = 'https://browse.library.kiwix.org';
 params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
 params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
+// The categories feed only lists categories declared in ZIM Category metadata, so archives with no
+// category (currently ~23% of the catalogue, including most of devdocs, maps, freecodecamp and
+// libretexts) are unreachable by category alone. This is the catalogue-wide feed advertised in root.xml.
+params['kiwixCatalogEntries'] = params.kiwixCatalogRoot + '/entries?count=-1';
 params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
