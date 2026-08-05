@@ -1076,9 +1076,13 @@ function applyOpdsFilters () {
 function setFilterCount (shown) {
     var counter = document.getElementById('kiwixFilterCount');
     if (!counter) return;
-    counter.textContent = shown === currentOpdsEntries.length
-        ? currentOpdsEntries.length + ' archives'
-        : 'showing ' + shown + ' of ' + currentOpdsEntries.length;
+    var total = currentOpdsEntries.length;
+    // The noun agrees with the total in both branches, so a one-entry feed reads '1 archive' and a
+    // filtered one reads 'showing 0 of 1 archive'
+    var noun = total === 1 ? ' archive' : ' archives';
+    counter.textContent = shown === total
+        ? total + noun
+        : 'showing ' + shown + ' of ' + total + noun;
 }
 
 // The download panels rewrite downloadLinks.innerHTML wholesale, which re-parses the filter controls
