@@ -143,6 +143,18 @@ foreground and see logs. You can also change the host port in [`docker-compose.y
 - When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
   without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
   Restricted mode — which is actually fine for reading legacy ZIM archives.
+  
+### Using the Electron app as Kiwix Serve Lite
+
+The Electron edition of Kiwix JS PWA includes a built-in Express server that allows you to access the application from a web browser on the same device or from other devices on your local network, without requiring Docker.
+
+When the app is running, the Home tab displays a localhost URL (by default `http://localhost:3000`) that you can open in any web browser. You can also enable **Allow external network access** to make the application available to other devices on your local network. The listening port is determined dynamically on startup if the default port is already in use, but it can be changed manually in **Configuration → Expert Settings**.
+
+**Important notes:**
+
+- The Express server serves the application only. ZIM archives must still be available on the host machine or via a mounted network share so they can be selected from the browser.
+- Access from other devices uses HTTP rather than HTTPS, so browsers will run the application in **Restricted mode** instead of **ServiceWorker Mode**. This is generally suitable for reading Wikipedia and other static ZIM archives, but some dynamic ZIMs may have limited functionality.
+- For your security, external network access is disabled by default, applies only to the current session, and accepts connections only from the local network.
 
 ## Technical information
 
