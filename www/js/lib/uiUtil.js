@@ -1365,6 +1365,36 @@ function appIsFullScreen () {
 }
 
 /**
+ * A function to test whether Chromium is currently drawing the Window Controls Overlay (the window
+ * buttons and app menu) over the app's own content, instead of reserving a title bar for them. This
+ * happens when the app is installed and the manifest asks for 'window-controls-overlay' in
+ * display_override, but the user can show or hide the title bar at any time, so the state must be
+ * queried rather than cached. Respects the params.useWindowControlsOverlay master switch
+ * @returns {Boolean} True if the Window Controls Overlay is currently overlapping the app's content
+ */
+function windowControlsOverlayIsVisible () {
+    return !!(params.useWindowControlsOverlay && navigator.windowControlsOverlay && navigator.windowControlsOverlay.visible);
+}
+
+/**
+ * Matches the document's theme-color to the current background colour of the navigation bar. Chromium
+ * paints the app window's frame with the theme-color, and that includes the strip of window buttons in
+ * the Window Controls Overlay, which is drawn over our content rather than behind it. If the two do not
+ * match, the buttons sit in a contrasting block that does not line up with the navbar (most obvious in
+ * light mode, where the navbar is pale but the declared theme-color is black). Reading the colour back
+ * from the navbar rather than hardcoding it means this keeps working if the UI theme colours change
+ */
+function setThemeColorFromNavbar () {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    var navbar = document.getElementById('navbar');
+    if (!meta || !navbar) return;
+    var colour = getComputedStyle(navbar).backgroundColor;
+    // A transparent navbar would make the window buttons unreadable, so leave the declared colour alone
+    if (!colour || /^rgba\(0, 0, 0, 0\)$|^transparent$/.test(colour)) return;
+    meta.setAttribute('content', colour);
+}
+
+/**
  * Puts the requested element into full-screen mode, or cancels full-screen mode if no element is provided
  * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode
  * @returns {Promise<Boolean>} A Promise that resolves to true if the element entered full-screen mode, false if full-screen mode cancelled
@@ -1771,6 +1801,8 @@ export default {
     checkServerIsAccessible: checkServerIsAccessible,
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
+    windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
+    setThemeColorFromNavbar: setThemeColorFromNavbar,
     lockDisplayOrientation: lockDisplayOrientation,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,

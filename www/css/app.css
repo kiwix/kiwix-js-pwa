@@ -574,6 +574,59 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     -webkit-app-region: drag;
 }
 
+/* When the Window Controls Overlay is active, Chromium draws the window buttons and the app menu
+   over our own content instead of reserving a title bar for them, so the top row has to keep clear
+   of them. The titlebar-area-* variables are only defined while the overlay is actually visible;
+   the fallbacks below collapse the insets to zero everywhere else. We inset the row rather than the
+   navbar itself so that the navbar background still spans the full window width, and so that the
+   second row (find-in-article), which the overlay never covers, keeps its full width.
+   No script is needed for this to be correct: the negative gate means the layout is right from the
+   first paint, and app.js only ever adds .no-wco to honour the params.useWindowControlsOverlay
+   master switch in init.js. */
+:root {
+    /* The width of the strip we keep free on the left of the home icon so that there is always
+       something to grab to move the window. It evaluates to 10px while Chromium is drawing the
+       overlay and to 0px whenever it is not: titlebar-area-height is the only one of the four
+       variables that is non-zero if and only if the overlay is present, so this min() expresses a
+       conditional that CSS otherwise cannot, needs no script, and is right on the very first paint.
+       Kept in px rather than em so that it resolves identically wherever it is used */
+    --wco-grab-strip: min(env(titlebar-area-height, 0px), 10px);
+}
+
+html:not(.no-wco) #navbar #row {
+    box-sizing: border-box;
+    /* On Windows the overlay is on the right, so titlebar-area-x is zero and the grab strip is what
+       keeps the home icon off the window edge. On macOS the overlay is on the left, so
+       titlebar-area-x already exceeds the strip and max() discards it */
+    padding-left: max(env(titlebar-area-x, 0px), var(--wco-grab-strip));
+    padding-right: calc(100% - env(titlebar-area-width, 100%) - env(titlebar-area-x, 0px));
+    /* The inset we have just carved out is the only part of the title bar area the user can grab to
+       move the window, since .navbar-header covers the whole bar with no-drag. Marking the row as a
+       drag handle makes its padding draggable, and the input group below opts its own controls back
+       out, so the buttons and search box still respond to clicks */
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+html:not(.no-wco) #navbar #row > .input-group {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+/* Take the grab strip out of the home button's own generous padding instead of adding it to the bar,
+   so the icon stays put and the row loses no width to it. The button keeps whatever padding is left
+   over, and gets its full 1em back when there is no overlay to make room for. The !important is
+   needed only to outrank the !important on the #btnHome rule above, which this deliberately mirrors:
+   if that padding ever changes, change the 1em here to match or the icon will shift.
+   The @supports guard matters too: on an engine that cannot evaluate this (Edge Legacy, IE11) the
+   var() substitution fails at computed-value time, which resets padding-left to zero rather than
+   leaving the 1em in place, jamming the icon against the edge */
+@supports (padding-left: calc(1em - min(env(titlebar-area-height, 0px), 10px))) {
+    html:not(.no-wco) #navbar #row #btnHome {
+        padding-left: calc(1em - var(--wco-grab-strip)) !important;
+    }
+}
+
 .btn-primary {
     background-color: #337ab7 !important;
     border-color: #1862b5 !important;

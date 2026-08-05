@@ -126,6 +126,7 @@ params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageD
 params['manipulateImages'] = getSetting('manipulateImages') === true; // Makes dataURIs by default instead of BLOB URIs for images
 params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') === true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
+params['useWindowControlsOverlay'] = true; // MASTER SWITCH: set to false to ignore the Window Controls Overlay entirely and keep the navbar full-width under the window buttons (see the html:not(.no-wco) rules in app.css, and uiUtil.windowControlsOverlayIsVisible)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
 params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
