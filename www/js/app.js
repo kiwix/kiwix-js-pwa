@@ -894,6 +894,8 @@ document.getElementById('btnTop').addEventListener('click', function () {
     // If the toolbar is hidden, show it instead of jumping to top
     if (!/\(0p?x?\)/.test(header.style.transform)) {
         header.style.transform = 'translateY(0)';
+        // Release the emulated title bar, which hideSlidingUIElements holds down against the header
+        document.getElementById('wcoTitleBar').style.transform = '';
     } else {
         if (!params.hideToolbars) iframe.style.transform = 'translateY(-1px)';
         iframe.contentWindow.scrollTo({

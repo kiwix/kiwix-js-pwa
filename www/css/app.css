@@ -171,7 +171,10 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     overflow-wrap: break-word;
 }
 
-#top, #articleContent, #footer, article {
+/* #wcoTitleBar is held against the top of the window by a transform that cancels the one sliding #top
+   away (see hideSlidingUIElements), so it has to be animated on exactly the same curve over exactly the
+   same time, or it lurches to its offset while the header eases into place and the bar appears to fly */
+#top, #articleContent, #footer, article, #wcoTitleBar {
     transition: transform 0.5s ease;
 }
 
@@ -636,6 +639,12 @@ html:not(.no-wco) #navbar #row > .input-group {
     box-sizing: border-box;
     flex: 0 0 100%;
     width: 100%;
+    /* The search row slides up behind the title bar rather than away with it, and Bootstrap positions the
+       controls in that row (.btn and the children of .input-group are all position: relative), so they
+       paint in tree order after the bar and would show through it on the way past. Nothing in the app can
+       be allowed over a title bar, native or emulated, so raise it above them */
+    position: relative;
+    z-index: 1;
 }
 
 /* .navbar is a wrapping flex container whose height we set explicitly in setNavbarHeight, so its default

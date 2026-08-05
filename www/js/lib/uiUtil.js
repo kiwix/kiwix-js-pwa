@@ -36,6 +36,10 @@ var itemsCount = false;
 // Placeholders for the articleContainer, header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
+// The emulated title bar, which is the topmost strip of the header, and has zero height except when the
+// browser is drawing the window controls overlay over the app and the user has asked for a title bar of
+// the app's own (see the html.show-titlebar rules in app.css)
+const titleBar = document.getElementById('wcoTitleBar');
 let articleContainer = document.getElementById('articleContent');
 
 /**
@@ -48,15 +52,26 @@ function hideSlidingUIElements () {
     const footerHeight = parseFloat(footerStyles.height) + parseFloat(footerStyles.marginTop) - 2;
     const headerStyles = getComputedStyle(header);
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom) - 2;
+    // The emulated title bar is the topmost strip of the header, so it is the first thing to leave the
+    // window when the header slides up. Pushing it back down by the same amount holds it against the top
+    // of the window while the search row disappears beneath it: a title bar is window chrome and should
+    // not scroll away, and it is the only part of the app the user can grab to move the window once the
+    // toolbars have gone. It cannot be pinned in CSS instead, because sticky positioning needs a
+    // scrollport (nothing here scrolls, the header is transformed) and a fixed child of a transformed
+    // ancestor is positioned against that ancestor, so it would travel with the header regardless
+    const titleBarHeight = titleBar ? titleBar.offsetHeight : 0;
+    if (titleBarHeight) titleBar.style.transform = 'translateY(' + headerHeight + 'px)';
     if (params.hideToolbars === true) { // Only hide footer if requested
         footer.style.transform = 'translateY(' + footerHeight + 'px)';
     }
-    articleContainer.style.height = window.innerHeight + 'px';
+    // With the title bar left behind, the article starts below it rather than at the top of the window,
+    // so it slides up that much less and has that much less room to fill
+    articleContainer.style.height = window.innerHeight - titleBarHeight + 'px';
     // articleContainer.style.height = document.documentElement.clientHeight + 'px';
     header.style.transform = 'translateY(-' + headerHeight + 'px)';
-    articleElement.style.transform = 'translateY(-' + headerHeight + 'px)';
+    articleElement.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
     // Needed by IE11 (only browser that has window.navigator.msSaveBlob)
-    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + headerHeight + 'px)';
+    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
 }
 
 /**
@@ -68,6 +83,8 @@ function showSlidingUIElements () {
     const headerStyles = getComputedStyle(document.getElementById('top'));
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom);
     header.style.transform = 'translateY(0)';
+    // The title bar travels back up with the header, so it no longer needs to be held down
+    if (titleBar) titleBar.style.transform = '';
     // Needed for Windows Mobile to prevent header disappearing beneath iframe
     articleElement.style.transform = 'translateY(-1px)';
     articleContainer.style.transform = 'translateY(-1px)';
