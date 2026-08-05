@@ -6103,8 +6103,10 @@ var articleLoadedSW = function (dirEntry, container) {
         checkToolbar();
         // Set page width according to user preference
         removePageMaxWidth();
-        setupHeadings();
-        applyWikimediaZimFixes(doc);
+        if (appstate.wikimediaZimLoaded) {
+            setupHeadings();
+            applyWikimediaZimFixes(doc);
+        }
 
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
@@ -7288,59 +7290,61 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             // Set relative font size
             setArticleZoom(params.relativeFontSize);
-            // Set page width according to user preference
-            removePageMaxWidth();
-            setupHeadings();
-            // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
-            // Process endnote references (so they open the reference block if closed)
-            var refs = docBody.getElementsByClassName('mw-reflink-text');
-            if (refs) {
-                for (var l = 0; l < refs.length; l++) {
-                    var reference = refs[l].parentElement;
-                    if (reference) {
-                        reference.addEventListener('click', function (obj) {
-                            var refID = obj.target.hash || obj.target.parentNode.hash;
-                            if (!refID) return;
-                            var refLocation = docBody.querySelector(refID);
-                            if (!refLocation) return;
-                            // In some ZIMs the id is in the parent node or in the parent of the parent
-                            var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
-                            // Add backlink to refLocation if missing
-                            if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
-                                var returnLink = document.createElement('a');
-                                returnLink.href = '#' + returnID;
-                                returnLink.innerHTML = '↑';
-                                refLocation.insertBefore(returnLink, refLocation.firstChild);
-                            }
-                            var refNext = util.getClosestBack(refLocation, function (el) {
-                                return /^(H2|DETAILS)$/.test(el.tagName);
-                            });
-                            if (refNext) {
-                                if (/DETAILS/.test(refNext.tagName)) {
-                                    refNext.open = true;
-                                    return;
+            if (appstate.wikimediaZimLoaded) {
+                // Set page width according to user preference
+                removePageMaxWidth();
+                setupHeadings();
+                // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
+                // Process endnote references (so they open the reference block if closed)
+                var refs = docBody.getElementsByClassName('mw-reflink-text');
+                if (refs) {
+                    for (var l = 0; l < refs.length; l++) {
+                        var reference = refs[l].parentElement;
+                        if (reference) {
+                            reference.addEventListener('click', function (obj) {
+                                var refID = obj.target.hash || obj.target.parentNode.hash;
+                                if (!refID) return;
+                                var refLocation = docBody.querySelector(refID);
+                                if (!refLocation) return;
+                                // In some ZIMs the id is in the parent node or in the parent of the parent
+                                var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
+                                // Add backlink to refLocation if missing
+                                if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
+                                    var returnLink = document.createElement('a');
+                                    returnLink.href = '#' + returnID;
+                                    returnLink.innerHTML = '↑';
+                                    refLocation.insertBefore(returnLink, refLocation.firstChild);
                                 }
-                                refNext.classList.add('open-block');
-                                // refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                refNext = refNext.nextElementSibling;
-                                while (refNext && refNext.classList.contains('collapsible-block')) {
+                                var refNext = util.getClosestBack(refLocation, function (el) {
+                                    return /^(H2|DETAILS)$/.test(el.tagName);
+                                });
+                                if (refNext) {
+                                    if (/DETAILS/.test(refNext.tagName)) {
+                                        refNext.open = true;
+                                        return;
+                                    }
                                     refNext.classList.add('open-block');
+                                    // refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
                                     refNext = refNext.nextElementSibling;
+                                    while (refNext && refNext.classList.contains('collapsible-block')) {
+                                        refNext.classList.add('open-block');
+                                        refNext = refNext.nextElementSibling;
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
-            }
-            var doc = articleWindow.document;
-            // Only manipulate sections if we are not on a landing page
-            if (!params.isLandingPage) {
-                // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
-                if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openOrCloseAllSections();
+                var doc = articleWindow.document;
+                // Only manipulate sections if we are not on a landing page
+                if (!params.isLandingPage) {
+                    // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
+                    if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
+                        openOrCloseAllSections();
+                    }
                 }
+                applyWikimediaZimFixes(doc);
             }
-            applyWikimediaZimFixes(doc);
 
             parseAnchorsJQuery(dirEntry);
             switchCSSTheme();
