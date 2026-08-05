@@ -1081,6 +1081,27 @@ function setFilterCount (shown) {
         : 'showing ' + shown + ' of ' + currentOpdsEntries.length;
 }
 
+// The download panels rewrite downloadLinks.innerHTML wholesale, which re-parses the filter controls
+// from their serialized markup. A dropdown's selection lives only in DOM properties, so it would be
+// lost on the round-trip and every dropdown would revert to its first option when the user goes back
+// to the list. Stamping the state into attributes first makes it survive. Called for both the OPDS
+// and the legacy directory listing, since both render these controls above the panel.
+function preserveFilterControls () {
+    var selectIds = ['langs', 'subjects', 'dates'];
+    for (var i = 0; i < selectIds.length; i++) {
+        var select = document.getElementById(selectIds[i]);
+        if (!select) continue;
+        for (var j = 0; j < select.options.length; j++) {
+            if (j === select.selectedIndex) select.options[j].setAttribute('selected', 'selected');
+            else select.options[j].removeAttribute('selected');
+        }
+    }
+    // Already kept in sync as the user types, but re-stated here so the invariant holds at the point
+    // it actually matters, however the value was set
+    var filterBox = document.getElementById('kiwixFilter');
+    if (filterBox) filterBox.setAttribute('value', filterBox.value);
+}
+
 function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var langArray = getOpdsLangArray(currentOpdsEntries);
     var subjectArray = getOpdsSubjectArray(currentOpdsEntries, currentOpdsCategory);
@@ -1301,6 +1322,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><b>Download with bittorrent:</b></p>' +
             '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
             if (body) body.innerHTML = bodyDoc;
+            preserveFilterControls();
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
@@ -1407,6 +1429,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         setPanelContent('dl-panel-heading', headerDoc);
         var body = document.getElementById('dl-panel-body');
         if (body) body.innerHTML = bodyDoc;
+        preserveFilterControls();
         downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
         if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-danger');
         if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
