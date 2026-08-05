@@ -612,6 +612,9 @@ regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n
 var currentBrowseUrl = '';
 var currentOpdsEntries = [];
 var currentOpdsCategory = '';
+// Held here rather than read back from the input because the download panels re-serialize
+// downloadLinks.innerHTML, which would discard a typed (property-only) value.
+var currentOpdsFilter = '';
 
 function escapeRegExp (str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -922,7 +925,10 @@ function parseOpdsEntries (xml, requestUrl) {
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
             filename: ''
         });
-        parsedEntries[parsedEntries.length - 1].filename = getOpdsFilename(parsedEntries[parsedEntries.length - 1]);
+        var parsed = parsedEntries[parsedEntries.length - 1];
+        parsed.filename = getOpdsFilename(parsed);
+        // Precomputed lowercase haystack for the text filter, so keystrokes never re-derive it
+        parsed.search = (parsed.filename + ' ' + (parsed.summary || parsed.title || '')).toLowerCase();
     }
     return parsedEntries;
 }
@@ -1010,7 +1016,18 @@ function buildDropdown (id, values, valueType) {
     return dropdown;
 }
 
-function entryMatchesFilters (entry, lang, subj, kiwixDate) {
+// Whitespace-separated tokens, all of which must appear somewhere in the entry's filename or
+// description, so 'devdocs angular' finds the archive regardless of the order the words appear in
+function getFilterTokens (filterText) {
+    var tokens = trim(filterText || '').toLowerCase().split(/\s+/);
+    var kept = [];
+    for (var i = 0; i < tokens.length; i++) {
+        if (tokens[i]) kept.push(tokens[i]);
+    }
+    return kept;
+}
+
+function entryMatchesFilters (entry, lang, subj, kiwixDate, filterTokens) {
     var matchLang = !lang || lang === 'All';
     var matchSubject = !subj || subj === 'All';
     var matchDate = !kiwixDate || kiwixDate === 'All';
@@ -1024,7 +1041,44 @@ function entryMatchesFilters (entry, lang, subj, kiwixDate) {
     }
     if (!matchSubject) matchSubject = entry.subject === subj;
     if (!matchDate) matchDate = entry.date === kiwixDate;
-    return matchLang && matchSubject && matchDate;
+    if (!(matchLang && matchSubject && matchDate)) return false;
+    if (filterTokens && filterTokens.length) {
+        var haystack = entry.search || '';
+        for (var j = 0; j < filterTokens.length; j++) {
+            if (haystack.indexOf(filterTokens[j]) === -1) return false;
+        }
+    }
+    return true;
+}
+
+// Re-applies all four filters to the rendered rows in place. Rows are rendered one per entry in
+// order, so the row index maps directly onto currentOpdsEntries and no data attributes are re-read.
+// Filtering in place (rather than re-rendering) is what lets the text box keep focus while typing.
+function applyOpdsFilters () {
+    var panel = document.getElementById('dl-panel-body');
+    if (!panel) return;
+    var rows = panel.getElementsByClassName('wikiLang');
+    if (rows.length !== currentOpdsEntries.length) return;
+    var langSel = document.getElementById('langs');
+    var subjSel = document.getElementById('subjects');
+    var dateSel = document.getElementById('dates');
+    var filterTokens = getFilterTokens(currentOpdsFilter);
+    var shown = 0;
+    for (var i = 0; i < rows.length; i++) {
+        var matches = entryMatchesFilters(currentOpdsEntries[i], langSel ? langSel.value : '',
+            subjSel ? subjSel.value : '', dateSel ? dateSel.value : '', filterTokens);
+        rows[i].style.display = matches ? '' : 'none';
+        if (matches) shown++;
+    }
+    setFilterCount(shown);
+}
+
+function setFilterCount (shown) {
+    var counter = document.getElementById('kiwixFilterCount');
+    if (!counter) return;
+    counter.textContent = shown === currentOpdsEntries.length
+        ? currentOpdsEntries.length + ' archives'
+        : 'showing ' + shown + ' of ' + currentOpdsEntries.length;
 }
 
 function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
@@ -1044,6 +1098,13 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         if (dropdownDate) bodyDoc += '<div class="col-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>';
         bodyDoc += '</div>';
     }
+    // The value is written as an attribute (and kept in sync on input) so that it survives the
+    // innerHTML round-trips performed by the download panels
+    bodyDoc += '<div class="row" style="margin-left:0; margin-right:0; padding-bottom:10px;">' +
+        '<div class="col-12" style="padding-top:4px;">Filter:&nbsp;&nbsp;' +
+        '<input type="search" id="kiwixFilter" class="kiwix-filter" autocomplete="off" spellcheck="false" ' +
+        'placeholder="Filter by name or description" value="' + escapeHtml(currentOpdsFilter) + '" />' +
+        '&nbsp;&nbsp;<span id="kiwixFilterCount" style="opacity:0.75;"></span></div></div>';
     bodyDoc += '</div>';
     var opdsRowStyle = 'display:flex;min-width:740px;white-space:nowrap;';
     var opdsNameColStyle = 'flex:0 0 300px;max-width:300px;padding-right:8px;overflow:hidden;text-overflow:ellipsis;';
@@ -1057,9 +1118,13 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         '</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;white-space:nowrap;margin-bottom:10px;overflow:auto;">';
     bodyDoc += '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" data-kiwix-kind="category-root" data-kiwix-dl="' + escapeHtml(params.kiwixCatalogCategories) + '">Back to category list</a></div><div style="' + opdsSizeColStyle + '"></div><div style="' + opdsDateColStyle + '"></div><div style="' + opdsDescColStyle + '"></div></div>';
+    var filterTokens = getFilterTokens(currentOpdsFilter);
+    var shown = 0;
     for (var i = 0; i < currentOpdsEntries.length; i++) {
         var entry = currentOpdsEntries[i];
-        var displayStyle = entryMatchesFilters(entry, lang, subj, kiwixDate) ? '' : ' style="display:none;"';
+        var matches = entryMatchesFilters(entry, lang, subj, kiwixDate, filterTokens);
+        if (matches) shown++;
+        var displayStyle = matches ? '' : ' style="display:none;"';
         bodyDoc += '<div class="wikiLang" data-kiwixlanguages="' + escapeHtml(entry.languages.join(',')) + '" data-kiwixsubject="' + escapeHtml(entry.subject) + '" data-kiwixdate="' + escapeHtml(entry.date) + '"' + displayStyle + '>' +
             '<div style="' + opdsRowStyle + '">' +
             '<div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" style="' + opdsNameLinkStyle + '" title="' + escapeHtml(entry.filename) + '" data-kiwix-kind="archive" data-kiwix-dl="' + escapeHtml(entry.acquisitionHref) + '">' + escapeHtml(entry.filename) + '</a></div>' +
@@ -1089,12 +1154,33 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     if (subjSel) subjSel.value = subj || 'All';
     if (dateSel) dateSel.value = kiwixDate || 'All';
 
-    var refreshFilters = function () {
-        renderOpdsEntries(entriesUrl, langSel ? langSel.value : '', subjSel ? subjSel.value : '', dateSel ? dateSel.value : '');
-    };
-    if (langSel) langSel.addEventListener('change', refreshFilters);
-    if (subjSel) subjSel.addEventListener('change', refreshFilters);
-    if (dateSel) dateSel.addEventListener('change', refreshFilters);
+    setFilterCount(shown);
+
+    // All four controls now filter the rendered rows in place instead of re-rendering the list, which
+    // both keeps the text box focused while typing and avoids rebuilding ~3600 rows per keystroke
+    if (langSel) langSel.addEventListener('change', applyOpdsFilters);
+    if (subjSel) subjSel.addEventListener('change', applyOpdsFilters);
+    if (dateSel) dateSel.addEventListener('change', applyOpdsFilters);
+
+    var filterBox = document.getElementById('kiwixFilter');
+    if (filterBox) {
+        filterBox.addEventListener('input', function () {
+            currentOpdsFilter = this.value;
+            this.setAttribute('value', this.value);
+            applyOpdsFilters();
+        });
+        // Escape clears the filter. The app's global key handlers already exempt input elements, so
+        // no other key needs intercepting here.
+        filterBox.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && this.value) {
+                e.preventDefault();
+                this.value = '';
+                currentOpdsFilter = '';
+                this.setAttribute('value', '');
+                applyOpdsFilters();
+            }
+        });
+    }
     document.getElementById('indexHeader').scrollIntoView();
 }
 
@@ -1104,9 +1190,13 @@ function processOpdsData (docText, requestUrl, lang, subj, kiwixDate) {
     if (isOpdsCategoryFeed(xml)) {
         currentOpdsEntries = [];
         currentOpdsCategory = '';
+        currentOpdsFilter = '';
         renderOpdsCategories(xml, requestUrl);
         return true;
     }
+    // Carry the filter across a re-fetch of the same feed (returning from a download panel), but drop
+    // it when moving to a different one, so it cannot silently empty a newly opened category
+    if (requestUrl !== currentBrowseUrl) currentOpdsFilter = '';
     currentOpdsEntries = parseOpdsEntries(xml, requestUrl);
     currentOpdsCategory = getCommonCategory(currentOpdsEntries);
     renderOpdsEntries(requestUrl, lang, subj, kiwixDate);

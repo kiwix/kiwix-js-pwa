@@ -1010,6 +1010,23 @@ pre {
     background: darkslategray !important;
 }
 
+/* The OPDS library filter box. Kept separate from .dropdown, whose max-width is too narrow for a
+   free-text field, but colour-matched to it so the controls read as one set in dark mode. */
+.kiwix-filter {
+    min-width: 14em;
+    max-width: 20em;
+}
+
+.dark .kiwix-filter {
+    color: #222 !important;
+    background-color: lightblue !important;
+    border-color: lightgray !important;
+}
+
+.dark .kiwix-filter::placeholder {
+    color: #555 !important;
+}
+
 .darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
     color: lightblue !important;
     background: rgba(34,34,34,0.6) !important;
