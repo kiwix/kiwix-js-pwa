@@ -612,6 +612,9 @@ regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n
 var currentBrowseUrl = '';
 var currentOpdsEntries = [];
 var currentOpdsCategory = '';
+// Held here rather than read back from the input because the download panels re-serialize
+// downloadLinks.innerHTML, which would discard a typed (property-only) value.
+var currentOpdsFilter = '';
 
 function escapeRegExp (str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -846,6 +849,13 @@ function renderOpdsCategories (xml, requestUrl) {
     var entries = xml.getElementsByTagName('entry');
     currentBrowseUrl = requestUrl;
     var categoryRows = injectDeveloperCategoryRows(buildOpdsCategoryRows(entries, requestUrl));
+    // Browsing by category alone cannot reach archives whose ZIM declares no Category, so offer the
+    // catalogue-wide feed as well. Rows with a label render verbatim (no trailing directory slash).
+    categoryRows.unshift({
+        title: 'All entries',
+        label: 'All entries (whole catalogue)',
+        href: params.kiwixCatalogEntries
+    });
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim</h3>' +
         '</div>' +
@@ -853,10 +863,11 @@ function renderOpdsCategories (xml, requestUrl) {
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">Name</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">';
     for (var i = 0; i < categoryRows.length; i++) {
+        var rowLabel = escapeHtml(categoryRows[i].label || categoryRows[i].title + '/');
         if (categoryRows[i].external) {
-            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + rowLabel + '</a></div>';
         } else {
-            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + escapeHtml(categoryRows[i].title) + '/</a></div>';
+            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + rowLabel + '</a></div>';
         }
     }
     bodyDoc += '</div></div>';
@@ -914,7 +925,10 @@ function parseOpdsEntries (xml, requestUrl) {
             sizeDisplay: formatSize(acquisitionLink ? acquisitionLink.getAttribute('length') || '' : ''),
             filename: ''
         });
-        parsedEntries[parsedEntries.length - 1].filename = getOpdsFilename(parsedEntries[parsedEntries.length - 1]);
+        var parsed = parsedEntries[parsedEntries.length - 1];
+        parsed.filename = getOpdsFilename(parsed);
+        // Precomputed lowercase haystack for the text filter, so keystrokes never re-derive it
+        parsed.search = (parsed.filename + ' ' + (parsed.summary || parsed.title || '')).toLowerCase();
     }
     return parsedEntries;
 }
@@ -945,7 +959,21 @@ function getOpdsLangArray (entries) {
     return ['All'].concat(sortAlphaNumeric(langs.slice(1)));
 }
 
+// Returns the category shared by every entry, or '' if the feed mixes categories (the all-entries
+// catalogue) or is empty. Callers treat '' as "no single category to key presentation to".
+function getCommonCategory (entries) {
+    if (!entries.length) return '';
+    var category = entries[0].category;
+    for (var i = 1; i < entries.length; i++) {
+        if (entries[i].category !== category) return '';
+    }
+    return category;
+}
+
 function getOpdsSubjectArray (entries, category) {
+    // Subjects are only comparable within a category, and a mixed feed yields ~1000 of them, which is
+    // not a usable dropdown. Per-entry subjects are still set, so the data attributes stay meaningful.
+    if (!category) return null;
     if (/^(mooc|phet|zimit|videos|other|dev)$/i.test(category)) return null;
     var seen = {};
     var subjects = [];
@@ -988,7 +1016,18 @@ function buildDropdown (id, values, valueType) {
     return dropdown;
 }
 
-function entryMatchesFilters (entry, lang, subj, kiwixDate) {
+// Whitespace-separated tokens, all of which must appear somewhere in the entry's filename or
+// description, so 'devdocs angular' finds the archive regardless of the order the words appear in
+function getFilterTokens (filterText) {
+    var tokens = trim(filterText || '').toLowerCase().split(/\s+/);
+    var kept = [];
+    for (var i = 0; i < tokens.length; i++) {
+        if (tokens[i]) kept.push(tokens[i]);
+    }
+    return kept;
+}
+
+function entryMatchesFilters (entry, lang, subj, kiwixDate, filterTokens) {
     var matchLang = !lang || lang === 'All';
     var matchSubject = !subj || subj === 'All';
     var matchDate = !kiwixDate || kiwixDate === 'All';
@@ -1002,7 +1041,69 @@ function entryMatchesFilters (entry, lang, subj, kiwixDate) {
     }
     if (!matchSubject) matchSubject = entry.subject === subj;
     if (!matchDate) matchDate = entry.date === kiwixDate;
-    return matchLang && matchSubject && matchDate;
+    if (!(matchLang && matchSubject && matchDate)) return false;
+    if (filterTokens && filterTokens.length) {
+        var haystack = entry.search || '';
+        for (var j = 0; j < filterTokens.length; j++) {
+            if (haystack.indexOf(filterTokens[j]) === -1) return false;
+        }
+    }
+    return true;
+}
+
+// Re-applies all four filters to the rendered rows in place. Rows are rendered one per entry in
+// order, so the row index maps directly onto currentOpdsEntries and no data attributes are re-read.
+// Filtering in place (rather than re-rendering) is what lets the text box keep focus while typing.
+function applyOpdsFilters () {
+    var panel = document.getElementById('dl-panel-body');
+    if (!panel) return;
+    var rows = panel.getElementsByClassName('wikiLang');
+    if (rows.length !== currentOpdsEntries.length) return;
+    var langSel = document.getElementById('langs');
+    var subjSel = document.getElementById('subjects');
+    var dateSel = document.getElementById('dates');
+    var filterTokens = getFilterTokens(currentOpdsFilter);
+    var shown = 0;
+    for (var i = 0; i < rows.length; i++) {
+        var matches = entryMatchesFilters(currentOpdsEntries[i], langSel ? langSel.value : '',
+            subjSel ? subjSel.value : '', dateSel ? dateSel.value : '', filterTokens);
+        rows[i].style.display = matches ? '' : 'none';
+        if (matches) shown++;
+    }
+    setFilterCount(shown);
+}
+
+function setFilterCount (shown) {
+    var counter = document.getElementById('kiwixFilterCount');
+    if (!counter) return;
+    var total = currentOpdsEntries.length;
+    // The noun agrees with the total in both branches, so a one-entry feed reads '1 archive' and a
+    // filtered one reads 'showing 0 of 1 archive'
+    var noun = total === 1 ? ' archive' : ' archives';
+    counter.textContent = shown === total
+        ? total + noun
+        : 'showing ' + shown + ' of ' + total + noun;
+}
+
+// The download panels rewrite downloadLinks.innerHTML wholesale, which re-parses the filter controls
+// from their serialized markup. A dropdown's selection lives only in DOM properties, so it would be
+// lost on the round-trip and every dropdown would revert to its first option when the user goes back
+// to the list. Stamping the state into attributes first makes it survive. Called for both the OPDS
+// and the legacy directory listing, since both render these controls above the panel.
+function preserveFilterControls () {
+    var selectIds = ['langs', 'subjects', 'dates'];
+    for (var i = 0; i < selectIds.length; i++) {
+        var select = document.getElementById(selectIds[i]);
+        if (!select) continue;
+        for (var j = 0; j < select.options.length; j++) {
+            if (j === select.selectedIndex) select.options[j].setAttribute('selected', 'selected');
+            else select.options[j].removeAttribute('selected');
+        }
+    }
+    // Already kept in sync as the user types, but re-stated here so the invariant holds at the point
+    // it actually matters, however the value was set
+    var filterBox = document.getElementById('kiwixFilter');
+    if (filterBox) filterBox.setAttribute('value', filterBox.value);
 }
 
 function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
@@ -1013,7 +1114,8 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var dropdownSubj = buildDropdown('subjects', subjectArray, 'subject');
     var dropdownDate = buildDropdown('dates', dateArray, 'date');
     var bodyDoc = '<div style="padding:0 8px;">' +
-        '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim/' + escapeHtml(currentOpdsCategory) + '</h3>';
+        '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim' +
+        (currentOpdsCategory ? '/' + escapeHtml(currentOpdsCategory) : ' (all entries)') + '</h3>';
     if (dropdownLang || dropdownSubj || dropdownDate) {
         bodyDoc += '<div class="row" style="margin-left:0; margin-right:0;">';
         if (dropdownLang) bodyDoc += '<div class="col-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>';
@@ -1021,6 +1123,13 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         if (dropdownDate) bodyDoc += '<div class="col-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>';
         bodyDoc += '</div>';
     }
+    // The value is written as an attribute (and kept in sync on input) so that it survives the
+    // innerHTML round-trips performed by the download panels
+    bodyDoc += '<div class="row" style="margin-left:0; margin-right:0; padding-bottom:10px;">' +
+        '<div class="col-12" style="padding-top:4px;">Filter:&nbsp;&nbsp;' +
+        '<input type="search" id="kiwixFilter" class="kiwix-filter" autocomplete="off" spellcheck="false" ' +
+        'placeholder="Filter by name or description" value="' + escapeHtml(currentOpdsFilter) + '" />' +
+        '&nbsp;&nbsp;<span id="kiwixFilterCount" style="opacity:0.75;"></span></div></div>';
     bodyDoc += '</div>';
     var opdsRowStyle = 'display:flex;min-width:740px;white-space:nowrap;';
     var opdsNameColStyle = 'flex:0 0 300px;max-width:300px;padding-right:8px;overflow:hidden;text-overflow:ellipsis;';
@@ -1034,9 +1143,13 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         '</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;white-space:nowrap;margin-bottom:10px;overflow:auto;">';
     bodyDoc += '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" data-kiwix-kind="category-root" data-kiwix-dl="' + escapeHtml(params.kiwixCatalogCategories) + '">Back to category list</a></div><div style="' + opdsSizeColStyle + '"></div><div style="' + opdsDateColStyle + '"></div><div style="' + opdsDescColStyle + '"></div></div>';
+    var filterTokens = getFilterTokens(currentOpdsFilter);
+    var shown = 0;
     for (var i = 0; i < currentOpdsEntries.length; i++) {
         var entry = currentOpdsEntries[i];
-        var displayStyle = entryMatchesFilters(entry, lang, subj, kiwixDate) ? '' : ' style="display:none;"';
+        var matches = entryMatchesFilters(entry, lang, subj, kiwixDate, filterTokens);
+        if (matches) shown++;
+        var displayStyle = matches ? '' : ' style="display:none;"';
         bodyDoc += '<div class="wikiLang" data-kiwixlanguages="' + escapeHtml(entry.languages.join(',')) + '" data-kiwixsubject="' + escapeHtml(entry.subject) + '" data-kiwixdate="' + escapeHtml(entry.date) + '"' + displayStyle + '>' +
             '<div style="' + opdsRowStyle + '">' +
             '<div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" style="' + opdsNameLinkStyle + '" title="' + escapeHtml(entry.filename) + '" data-kiwix-kind="archive" data-kiwix-dl="' + escapeHtml(entry.acquisitionHref) + '">' + escapeHtml(entry.filename) + '</a></div>' +
@@ -1066,12 +1179,33 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     if (subjSel) subjSel.value = subj || 'All';
     if (dateSel) dateSel.value = kiwixDate || 'All';
 
-    var refreshFilters = function () {
-        renderOpdsEntries(entriesUrl, langSel ? langSel.value : '', subjSel ? subjSel.value : '', dateSel ? dateSel.value : '');
-    };
-    if (langSel) langSel.addEventListener('change', refreshFilters);
-    if (subjSel) subjSel.addEventListener('change', refreshFilters);
-    if (dateSel) dateSel.addEventListener('change', refreshFilters);
+    setFilterCount(shown);
+
+    // All four controls now filter the rendered rows in place instead of re-rendering the list, which
+    // both keeps the text box focused while typing and avoids rebuilding ~3600 rows per keystroke
+    if (langSel) langSel.addEventListener('change', applyOpdsFilters);
+    if (subjSel) subjSel.addEventListener('change', applyOpdsFilters);
+    if (dateSel) dateSel.addEventListener('change', applyOpdsFilters);
+
+    var filterBox = document.getElementById('kiwixFilter');
+    if (filterBox) {
+        filterBox.addEventListener('input', function () {
+            currentOpdsFilter = this.value;
+            this.setAttribute('value', this.value);
+            applyOpdsFilters();
+        });
+        // Escape clears the filter. The app's global key handlers already exempt input elements, so
+        // no other key needs intercepting here.
+        filterBox.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && this.value) {
+                e.preventDefault();
+                this.value = '';
+                currentOpdsFilter = '';
+                this.setAttribute('value', '');
+                applyOpdsFilters();
+            }
+        });
+    }
     document.getElementById('indexHeader').scrollIntoView();
 }
 
@@ -1081,11 +1215,15 @@ function processOpdsData (docText, requestUrl, lang, subj, kiwixDate) {
     if (isOpdsCategoryFeed(xml)) {
         currentOpdsEntries = [];
         currentOpdsCategory = '';
+        currentOpdsFilter = '';
         renderOpdsCategories(xml, requestUrl);
         return true;
     }
+    // Carry the filter across a re-fetch of the same feed (returning from a download panel), but drop
+    // it when moving to a different one, so it cannot silently empty a newly opened category
+    if (requestUrl !== currentBrowseUrl) currentOpdsFilter = '';
     currentOpdsEntries = parseOpdsEntries(xml, requestUrl);
-    currentOpdsCategory = currentOpdsEntries.length ? currentOpdsEntries[0].category : '';
+    currentOpdsCategory = getCommonCategory(currentOpdsEntries);
     renderOpdsEntries(requestUrl, lang, subj, kiwixDate);
     return true;
 }
@@ -1188,6 +1326,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><b>Download with bittorrent:</b></p>' +
             '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
             if (body) body.innerHTML = bodyDoc;
+            preserveFilterControls();
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
@@ -1294,6 +1433,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         setPanelContent('dl-panel-heading', headerDoc);
         var body = document.getElementById('dl-panel-body');
         if (body) body.innerHTML = bodyDoc;
+        preserveFilterControls();
         downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
         if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-danger');
         if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
