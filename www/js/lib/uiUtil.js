@@ -1426,7 +1426,11 @@ function setThemeColorFromNavbar () {
  * Call this on startup, whenever the preference changes, and on the overlay's geometrychange event
  */
 function setTitleBarState () {
-    document.documentElement.classList.toggle('show-titlebar', params.showTitleBar);
+    // Gated on the overlay actually being drawn, and not merely on the setting, so that a user who once
+    // turned the title bar on cannot be left with its styling applied in a context that has a title bar
+    // of its own. The bar's own height collapses to zero by itself in that case, because it is set from
+    // env(titlebar-area-height), but rules that do not depend on those variables would otherwise persist
+    document.documentElement.classList.toggle('show-titlebar', params.showTitleBar && windowControlsOverlayIsVisible());
     document.getElementById('showTitleBarLabel').style.display =
         windowControlsOverlayIsVisible() ? 'block' : 'none';
     document.getElementById('wcoTitleBarText').textContent = document.title;
