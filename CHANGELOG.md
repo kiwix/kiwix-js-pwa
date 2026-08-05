@@ -7,12 +7,13 @@
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
 * ENHANCEMENT: When the app supplies its own title bar, it stays in place as the navigation bar slides away on scroll
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
+* ENHANCEMENT: The top navigation bar now matches the height of the window controls overlay, and follows it when the user shows or hides the title bar
 * FIX: The library's Language, Subject and Date filters now apply instantly, without rebuilding the list, and no longer reset when returning to the list
 * FIX: Auto-updates now enabled for the macOS Electron app
-* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
-* ENHANCEMENT: The top navigation bar now matches the height of the window controls overlay, and follows it when the user shows or hides the title bar
-* REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
 * FIX: The colour of the window frame now follows the app's navigation bar, so the window buttons no longer sit in a contrasting block in light mode
+* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
+* REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
+* REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
