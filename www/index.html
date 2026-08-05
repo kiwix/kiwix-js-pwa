@@ -103,19 +103,22 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Fast, resumable downloads of ZIM archives over BitTorrent directly in-app (Electron only)</li>
-                                <li>Optionally seed a downloaded archive while the app remains open to help the community</li>
-                                <li>More reliable ZIM download library with richer descriptions, now using the Kiwix catalogue service (OPDS)</li>
-                                <li>MacOS packages are now signed and notarized, and signing of Windows packages has recommenced</li>
-                                <li>Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)</li>
-                                <li>App now reloads current article immediately when switching between Restricted and ServiceWorker Modes</li>
-                                <li>Fixed regression whereby Windows Setup and self-extracting portable packages failed to decompress during installation</li>
-                                <li>Fixed regression with the Windows 7/8/8.1 package which was being built against an incompatible Electron version</li>
-                                <li>New keyboard shortcuts for article search: <b>/</b>, <b>Ctrl-K</b> and <b>Home</b></li>
+                                <li>[New] Fixed the window buttons of recent Edge versions covering the app's own navigation buttons</li>
+                                <li>[New] Restored the draggable area for moving the app window</li>
+                                <li>[New] Setting in Configuration &gt; Display settings to emulate the title bar</li>
+                                <li>[3.8.8] Fast, resumable downloads of ZIM archives over BitTorrent directly in-app (Electron only)</li>
+                                <li>[3.8.8] Optionally seed a downloaded archive while the app remains open to help the community</li>
+                                <li>[3.8.8] More reliable ZIM download library with richer descriptions, now using the Kiwix catalogue service (OPDS)</li>
+                                <li>[3.8.8] MacOS packages are now signed and notarized, and signing of Windows packages has recommenced</li>
+                                <li>[3.8.8] Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)</li>
+                                <li>[3.8.8] App now reloads current article immediately when switching between Restricted and ServiceWorker Modes</li>
+                                <li>[3.8.8] Fixed regression whereby Windows Setup and self-extracting portable packages failed to decompress during installation</li>
+                                <li>[3.8.8] Fixed regression with the Windows 7/8/8.1 package which was being built against an incompatible Electron version</li>
+                                <li>[3.8.8] New keyboard shortcuts for article search: <b>/</b>, <b>Ctrl-K</b> and <b>Home</b></li>
                                 <li>Fixed error clicking links in Zimit-based archives in the NWJS app</li>
-                                <li>Fixed broken printing of articles</li>
-                                <li>Fixed display of grid-style (masonry) landing pages</li>
-                                <li>Updated Electron and NWJS frameworks, plus many security updates to dependencies</li>
+                                <li>[3.8.8] Fixed broken printing of articles</li>
+                                <li>[3.8.8] Fixed display of grid-style (masonry) landing pages</li>
+                                <li>[3.8.8] Updated Electron and NWJS frameworks, plus many security updates to dependencies</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
@@ -236,6 +239,8 @@
     <section id="search-article" role="region">
         <header id="top">
             <nav id="navbar" class="navbar navbar-light" role="navigation">
+                <!-- Emulated title bar, shown only when the browser draws the window controls overlay over the app and the user has asked for a title bar -->
+                <div id="wcoTitleBar"><span id="wcoTitleBarText"></span></div>
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch" role="search" aria-label="Search articles">
@@ -1049,6 +1054,12 @@
                                                     <input type="checkbox" name="triStateThemeRandomBtn" id="triStateThemeRandomBtnCheck">
                                                     <span class="checkmark"></span>
                                                     <b>Show toolbar buttons</b>: [ <b><span id="triStateThemeRandomBtnState"></span></b> ] (select to show random or theme buttons in toolbar)
+                                                </label>
+                                                <!-- Only shown while the browser is drawing the window buttons over the app: see setTitleBarState() in app.js -->
+                                                <label class="checkbox" id="showTitleBarLabel" style="display: none;">
+                                                    <input type="checkbox" name="showTitleBar" id="showTitleBarCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Show a title bar</b> (your browser is drawing the window buttons over this app instead of giving it a title bar, so the app can supply one of its own)
                                                 </label>
                                                 <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This resets the display on app launch or when the app is resized, to fix UI on excternal monitors. It increases load time, so turn off if you do not use a secondary display.">
                                                     <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">

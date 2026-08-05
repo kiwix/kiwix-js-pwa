@@ -561,6 +561,10 @@ function printIntercept () {
 var localSearch = {};
 var timeoutFIAKeyup = null;
 
+// The navbar keeps clear of the Window Controls Overlay by default (see the html:not(.no-wco) rules in
+// app.css), so we only have to mark the document when the master switch turns that adaptation off
+if (!params.useWindowControlsOverlay) document.documentElement.classList.add('no-wco');
+
 function clearFindInArticle () {
     if (document.getElementById('row2').style.display === 'none') return;
     if (typeof localSearch !== 'undefined' && localSearch.remove) {
@@ -792,7 +796,46 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
 // Helper function to calculate navbar height
 function setNavbarHeight (height, relativeUIFontSize) {
     const navbar = document.getElementById('navbar');
-    navbar.style.height = height * (relativeUIFontSize / 100) + 'px';
+    let scaledHeight = height * (relativeUIFontSize / 100);
+    const titleBarHeight = uiUtil.windowControlsOverlayIsVisible()
+        ? navigator.windowControlsOverlay.getTitlebarAreaRect().height : 0;
+    if (titleBarHeight) {
+        scaledHeight = params.showTitleBar
+            // Our emulated title bar sits above the search row, so the navbar has to accommodate both
+            ? scaledHeight + titleBarHeight
+            // Otherwise the navbar is doubling as the title bar, so it must be at least as tall as the
+            // window buttons drawn over it, or they visibly overhang the article below
+            : Math.max(scaledHeight, titleBarHeight);
+    }
+    navbar.style.height = scaledHeight + 'px';
+}
+
+uiUtil.setTitleBarState();
+
+document.getElementById('showTitleBarCheck').addEventListener('change', function (e) {
+    params.showTitleBar = e.target.checked;
+    settingsStore.setItem('showTitleBar', params.showTitleBar, Infinity);
+    uiUtil.setTitleBarState();
+    setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
+    resizeIFrame();
+});
+
+// The user can show or hide the title bar at any moment, and the overlay geometry also changes when the
+// window is resized, snapped, or moved to a monitor with a different scaling, so re-apply the height on
+// each change (the width is handled entirely in CSS). The event fires very frequently while dragging,
+// hence the debounce.
+if (params.useWindowControlsOverlay && navigator.windowControlsOverlay) {
+    let wcoTimeout;
+    navigator.windowControlsOverlay.addEventListener('geometrychange', function () {
+        clearTimeout(wcoTimeout);
+        wcoTimeout = setTimeout(function () {
+            uiUtil.setTitleBarState();
+            // The find-in-article row adds 35px to the base navbar height (see the findText handler)
+            const findRowShowing = document.getElementById('row2').style.display !== 'none';
+            setNavbarHeight(params.navbarHeight + (findRowShowing ? 35 : 0), params.relativeUIFontSize);
+            resizeIFrame();
+        }, 200);
+    });
 }
 
 function setRelativeUIFontSize (value) {
@@ -851,6 +894,8 @@ document.getElementById('btnTop').addEventListener('click', function () {
     // If the toolbar is hidden, show it instead of jumping to top
     if (!/\(0p?x?\)/.test(header.style.transform)) {
         header.style.transform = 'translateY(0)';
+        // Release the emulated title bar, which hideSlidingUIElements holds down against the header
+        document.getElementById('wcoTitleBar').style.transform = '';
     } else {
         if (!params.hideToolbars) iframe.style.transform = 'translateY(-1px)';
         iframe.contentWindow.scrollTo({
@@ -2721,6 +2766,8 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? 'img/icons/wikivoyage-black-32.png' : /medicine|mdwiki/i.test(params.storedFile) ? 'img/icons/wikimed-blue-32.png' : 'img/icons/kiwix-blue-32.png';
         if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = 'img/icons/wikivoyage-90.png';
     }
+    // Keep the window frame (and hence the Window Controls Overlay strip) in step with the navbar
+    uiUtil.setThemeColorFromNavbar();
     refreshCacheStatus();
     setOPFSUI();
     return value;

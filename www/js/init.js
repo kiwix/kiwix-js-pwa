@@ -126,6 +126,8 @@ params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageD
 params['manipulateImages'] = getSetting('manipulateImages') === true; // Makes dataURIs by default instead of BLOB URIs for images
 params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') === true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
+params['useWindowControlsOverlay'] = true; // MASTER SWITCH: set to false to ignore the Window Controls Overlay entirely and keep the navbar full-width under the window buttons (see the html:not(.no-wco) rules in app.css, and uiUtil.windowControlsOverlayIsVisible)
+params['showTitleBar'] = getSetting('showTitleBar') === true; // Draws an emulated title bar in the strip occupied by the window controls overlay, for users who prefer the window buttons not to sit over the app's own controls (has no effect unless the overlay is being drawn)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
 params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
@@ -307,6 +309,7 @@ document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === t
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === 'top' ? 'top' : params.hideToolbars ? 'both' : 'never');
+document.getElementById('showTitleBarCheck').checked = params.showTitleBar;
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
 document.getElementById('showPopoverPreviewsCheck').checked = params.showPopoverPreviews;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;

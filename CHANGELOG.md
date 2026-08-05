@@ -4,14 +4,23 @@
 
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * FIX: Auto-updates now enabled for the macOS Electron app
+* FEATURE: New setting to show a title bar when the browser draws the window controls overlay over the app, restoring the choice that recent versions of Edge removed
+* ENHANCEMENT: When the app supplies its own title bar, it now stays in place as the navigation bar slides away on scrolling, as a real title bar would
+* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
+* ENHANCEMENT: The top navigation bar now matches the height of the window controls overlay, and follows it when the user shows or hides the title bar
+* REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
+* FIX: The colour of the window frame now follows the app's navigation bar, so the window buttons no longer sit in a contrasting block in light mode
+* REGRESSION: Fix serious bootloop when a new GitHub release is found
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
-* DEV: Publish releases with a new script instead of electron-builder's GitHub publisher, usig smart routing for human vs autoupdate releases
+* DEV: Publish releases with a new script instead of electron-builder's GitHub publisher, using smart routing for human vs autoupdate releases
 * DEV: Derive `minimumSystemVersion` from the built app rather than hardcoding it
 * DEV: Fail the publish if any modern macOS variant is missing
 * DEV: Verify each disk image in CI by mounting it and re-checking the signature, notarization, etc.
 * DEV: Publish disk images rather than zips to download.kiwix.org and S3
+* DEV: For the NW.js app, `npm start` now runs the x64 version
+* DEV: When running Create-DraftRelease with winget switch, select correct setup package
 
 ## Release 3.8.7 / 3.8.8
 

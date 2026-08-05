@@ -36,6 +36,10 @@ var itemsCount = false;
 // Placeholders for the articleContainer, header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
+// The emulated title bar, which is the topmost strip of the header, and has zero height except when the
+// browser is drawing the window controls overlay over the app and the user has asked for a title bar of
+// the app's own (see the html.show-titlebar rules in app.css)
+const titleBar = document.getElementById('wcoTitleBar');
 let articleContainer = document.getElementById('articleContent');
 
 /**
@@ -48,15 +52,26 @@ function hideSlidingUIElements () {
     const footerHeight = parseFloat(footerStyles.height) + parseFloat(footerStyles.marginTop) - 2;
     const headerStyles = getComputedStyle(header);
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom) - 2;
+    // The emulated title bar is the topmost strip of the header, so it is the first thing to leave the
+    // window when the header slides up. Pushing it back down by the same amount holds it against the top
+    // of the window while the search row disappears beneath it: a title bar is window chrome and should
+    // not scroll away, and it is the only part of the app the user can grab to move the window once the
+    // toolbars have gone. It cannot be pinned in CSS instead, because sticky positioning needs a
+    // scrollport (nothing here scrolls, the header is transformed) and a fixed child of a transformed
+    // ancestor is positioned against that ancestor, so it would travel with the header regardless
+    const titleBarHeight = titleBar ? titleBar.offsetHeight : 0;
+    if (titleBarHeight) titleBar.style.transform = 'translateY(' + headerHeight + 'px)';
     if (params.hideToolbars === true) { // Only hide footer if requested
         footer.style.transform = 'translateY(' + footerHeight + 'px)';
     }
-    articleContainer.style.height = window.innerHeight + 'px';
+    // With the title bar left behind, the article starts below it rather than at the top of the window,
+    // so it slides up that much less and has that much less room to fill
+    articleContainer.style.height = window.innerHeight - titleBarHeight + 'px';
     // articleContainer.style.height = document.documentElement.clientHeight + 'px';
     header.style.transform = 'translateY(-' + headerHeight + 'px)';
-    articleElement.style.transform = 'translateY(-' + headerHeight + 'px)';
+    articleElement.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
     // Needed by IE11 (only browser that has window.navigator.msSaveBlob)
-    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + headerHeight + 'px)';
+    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
 }
 
 /**
@@ -68,6 +83,8 @@ function showSlidingUIElements () {
     const headerStyles = getComputedStyle(document.getElementById('top'));
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom);
     header.style.transform = 'translateY(0)';
+    // The title bar travels back up with the header, so it no longer needs to be held down
+    if (titleBar) titleBar.style.transform = '';
     // Needed for Windows Mobile to prevent header disappearing beneath iframe
     articleElement.style.transform = 'translateY(-1px)';
     articleContainer.style.transform = 'translateY(-1px)';
@@ -1365,6 +1382,64 @@ function appIsFullScreen () {
 }
 
 /**
+ * A function to test whether Chromium is currently drawing the Window Controls Overlay (the window
+ * buttons and app menu) over the app's own content, instead of reserving a title bar for them. This
+ * happens when the app is installed and the manifest asks for 'window-controls-overlay' in
+ * display_override, but the user can show or hide the title bar at any time, so the state must be
+ * queried rather than cached. Respects the params.useWindowControlsOverlay master switch
+ * @returns {Boolean} True if the Window Controls Overlay is currently overlapping the app's content
+ */
+function windowControlsOverlayIsVisible () {
+    return !!(params.useWindowControlsOverlay && navigator.windowControlsOverlay && navigator.windowControlsOverlay.visible);
+}
+
+/**
+ * Matches the document's theme-color to the current background colour of the navigation bar. Chromium
+ * paints the app window's frame with the theme-color, and that includes the strip of window buttons in
+ * the Window Controls Overlay, which is drawn over our content rather than behind it. If the two do not
+ * match, the buttons sit in a contrasting block that does not line up with the navbar (most obvious in
+ * light mode, where the navbar is pale but the declared theme-color is black). Reading the colour back
+ * from the navbar rather than hardcoding it means this keeps working if the UI theme colours change.
+ * The exception is when the user has asked for an emulated title bar, which is deliberately black in
+ * both themes, and which the buttons should therefore sit in rather than beside
+ */
+function setThemeColorFromNavbar () {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    var navbar = document.getElementById('navbar');
+    if (!meta || !navbar) return;
+    // When we are drawing our own title bar the frame should match that bar rather than the navbar, so
+    // that the window buttons sit in the same black strip (see the #wcoTitleBar rules in app.css)
+    var colour = params.showTitleBar && windowControlsOverlayIsVisible() ? 'rgb(0, 0, 0)'
+        : getComputedStyle(navbar).backgroundColor;
+    // A transparent navbar would make the window buttons unreadable, so leave the declared colour alone
+    if (!colour || /^rgba\(0, 0, 0, 0\)$|^transparent$/.test(colour)) return;
+    meta.setAttribute('content', colour);
+}
+
+/**
+ * Applies the user's emulated title bar preference, and shows or hides the setting that controls it. The
+ * setting is only meaningful while Chromium is drawing the Window Controls Overlay: without an overlay
+ * there is either a real title bar already (standalone mode, Electron, NWJS) or none to be had (a browser
+ * tab), and in both cases an emulated one would be dead space, so we hide the control rather than leave
+ * the user a switch that does nothing. Note that the CSS collapses the emulated bar to zero height
+ * whenever the overlay is absent, so the preference can safely stay set while it is inapplicable.
+ * Call this on startup, whenever the preference changes, and on the overlay's geometrychange event
+ */
+function setTitleBarState () {
+    // Gated on the overlay actually being drawn, and not merely on the setting, so that a user who once
+    // turned the title bar on cannot be left with its styling applied in a context that has a title bar
+    // of its own. The bar's own height collapses to zero by itself in that case, because it is set from
+    // env(titlebar-area-height), but rules that do not depend on those variables would otherwise persist
+    document.documentElement.classList.toggle('show-titlebar', params.showTitleBar && windowControlsOverlayIsVisible());
+    document.getElementById('showTitleBarLabel').style.display =
+        windowControlsOverlayIsVisible() ? 'block' : 'none';
+    document.getElementById('wcoTitleBarText').textContent = document.title;
+    // The frame colour depends on whether we are drawing a title bar, so it has to be re-evaluated here
+    // as well as on a change of theme
+    setThemeColorFromNavbar();
+}
+
+/**
  * Puts the requested element into full-screen mode, or cancels full-screen mode if no element is provided
  * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode
  * @returns {Promise<Boolean>} A Promise that resolves to true if the element entered full-screen mode, false if full-screen mode cancelled
@@ -1771,6 +1846,9 @@ export default {
     checkServerIsAccessible: checkServerIsAccessible,
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
+    windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
+    setThemeColorFromNavbar: setThemeColorFromNavbar,
+    setTitleBarState: setTitleBarState,
     lockDisplayOrientation: lockDisplayOrientation,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
