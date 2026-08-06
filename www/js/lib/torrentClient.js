@@ -1,4 +1,4 @@
-/**
+﻿/**
  * torrentClient.js: Renderer-side adapter for in-app BitTorrent downloads of ZIM archives.
  * Presents a single framework-neutral API to the UI, and internally selects the backend:
  * - Electron: calls the main process (torrentDownloader.cjs) over IPC via window.electronAPI
