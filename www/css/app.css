@@ -171,10 +171,11 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     overflow-wrap: break-word;
 }
 
-/* #wcoTitleBar is held against the top of the window by a transform that cancels the one sliding #top
-   away (see hideSlidingUIElements), so it has to be animated on exactly the same curve over exactly the
-   same time, or it lurches to its offset while the header eases into place and the bar appears to fly */
-#top, #articleContent, #footer, article, #wcoTitleBar {
+/* #navbar .container-fluid is the slide-away target (see hideSlidingUIElements): it slides out from
+   under the title bar rather than taking the whole header with it, so #top and #wcoTitleBar no longer
+   need a coordinated transition. These three elements animate on the same ease so the layout shifts
+   smoothly together */
+#articleContent, #footer, article, #navbar .container-fluid {
     transition: transform 0.5s ease;
 }
 
