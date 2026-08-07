@@ -302,6 +302,7 @@
                         <li><a href="#windows">Window and tab management</a></li>
                         <li><a href="browsers">Browser support</a></li>
                         <li><a href="#expressServer">Express server (Electron app)</a></li>
+                        <li><a href="#webTorrent">BitTorrent downloads (Electron app)</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -717,6 +718,50 @@
                         <li>The server only allows connections from your local network (private IP ranges), not from the public internet</li>
                         <li>External access is disabled by default for security and only applies to the current session</li>
                     </ul>
+
+                    <h3 id="webTorrent">BitTorrent downloads (Electron app)</h3>
+
+                    <p>
+                        When running in the Electron framework, the app includes a built-in BitTorrent client for downloading large ZIM
+                        archives directly from the Download Library. BitTorrent downloads are recommended for large archives because interrupted downloads can be resumed, even after closing the application.
+                    </p>
+
+                    <p>
+                        <b>Downloading archives:</b>
+                    </p>
+
+                    <ol>
+                        <li>Open the Download Library and browse or search for the archive you want to download.</li>
+                        <li>If the archive supports BitTorrent, click <b>Download via BitTorrent</b>.</li>
+                        <li>Choose the default download folder or select another location if required, then start the download.</li>
+                        <li>Your Firewall may prompt you to allow network access the first time the BitTorrent client is used. Approve this
+                            to enable BitTorrent downloads.</li>
+                    </ol>
+
+                    <p>
+                        <b>Managing downloads:</b>
+                    </p>
+
+                    <ul>
+                        <li>While a download is in progress, selecting Download via BitTorrent again lets you either continue or stop the download.</li>
+                        <li>If you stop a download, the partially downloaded data is kept. Selecting <b>Download via BitTorrent</b> for the
+                            same archive again resumes the download from where it left off.</li>
+                        <li>If the application is closed while a download is in progress, you will be prompted to <b>Resume</b> or
+                            <b>Discard</b> the download when the application is restarted.</li>
+                        <li>Choosing <b>Resume</b> continues the download using the previously downloaded data.</li>
+                        <li>Choosing <b>Discard</b> deletes the saved partial download.</li>
+                    </ul>
+
+                    <p>
+                        <b>Important notes:</b>
+                    </p>
+
+                    <ul>
+                        <li>Completed downloads continue seeding to other BitTorrent users while the application is running.</li>
+                        <li>You can disable seeding in <b>Configuration &gt; Download library</b> by clearing the <b>Keep seeding BitTorrent
+                                downloads</b> option.</li>
+                    </ul>
+
                     <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call

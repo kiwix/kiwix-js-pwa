@@ -156,6 +156,12 @@ When the app is running, the Home tab displays a localhost URL (by default `http
 - Access from other devices uses HTTP rather than HTTPS, so browsers will run the application in **Restricted mode** instead of **ServiceWorker Mode**. This is generally suitable for reading Wikipedia and other static ZIM archives, but some dynamic ZIMs may have limited functionality.
 - For your security, external network access is disabled by default, applies only to the current session, and accepts connections only from the local network.
 
+### BitTorrent downloads (Electron)
+
+The Electron edition of Kiwix JS PWA includes a built-in BitTorrent client for downloading large ZIM archives directly within the application. Downloads can be resumed if interrupted, including after restarting the application. Previously downloaded data is reused automatically.
+
+For more information about managing BitTorrent downloads, see the in-app About documentation.
+
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
