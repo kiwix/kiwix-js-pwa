@@ -15,6 +15,7 @@
 * REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
+* INFO: Document the Electron app's server feature in README
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
@@ -25,6 +26,7 @@
 * DEV: Publish disk images rather than zips to download.kiwix.org and S3
 * DEV: For the NW.js app, `npm start` now runs the x64 version
 * DEV: When running Create-DraftRelease with winget switch, select correct setup package
+* DEV: Update javascript-libzim to v0.95
 
 ## Release 3.8.7 / 3.8.8
 
