@@ -11,6 +11,7 @@
 * FIX: The library's Language, Subject and Date filters now apply instantly, without rebuilding the list, and no longer reset when returning to the list
 * FIX: Auto-updates now enabled for the macOS Electron app
 * FIX: The colour of the window frame now follows the app's navigation bar, so the window buttons no longer sit in a contrasting block in light mode
+* FIX: Popover previews of Wikimedia article links now work when reading the archive with the experimental libzim reader
 * REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
 * REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives

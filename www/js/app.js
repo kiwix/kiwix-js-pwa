@@ -6161,6 +6161,9 @@ var articleLoadedSW = function (dirEntry, container) {
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
             popovers.attachKiwixPopoverCss(doc, darkTheme);
+            // With the libzim backend we do not run parseAnchorsJQuery (see above), so no popover listeners are attached to
+            // individual anchors: instead we attach delegated listeners to the article window [kiwix-js #1336]
+            if (params.useLibzim) attachPopoverTriggerEvents(articleWindow);
         }
         params.isLandingPage = false;
     } else if (unhideArticleTries > 0) {
@@ -6180,6 +6183,117 @@ var articleLoadedSW = function (dirEntry, container) {
         }
     };
 };
+
+/**
+ * Attaches delegated popover trigger events to the given window
+ * DEV: This is only used with the libzim backend, because with the custom backend the equivalent listeners are attached
+ * to each anchor individually in addListenersToLink (which additionally handles link interception and window opening)
+ * @param {Window} win The window to which to attach popover trigger events
+ */
+function attachPopoverTriggerEvents (win) {
+    // The popover feature requires as a minimum that the browser supports the css matches function
+    // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled for such browsers)
+    if (!win || !win.document || !appstate.wikimediaZimLoaded || !params.showPopoverPreviews || !('matches' in Element.prototype)) {
+        return;
+    }
+    // Add event listeners to the article window to check when anchors are hovered, focused or touched
+    // DEV: Duplicate registrations of the same function reference are ignored by the browser, so these are safe to re-attach
+    win.addEventListener('mouseover', evokePopoverEvents, true);
+    win.addEventListener('focus', evokePopoverEvents, true);
+    // Conditionally add event listeners to support touch events with fallback to pointer events
+    if (window.navigator.maxTouchPoints > 0) {
+        win.addEventListener('touchstart', evokePopoverEvents, true);
+    } else {
+        win.addEventListener('pointerdown', evokePopoverEvents, true);
+    }
+}
+
+// Throttle for the popover event handler to prevent multiple activations with mouse movement
+var popoverThrottle = false;
+
+/**
+ * Conditionally evokes popover events subject to a throttle
+ * @param {Event} event The event produced by the calling action
+ */
+function evokePopoverEvents (event) {
+    // Check if the hovered or focused element or its parent is a link
+    if (popoverThrottle) return;
+    popoverThrottle = true;
+    setTimeout(function () {
+        handlePopoverEvents(event);
+        popoverThrottle = false;
+    }, 10);
+};
+
+/**
+ * Event handler for attaching preview popovers
+ * @param {Event} ev The event produced by the mouseover, focus, touchstart or pointerdown action
+ */
+function handlePopoverEvents (ev) {
+    var anchor = ev.target;
+    var articleDoc = anchor.ownerDocument;
+    if (!articleDoc) return;
+    var win = articleDoc.defaultView;
+    while (anchor && anchor !== win && anchor.nodeName !== 'A') {
+        anchor = anchor.parentNode;
+    }
+    // If we're not hovering a link, then we can exit
+    if (!anchor || anchor.nodeName !== 'A') return;
+    var suppressContextMenuHandler = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    // Prevent context menu on this anchor element
+    anchor.addEventListener('contextmenu', suppressContextMenuHandler, true);
+    if (/touchstart|pointerdown/.test(ev.type)) {
+        anchor.touched = true; // Used to prevent dismissal of popover on mouseout if initiated by touch
+    }
+    if (anchor.style.userSelect === undefined) {
+        // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
+        anchor.style.webkitUserSelect = 'none';
+        anchor.style.msUserSelect = 'none';
+    }
+    // Check if a popover div is currently being hovered
+    var divArray = Array.prototype.slice.call(articleDoc.getElementsByClassName('kiwixtooltip'));
+    var divIsHovered = divArray.some(function (div) {
+        return div.matches(':hover');
+    });
+    // Only add a popover to the link if a current popover is not being hovered (prevents popovers showing for links in a popover)
+    if (!divIsHovered) {
+        // Prevent text selection while popover is open in modern browsers
+        anchor.style.userSelect = 'none';
+        var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+        // Get and populate the popover corresponding to the hovered or focused link
+        popovers.populateKiwixPopoverDiv(ev, anchor, appstate, darkTheme, appstate.selectedArchive);
+    }
+    var outHandler = function (e) {
+        setTimeout(function () {
+            anchor.popoverisloading = false;
+            if (/blur/.test(e.type) || !anchor.touched) {
+                popovers.removeKiwixPopoverDivs(articleDoc);
+                anchor.touched = false;
+            }
+            anchor.style.webkitUserSelect = 'auto';
+            anchor.style.msUserSelect = 'auto';
+            anchor.style.userSelect = 'auto';
+            anchor.removeEventListener(e.type, outHandler);
+            anchor.removeEventListener('contextmenu', suppressContextMenuHandler, true);
+        }, 250);
+    };
+    // Clean up when user stops hovering, lifts pointer, stops touching, or unfocuses (blurs) the link
+    if (/mouseover/.test(ev.type)) {
+        anchor.addEventListener('mouseleave', outHandler);
+    }
+    if (/pointerdown/.test(ev.type)) {
+        anchor.addEventListener('pointerup', outHandler);
+    }
+    if (/touchstart/.test(ev.type)) {
+        anchor.addEventListener('touchend', outHandler);
+    }
+    if (ev.type === 'focus') {
+        anchor.addEventListener('blur', outHandler);
+    }
+}
 
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
@@ -6392,6 +6506,10 @@ function handleMessageChannelForLibzim (event) {
             // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
             var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
             if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
+                // Update appstate for HTML content, so that link-based navigation is tracked correctly (this is done by
+                // addListenersToLink and readArticle with the custom backend, neither of which runs in libzim mode) [kiwix-js #1385]
+                appstate.baseUrl = encodeURI(title.replace(/[^/]+$/, ''));
+                appstate.expectedArticleURLToBeDisplayed = title;
                 if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
                 articleContainer.onload = function () {
                     // if (loaded) return;
