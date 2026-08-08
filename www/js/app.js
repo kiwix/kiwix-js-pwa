@@ -5974,9 +5974,14 @@ function filterClickEvent (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
-            // Establish whether this click is destined for a new window or tab, either because the user requested one with a
-            // modifier key or middle-click, or because the popover's break-out icon set the newcontainer property on the anchor
-            var opensNewContainer = clickedAnchor.newcontainer || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
+            // Establish whether this click is destined for a new window or tab, either because the anchor targets another
+            // browsing context, or because the user requested one with a modifier key or middle-click, or because the
+            // popover's break-out icon set the newcontainer property on the anchor
+            // DEV: _self, _parent and _top all stay within the current window, but any other target names a different
+            // browsing context, which the browser will open as a new window or tab unless a frame of that name exists
+            var anchorTarget = clickedAnchor.target;
+            var opensNewContainer = clickedAnchor.newcontainer || event.ctrlKey || event.metaKey || event.shiftKey ||
+                event.button === 1 || (anchorTarget && !/^_(self|parent|top)$/i.test(anchorTarget));
             // With the libzim backend, addListenersToLink does not run, so nothing actions the break-out icon's request for a
             // new container: we do it here. No further window management is needed, because the ServiceWorker asks this
             // instance for the content of the new window in any case [kiwix-js-pwa #912]
@@ -6520,7 +6525,11 @@ function handleMessageChannelForLibzim (event) {
             // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
             // loaded = true;
         } else {
-            dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
+            // DEV: The libzim worker returns the full path, but the rest of the app expects a dirEntry to carry the namespace
+            // and the url separately, and reconstructs the path as namespace + '/' + url (e.g. to store the last-visited page)
+            var pathParts = title.match(/^([-ABCHIJMUVWX])\/(.*)$/);
+            dirEntry.namespace = pathParts ? pathParts[1] : '';
+            dirEntry.url = pathParts ? pathParts[2] : title;
             // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
             var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
             // The ServiceWorker broadcasts its request to every window controlled by this app, so the content we are serving
