@@ -5974,10 +5974,32 @@ function filterClickEvent (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
+            // Establish whether this click is destined for a new window or tab, either because the anchor targets another
+            // browsing context, or because the user requested one with a modifier key or middle-click, or because the
+            // popover's break-out icon set the newcontainer property on the anchor
+            // DEV: _self, _parent and _top all stay within the current window, but any other target names a different
+            // browsing context, which the browser will open as a new window or tab unless a frame of that name exists
+            var anchorTarget = clickedAnchor.target;
+            var opensNewContainer = clickedAnchor.newcontainer || event.ctrlKey || event.metaKey || event.shiftKey ||
+                event.button === 1 || (anchorTarget && !/^_(self|parent|top)$/i.test(anchorTarget));
+            // With the libzim backend, addListenersToLink does not run, so nothing actions the break-out icon's request for a
+            // new container: we do it here. No further window management is needed, because the ServiceWorker asks this
+            // instance for the content of the new window in any case [kiwix-js-pwa #912]
+            if (params.useLibzim && clickedAnchor.newcontainer && params.windowOpener) {
+                event.preventDefault();
+                event.stopPropagation();
+                clickedAnchor.newcontainer = false;
+                console.debug('filterClickEvent opening new ' + params.windowOpener + ' for ' + decHref);
+                window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                return;
+            }
             // We need to ensure that the link we wish to load is not already loaded in the article container, to handle links which are to the same document
             // e.g., those containing fragments at the end of a relative URL, or those containing querystrings
             var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(href, appstate.expectedArticleURLToBeDisplayed);
-            if (zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
+            // Note that if the article is opening in a new window or tab, the current document stays where it is, so we must
+            // neither tear it down nor show a spinner for a load that will not happen here [kiwix-js-pwa #572]
+            if (!opensNewContainer && zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
                 // an event listener attached. For example, links in popovers in external windows. UWP doesn't allow access to the contents
@@ -6059,7 +6081,8 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = articleWindow.document.documentElement;
-    var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
+    // DEV: libzim dirEntries carry a mimetype string (note the lowercase 't', as returned by the libzim worker) rather than a function
+    var mimeType = params.useLibzim ? dirEntry.mimetype : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
         // console.debug('HTML appears to be available...');
@@ -6161,6 +6184,9 @@ var articleLoadedSW = function (dirEntry, container) {
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
             popovers.attachKiwixPopoverCss(doc, darkTheme);
+            // With the libzim backend we do not run parseAnchorsJQuery (see above), so no popover listeners are attached to
+            // individual anchors: instead we attach delegated listeners to the article window [kiwix-js #1336]
+            if (params.useLibzim) attachPopoverTriggerEvents(articleWindow);
         }
         params.isLandingPage = false;
     } else if (unhideArticleTries > 0) {
@@ -6180,6 +6206,117 @@ var articleLoadedSW = function (dirEntry, container) {
         }
     };
 };
+
+/**
+ * Attaches delegated popover trigger events to the given window
+ * DEV: This is only used with the libzim backend, because with the custom backend the equivalent listeners are attached
+ * to each anchor individually in addListenersToLink (which additionally handles link interception and window opening)
+ * @param {Window} win The window to which to attach popover trigger events
+ */
+function attachPopoverTriggerEvents (win) {
+    // The popover feature requires as a minimum that the browser supports the css matches function
+    // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled for such browsers)
+    if (!win || !win.document || !appstate.wikimediaZimLoaded || !params.showPopoverPreviews || !('matches' in Element.prototype)) {
+        return;
+    }
+    // Add event listeners to the article window to check when anchors are hovered, focused or touched
+    // DEV: Duplicate registrations of the same function reference are ignored by the browser, so these are safe to re-attach
+    win.addEventListener('mouseover', evokePopoverEvents, true);
+    win.addEventListener('focus', evokePopoverEvents, true);
+    // Conditionally add event listeners to support touch events with fallback to pointer events
+    if (window.navigator.maxTouchPoints > 0) {
+        win.addEventListener('touchstart', evokePopoverEvents, true);
+    } else {
+        win.addEventListener('pointerdown', evokePopoverEvents, true);
+    }
+}
+
+// Throttle for the popover event handler to prevent multiple activations with mouse movement
+var popoverThrottle = false;
+
+/**
+ * Conditionally evokes popover events subject to a throttle
+ * @param {Event} event The event produced by the calling action
+ */
+function evokePopoverEvents (event) {
+    // Check if the hovered or focused element or its parent is a link
+    if (popoverThrottle) return;
+    popoverThrottle = true;
+    setTimeout(function () {
+        handlePopoverEvents(event);
+        popoverThrottle = false;
+    }, 10);
+};
+
+/**
+ * Event handler for attaching preview popovers
+ * @param {Event} ev The event produced by the mouseover, focus, touchstart or pointerdown action
+ */
+function handlePopoverEvents (ev) {
+    var anchor = ev.target;
+    var articleDoc = anchor.ownerDocument;
+    if (!articleDoc) return;
+    var win = articleDoc.defaultView;
+    while (anchor && anchor !== win && anchor.nodeName !== 'A') {
+        anchor = anchor.parentNode;
+    }
+    // If we're not hovering a link, then we can exit
+    if (!anchor || anchor.nodeName !== 'A') return;
+    var suppressContextMenuHandler = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    // Prevent context menu on this anchor element
+    anchor.addEventListener('contextmenu', suppressContextMenuHandler, true);
+    if (/touchstart|pointerdown/.test(ev.type)) {
+        anchor.touched = true; // Used to prevent dismissal of popover on mouseout if initiated by touch
+    }
+    if (anchor.style.userSelect === undefined) {
+        // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
+        anchor.style.webkitUserSelect = 'none';
+        anchor.style.msUserSelect = 'none';
+    }
+    // Check if a popover div is currently being hovered
+    var divArray = Array.prototype.slice.call(articleDoc.getElementsByClassName('kiwixtooltip'));
+    var divIsHovered = divArray.some(function (div) {
+        return div.matches(':hover');
+    });
+    // Only add a popover to the link if a current popover is not being hovered (prevents popovers showing for links in a popover)
+    if (!divIsHovered) {
+        // Prevent text selection while popover is open in modern browsers
+        anchor.style.userSelect = 'none';
+        var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+        // Get and populate the popover corresponding to the hovered or focused link
+        popovers.populateKiwixPopoverDiv(ev, anchor, appstate, darkTheme, appstate.selectedArchive);
+    }
+    var outHandler = function (e) {
+        setTimeout(function () {
+            anchor.popoverisloading = false;
+            if (/blur/.test(e.type) || !anchor.touched) {
+                popovers.removeKiwixPopoverDivs(articleDoc);
+                anchor.touched = false;
+            }
+            anchor.style.webkitUserSelect = 'auto';
+            anchor.style.msUserSelect = 'auto';
+            anchor.style.userSelect = 'auto';
+            anchor.removeEventListener(e.type, outHandler);
+            anchor.removeEventListener('contextmenu', suppressContextMenuHandler, true);
+        }, 250);
+    };
+    // Clean up when user stops hovering, lifts pointer, stops touching, or unfocuses (blurs) the link
+    if (/mouseover/.test(ev.type)) {
+        anchor.addEventListener('mouseleave', outHandler);
+    }
+    if (/pointerdown/.test(ev.type)) {
+        anchor.addEventListener('pointerup', outHandler);
+    }
+    if (/touchstart/.test(ev.type)) {
+        anchor.addEventListener('touchend', outHandler);
+    }
+    if (ev.type === 'focus') {
+        anchor.addEventListener('blur', outHandler);
+    }
+}
 
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
@@ -6388,22 +6525,50 @@ function handleMessageChannelForLibzim (event) {
             // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
             // loaded = true;
         } else {
-            dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
+            // DEV: The libzim worker returns the full path, but the rest of the app expects a dirEntry to carry the namespace
+            // and the url separately, and reconstructs the path as namespace + '/' + url (e.g. to store the last-visited page)
+            var pathParts = title.match(/^([-ABCHIJMUVWX])\/(.*)$/);
+            dirEntry.namespace = pathParts ? pathParts[1] : '';
+            dirEntry.url = pathParts ? pathParts[2] : title;
             // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
             var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
-            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
-                if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
-                articleContainer.onload = function () {
-                    // if (loaded) return;
-                    // articleContainer.style.display = '';
-                    // resizeIFrame();
-                    // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-                    // articleWindow.removeEventListener('click', filterClickEvent, true);
-                    // articleWindow.addEventListener('click', filterClickEvent, true);
-                    articleLoadedSW(dirEntry, articleContainer);
-                };
+            // The ServiceWorker broadcasts its request to every window controlled by this app, so the content we are serving
+            // may well be destined for a window or tab the user opened separately. In that case we must neither track it as
+            // our own state nor touch our iframe, or we blank the article the user is still reading [kiwix-js-pwa #572]
+            var contentIsForThisIframe = event.data.requestingFrameType !== 'top-level';
+            // DEV: Do not be tempted to exclude the legacy Zimit fallback here (by testing appstate.isReplayWorkerAvailable):
+            // reading a Zimit (classic) archive with the legacy method and the libzim backend loops whatever we do here, and
+            // routing it back to the inline handler below additionally locks the UI, so the Configuration panel cannot be
+            // opened to turn the legacy method off again
+            var isZimitClassic = appstate.selectedArchive.zimType === 'zimit';
+            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset && contentIsForThisIframe) {
+                // Update appstate for HTML content, so that link-based navigation is tracked correctly (this is done by
+                // addListenersToLink and readArticle with the custom backend, neither of which runs in libzim mode) [kiwix-js #1385]
+                appstate.baseUrl = encodeURI(title.replace(/[^/]+$/, ''));
+                appstate.expectedArticleURLToBeDisplayed = title;
+                // For Zimit (classic) the article is not displayed in this container at all, but in the replay_iframe nested
+                // inside it, so we leave the display and the load handling to articleLoader below
+                if (!isZimitClassic) {
+                    if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
+                    articleContainer.onload = function () {
+                        // if (loaded) return;
+                        // articleContainer.style.display = '';
+                        // resizeIFrame();
+                        // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+                        // articleWindow.removeEventListener('click', filterClickEvent, true);
+                        // articleWindow.addEventListener('click', filterClickEvent, true);
+                        articleLoadedSW(dirEntry, articleContainer);
+                    };
+                }
             }
             messagePort.postMessage(message);
+            // With Zimit (classic) archives, it is articleLoader that attaches the load handling to the nested replay_iframe,
+            // and that unhides that iframe and the sliding UI elements once the replay document has settled. It has to be called
+            // for every entry, because comparing the replay document's location is how it detects that the document has navigated.
+            // The custom backend does this from handleMessageChannelMessage; nothing did so in libzim mode [kiwix-js #1380]
+            if (isZimitClassic && contentIsForThisIframe) {
+                articleLoader(dirEntry, dirEntry.mimetype);
+            }
         }
     }).catch(function () {
         messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });

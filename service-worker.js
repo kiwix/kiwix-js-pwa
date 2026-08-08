@@ -428,7 +428,7 @@ self.addEventListener('fetch', function (event) {
                         });
                     }
                     const range = modRequestOrResponse.headers.get('range');
-                    return fetchUrlFromZIM(urlObject, range).then(function (response) {
+                    return fetchUrlFromZIM(urlObject, range, event).then(function (response) {
                         return cacheAndReturnResponseForAsset(event, response);
                     }).catch(function (msgPortData) {
                         console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
@@ -597,7 +597,7 @@ function zimitResolver (event, rqUrl) {
         console.debug('[SW] Filtering content of load.js', rqUrl);
         // First we have to get the contents of load.js from the ZIM, because it is a common name, and there is no way to be sure
         // that the request will be for the Zimit load.js
-        return fetchUrlFromZIM(new URL(rqUrl)).then(function (response) {
+        return fetchUrlFromZIM(new URL(rqUrl), null, event).then(function (response) {
             // The response was found in the ZIM so we respond with it
             // Clone the response before reading its body
             var clonedResponse = response.clone();
@@ -713,17 +713,28 @@ function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders */)
 
         // console.debug('[SW] Asking app.js for ' + titleWithNameSpace + ' from ' + zimName + '...');
 
-        // Get the requesting client's frameType if available
-        // This tells us whether the fetch request came from an iframe ('nested'), a top-level window ('top-level'),
-        // or another context. We pass this info to the app so it knows whether to hide the articleContainer
-        // to prevent theme flash (only needed for its own iframe, not for new windows/tabs users open).
-        var getRequestingFrameType = event && event.clientId
-            ? self.clients.get(event.clientId).then(function (client) {
+        // Establish whether the fetch request came from an iframe ('nested'), a top-level window or tab ('top-level'),
+        // or an indeterminate context ('unknown'). We pass this info to the app so that it knows whether the content is
+        // destined for its own iframe: it must not manipulate that iframe on behalf of a window the user opened separately.
+        // DEV: We cannot simply look the requesting client up by event.clientId, because for navigation requests (which is
+        // what an article load is) the clientId is empty -- the client does not exist yet. The request destination tells us
+        // what we need synchronously, so we use that first, and fall back to the client lookup, which does work for
+        // subresource requests. Engines that support neither will report 'unknown', which the app treats as it always has.
+        var destination = event && event.request ? event.request.destination : '';
+        var getRequestingFrameType;
+        if (/^i?frame$/.test(destination)) {
+            getRequestingFrameType = Promise.resolve('nested');
+        } else if (destination === 'document') {
+            getRequestingFrameType = Promise.resolve('top-level');
+        } else if (event && event.clientId) {
+            getRequestingFrameType = self.clients.get(event.clientId).then(function (client) {
                 return client ? client.frameType : 'unknown';
             }).catch(function () {
                 return 'unknown';
-            })
-            : Promise.resolve('unknown');
+            });
+        } else {
+            getRequestingFrameType = Promise.resolve('unknown');
+        }
 
         var messageListener = function (msgPortEvent) {
             if (msgPortEvent.data.action === 'giveContent') {
