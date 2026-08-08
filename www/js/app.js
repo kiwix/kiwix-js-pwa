@@ -6076,7 +6076,8 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = articleWindow.document.documentElement;
-    var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
+    // DEV: libzim dirEntries carry a mimetype string (note the lowercase 't', as returned by the libzim worker) rather than a function
+    var mimeType = params.useLibzim ? dirEntry.mimetype : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
         // console.debug('HTML appears to be available...');
@@ -6526,23 +6527,39 @@ function handleMessageChannelForLibzim (event) {
             // may well be destined for a window or tab the user opened separately. In that case we must neither track it as
             // our own state nor touch our iframe, or we blank the article the user is still reading [kiwix-js-pwa #572]
             var contentIsForThisIframe = event.data.requestingFrameType !== 'top-level';
+            // DEV: Do not be tempted to exclude the legacy Zimit fallback here (by testing appstate.isReplayWorkerAvailable):
+            // reading a Zimit (classic) archive with the legacy method and the libzim backend loops whatever we do here, and
+            // routing it back to the inline handler below additionally locks the UI, so the Configuration panel cannot be
+            // opened to turn the legacy method off again
+            var isZimitClassic = appstate.selectedArchive.zimType === 'zimit';
             if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset && contentIsForThisIframe) {
                 // Update appstate for HTML content, so that link-based navigation is tracked correctly (this is done by
                 // addListenersToLink and readArticle with the custom backend, neither of which runs in libzim mode) [kiwix-js #1385]
                 appstate.baseUrl = encodeURI(title.replace(/[^/]+$/, ''));
                 appstate.expectedArticleURLToBeDisplayed = title;
-                if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
-                articleContainer.onload = function () {
-                    // if (loaded) return;
-                    // articleContainer.style.display = '';
-                    // resizeIFrame();
-                    // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-                    // articleWindow.removeEventListener('click', filterClickEvent, true);
-                    // articleWindow.addEventListener('click', filterClickEvent, true);
-                    articleLoadedSW(dirEntry, articleContainer);
-                };
+                // For Zimit (classic) the article is not displayed in this container at all, but in the replay_iframe nested
+                // inside it, so we leave the display and the load handling to articleLoader below
+                if (!isZimitClassic) {
+                    if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
+                    articleContainer.onload = function () {
+                        // if (loaded) return;
+                        // articleContainer.style.display = '';
+                        // resizeIFrame();
+                        // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+                        // articleWindow.removeEventListener('click', filterClickEvent, true);
+                        // articleWindow.addEventListener('click', filterClickEvent, true);
+                        articleLoadedSW(dirEntry, articleContainer);
+                    };
+                }
             }
             messagePort.postMessage(message);
+            // With Zimit (classic) archives, it is articleLoader that attaches the load handling to the nested replay_iframe,
+            // and that unhides that iframe and the sliding UI elements once the replay document has settled. It has to be called
+            // for every entry, because comparing the replay document's location is how it detects that the document has navigated.
+            // The custom backend does this from handleMessageChannelMessage; nothing did so in libzim mode [kiwix-js #1380]
+            if (isZimitClassic && contentIsForThisIframe) {
+                articleLoader(dirEntry, dirEntry.mimetype);
+            }
         }
     }).catch(function () {
         messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
