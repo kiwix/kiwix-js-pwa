@@ -5974,10 +5974,27 @@ function filterClickEvent (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
+            // Establish whether this click is destined for a new window or tab, either because the user requested one with a
+            // modifier key or middle-click, or because the popover's break-out icon set the newcontainer property on the anchor
+            var opensNewContainer = clickedAnchor.newcontainer || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
+            // With the libzim backend, addListenersToLink does not run, so nothing actions the break-out icon's request for a
+            // new container: we do it here. No further window management is needed, because the ServiceWorker asks this
+            // instance for the content of the new window in any case [kiwix-js-pwa #912]
+            if (params.useLibzim && clickedAnchor.newcontainer && params.windowOpener) {
+                event.preventDefault();
+                event.stopPropagation();
+                clickedAnchor.newcontainer = false;
+                console.debug('filterClickEvent opening new ' + params.windowOpener + ' for ' + decHref);
+                window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                return;
+            }
             // We need to ensure that the link we wish to load is not already loaded in the article container, to handle links which are to the same document
             // e.g., those containing fragments at the end of a relative URL, or those containing querystrings
             var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(href, appstate.expectedArticleURLToBeDisplayed);
-            if (zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
+            // Note that if the article is opening in a new window or tab, the current document stays where it is, so we must
+            // neither tear it down nor show a spinner for a load that will not happen here [kiwix-js-pwa #572]
+            if (!opensNewContainer && zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
                 // an event listener attached. For example, links in popovers in external windows. UWP doesn't allow access to the contents
@@ -6505,7 +6522,11 @@ function handleMessageChannelForLibzim (event) {
             dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
             // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
             var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
-            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
+            // The ServiceWorker broadcasts its request to every window controlled by this app, so the content we are serving
+            // may well be destined for a window or tab the user opened separately. In that case we must neither track it as
+            // our own state nor touch our iframe, or we blank the article the user is still reading [kiwix-js-pwa #572]
+            var contentIsForThisIframe = event.data.requestingFrameType !== 'top-level';
+            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset && contentIsForThisIframe) {
                 // Update appstate for HTML content, so that link-based navigation is tracked correctly (this is done by
                 // addListenersToLink and readArticle with the custom backend, neither of which runs in libzim mode) [kiwix-js #1385]
                 appstate.baseUrl = encodeURI(title.replace(/[^/]+$/, ''));
