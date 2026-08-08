@@ -67,6 +67,11 @@ var params = {};
  */
 var appstate = {};
 
+// Track whether the slide-away toolbars are currently visible. This is the single source of truth for
+// the toolbar visibility state, replacing the previous fragile approach of parsing the header's inline
+// transform string with a regex (see uiUtil.js hideSlidingUIElements/showSlidingUIElements)
+appstate.toolbarVisible = true;
+
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '3.8.9'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
