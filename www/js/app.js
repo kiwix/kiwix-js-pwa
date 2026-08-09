@@ -86,6 +86,15 @@ params['storeType'] = settingsStore.getBestAvailableStorageAPI();
 // A parameter to determine whether the webkitdirectory API is available
 params['webkitdirectory'] = util.webkitdirectorySupported();
 
+// Signals that the OS launched the app by double-clicking on a ZIM, and that the archive in question is
+// therefore already on its way. It tells the startup autoload and getNativeFSHandle() not to restore the
+// last-used archive as well, which would otherwise load an archive (and run the source verification
+// dialogue) a second time [kiwix-js-pwa #915]. In Electron the path is available synchronously from the
+// preload script (the IPC message that actually opens it only arrives once the page has loaded); in the
+// PWA it is set by the File Handling API's launchQueue consumer (see @LAUNCH QUEUE below), which runs
+// before the autoload because launchQueue.setConsumer() invokes it with any queued files straight away
+var launchedWithFile = !!(window.electronAPI && electronAPI.launchFilePath);
+
 // Retrieve UWP launch arguments when the app is started by double-clicking on a file
 if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
     Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
@@ -1284,6 +1293,13 @@ function getNativeFSHandle (callback) {
     }
     console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
+        // A file handed to us by the OS supersedes any stored handle, so bail out before we verify permission
+        // (which can prompt the user) or load an archive that is already being loaded [kiwix-js-pwa #915].
+        // Callers that supply a callback are responding to a user gesture, so they are not affected
+        if (launchedWithFile && !callback) {
+            console.debug('Ignoring the stored file system handle because the app was launched with a file');
+            return;
+        }
         // Self-heal: if something other than a file system handle was stored (e.g. a path
         // string), remove it and proceed as if no handle had been stored, or else every app
         // launch would fail to restore the picked file or folder
@@ -3786,7 +3802,7 @@ function searchForArchivesInStorage () {
     }
 }
 
-// Check if there are files in the launch queue to be handled by the File Handling API
+// @LAUNCH QUEUE: check if there are files in the launch queue to be handled by the File Handling API
 if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
     console.log('File Handling API is available');
     launchQueue.setConsumer(function (launchParams) {
@@ -3796,12 +3812,24 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         } else {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
+            // Signal that the archive to load has been supplied by the OS, so that the autoload further down
+            // does not restore the last-used handle and load an archive as well [kiwix-js-pwa #915]
+            launchedWithFile = true;
             // Turn off OPFS if it is on, because we are using the File Handling API instead
             params.useOPFS = false;
             params.pickedFolder = '';
             params.storedFile = '';
             setOPFSUI();
-            processNativeFileHandle(launchParams.files[0]);
+            processNativeFileHandle(launchParams.files[0]).catch(function (err) {
+                // Since we told the autoload not to restore the last-used archive, we have to get the user
+                // out of the resulting empty app if the file we were handed cannot be read after all
+                console.error('Unable to open the file that the app was launched with', err);
+                launchedWithFile = false;
+                if (document.getElementById('configuration').style.display === 'none') {
+                    document.getElementById('btnConfigure').click();
+                }
+                uiUtil.systemAlert('We could not open the archive that you launched. Please try picking it with the file selectors below.');
+            });
         }
     });
 }
@@ -3833,7 +3861,12 @@ if (storages !== null && storages.length > 0 ||
             params.pickedFile = params.storedFile;
         }
     }
-    if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
+    if (launchedWithFile) {
+        // The OS has just handed us a ZIM via the File Handling API, and it is being processed asynchronously
+        // (params.pickedFile is not set until the file handle resolves). We must not restore the last-used
+        // handle as well, or the archive would be loaded, and verified, twice [kiwix-js-pwa #915]
+        console.debug('App was launched with a file, so we are not restoring the last selected archive');
+    } else if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
         var btnConfigure = document.getElementById('btnConfigure');
         // If we are using OPFS, we should can load the entries directly
         if (params.useOPFS) {

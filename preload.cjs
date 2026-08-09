@@ -95,6 +95,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     deletePartialTorrentFile: function (savePath, name) {
         return ipcRenderer.invoke('torrent-delete-partial', savePath, name);
     },
+    // The path of any ZIM the app was launched with (null if there is none). The renderer is also sent this
+    // path over IPC once the page has loaded (which is what actually opens the archive), but that arrives
+    // after the renderer's startup autoload has run, so we read it synchronously here to let the renderer
+    // know in time that it should not also restore the last-used archive [kiwix-js-pwa #915]
+    launchFilePath: ipcRenderer.sendSync('get-launch-file-path-sync'),
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(__dirname),
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,
