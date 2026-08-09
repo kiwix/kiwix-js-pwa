@@ -16,6 +16,8 @@
 * FIX: Opening an article in a new window or tab no longer blanks or hides the article you were reading in the original window
 * FIX: Zimit (classic) archives read with the experimental libzim reader no longer sometimes stay hidden after a page loads
 * FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
+* FIX: Launching a ZIM by double-clicking it in the OS no longer opens the archive twice, so the file permission request and the "trusted source" security prompt are no longer shown twice
+* FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives can be opened by double-clicking them in File Explorer
 * REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
 * REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
