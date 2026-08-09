@@ -289,6 +289,15 @@ function processLaunchFilePath (arg) {
     return openFilePath;
 }
 
+// The 'get-launch-file-path' message below is sent on did-finish-load, i.e. after all the renderer's scripts
+// have run, which is too late for the renderer to know at startup that it should not also load the last-used
+// archive (this caused the archive to be loaded, and verified, twice: see kiwix-js-pwa #915). We therefore
+// also expose the path synchronously, for the preload script to read before any page script runs. This is
+// registered at module level so that it is always in place by the time a preload can ask for it
+ipcMain.on('get-launch-file-path-sync', function (event) {
+    event.returnValue = processLaunchFilePath(process.argv);
+});
+
 // Prevent launching multiple instances for now (they are not isolated)
 // Code from https://stackoverflow.com/a/73669484/9727685
 // Behaviour on second instance for parent process
