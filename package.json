@@ -26,6 +26,18 @@
         "from": "archives",
         "to": "archives"
       },
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive",
+          "description": "Compressed ZIM file archive"
+        },
+        {
+          "ext": "zimaa",
+          "name": "Split ZIM Archive",
+          "description": "First part of a split ZIM file archive"
+        }
+      ],
       "publish": [
         "github"
       ],
