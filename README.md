@@ -118,6 +118,11 @@ Feedback section on the About page in the app for other ways of getting technica
 (see About page of app) if you would just like to provide feedback, or leave a review if you obtained the app from a Store. If you like
 the app, please star this Repostiory (see top)!
 
+## Building from source
+
+If you would rather build the app yourself, than use one of the packaged versions or the container image below, you will find setup
+and build instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Self-hosting with Docker
 
 The PWA is also published as a container image to the GitHub Container Registry (GHCR) on every release,
@@ -207,20 +212,8 @@ Kiwix JS PWA feature, then please open an issue on this repository explaining th
 this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
 [contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
 
-We have now transitioned this app to ES6 code, which is transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code
-that is compatible with older browsers. Brief instructions:
-
-* Clone this repo and run `npm install` to get the Node dependencies;
-* To serve the app with [Vite.js](https://vitejs.dev/), which includes Hot Module Replacement, run `npm run serve`;
-* You MUST turn on the option to Bypass the app cache in Configuration under Troubleshooting and development. If the app loads in a disordered way,
-you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode).
-Refresh the app with Ctrl-R;
-* Vite will watch for changes and will refresh the app when you make any and save them;
-* To preview the bundled version of the app, run `npm run preview`, and Vite will build the app and open a browser window to view the bundled version;
-* To fully build the app, run `npm run build`. The built app will be saved to a directory called `dist` in your cloned repo; 
-* To run the app in the Electron framework, you can use `npm start`. This will run the unbundled app in the Electron version specified in `package.json`. See various
-scripts to build the bundled version of the app for Electron in `package.json` (you can only build it for the OS you are currently on, though the Linux app can be built
-on Windows with WSL).
+***Please read this repository's [CONTRIBUTING.md](CONTRIBUTING.md) before you start work, as it explains which contributions belong here and
+which belong upstream. It also contains the setup and build instructions for this app.***
 
 ## Other contributions / donations
 
