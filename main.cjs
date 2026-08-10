@@ -328,7 +328,7 @@ if (!gotSingleInstanceLock) {
 // };
 
 app.whenReady().then(() => {
-    server = express()
+    server = express();
 
     // Add security headers
     server.use((req, res, next) => {

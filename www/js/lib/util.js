@@ -455,7 +455,7 @@ function Hilitor (node, tag) {
     this.countPartialMatches = function () {
         if (node === undefined || !node) return;
         var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
-        if (matches) return matches.length
+        if (matches) return matches.length;
         else return 0;
     };
 
@@ -514,7 +514,7 @@ function Hilitor (node, tag) {
             end++;
         }
         return start + inputWords.length;
-    }
+    };
 
     // recursively apply word highlighting
     this.hiliteWords = function (node) {

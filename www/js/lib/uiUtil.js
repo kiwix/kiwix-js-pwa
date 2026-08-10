@@ -978,7 +978,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
             modal.setAttribute('role', 'dialog');
 
             // Get elements to which we will attach event listeners
-            var modalCloseBtn = document.getElementById(prfx + 'modalCloseBtn')
+            var modalCloseBtn = document.getElementById(prfx + 'modalCloseBtn');
             var declineConfirm = document.getElementById(prfx + 'declineConfirm');
             var closeMessage = document.getElementById(prfx + 'closeMessage');
             var approveConfirm = document.getElementById(prfx + 'approveConfirm');
@@ -1342,7 +1342,7 @@ function setupConfigurationToggles () {
         // Close each heading to begin with, except the first and specials
         var exceptionTest = function (testStr) {
             return /Display\ssize|API\sStatus/i.test(testStr) || /Troubleshooting/i.test(testStr) && !params.appCache;
-        }
+        };
         if (panelNext) panelNextHeading.innerHTML = (exceptionTest(panelNextHeading.innerHTML) ? '▽ ' : '▷ ') + panelNextHeading.innerHTML;
         var icon = exceptionTest(headingText) ? '▽ ' : '▷ ';
         panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, icon);
@@ -1561,7 +1561,7 @@ function getBrowserLanguage () {
     var language = {
         base: 'en',
         locale: 'GB'
-    }
+    };
     var fullLanguage = navigator.language || navigator.userLanguage;
     if (fullLanguage) {
         language.base = fullLanguage.replace(/-.+$/, '').toLowerCase();

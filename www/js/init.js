@@ -552,7 +552,7 @@ var webpMachine = false;
         var webpScript = document.createElement('script');
         webpScript.onload = function () {
             webpMachine = new webpHero.WebpMachine();
-        }
+        };
         webpScript.src = 'js/webpHeroBundle_0.0.2.js';
         document.head.appendChild(webpScript);
     }
