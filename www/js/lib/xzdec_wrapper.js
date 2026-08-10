@@ -213,4 +213,4 @@ Decompressor.prototype._fillInBufferIfNeeded = function() {
 
 export default {
     Decompressor: Decompressor
-}
+};

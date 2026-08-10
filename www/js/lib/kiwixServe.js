@@ -1500,7 +1500,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                                 return cache.deleteOPFSEntry(archiveName);
                             });
                         });
-                    }
+                    };
                     if (megabytes > 1000) {
                         var message = '<p>Do you wish to download the following <b>large</b> archive ' + (params.useOPFS ? 'directly into the Origin Private File System' : 'to the current ZIM folder') +
                             '?</p><ul><li><i>' + archiveName + '</i> (<b>' + megabytes$ + ' MB</b>)</li></ul><p><b><i>If you proceed, do not close the app during the download.</i></b><p>' +

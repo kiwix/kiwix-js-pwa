@@ -101,7 +101,7 @@ function extractImages (images, callback) {
                 image.style.transition = 'opacity 0.3s ease-in';
                 image.style.opacity = '1';
                 removeEventListener('load', transition);
-            }
+            };
             image.addEventListener('load', transition);
             // Let's remove kiwix-display from the end of the url so that the SW will ask for the image
             image.src = imageUrl.replace(/\?kiwix-display/, '');

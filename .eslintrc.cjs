@@ -8,8 +8,27 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module'
     },
+    ignorePatterns: [
+        // Build output, and packaged copies of the app
+        'dist/',
+        'bld/',
+        'BundleArtifacts/',
+        'AppPackages/',
+        // Third-party or generated bundles that we do not maintain
+        'replayWorker.js',
+        'www/js/katex/',
+        'www/js/lib/*.min.js',
+        'www/js/lib/webpHeroBundle_*.js',
+        'www/js/lib/*-asm.js',
+        'www/js/lib/*-asm.dev.js',
+        'www/js/lib/*-wasm.js',
+        'www/js/lib/*-wasm.dev.js',
+        'www/js/lib/promisePolyfill.js'
+    ],
     rules: {
-        semi: 0,
+        semi: ['error', 'always'],
+        // Many files in this Repo are deliberately saved with a BOM (see scripts/Add-Remove-BOM.ps1)
+        'unicode-bom': 0,
         indent: ['error', 4],
         'dot-notation': 0,
         'no-var': 0,
@@ -24,4 +43,4 @@ module.exports = {
         'no-extend-native': 0,
         'no-global-assign': 0
     }
-}
+};

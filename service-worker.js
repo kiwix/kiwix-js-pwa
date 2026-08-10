@@ -564,7 +564,7 @@ function setReplayCollectionAsRoot (prefix, name) {
         main: self.sw.prefix,
         root: self.sw.prefix,
         static: self.sw.staticPrefix
-    }
+    };
     // If we want to be able to get the static data URL directly from the map, we need to replace the keyes, but as this is quite costly (moving a lot of static)
     // data around, we're using another way to get the static data URL from the map in zimitResolver()
     // let newMap = new Map();
@@ -624,7 +624,7 @@ function zimitResolver (event, rqUrl) {
                 if (/\/A\/static\//.test(rqUrl)) {
                     // If the request is for static data from the replayWorker, we should get them from the Worker's cache
                     // DEV: This extracts both wombat.js and wombatWorkers.js from the staticData Map
-                    var staticDataUrl = rqUrl.replace(/^(.*?\/)[^/]+?\.zim\w?\w?\/[AC/]{2,4}(.*)/, '$1$2')
+                    var staticDataUrl = rqUrl.replace(/^(.*?\/)[^/]+?\.zim\w?\w?\/[AC/]{2,4}(.*)/, '$1$2');
                     if (self.sw.staticData) {
                         var staticData = self.sw.staticData.get(staticDataUrl);
                         if (staticData) {

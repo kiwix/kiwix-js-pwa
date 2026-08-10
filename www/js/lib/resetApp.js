@@ -198,4 +198,4 @@ export default {
     reset: reset,
     reloadApp: reloadApp,
     getCacheNames: getCacheNames
-}
+};
