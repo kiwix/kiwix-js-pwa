@@ -20,7 +20,7 @@ If in doubt, please open an issue here describing what you want to do, and we wi
 
 ## Setting up and building
 
-* Clone your fork and run `npm install` to get the Node dependencies;
+* Fork the repository and run `npm install` to get the Node dependencies;
 * `npm run serve` starts a [Vite.js](https://vitejs.dev/) development server with Hot Module Replacement, which will refresh the app as you save your changes;
 * `npm run preview` builds the app and opens the bundled version in a server, so that you can test the production code;
 * `npm run build` fully builds the app, to a directory called `dist` in your cloned repo;
@@ -30,16 +30,19 @@ The app's source is ES6, which is transpiled by [rollup.js](https://rollupjs.org
 
 ## Please test your code before asking for review
 
-Please fork the repository, set up the development tools, and test your PR thoroughly, following the instructions in upstream's [CONTRIBUTING](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md). Full instructions are provided there, and the setup for this Repo is almost identical, bar the specific scripts that package Kiwix JS as an Electron, UWP, NW.js or PWA app.
+Be sure you have set up the development tools, and test your PR thoroughly, following the instructions in upstream's [CONTRIBUTING](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md), for all steps that apply (there is no need to test this app in an extension).
 
-There is one important difference from upstream, however: **this Repo has no unit or end-to-end test suite**. Upstream runs automated tests on every PR, whereas here the CI only checks that the app builds. This means that if you do not test your change, nobody will before it reaches users, many of whom install this app from an app store and receive updates automatically.
+There is one important difference from upstream, however: **this Repo has no unit or end-to-end test suite**. Upstream runs automated tests on every PR, whereas here the CI only checks that the app builds. This means that you must do a lot more manual testing.
+
+You will need to obtain a ZIM archive to test this app properly. Please follow in-app instructions, and obtain one (ideally a Wikipedia subset and one more dynamic type).
 
 At a minimum, please test:
 
 * the source code (`npm run serve`) *and* the bundled code (`npm run preview`) — a change can easily work in one and fail in the other;
 * in both Restricted and ServiceWorker content-injection modes (see Configuration);
 * in at least Chromium (Edge or Chrome) and Firefox;
-* in the Electron app (`npm start`) if your change touches anything outside `www/`.
+* in the Electron app (`npm start`) if your change touches anything outside `www/`;
+* as an installed PWA (you can install the PWA from localhost in Chromium browsers).
 
 ### Seeing your changes: the app caches its own code
 
@@ -55,17 +58,18 @@ Because this is an offline-first PWA, the app caches its own code, which means t
 
 ## Using AI assistants
 
-We have no objection to code written with the help of an LLM, provided you meet the same standard as any other contributor: you understand every line you are submitting, you can explain and defend it in review, and you have run and tested it yourself. If you cannot do that, please do not open the PR. It is unfair to treat us as free testers of code that you do not understand, and it is we who will have to maintain it long after you have moved on.
+We want you in the driving seat. We have no objection to your using an LLM as a pair programmer, to explain unfamiliar parts of the codebase to you, or to review your work before you open a PR. Used that way, it can be a real help. What we ask is that you meet the same standard as any other contributor: you understand every line you are submitting, you can explain and defend it in review, and you have run and tested it yourself. If you cannot do that, please do not open the PR. It is unfair to treat us as free testers of code that you do not understand, and it is we who will have to maintain it long after you have moved on.
 
 ## Repository hygiene
 
 A few things that make a PR much easier to review, and much more likely to be merged quickly:
 
 * Follow the coding style of the code you are editing, and please do not reformat or prettify code you are not working on: it buries your actual change in a wall of diff;
+* We use [ESLint](https://eslint.org/) to keep the coding style consistent, with a modified [standard](https://github.com/standard/eslint-config-standard) configuration (see `.eslintrc.cjs`: notably we indent with four spaces). It is installed for you by `npm install`. The easiest way to use it is the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for [VS Code](https://code.visualstudio.com/), which picks up this Repo's rules automatically and flags problems as you type; alternatively you can check a file from the command line with, e.g., `npx eslint www/js/app.js`. Please do not add new lint errors, and ignore the mention of a BOM on many files in this Repo;
 * Keep your PR to a single issue or feature;
 * Do not commit build output, such as the contents of `dist/`;
 * Please leave version bumps, CHANGELOG entries and anything else release-related to the maintainer.
 
 ## Licence
 
-This app is released under the [GPL v3](https://www.gnu.org/licenses/gpl-3.0) licence. By contributing, you agree that your contribution is licensed under the same terms.
+This app is released under the [GPL v3](LICENSE) licence. By contributing, you agree that your contribution is licensed under the same terms.
