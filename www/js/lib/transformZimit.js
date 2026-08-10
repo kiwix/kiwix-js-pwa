@@ -79,7 +79,7 @@ function getZimitRedirect (dirEntry, data, cns) {
     if (dirEntry.namespace === 'H' || cns === 'C' && /^H\//.test(dirEntry.url)) {
         // We are dealing with a Header redirect, so we need to find the Location: field
         redirect = data.match(/^Location:\s*https?:\/\/([^/]+)(.*)$/m);
-        if (!redirect) redirect = data.match(/^WARC-Target-URI:\s*https?:\/\/([^/]+)(.*)$/m)
+        if (!redirect) redirect = data.match(/^WARC-Target-URI:\s*https?:\/\/([^/]+)(.*)$/m);
         if (redirect && redirect[1]) {
             // Type 1 Zimit ZIMs need intermediary 'A' prefix, since there is no longer any A namespace
             params.zimitPrefix = (cns === 'C' ? 'A/' : '') + redirect[1];
@@ -296,7 +296,7 @@ function transformVideoUrl (url, articleDocument, callback) {
         videoId = videoId ? videoId[1] : null;
         if (!videoId) {
             callback(url);
-            return
+            return;
         };
         var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
         // Set up regular expression search of URL index (aka fuzzy search)
@@ -304,7 +304,7 @@ function transformVideoUrl (url, articleDocument, callback) {
             rgxPrefix: new RegExp('.*' + videoId, 'i'),
             searchUrlIndex: true,
             size: 1
-        }
+        };
         appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
             if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                 dirEntry = dirEntry[0];
@@ -318,7 +318,7 @@ function transformVideoUrl (url, articleDocument, callback) {
                         rgxPrefix: new RegExp('.*' + (ei ? 'ei=' + ei : '') + (cpn ? '.*cpn=' + cpn : ''), 'i'),
                         searchUrlIndex: true,
                         size: 1
-                    }
+                    };
                     appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                         if (dirEntry && dirEntry[0] && dirEntry[0].url && !search.found) {
                             dirEntry = dirEntry[0];
@@ -348,7 +348,7 @@ function transformVideoUrl (url, articleDocument, callback) {
                         protocol: 'https:',
                         href: 'https://www.youtube.com/watch?v=' + videoId,
                         type: 'video'
-                    }
+                    };
                     uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor, 'This video is not available offline in this ZIM. To view online, please open the following URL');
                 }
             }

@@ -784,7 +784,7 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
             if (dirEntry.zimitRedirect) {
                 return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
                     return appstate.selectedArchive.readBinaryFile(rd, callback);
-                })
+                });
             }
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
@@ -813,7 +813,7 @@ ZIMArchive.prototype.getUtf8FromData = function (data) {
         decData = utf8.parse(data);
     }
     return decData;
-}
+};
 
 /**
  * Searches the URL pointer list of Directory Entries by pathname
@@ -882,7 +882,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
                     lc: true, // Make the comparator (e.g. dirEntry.url) lowercase
                     size: 1,
                     found: 0
-                }
+                };
                 return fuzzySearch(path, search);
             } else if (!appstate.isReplayWorkerAvailable) {
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
@@ -1021,7 +1021,7 @@ ZIMArchive.prototype.setZimitMetadata = function () {
     }).catch(function (e) {
         console.warn('Zimit metadata not found in this archive!', e);
     });
-}
+};
 
 export default {
     ZIMArchive: ZIMArchive

@@ -568,7 +568,7 @@ function addEventListenersToPopoverIcons (anchor, popover, doc) {
         anchor.newcontainer = true;
         anchor.click();
         closePopover(popover);
-    }
+    };
     const closeIcon = doc.getElementById('popcloseicon');
     const breakoutIcon = doc.getElementById('popbreakouticon');
     // If the icons are not found, do not add event listeners

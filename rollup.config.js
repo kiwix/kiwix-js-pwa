@@ -166,7 +166,7 @@ if (process.env.BUILD === 'production') {
             ],
             flatten: false
         })
-    )
+    );
 } else {
     // Normal (Uniminified) build
     config.plugins.push(
@@ -221,7 +221,7 @@ if (process.env.BUILD === 'production') {
             ],
             flatten: false
         })
-    )
+    );
 }
 
 export default config;

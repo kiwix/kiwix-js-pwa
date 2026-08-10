@@ -889,7 +889,7 @@ if (typeof Windows !== 'undefined' &&
     var onBackRequested = function (eventArgs) {
         window.history.back();
         eventArgs.handled = true;
-    }
+    };
     Windows.UI.Core.SystemNavigationManager.getForCurrentView()
         .appViewBackButtonVisibility =
         Windows.UI.Core.AppViewBackButtonVisibility.visible;
@@ -1796,7 +1796,7 @@ function setOPFSUI () {
         archiveFilesLabel.style.display = 'none';
         archiveFileLabel.classList.remove('col-xs-6');
         archiveFileLabel.classList.add('col-xs-12');
-        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>';
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
         archiveFileCol.classList.remove('col-xs-6');
@@ -1827,7 +1827,7 @@ function setOPFSUI () {
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-12');
             archiveFileLabel.classList.add('col-xs-6');
-            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
+            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.';
             archiveFile.value = 'Select file';
         }
         OPFSQuota.style.display = 'none';
@@ -1908,7 +1908,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         processNativeDirHandle(params.pickedFolder);
         if (params.useOPFS) cache.populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
-        scanUWPFolderforArchives(params.pickedFolder)
+        scanUWPFolderforArchives(params.pickedFolder);
     } else if (window.fs) {
         scanNodeFolderforArchives(params.pickedFolder);
     } else if (params.webkitdirectory) {
@@ -2346,7 +2346,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
 });
 document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
     var that = this;
-    var message = '<p>App will reload to apply the new setting.</p>'
+    var message = '<p>App will reload to apply the new setting.</p>';
     if (event.target.value) {
         message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' +
         'e.g. the app will no longer check whether the OS supports full-text searching and searches may fail silently.</i></p>';
@@ -2909,7 +2909,7 @@ function switchCSSTheme () {
                 resizeEvent.initEvent('resize', true, true);
                 window.dispatchEvent(resizeEvent);
             }
-        }
+        };
         doc.head.appendChild(link);
         if (doc.defaultView.DarkReader) {
             doc.defaultView.DarkReader.disable();
@@ -2932,7 +2932,7 @@ function switchCSSTheme () {
                             window.dispatchEvent(resizeEvent);
                         }, 350);
                     }
-                }
+                };
                 darkReader.type = 'text/javascript';
                 darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
                 doc.head.appendChild(darkReader);
@@ -3026,7 +3026,7 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             // We have to reload the article to respect user's choice
             params.themeChanged = true;
             setTab();
-        }
+        };
         if (!params.cssCache && params.cssSource !== 'auto') {
             uiUtil.systemAlert('Transforming the ZIM style requires the use of locally cached Wikimedia stylesheets, so we need to enable these.',
                 'Warning!', true).then(function (rtn) {
@@ -3327,7 +3327,7 @@ function refreshAPIStatus () {
     if (isMessageChannelAvailable()) {
         messageChannelStatus.textContent = 'MessageChannel API available';
         messageChannelStatus.classList.remove('apiAvailable');
-        messageChannelStatus.classList.remove('apiUnavailable')
+        messageChannelStatus.classList.remove('apiUnavailable');
         messageChannelStatus.classList.add('apiAvailable');
     } else {
         apiPanelClass = 'border-warning';
@@ -3942,7 +3942,7 @@ if (storages !== null && storages.length > 0 ||
                 document.getElementById('hideFileSelectors').style.display = 'inline';
                 document.getElementById('btnConfigure').click();
                 var message = params.packagedFile ? ('The packaged file cannot be found!\nPlease check that it is in the "' + params.archivePath +
-                    '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.'
+                    '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.';
                 setTimeout(function () {
                     uiUtil.systemAlert(message);
                 }, 10);
@@ -4029,7 +4029,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; })
+            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; });
             // console.debug('Archive list: ' + arrayOfOptionValues);
             if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
                 archiveList.value = lastSelectedArchive;
@@ -4951,7 +4951,7 @@ function archiveReadyCallback (archive) {
                 document.getElementById('btnHome').click();
             }
         }
-    }
+    };
     // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
     if (params.contentInjectionMode === 'jquery') {
         params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
@@ -5405,7 +5405,7 @@ function showZIMIndex (start, search) {
                             var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
                             var panelBody = util.closest(alphaLabel, '.card-body');
                             if (panelBody && panelBody.style.display === 'none') {
-                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className) });
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className); });
                                 if (panelHeading) panelHeading.click();
                             }
                             alphaLabel.style.borderColor = 'red';
@@ -5679,7 +5679,7 @@ function readArticle (dirEntry) {
     articleContainer = appstate.target === 'window' ? articleWindow : iframe;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
-    uiUtil.pollSpinner()
+    uiUtil.pollSpinner();
     // Show the spinner with a loading message
     var message = dirEntry.url.match(/(?:^|\/)([^/]{1,13})[^/]*?$/);
     message = message ? message[1] + '...' : '...';
@@ -5860,7 +5860,7 @@ function readArticle (dirEntry) {
                             goToArticle(fileDirEntry.zimitRedirect);
                         } else {
                             if (!data) {
-                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url)
+                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url);
                                 uiUtil.systemAlert(
                                     '<p>The requested page <b>' + requestedURL + '</b> does not appear to be an article!</p>' +
                                     '<p>Try searching for content in the search bar, or type a <b><i>space</i></b> for the ZIM ' +
@@ -6071,7 +6071,7 @@ var unhideArticleContainer = function () {
             }, 100);
         }
     }
-}
+};
 
 /**
  * Applies fixes for Wikimedia ZIMs, including reference marker display fixes
@@ -6987,7 +6987,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (wikiLang && /^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                 newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                     '.org/wiki/File:' + assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
-                    '" target="_blank">' + newBlock + '</a>'
+                    '" target="_blank">' + newBlock + '</a>';
             }
             return newBlock;
         });
@@ -7012,7 +7012,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 if (/^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                     newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                         '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
-                        '" target="_blank">' + newBlock + '</a>'
+                        '" target="_blank">' + newBlock + '</a>';
                 }
             }
             return newBlock;
@@ -8312,7 +8312,7 @@ function goToArticle (path, download, contentType, pathEnc) {
                         href: path.replace(/^(C\/)?A\//, ''),
                         target: '_blank'
                     };
-                    uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor)
+                    uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
                     setTab();
                 }
             } else {
@@ -8397,7 +8397,7 @@ function goToMainArticle () {
                 params.isLandingPage = true;
                 appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                 readArticle(dirEntry);
-            }
+            };
             if (dirEntry.redirect) {
                 appstate.selectedArchive.resolveRedirect(dirEntry, setMainPage);
             } else if (/text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {

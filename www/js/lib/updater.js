@@ -92,7 +92,7 @@ function getLatestUpdates (callback) {
                 }
                 if (!updateTag) updateTag = matchedRelease[2];
                 if (!updateUrl) updateUrl = releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
-                updatedReleases.push(releaseFile)
+                updatedReleases.push(releaseFile);
             }
             matchedRelease = regexpMatchGitHubReleases.exec(releases);
         }
