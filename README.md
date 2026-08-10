@@ -120,7 +120,7 @@ the app, please star this Repostiory (see top)!
 
 ## Building from source
 
-If you would rather build the app yourself, than use one of the packaged versions or the container image below, you will find setup
+If you would rather build the app yourself, instead of using one of the packaged versions or the container image below, you will find setup
 and build instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Self-hosting with Docker
@@ -163,7 +163,7 @@ When the app is running, the Home tab displays a localhost URL (by default `http
 
 ### BitTorrent downloads (Electron)
 
-The Electron edition of Kiwix JS PWA includes a built-in BitTorrent client for downloading large ZIM archives directly within the application. Downloads can be resumed if interrupted, including after restarting the application. Previously downloaded data is reused automatically.
+The Electron edition of Kiwix JS PWA includes a built-in BitTorrent client for downloading large ZIM archives directly within the application. Downloads can be resumed if interrupted, including after restarting the application. Previously downloaded data are reused automatically.
 
 For more information about managing BitTorrent downloads, see the in-app About documentation.
 
@@ -207,12 +207,11 @@ Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream
 [Kiwix JS repository](https://kiwix.github.io/kiwix-js/), as much of the code contributed there is subsequently ported to this repository.
-Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details. If you wish to contribute to a specific
+Please see upstream's [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details. If you wish to contribute to a specific
 Kiwix JS PWA feature, then please open an issue on this repository explaining the feature or other code you aim to contribute and how you propose
-this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
+this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript.
 
-***Please read this repository's [CONTRIBUTING.md](CONTRIBUTING.md) before you start work, as it explains which contributions belong here and
+***If contributing here, please read this repository's [CONTRIBUTING.md](CONTRIBUTING.md) carefully and thoroughly before you start work, as it explains which contributions belong here and
 which belong upstream. It also contains the setup and build instructions for this app.***
 
 ## Other contributions / donations
