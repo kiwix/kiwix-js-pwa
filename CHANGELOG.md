@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## Interim release 3.8.91
 
+* SECURITY: Settings supplied in the app's URL are no longer saved permanently, apart from the few the app passes between its own windows, and source verification can now only be changed in Configuration
 * FEATURE: New setting to show a title bar when the browser draws the window controls overlay over the app, restoring the choice that recent versions of Edge removed
 * FEATURE: In-app library can now browse the whole ZIM catalogue as well as by category, so archives that declare no category in their metadata can now be found
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
@@ -18,6 +19,7 @@
 * FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
 * FIX: Launching a ZIM by double-clicking it in the OS no longer opens the archive twice, so the file permission request and the "trusted source" security prompt are no longer shown twice
 * FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives can be opened by double-clicking them in File Explorer
+* FIX: When the Windows Store app is launched by double-clicking a ZIM file, the stored location of the previously opened archive is now cleared as intended, instead of being left in place
 * REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
 * REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
