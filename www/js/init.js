@@ -145,6 +145,9 @@ params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippe
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
+// DEV: NW.js is excluded from the ServiceWorker default below because it primarily targets Windows XP. If that
+// changes, note that params.sourceVerification (set further down) becomes live in NW.js as a result, and NW.js
+// runs from file: - see the notes on the trusted context in overrideParams() below before altering this line.
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
@@ -188,18 +191,103 @@ params['lockDisplayOrientation'] = getSetting('lockDisplayOrientation'); // 'por
 params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== null ? getSetting('noHiddenElementsWarning') : false; // A one-time warning about Hidden elements display
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
+// Only the keys listed below are written to the Settings Store. Any other key is applied to the current page
+// load alone and is deliberately not stored, so that a crafted link cannot make a lasting change to the app's
+// configuration: DEV keeps the ability to drive any setting from the querystring while debugging, but the
+// setting reverts as soon as the app is reloaded without it.
 (function overrideParams () {
-    var rgx = /[?&]([^=]+)=([^&]+)/g;
+    // Parameters that may be set from the querystring and written to the Settings Store. These are the keys the
+    // app passes between its own contexts (the UWP <-> PWA handoffs in this file and in app.js, and the reload
+    // in resetApp.js), together with the cosmetic settings and the escape hatches DEV needs to break out of a
+    // boot loop. NB a handoff key only belongs here if it is read back from the Store at boot: params that are
+    // merely needed for the page load they arrive on (e.g. lastPageVisit) work correctly as session-only values.
+    var persistableParams = ['allowInternetAccess', 'contentInjectionMode', 'packagedFile', 'fileVersion',
+        'lastSelectedArchive', 'lastSelectedArchivePath', 'manipulateImages', 'allowHTMLExtraction',
+        'appCache', 'assetsCache', 'cssTheme', 'cssUITheme', 'hideActiveContentWarning', 'rememberLastPage'];
+
+    // Parameters that are never accepted from the querystring, in any context. The source verification prompt is
+    // the app's gate on opening an untrusted archive, and a stored "off" survives every subsequent visit, so a
+    // single crafted link must not be able to disarm it. It is deliberately not enough to gate this on a
+    // development origin: the app is documented as self-hostable via Docker (see README), where the user's own
+    // production instance is reached at http://localhost:<port> on a conventional port, and no origin test can
+    // tell that apart from a developer's dev server. DEV: set this once in Configuration, or from DevTools with
+    // localStorage.setItem('kiwixjs-sourceVerification', 'false') - both persist, so it is not a per-load cost.
+    var neverFromQuerystring = ['sourceVerification'];
+
+    // Parameters that weaken or bypass security-relevant behaviour, and are only ever needed when developing.
+    // They are honoured in a development context but ignored everywhere else, so that a crafted link to the
+    // production PWA cannot use them to disarm the app.
+    var devOnlyParams = ['noPrompts', 'PWAServer'];
+
+    // Parameters whose value must match a pattern before it will be accepted. These are the URL-shaped params:
+    // the OPDS catalogue and download endpoints, and the PWA jump target. Restricting them to the Kiwix domains
+    // stops a crafted link repointing the library or a download at a host of the attacker's choosing. NB the
+    // trailing group also permits the bare origin, as several of these defaults carry no trailing slash.
+    var kiwixServerPattern = /^https:\/\/(?:(?:[a-z0-9-]+\.)*kiwix\.org|kiwix\.github\.io)(?:[/?#]|$)/;
+    var validatedParams = {
+        kiwixLibraryServer: kiwixServerPattern,
+        kiwixLibraryBrowser: kiwixServerPattern,
+        kiwixCatalogRoot: kiwixServerPattern,
+        kiwixCatalogCategories: kiwixServerPattern,
+        kiwixCatalogEntries: kiwixServerPattern,
+        kiwixStagingCatalogEntries: kiwixServerPattern,
+        kiwixDownloadServer: kiwixServerPattern,
+        kiwixMirrorServer: kiwixServerPattern,
+        kiwixStagingServer: kiwixServerPattern,
+        PWAServer: kiwixServerPattern
+    };
+
+    // Keys that must never be copied onto the params object, because assigning them could alter the object's
+    // prototype chain rather than setting a parameter
+    var forbiddenParams = ['__proto__', 'constructor', 'prototype'];
+
+    // Determines whether we are running from a developer's own machine, as opposed to a shipped app. Note this
+    // is deliberately not a secure-context test: the production PWA is served over https, and it is precisely
+    // the context we must not trust with the parameters in devOnlyParams.
+    // The packaged app types are excluded before the origin is examined, because their origins are
+    // indistinguishable from a developer's: the Electron app serves itself from http://localhost via its
+    // bundled Express server, and NW.js runs from file:. Trusting those origins would trust every desktop
+    // install rather than the developer. DEV: this is why changing the default contentInjectionMode for NW.js
+    // (see params.contentInjectionMode above) does not open a hole here - do not reduce this to an origin test.
+    // Both clauses below still fire for the cases they are meant for, i.e. a browser pointed at the dev server
+    // on localhost, or at www/index.html opened directly from disk.
+    var trustedContext = !/Electron|UWP/.test(params.appType) &&
+        (/^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) || /^file:$/.test(window.location.protocol));
+
+    // NB the value is [^&]* rather than [^&]+ so that an empty value is parsed rather than silently skipped:
+    // the UWP handoff clears a stale setting by sending it empty (e.g. '&lastSelectedArchivePath=' below),
+    // which never worked while the parser demanded at least one character. Senders that may legitimately have
+    // no value must therefore omit the parameter entirely rather than send it empty - see app.js. The pattern
+    // still cannot match an empty string overall (it needs at least '?x='), so the global exec loop terminates.
+    var rgx = /[?&]([^=]+)=([^&]*)/g;
     var matches = rgx.exec(window.location.search);
     while (matches) {
-        if (matches[1] && matches[2]) {
+        // NB test matches[2] against undefined, not truthiness: an empty value is meaningful here
+        if (matches[1] && matches[2] !== undefined) {
             var paramKey = decodeURIComponent(matches[1]);
             var paramVal = decodeURIComponent(matches[2]);
-            if (paramKey !== 'title') {
-                // Store new values
-                setSetting(paramKey, paramVal);
-                paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
-                params[paramKey] = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
+            // The title key is a ZIM article path, which is consumed by the router rather than being a setting
+            if (paramKey !== 'title' && !~forbiddenParams.indexOf(paramKey)) {
+                // NB we must use hasOwnProperty here, or a key such as 'toString' would pick up an inherited
+                // function, which is truthy, and calling .test() on it would throw
+                var paramPattern = Object.prototype.hasOwnProperty.call(validatedParams, paramKey) ? validatedParams[paramKey] : null;
+                if (~neverFromQuerystring.indexOf(paramKey)) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": it can only be set in Configuration');
+                } else if (~devOnlyParams.indexOf(paramKey) && !trustedContext) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": it is only honoured when running from a development location');
+                } else if (paramPattern && !paramPattern.test(paramVal)) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": the value is not in the expected format');
+                } else {
+                    // Store new values
+                    // NB if we reach here with a devOnlyParams key, we are necessarily in a trusted context (see above)
+                    if (~persistableParams.indexOf(paramKey) || paramPattern || ~devOnlyParams.indexOf(paramKey)) {
+                        setSetting(paramKey, paramVal);
+                    } else {
+                        console.debug('Parameter "' + paramKey + '" applies to this page load only, and will not be stored');
+                    }
+                    paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
+                    params[paramKey] = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
+                }
             }
         }
         matches = rgx.exec(window.location.search);
@@ -233,7 +321,7 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
             var fal = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
             fal.addOrReplace(params.falFileToken, launchArgumentsUWP.files[0]);
             if (fal.containsItem(params.falFolderToken)) fal.remove(params.falFolderToken);
-            uriParams += '&lasSelectedArchivePath=&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
+            uriParams += '&lastSelectedArchivePath=&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
         }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land

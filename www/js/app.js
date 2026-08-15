@@ -2005,8 +2005,11 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
                     var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
                     // Commented line below causes crash when there are too many archives
                     // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-                    uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-                    uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                    // NB only send these when we have a value: an empty value now clears the setting on the
+                    // receiving side (see the parser in init.js), and we do not want to void a pointer there
+                    // merely because this instance has none
+                    uriParams += params.storedFile ? '&lastSelectedArchive=' + encodeURIComponent(params.storedFile) : '';
+                    uriParams += params.lastPageVisit ? '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit) : '';
                     // Void the PWA_launch signal so that user will be asked again next time
                     params.localUWPSettings.PWA_launch = '';
                     window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
@@ -3727,7 +3730,9 @@ function launchUWPServiceWorker () {
         uriParams += '&manipulateImages=false&allowHTMLExtraction=false';
         // Commented line below causes crash if there are too many archives
         // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-        uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+        // NB only send this when we have a value: an empty value now clears the setting on the receiving side
+        // (see the parser in init.js), and we do not want to void the PWA's pointer if this instance has none
+        uriParams += params.storedFile ? '&lastSelectedArchive=' + encodeURIComponent(params.storedFile) : '';
         uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
         uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
         // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
