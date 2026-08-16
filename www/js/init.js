@@ -148,7 +148,11 @@ params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alph
 // DEV: NW.js is excluded from the ServiceWorker default below because it primarily targets Windows XP. If that
 // changes, note that params.sourceVerification (set further down) becomes live in NW.js as a result, and NW.js
 // runs from file: - see the notes on the trusted context in overrideParams() below before altering this line.
-params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+// NB the stored value is checked against the modes this app actually supports, and anything else falls back to
+// the default: an unrecognized mode matches neither branch of setContentInjectionMode() in app.js, which leaves
+// the app in a hybrid state with no radio button selected. This also heals a value stored before that was so
+params['contentInjectionMode'] = /^(?:jquery|serviceworker)$/.test(getSetting('contentInjectionMode'))
+    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
@@ -157,7 +161,11 @@ params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
 params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
-params['sourceVerification'] = params.contentInjectionMode === 'serviceworker' ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false; // Sets a boolean indicating weather a user trusts the source of zim files
+// Sets a boolean indicating whether a user trusts the source of zim files. NB this tests the start of the mode
+// string rather than matching it exactly, both because the gate in app.js does the same and because upstream
+// kiwix-js has a further 'serviceworkerlocal' mode: an exact match would silently leave the gate off in any
+// mode whose name merely begins with 'serviceworker'
+params['sourceVerification'] = /^serviceworker/.test(params.contentInjectionMode) ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false;
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
 params['keepTorrentSeeding'] = getSetting('keepTorrentSeeding') !== false; // A setting that determines whether completed in-app BitTorrent downloads keep seeding until app quit (default is true; Electron/NWJS only)
@@ -219,12 +227,16 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // production PWA cannot use them to disarm the app.
     var devOnlyParams = ['noPrompts', 'PWAServer'];
 
-    // Parameters whose value must match a pattern before it will be accepted. These are the URL-shaped params:
+    // Parameters whose value must match a pattern before it will be accepted. Most are the URL-shaped params:
     // the OPDS catalogue and download endpoints, and the PWA jump target. Restricting them to the Kiwix domains
     // stops a crafted link repointing the library or a download at a host of the attacker's choosing. NB the
     // trailing group also permits the bare origin, as several of these defaults carry no trailing slash.
+    // contentInjectionMode is here for a different reason: it is a mode name rather than a URL, and a value the
+    // app does not recognize leaves it in a state its own UI cannot represent (see params.contentInjectionMode
+    // above). The two names below are the values of the radio buttons in index.html.
     var kiwixServerPattern = /^https:\/\/(?:(?:[a-z0-9-]+\.)*kiwix\.org|kiwix\.github\.io)(?:[/?#]|$)/;
     var validatedParams = {
+        contentInjectionMode: /^(?:jquery|serviceworker)$/,
         kiwixLibraryServer: kiwixServerPattern,
         kiwixLibraryBrowser: kiwixServerPattern,
         kiwixCatalogRoot: kiwixServerPattern,

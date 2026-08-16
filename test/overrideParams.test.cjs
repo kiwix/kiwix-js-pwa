@@ -150,6 +150,9 @@ r = run('?contentInjectionMode=serviceworker&manipulateImages=false&allowHTMLExt
 check('contentInjectionMode is stored', r.store.contentInjectionMode === 'serviceworker');
 check('manipulateImages is stored', r.store.manipulateImages === 'false' && r.params.manipulateImages === false);
 check('allowHTMLExtraction is stored', r.store.allowHTMLExtraction === 'false');
+r = run('?allowInternetAccess=false&contentInjectionMode=jquery', PRODUCTION);
+check('contentInjectionMode accepts the app\'s other mode, used by the UWP handoff and resetApp',
+    r.store.contentInjectionMode === 'jquery');
 r = run('?lastPageVisit=A%2FSome_page', PRODUCTION);
 check('lastPageVisit applies to the current page load', r.params.lastPageVisit === 'A/Some_page');
 check('lastPageVisit is not stored, as init.js never reads it back under that key',
@@ -168,6 +171,16 @@ section('Endpoint parameters restricted to Kiwix hosts');
     r = run('?kiwixDownloadServer=' + encodeURIComponent(url), PRODUCTION);
     check('kiwixDownloadServer refuses ' + url,
         !stored(r, 'kiwixDownloadServer') && r.params.kiwixDownloadServer === undefined);
+});
+
+section('The content injection mode is restricted to the modes the app implements');
+// setContentInjectionMode() in app.js branches on 'jquery' and 'serviceworker' only, and the radio buttons in
+// index.html carry those same two values, so any other mode name leaves the app in a state it cannot show the
+// user: no radio button is selected, and the mode matches neither branch at the call sites that switch on it
+['serviceworkerlocal', 'jQuery', 'serviceworker ', 'anything'].forEach(function (mode) {
+    r = run('?contentInjectionMode=' + encodeURIComponent(mode), PRODUCTION);
+    check('contentInjectionMode refuses "' + mode + '"',
+        !stored(r, 'contentInjectionMode') && r.params.contentInjectionMode === undefined);
 });
 
 section('Keys that could alter the params prototype');

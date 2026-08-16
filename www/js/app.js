@@ -2215,8 +2215,11 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
         }
     });
 });
-// Source verification is only makes sense in SW mode as doing the same in jQuery mode is redundant.
-document.getElementById('enableSourceVerificationCheck').style.display = params.contentInjectionMode === ('serviceworker' || 'serviceworkerlocal') ? 'block' : 'none';
+// Source verification only makes sense in SW mode, as doing the same in jQuery mode is redundant.
+// NB test the start of the mode string, as init.js does when reading params.sourceVerification back: the
+// parenthesized ('serviceworker' || 'serviceworkerlocal') this replaces short-circuited to its first operand,
+// so it was only ever an exact match on 'serviceworker'
+document.getElementById('enableSourceVerificationCheck').style.display = /^serviceworker/.test(params.contentInjectionMode) ? 'block' : 'none';
 document.getElementById('enableSourceVerificationCheck').addEventListener('change', function () {
     params.sourceVerification = this.checked;
     settingsStore.setItem('sourceVerification', this.checked, Infinity);
@@ -4960,16 +4963,13 @@ function archiveReadyCallback (archive) {
     // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
     if (params.contentInjectionMode === 'jquery') {
         params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        // Change the radio buttons accordingly
-        switch (settingsStore.getItem('contentInjectionMode')) {
-            case 'serviceworker':
-                document.getElementById('serviceworkerModeRadio').checked = true;
-                // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
-                params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
-                break;
-            case 'serviceworkerlocal':
-                document.getElementById('serviceworkerLocalModeRadio').checked = true;
-                break;
+        // Change the radio buttons accordingly. NB there was formerly a 'serviceworkerlocal' case here, copied
+        // from upstream kiwix-js, but this app has no such mode and no serviceworkerLocalModeRadio element, so
+        // that branch could only ever have thrown on a null element
+        if (settingsStore.getItem('contentInjectionMode') === 'serviceworker') {
+            document.getElementById('serviceworkerModeRadio').checked = true;
+            // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
+            params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
         }
     }
     if (settingsStore.getItem('trustedZimFiles') === null) {
