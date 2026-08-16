@@ -1933,6 +1933,11 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         // Do the necessary to enable or disable the Service Worker
         setContentInjectionMode(this.value);
 
+        // Set below if the user has to be asked whether they trust the loaded archive. The article reload
+        // at the foot of this handler must wait for that answer, because declining switches the app back
+        // to Restricted mode, and reloading first would load the archive in Service Worker mode regardless
+        var verifyingArchive = null;
+
         /** DEV: PLEASE NOTE THAT "jQuery mode" HAS NOW CHANGED to "Restricted mode", but we still use "jquery" in code */
 
         // Actions that must be completed after switch to Restricted mode
@@ -1952,7 +1957,7 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
             document.getElementById('enableSourceVerificationCheck').style.display = '';
             if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
-                verifyLoadedArchive(appstate.selectedArchive);
+                verifyingArchive = verifyLoadedArchive(appstate.selectedArchive);
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
                 if (!appstate.wikimediaZimLoaded) {
@@ -1967,15 +1972,25 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         // Reload the currently displayed article straight away, so that anchor click handling
         // (which differs between Restricted and Service Worker mode) is applied to the page that
-        // is already open, instead of only taking effect on the next navigation
-        if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
-            if (params.lastPageVisit) {
-                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-            } else {
-                goToMainArticle();
+        // is already open, instead of only taking effect on the next navigation. NB if the user is
+        // being asked whether they trust the archive, this must not run until they have answered:
+        // params.contentInjectionMode is only switched back to 'jquery' when they decline, so an
+        // immediate reload would load the archive in Service Worker mode whatever the answer
+        var reloadCurrentArticle = function () {
+            if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
+                if (params.lastPageVisit) {
+                    goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+                } else {
+                    goToMainArticle();
+                }
             }
+            params.themeChanged = false;
+        };
+        if (verifyingArchive) {
+            verifyingArchive.then(reloadCurrentArticle);
+        } else {
+            reloadCurrentArticle();
         }
-        params.themeChanged = false;
     });
 });
 document.getElementById('allowInternetAccessCheck').addEventListener('change', function () {
