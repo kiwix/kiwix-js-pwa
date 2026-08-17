@@ -1,7 +1,11 @@
 # Changelog
 
-## Interim release 3.8.91
+## Interim release 3.8.92
 
+* SECURITY/REGRESSION: An archive is no longer loaded in ServiceWorker mode while the security prompt about trusting its source is still showing
+* FIX: The content injection mode is now checked against the modes the app actually supports, so an unrecognized value can no longer leave the app in an invalid state
+* DEV: Harmonized the checks on the content injection mode string with upstream, and removed vestigial handling of a mode this app does not implement
+* DEV: Added unit tests covering the validation of the content injection mode value
 * SECURITY: Settings supplied in the app's URL are no longer saved permanently, apart from the few the app passes between its own windows, and source verification can now only be changed in Configuration
 * FEATURE: New setting to show a title bar when the browser draws the window controls overlay over the app, restoring the choice that recent versions of Edge removed
 * FEATURE: In-app library can now browse the whole ZIM catalogue as well as by category, so archives that declare no category in their metadata can now be found
