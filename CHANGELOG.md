@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.92
 
+* REGRESSION: Opening a historical archive such as `wikipedia_en_wp1-0.5_2007-03.zim` again switches automatically to Restricted mode, the only mode that can find the stylesheets of such an archive, and says so in a banner; the app returns to your chosen mode when you next open any other archive
 * FIX: The warning about limited Zimit support is now shown for zimit2 archives in Restricted mode, where it was silently skipped
 * FIX: The warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader for an archive its browser cannot handle
 * FIX: Links in the active content warnings are now legible in dark mode, instead of light blue on the warning's yellow background

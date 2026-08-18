@@ -6950,6 +6950,20 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     if (params.zimType === 'open') {
         params.isLegacyZIM = /<link\b[^>]+href\s*=\s*["']\/[^."']+\.css["']/i.test(htmlArticle);
     }
+    // A historical ZIM gives the paths to its assets as root-relative URLs, which are not parsed in Service Worker
+    // mode, so switch to Restricted mode (which parses them more leniently) and read the article again. The banner
+    // explaining the switch is raised by the gate below on that second pass, when the mode is no longer 'serviceworker'.
+    // DEV: The switch is deliberately to params only, exactly as when the user declines the trust prompt in
+    // verifyLoadedArchive(): the Settings Store keeps the user's real choice, so opening any non-legacy archive
+    // afterwards restores it (see the block at the head of archiveReadyCallback). It is also deliberately outside the
+    // gate below, whose Service Worker mode conditions are about the app's own image and HTML processing, and so left
+    // a historical ZIM entirely unhandled at default settings [kiwix-js-pwa #902]
+    if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
+        console.debug('Historical ZIM detected: switching to Restricted mode so that its stylesheets can be found');
+        params.contentInjectionMode = 'jquery';
+        document.getElementById('jQueryModeRadio').checked = true;
+        return readArticle(dirEntry);
+    }
     params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url
         ? true : params.isLandingPage;
     // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html
@@ -6966,11 +6980,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 setTimeout(function () {
                     uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
                 }, 1500);
-            }
-            if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
-                // Pop up a dialogue box to warn the user about the legacy ZIM
-                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to Restricted mode.</p>' +
-                    "<p>Don't forget to switch back afterwards!</p>", 'Legacy ZIM file');
             }
         }
     }

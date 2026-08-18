@@ -606,11 +606,14 @@ function displayActiveContentWarning (type) {
             '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
             'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
+    } else if (type === 'legacy') {
+        // DEV: The app now switches to Restricted mode by itself when it meets a historical ZIM, so this no longer
+        // asks the user to do it; the wording holds whether the app switched or the user was already in that mode,
+        // and the link takes them to the setting in case they want to change it back [kiwix-js-pwa #902]
         alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-        '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
-            'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
+        '<strong>Legacy ZIM type!</strong> This historical ZIM can only be displayed correctly in the legacy ' +
+            '<a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">Restricted mode</a>, which is now in use. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     } else if (/^zimit/.test(type)) {
