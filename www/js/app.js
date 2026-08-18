@@ -1933,6 +1933,11 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         // Do the necessary to enable or disable the Service Worker
         setContentInjectionMode(this.value);
 
+        // Set below if the user has to be asked whether they trust the loaded archive. The article reload
+        // at the foot of this handler must wait for that answer, because declining switches the app back
+        // to Restricted mode, and reloading first would load the archive in Service Worker mode regardless
+        var verifyingArchive = null;
+
         /** DEV: PLEASE NOTE THAT "jQuery mode" HAS NOW CHANGED to "Restricted mode", but we still use "jquery" in code */
 
         // Actions that must be completed after switch to Restricted mode
@@ -1952,7 +1957,7 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
             document.getElementById('enableSourceVerificationCheck').style.display = '';
             if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
-                verifyLoadedArchive(appstate.selectedArchive);
+                verifyingArchive = verifyLoadedArchive(appstate.selectedArchive);
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
                 if (!appstate.wikimediaZimLoaded) {
@@ -1967,15 +1972,25 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         // Reload the currently displayed article straight away, so that anchor click handling
         // (which differs between Restricted and Service Worker mode) is applied to the page that
-        // is already open, instead of only taking effect on the next navigation
-        if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
-            if (params.lastPageVisit) {
-                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-            } else {
-                goToMainArticle();
+        // is already open, instead of only taking effect on the next navigation. NB if the user is
+        // being asked whether they trust the archive, this must not run until they have answered:
+        // params.contentInjectionMode is only switched back to 'jquery' when they decline, so an
+        // immediate reload would load the archive in Service Worker mode whatever the answer
+        var reloadCurrentArticle = function () {
+            if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
+                if (params.lastPageVisit) {
+                    goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+                } else {
+                    goToMainArticle();
+                }
             }
+            params.themeChanged = false;
+        };
+        if (verifyingArchive) {
+            verifyingArchive.then(reloadCurrentArticle);
+        } else {
+            reloadCurrentArticle();
         }
-        params.themeChanged = false;
     });
 });
 document.getElementById('allowInternetAccessCheck').addEventListener('change', function () {
@@ -2215,8 +2230,11 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
         }
     });
 });
-// Source verification is only makes sense in SW mode as doing the same in jQuery mode is redundant.
-document.getElementById('enableSourceVerificationCheck').style.display = params.contentInjectionMode === ('serviceworker' || 'serviceworkerlocal') ? 'block' : 'none';
+// Source verification only makes sense in SW mode, as doing the same in jQuery mode is redundant.
+// NB test the start of the mode string, as init.js does when reading params.sourceVerification back: the
+// parenthesized ('serviceworker' || 'serviceworkerlocal') this replaces short-circuited to its first operand,
+// so it was only ever an exact match on 'serviceworker'
+document.getElementById('enableSourceVerificationCheck').style.display = /^serviceworker/.test(params.contentInjectionMode) ? 'block' : 'none';
 document.getElementById('enableSourceVerificationCheck').addEventListener('change', function () {
     params.sourceVerification = this.checked;
     settingsStore.setItem('sourceVerification', this.checked, Infinity);
@@ -4960,16 +4978,13 @@ function archiveReadyCallback (archive) {
     // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
     if (params.contentInjectionMode === 'jquery') {
         params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        // Change the radio buttons accordingly
-        switch (settingsStore.getItem('contentInjectionMode')) {
-            case 'serviceworker':
-                document.getElementById('serviceworkerModeRadio').checked = true;
-                // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
-                params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
-                break;
-            case 'serviceworkerlocal':
-                document.getElementById('serviceworkerLocalModeRadio').checked = true;
-                break;
+        // Change the radio buttons accordingly. NB there was formerly a 'serviceworkerlocal' case here, copied
+        // from upstream kiwix-js, but this app has no such mode and no serviceworkerLocalModeRadio element, so
+        // that branch could only ever have thrown on a null element
+        if (settingsStore.getItem('contentInjectionMode') === 'serviceworker') {
+            document.getElementById('serviceworkerModeRadio').checked = true;
+            // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
+            params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
         }
     }
     if (settingsStore.getItem('trustedZimFiles') === null) {
