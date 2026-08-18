@@ -4864,6 +4864,23 @@ function archiveReadyCallback (archive) {
     // When a new ZIM is loaded, we turn this flag to null, so that we don't get false positive attempts to use the Worker
     // It will be defined as false or true when the first article is loaded
     appstate.isReplayWorkerAvailable = null;
+    // Restore the user's own content injection mode when opening a new archive, in case the app switched to
+    // Restricted mode for the previous one (it does that for a historical ZIM, and when the user declines the
+    // trust prompt, in both cases by changing params only, so the Store still holds their real choice).
+    // DEV: This has to run before anything below reads the mode, or the archive that follows such a switch would
+    // silently skip the Service Worker initialization and the mode-dependent defaults [kiwix-js-pwa #929]
+    if (params.contentInjectionMode === 'jquery') {
+        var storedContentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        // NB there was formerly a 'serviceworkerlocal' case here, copied from upstream kiwix-js, but this app has
+        // no such mode and no serviceworkerLocalModeRadio element, so that branch could only ever have thrown on a
+        // null element. An unrecognized or missing stored value is ignored rather than assigned, which would leave
+        // the mode in a state the app's own UI cannot represent (see params.contentInjectionMode in init.js)
+        if (/^(?:jquery|serviceworker)$/.test(storedContentInjectionMode)) {
+            params.contentInjectionMode = storedContentInjectionMode;
+            // Change the radio buttons accordingly
+            if (storedContentInjectionMode === 'serviceworker') document.getElementById('serviceworkerModeRadio').checked = true;
+        }
+    }
     // Initialize the Service Worker
     if (params.contentInjectionMode === 'serviceworker') {
         initServiceWorkerMessaging();
@@ -4874,6 +4891,7 @@ function archiveReadyCallback (archive) {
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.zimThemeType = 'desktop';
     appstate.pureMode = false;
+    appstate.legacyModeSwitched = false;
     // Reset params.assetsCache in case it was changed below
     params.assetsCache = cache.assetsCacheAllowed();
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
@@ -4997,18 +5015,6 @@ function archiveReadyCallback (archive) {
             }
         }
     };
-    // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
-    if (params.contentInjectionMode === 'jquery') {
-        params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        // Change the radio buttons accordingly. NB there was formerly a 'serviceworkerlocal' case here, copied
-        // from upstream kiwix-js, but this app has no such mode and no serviceworkerLocalModeRadio element, so
-        // that branch could only ever have thrown on a null element
-        if (settingsStore.getItem('contentInjectionMode') === 'serviceworker') {
-            document.getElementById('serviceworkerModeRadio').checked = true;
-            // In case we auto-switched off assetsCache due to switch to Restricted mode, we need to reset
-            params.assetsCache = cache.assetsCacheAllowed();
-        }
-    }
     if (settingsStore.getItem('trustedZimFiles') === null) {
         settingsStore.setItem('trustedZimFiles', '', Infinity);
     }
@@ -6565,7 +6571,9 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     // params.contentInjectionMode = 'jquery';
     readArticle(unhandledDirEntry);
     if (!params.hideActiveContentWarning) {
-        uiUtil.displayActiveContentWarning();
+        // We only get here for a classic Zimit archive that has to fall back to the legacy reader, so name the type:
+        // called with no argument, the warning silently matched none of its branches and nothing was shown [kiwix-js-pwa #928]
+        uiUtil.displayActiveContentWarning('zimit');
         return uiUtil.systemAlert('<p>You are attempting to open a Zimit (classic) archive, ' +
             'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
             'fallback method to read this archive, but some highly dynamic content may not work.</p>',
@@ -6948,6 +6956,23 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     if (params.zimType === 'open') {
         params.isLegacyZIM = /<link\b[^>]+href\s*=\s*["']\/[^."']+\.css["']/i.test(htmlArticle);
     }
+    // A historical ZIM gives the paths to its assets as root-relative URLs, which are not parsed in Service Worker
+    // mode, so switch to Restricted mode (which parses them more leniently) and read the article again. The banner
+    // explaining the switch is raised by the gate below on that second pass, when the mode is no longer 'serviceworker'.
+    // DEV: The switch is deliberately to params only, exactly as when the user declines the trust prompt in
+    // verifyLoadedArchive(): the Settings Store keeps the user's real choice, so opening any non-legacy archive
+    // afterwards restores it (see the block at the head of archiveReadyCallback). It is also deliberately outside the
+    // gate below, whose Service Worker mode conditions are about the app's own image and HTML processing, and so left
+    // a historical ZIM entirely unhandled at default settings [kiwix-js-pwa #902]
+    if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
+        console.debug('Historical ZIM detected: switching to Restricted mode so that its stylesheets can be found');
+        params.contentInjectionMode = 'jquery';
+        document.getElementById('jQueryModeRadio').checked = true;
+        // The gate below only lets the landing page raise a warning, but an archive reopened at its last visited
+        // page never reaches it, so flag the switch to be announced on the second pass whatever page we are on
+        appstate.legacyModeSwitched = true;
+        return readArticle(dirEntry);
+    }
     params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url
         ? true : params.isLandingPage;
     // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html
@@ -6956,7 +6981,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
 
     // Display Bootstrap warning alert if the landing page contains active content
-    if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
+    if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.legacyModeSwitched ||
+        appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
         (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || /zimit/.test(appstate.selectedArchive.zimType))) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
@@ -6965,13 +6991,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
                 }, 1500);
             }
-            if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
-                // Pop up a dialogue box to warn the user about the legacy ZIM
-                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to Restricted mode.</p>' +
-                    "<p>Don't forget to switch back afterwards!</p>", 'Legacy ZIM file');
-            }
         }
     }
+    // The switch is explained once, on the pass that follows it: clear the flag whether or not the conditions
+    // above were met, so that it cannot raise a warning on some later article of the same archive
+    appstate.legacyModeSwitched = false;
 
     // App appears to have successfully launched
     params.appIsLaunching = false;

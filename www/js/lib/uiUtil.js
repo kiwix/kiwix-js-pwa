@@ -592,7 +592,7 @@ function getClosestMatchForTagname (el, rgx) {
 
 /**
  * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
- * @param {String} type The ZIM archive type ('open', 'zimit', or 'legacy')
+ * @param {String} type The ZIM archive type ('open', 'zimit', 'zimit2', or 'legacy')
  */
 function displayActiveContentWarning (type) {
     // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
@@ -606,14 +606,23 @@ function displayActiveContentWarning (type) {
             '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
             'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
+    } else if (type === 'legacy') {
+        // DEV: The app now switches to Restricted mode by itself when it meets a historical ZIM, so this no longer
+        // asks the user to do it; the wording holds whether the app switched or the user was already in that mode,
+        // and the link takes them to the setting in case they want to change it back [kiwix-js-pwa #902]
         alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-        '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
-            'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
+        '<strong>Legacy ZIM type!</strong> This historical ZIM can only be displayed correctly in the legacy ' +
+            '<a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">Restricted mode</a>, which is now in use. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (type === 'zimit') {
+    } else if (/^zimit/.test(type)) {
+        // DEV: This warning tells the user that what they are seeing is an approximation of the ZIM's content, so it
+        // belongs to Restricted mode. In Service Worker mode a modern browser renders these archives properly and
+        // there is nothing to warn about; the only exception is a classic Zimit archive whose browser cannot run the
+        // Replay worker, which falls back to the legacy reader (see handleUnsupportedReplayWorker in app.js) and does
+        // warn below. Zimit2 has no such fallback, so it warns in Restricted mode only [kiwix-js-pwa #928]
+        if (type === 'zimit2' && params.contentInjectionMode !== 'jquery') return;
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
