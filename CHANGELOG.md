@@ -2,6 +2,9 @@
 
 ## Interim release 3.8.92
 
+* FIX: The warning about limited Zimit support is now shown for zimit2 archives in Restricted mode, where it was silently skipped
+* FIX: The warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader for an archive its browser cannot handle
+* FIX: Links in the active content warnings are now legible in dark mode, instead of light blue on the warning's yellow background
 * FIX: Developer Mode can now be turned on and off while the app is in Restricted mode, instead of being refused with an alert that left the checkbox showing the opposite of the setting it controls
 * ENHANCEMENT: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable, so the mode genuinely runs the app with no caches at all; your own choice of assets cache returns when you turn Developer Mode off
 * FIX: A misspelt setting name meant the ZIM assets cache was silently switched back on, whatever you had chosen, whenever the app returned to Service Worker mode after opening an archive
