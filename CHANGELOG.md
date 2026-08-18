@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.92
 
+* FIX: An archive opened after the app has temporarily switched itself to Restricted mode now has its Service Worker mode settings applied again, instead of opening with the app still set up for the mode it had left behind
 * REGRESSION: A historical archive such as `wikipedia_en_wp1-0.5_2007-03.zim` no longer opens with broken styling and no explanation, now that the advice to read it in Restricted mode is shown again; the app also switches to that mode for you, since it is the only one that can find such an archive's stylesheets, and your own choice of mode returns as soon as you open any other archive
 * FIX: The warning about limited Zimit support is now shown for zimit2 archives in Restricted mode, where it was silently skipped
 * FIX: The warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader for an archive its browser cannot handle
