@@ -614,9 +614,11 @@ function displayActiveContentWarning (type) {
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     } else if (/^zimit/.test(type)) {
-        // DEV: Zimit2 archives are fully supported in Service Worker mode, where the Service Worker serves them
-        // directly (see appstate.pureMode in app.js), so there is nothing to warn about; but in Restricted mode
-        // they are as limited as classic Zimit archives, so they get the same warning [kiwix-js-pwa #928]
+        // DEV: This warning tells the user that what they are seeing is an approximation of the ZIM's content, so it
+        // belongs to Restricted mode. In Service Worker mode a modern browser renders these archives properly and
+        // there is nothing to warn about; the only exception is a classic Zimit archive whose browser cannot run the
+        // Replay worker, which falls back to the legacy reader (see handleUnsupportedReplayWorker in app.js) and does
+        // warn below. Zimit2 has no such fallback, so it warns in Restricted mode only [kiwix-js-pwa #928]
         if (type === 'zimit2' && params.contentInjectionMode !== 'jquery') return;
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
