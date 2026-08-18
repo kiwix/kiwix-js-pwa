@@ -2,6 +2,11 @@
 
 ## Interim release 3.8.92
 
+* FIX: Developer Mode can now be turned on and off while the app is in Restricted mode, instead of being refused with an alert that left the checkbox showing the opposite of the setting it controls
+* ENHANCEMENT: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable, so the mode genuinely runs the app with no caches at all; your own choice of assets cache returns when you turn Developer Mode off
+* FIX: A misspelt setting name meant the ZIM assets cache was silently switched back on, whatever you had chosen, whenever the app returned to Service Worker mode after opening an archive
+* REGRESSION: Restored the warnings about active content, and about limited support for Zimit archives, which have been invisible since the Bootstrap 4 migration
+* FIX: Reset app no longer fails with an error, leaving the app unreset, when no Service Worker is controlling the page
 * SECURITY/REGRESSION: An archive is no longer loaded in ServiceWorker mode while the security prompt about trusting its source is still showing
 * FIX: The content injection mode is now checked against the modes the app actually supports, so an unrecognized value can no longer leave the app in an invalid state
 * DEV: Harmonized the checks on the content injection mode string with upstream, and removed vestigial handling of a mode this app does not implement

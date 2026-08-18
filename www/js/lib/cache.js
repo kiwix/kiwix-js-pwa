@@ -1010,8 +1010,22 @@ function wait (semaphor, value) {
     return p;
 }
 
+/**
+ * Determines whether the ZIM assets cache may be used, combining the user's stored preference with the state of
+ * Developer Mode. The assets cache is subordinate to params.appCache: Developer Mode exists to run the app with no
+ * caches at all, so it clamps this value rather than overwriting the stored preference, which therefore returns
+ * intact when Developer Mode is switched off. The same rule is restated at the head of init.js, which cannot use
+ * this helper because it is a classic script that runs before the modules load [kiwix-js-pwa #926]
+ *
+ * @returns {Boolean} True if ZIM assets may be cached
+ */
+function assetsCacheAllowed () {
+    return params.appCache && settingsStore.getItem('assetsCache') !== 'false';
+}
+
 export default {
     APPCACHE: APPCACHE,
+    assetsCacheAllowed: assetsCacheAllowed,
     CACHEAPI: CACHEAPI,
     test: test,
     count: count,

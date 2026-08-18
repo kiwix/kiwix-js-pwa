@@ -1920,12 +1920,6 @@ document.getElementById('downloadTrigger').addEventListener('click', function ()
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {
-        // if (this.value === 'jquery' && !params.appCache) {
-        //     uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to Restricted mode!');
-        //     this.checked = false;
-        //     document.getElementById('serviceworkerModeRadio').checked = true;
-        //     return;
-        // }
         var returnDivs = document.getElementsByClassName('returntoArticle');
         for (var i = 0; i < returnDivs.length; i++) {
             returnDivs[i].innerHTML = '';
@@ -2123,14 +2117,22 @@ document.getElementById('btnRefreshApp').addEventListener('click', function () {
     window.location.reload();
 });
 document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
-    if (params.contentInjectionMode !== 'serviceworker') {
-        uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
-        this.checked = false;
-    } else {
-        params.appCache = !this.checked;
-        settingsStore.setItem('appCache', params.appCache, Infinity);
-        resetApp.reset('cacheAPI');
-    }
+    // DEV: This setting used to be refused outside Service Worker mode, but Restricted mode does not unregister the
+    // Service Worker here: it only stops it intercepting requests for ZIM assets, so the app's own code is still
+    // served from the app cache, which is exactly what this setting bypasses (see setContentInjectionMode below).
+    // The old guard therefore blocked a bypass that does work, and because it rejected the change in both
+    // directions, it also made Developer mode impossible to turn off without first returning to Service Worker
+    // mode. Worse, its this.checked = false was written for the turn-on case only, so on the turn-off path the box
+    // was already unticked and the line did nothing: the checkbox showed Developer mode off while params.appCache
+    // said it was still on, until the next launch put the tick back [kiwix-js-pwa #926, cf. kiwix-js #1465]
+    params.appCache = !this.checked;
+    settingsStore.setItem('appCache', params.appCache, Infinity);
+    // Apply the assets cache rule stated in init.js at the moment the mode changes, not merely at the next boot,
+    // or the app sits in the very state that rule exists to prevent (Developer Mode on, assets still cached) for
+    // the rest of the session. NB we clamp params only: the stored preference is left alone so that it comes back
+    // when Developer Mode is switched off [kiwix-js-pwa #926]
+    params.assetsCache = cache.assetsCacheAllowed();
+    resetApp.reset('cacheAPI');
     // This will also send any new values to Service Worker
     refreshCacheStatus();
 });
@@ -3022,7 +3024,10 @@ document.getElementById('rememberLastPageCheck').addEventListener('change', func
 document.getElementById('cachedAssetsModeRadioTrue').addEventListener('change', function (e) {
     if (e.target.checked) {
         settingsStore.setItem('assetsCache', true, Infinity);
-        params.assetsCache = true;
+        // Store the preference, but it cannot take effect while Developer Mode is on: same rule as in init.js and
+        // in the bypassAppCacheCheck handler. The radios are disabled in that state (see refreshCacheStatus), so
+        // this is the backstop rather than the primary guard [kiwix-js-pwa #926]
+        params.assetsCache = params.appCache;
         refreshCacheStatus();
     }
 });
@@ -3424,6 +3429,21 @@ function refreshAPIStatus () {
 function refreshCacheStatus () {
     // Update radio buttons and checkbox
     document.getElementById('cachedAssetsModeRadio' + (params.assetsCache ? 'True' : 'False')).checked = true;
+    // Developer Mode forces the assets cache off, so show these radios as unavailable rather than letting the user
+    // pick a value the app will immediately override. DEV: the native inputs are visually hidden by app.css (the
+    // visible control is the .radiobtn span), so the disabled attribute alone produces no visible change: the
+    // setting-disabled class on the label is what draws it [kiwix-js-pwa #926]
+    ['cachedAssetsModeRadioTrue', 'cachedAssetsModeRadioFalse'].forEach(function (id) {
+        var radio = document.getElementById(id);
+        var label = radio.parentElement;
+        radio.disabled = !params.appCache;
+        // Stash the explanatory title the label carries in index.html, so it can be restored verbatim
+        if (label.getAttribute('data-title-enabled') === null) label.setAttribute('data-title-enabled', label.title);
+        label.title = params.appCache ? label.getAttribute('data-title-enabled')
+            : 'Unavailable while Developer Mode is on (see Troubleshooting), because that mode runs the app with no caches at all.';
+        if (params.appCache) label.classList.remove('setting-disabled');
+        else label.classList.add('setting-disabled');
+    });
     // Get cache attributes, then update the UI with the obtained data
     cache.count(function (c) {
         document.getElementById('cacheUsed').innerHTML = c.description;
@@ -3594,7 +3614,7 @@ function setContentInjectionMode (value) {
             return;
         }
         // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in Restricted mode
-        params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
+        params.assetsCache = cache.assetsCacheAllowed();
         if (!isServiceWorkerReady()) {
             var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
             serviceWorkerStatus.textContent = 'ServiceWorker API available : trying to register it...';
@@ -4855,7 +4875,7 @@ function archiveReadyCallback (archive) {
     appstate.zimThemeType = 'desktop';
     appstate.pureMode = false;
     // Reset params.assetsCache in case it was changed below
-    params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
+    params.assetsCache = cache.assetsCacheAllowed();
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
     if (/gutenberg|phet|(?:^|_)ted_/i.test(archive.file.name) ||
@@ -4872,7 +4892,9 @@ function archiveReadyCallback (archive) {
         // Turn off the assetsCache for now in Restricted mode
         // @TODO: Check why it works better with it off for Zimit archives in Restricted mode!
         if (/zimit/.test(archive.zimType)) {
-            params.assetsCache = params.contentInjectionMode !== 'jquery';
+            // NB params.appCache is included so that this override cannot re-enable the cache under Developer
+            // Mode, which would silently defeat it on opening a Zimit archive [kiwix-js-pwa #926]
+            params.assetsCache = params.appCache && params.contentInjectionMode !== 'jquery';
         }
     }
     if (params.contentInjectionMode === 'serviceworker') {
@@ -4983,8 +5005,8 @@ function archiveReadyCallback (archive) {
         // that branch could only ever have thrown on a null element
         if (settingsStore.getItem('contentInjectionMode') === 'serviceworker') {
             document.getElementById('serviceworkerModeRadio').checked = true;
-            // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
-            params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
+            // In case we auto-switched off assetsCache due to switch to Restricted mode, we need to reset
+            params.assetsCache = cache.assetsCacheAllowed();
         }
     }
     if (settingsStore.getItem('trustedZimFiles') === null) {

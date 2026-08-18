@@ -167,7 +167,14 @@ function reloadApp () {
     var reboot = function () {
         // Disable beforeunload interceptor
         params.interceptBeforeUnload = false;
-        navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+        // The page may have no Service Worker controlling it: there is none registered yet on a first launch or in
+        // Restricted mode, and the registrations were in any case just unregistered above. Without this test the
+        // throw was caught below, which called reboot() a second time, throwing again uncaught and leaving the app
+        // sitting there unreset. Nothing is waiting to skip in that state anyway, so go straight to the reload.
+        // NB getCacheNames() above already guards the same call this way
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+        }
         // Force reload from server, bypassing cache
         console.debug('Performing hard reload...');
         window.location.href = location.origin + location.pathname + uriParams;

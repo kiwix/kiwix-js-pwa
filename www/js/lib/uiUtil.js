@@ -596,16 +596,18 @@ function getClosestMatchForTagname (el, rgx) {
  */
 function displayActiveContentWarning (type) {
     // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
+    // DEV: The alerts below must carry BOTH `fade` and `show`: Bootstrap 4 pins `.fade:not(.show)` at zero opacity, so
+    // an alert built with Bootstrap 3's `fade in` is inserted and laid out but never painted [kiwix-js-pwa #928]
     var alertHTML = '';
     if (params.contentInjectionMode === 'jquery' && type === 'open') {
-        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
             '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
             'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
-        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
             'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
@@ -613,7 +615,7 @@ function displayActiveContentWarning (type) {
         '</div>';
     } else if (type === 'zimit') {
         alertHTML =
-        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' +
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
@@ -624,7 +626,7 @@ function displayActiveContentWarning (type) {
         '</div>';
     } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || (params.displayHiddenBlockElements === true) || params.allowHTMLExtraction)) {
         alertHTML =
-        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements
             ? '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> '
