@@ -2,17 +2,16 @@
 
 ## Interim release 3.8.92
 
-* FIX: An archive opened after the app has temporarily switched itself to Restricted mode now has its Service Worker mode settings applied again, instead of opening with the app still set up for the mode it had left behind
-* REGRESSION: A historical archive such as `wikipedia_en_wp1-0.5_2007-03.zim` no longer opens with broken styling and no explanation, now that the advice to read it in Restricted mode is shown again; the app also switches to that mode for you, since it is the only one that can find such an archive's stylesheets, and your own choice of mode returns as soon as you open any other archive
-* FIX: The warning about limited Zimit support is now shown for zimit2 archives in Restricted mode, where it was silently skipped
-* FIX: The warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader for an archive its browser cannot handle
-* FIX: Links in the active content warnings are now legible in dark mode, instead of light blue on the warning's yellow background
-* FIX: Developer Mode can now be turned on and off while the app is in Restricted mode, instead of being refused with an alert that left the checkbox showing the opposite of the setting it controls
-* ENHANCEMENT: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable, so the mode genuinely runs the app with no caches at all; your own choice of assets cache returns when you turn Developer Mode off
-* FIX: A misspelt setting name meant the ZIM assets cache was silently switched back on, whatever you had chosen, whenever the app returned to Service Worker mode after opening an archive
-* REGRESSION: Restored the warnings about active content, and about limited support for Zimit archives, which have been invisible since the Bootstrap 4 migration
-* FIX: Reset app no longer fails with an error, leaving the app unreset, when no Service Worker is controlling the page
-* SECURITY/REGRESSION: An archive is no longer loaded in ServiceWorker mode while the security prompt about trusting its source is still showing
+* FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
+* REGRESSION: App now auto-switches to appropriate display mode when openinig historical Wikipedia archives
+* REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
+* REGRISSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
+* REGRESSION: Links in the active content warnings are now legible in dark mode
+* DEV: Developer Mode can now be turned on and off while the app is in Restricted mode
+* DEV: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable
+* FIX: A misspelt setting name meant the app ignored user choice to disable assets cache
+* FIX: Reset app no longer fails with an error when no Service Worker is controlling the page
+* SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level
 * FIX: The content injection mode is now checked against the modes the app actually supports, so an unrecognized value can no longer leave the app in an invalid state
 * DEV: Harmonized the checks on the content injection mode string with upstream, and removed vestigial handling of a mode this app does not implement
 * DEV: Added unit tests covering the validation of the content injection mode value
