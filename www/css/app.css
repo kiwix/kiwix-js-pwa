@@ -1236,8 +1236,15 @@ label.radio {
 }
 
 /* On mouse-over, add a grey background color */
-.radio:hover input ~ .radiobtn, .radio:hover input:checked ~ .checkmark {
+.radio:not(.setting-disabled):hover input ~ .radiobtn, .radio:not(.setting-disabled):hover input:checked ~ .checkmark {
     background-color: #ccc !important;
+}
+
+/* A setting the app is currently overriding, e.g. the assets cache while Developer Mode is on. The native input
+   is hidden (see above), so the unavailable state has to be drawn on the label itself [kiwix-js-pwa #926] */
+.setting-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Collapsible features section */

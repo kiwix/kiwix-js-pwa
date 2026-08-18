@@ -134,7 +134,12 @@ params['useWindowControlsOverlay'] = true; // MASTER SWITCH: set to false to ign
 params['showTitleBar'] = getSetting('showTitleBar') === true; // Draws an emulated title bar in the strip occupied by the window controls overlay, for users who prefer the window buttons not to sit over the app's own controls (has no effect unless the overlay is being drawn)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
-params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
+// The assets cache is subordinate to appCache (Developer Mode): that mode exists to run the app with no caches at
+// all, so a stored 'cache assets' preference is clamped here rather than overwritten, and returns intact when
+// Developer Mode is switched off. DEV: before #926 this line read appCache alone, which also forced the assets
+// cache ON whenever Developer Mode was off, discarding a deliberate 'do not cache assets' choice at every launch.
+// That was a side effect of #503, where the line's job was only to give this param a default of true
+params['assetsCache'] = getSetting('appCache') !== false && getSetting('assetsCache') !== false;
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
