@@ -1060,6 +1060,14 @@ pre {
     color: lightblue !important;
 }
 
+/* Bootstrap draws the links in an alert in a darker shade of the alert's own palette (.alert-warning
+   .alert-link is #533f03), but the blanket dark mode link colour above overrides it, leaving light blue
+   on the warning alert's yellow, which is barely legible. The active content warnings keep their light
+   theme colours in both themes, so their links must do the same [kiwix-js-pwa #928] */
+.dark .alert-warning a {
+    color: #533f03 !important;
+}
+
 .darkfooter .btn-default {
     background: rgba(34,34,34,0) !important;
     color: lightblue !important;

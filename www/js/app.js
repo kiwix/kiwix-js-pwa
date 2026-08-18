@@ -6565,7 +6565,9 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     // params.contentInjectionMode = 'jquery';
     readArticle(unhandledDirEntry);
     if (!params.hideActiveContentWarning) {
-        uiUtil.displayActiveContentWarning();
+        // We only get here for a classic Zimit archive that has to fall back to the legacy reader, so name the type:
+        // called with no argument, the warning silently matched none of its branches and nothing was shown [kiwix-js-pwa #928]
+        uiUtil.displayActiveContentWarning('zimit');
         return uiUtil.systemAlert('<p>You are attempting to open a Zimit (classic) archive, ' +
             'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
             'fallback method to read this archive, but some highly dynamic content may not work.</p>',

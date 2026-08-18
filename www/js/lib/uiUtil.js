@@ -592,7 +592,7 @@ function getClosestMatchForTagname (el, rgx) {
 
 /**
  * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
- * @param {String} type The ZIM archive type ('open', 'zimit', or 'legacy')
+ * @param {String} type The ZIM archive type ('open', 'zimit', 'zimit2', or 'legacy')
  */
 function displayActiveContentWarning (type) {
     // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
@@ -613,7 +613,11 @@ function displayActiveContentWarning (type) {
             'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (type === 'zimit') {
+    } else if (/^zimit/.test(type)) {
+        // DEV: Zimit2 archives are fully supported in Service Worker mode, where the Service Worker serves them
+        // directly (see appstate.pureMode in app.js), so there is nothing to warn about; but in Restricted mode
+        // they are as limited as classic Zimit archives, so they get the same warning [kiwix-js-pwa #928]
+        if (type === 'zimit2' && params.contentInjectionMode !== 'jquery') return;
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
