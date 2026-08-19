@@ -2,6 +2,8 @@
 
 ## Interim release 3.8.92
 
+* FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
+* FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
 * REGRESSION: App now auto-switches to appropriate display mode when openinig historical Wikipedia archives
 * REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
