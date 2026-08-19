@@ -2,7 +2,7 @@
 
 ## Interim release 3.8.92
 
-* FIX: Links to articles that are HTML redirect stubs (e.g. Junior (suffix) in English Wikipedia) now open the target article in Restricted mode, instead of failing with File not found
+* FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
 * FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
 * REGRESSION: App now auto-switches to appropriate display mode when openinig historical Wikipedia archives
