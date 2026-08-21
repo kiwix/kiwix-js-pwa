@@ -159,18 +159,20 @@ function resizeIFrame (reload) {
         ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     }
     if (window.outerWidth <= 470) {
-        document.getElementById('dropup').classList.remove('col-xs-4');
-        document.getElementById('dropup').classList.add('col-xs-3');
+        document.getElementById('dropup').classList.remove('col-4');
+        document.getElementById('dropup').classList.add('col-3');
         if (window.outerWidth <= 360) {
-            document.getElementById('btnTop').classList.remove('col-xs-2');
-            document.getElementById('btnTop').classList.add('col-xs-1');
+            document.getElementById('btnTop').classList.remove('col-2');
+            document.getElementById('btnTop').classList.add('col-1');
         } else {
-            document.getElementById('btnTop').classList.remove('col-xs-1');
-            document.getElementById('btnTop').classList.add('col-xs-2');
+            document.getElementById('btnTop').classList.remove('col-1');
+            document.getElementById('btnTop').classList.add('col-2');
         }
     } else {
-        document.getElementById('dropup').classList.remove('col-xs-3');
-        document.getElementById('dropup').classList.add('col-xs-4');
+        document.getElementById('dropup').classList.remove('col-3');
+        document.getElementById('dropup').classList.add('col-4');
+        document.getElementById('btnTop').classList.remove('col-1');
+        document.getElementById('btnTop').classList.add('col-2');
     }
     if (settingsStore.getItem('reloadDispatched') === 'true') {
         setTimeout(function () {
@@ -1794,15 +1796,15 @@ function setOPFSUI () {
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
-        archiveFileLabel.classList.remove('col-xs-6');
-        archiveFileLabel.classList.add('col-xs-12');
+        archiveFileLabel.classList.remove('col-6');
+        archiveFileLabel.classList.add('col-12');
         archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>';
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
-        archiveFileCol.classList.remove('col-xs-6');
-        archiveFileCol.classList.add('col-xs-5');
-        archiveFilesCol.classList.remove('col-xs-6');
-        archiveFilesCol.classList.add('col-xs-7');
+        archiveFileCol.classList.remove('col-6');
+        archiveFileCol.classList.add('col-5');
+        archiveFilesCol.classList.remove('col-6');
+        archiveFilesCol.classList.add('col-7');
         archiveList.style.background = determinedTheme === 'dark' ? 'darkslategray' : 'lightcyan';
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
@@ -1810,23 +1812,23 @@ function setOPFSUI () {
         cache.populateOPFSStorageQuota();
     } else {
         useOPFS.checked = false;
-        archiveFileCol.classList.remove('col-xs-5');
-        archiveFileCol.classList.add('col-xs-6');
-        archiveFilesCol.classList.remove('col-xs-7');
-        archiveFilesCol.classList.add('col-xs-6');
+        archiveFileCol.classList.remove('col-5');
+        archiveFileCol.classList.add('col-6');
+        archiveFilesCol.classList.remove('col-7');
+        archiveFilesCol.classList.add('col-6');
         archiveList.style.background = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-6');
-            archiveFileLabel.classList.add('col-xs-12');
+            archiveFileLabel.classList.remove('col-6');
+            archiveFileLabel.classList.add('col-12');
             archiveFile.title = 'Select one or more files you wish to access during this session from your device\'s storage. You may load as many files as you wish, and they will be added to the selection list above.';
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFiles.style.display = '';
             archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-12');
-            archiveFileLabel.classList.add('col-xs-6');
+            archiveFileLabel.classList.remove('col-12');
+            archiveFileLabel.classList.add('col-6');
             archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.';
             archiveFile.value = 'Select file';
         }
