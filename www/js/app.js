@@ -1595,7 +1595,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             if (!confirmed) return;
             // User has chosen a file or files to store in the Origin Private File System
             // This operation can take a long time, so show opsPanel
-            uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Importing files to OPFS...', true);
+            uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Importing files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
                 uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
                 .then(function () {
@@ -2292,7 +2292,7 @@ var refreshFullScreen = function (evt) {
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
     if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
-    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /glyphicon-(resize-small|fullscreen)/.test(evt.target.className))) {
+    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /fa-(compress|expand)/.test(evt.target.className) || (evt.target.closest && evt.target.closest('#btnAbout')))) {
         if (uiUtil.appIsFullScreen()) {
             // Cancel fullscreen mode
             uiUtil.lockDisplayOrientation().then(function () {
@@ -2333,7 +2333,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
                 if (rtn === 'click') {
                     uiUtil.systemAlert((!params.PWAInstalled && /iOS/.test(params.appType)
                         ? '<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home), which will give a better experience than full-screen mode.</p>' : '') +
-                         '<p>Please click the &nbsp;<span class="glyphicon glyphicon-fullscreen"></span>&nbsp; button top-right to enter full-screen mode.</p>'
+                         '<p>Please click the &nbsp;<i class="fas fa-expand"></i>&nbsp; button top-right to enter full-screen mode.</p>'
                     );
                 }
             }
