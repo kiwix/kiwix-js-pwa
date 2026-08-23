@@ -35,12 +35,11 @@ params.updateServer = {
 };
 
 // A RegExp prototype string to match the current app's releases
-const baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
-    : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
-        : 'windows|electron|kiwixwebapp_'; // Default value
-
-// A RegExp to match download URLs of releases
-const regexpMatchGitHubReleases = RegExp('"browser_download_url[":\\s]+"(https:.*download\\/([^\\/]+).*(?:' + baseApp + ')[^"]+)"', 'ig');
+function getBaseAppPattern () {
+    return (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
+        : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
+            : 'windows|electron|kiwixwebapp_'; // Default value
+}
 
 /**
  * Get and return the JSON list of releases from the update server's REST API
@@ -74,28 +73,48 @@ function getLatestUpdates (callback) {
     var channelMatchedTag;
     var updateUrl;
     var channelMatchedUpdateUrl;
-    getReleasesObject(function (releases) {
-        var releaseFile;
-        var releaseVersion;
-        var releaseChannel;
-        // Loop through every line in releases
-        var matchedRelease = regexpMatchGitHubReleases.exec(releases);
-        while (matchedRelease != null) {
-            releaseFile = matchedRelease[1];
-            releaseVersion = matchedRelease[2].replace(/^v?([\d.]+).*/, '$1');
-            releaseChannel = matchedRelease[2].replace(/^[v\d.]+/, '');
-            // Compare the releases using a version-type comparison
-            if (releaseVersion.localeCompare(currentRelease, { numeric: true, sensitivity: 'base' }) === 1) {
-                if (!channelMatchedTag && currentReleaseChannel === releaseChannel) {
-                    channelMatchedTag = matchedRelease[2];
-                    channelMatchedUpdateUrl = releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
-                }
-                if (!updateTag) updateTag = matchedRelease[2];
-                if (!updateUrl) updateUrl = releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
-                updatedReleases.push(releaseFile);
-            }
-            matchedRelease = regexpMatchGitHubReleases.exec(releases);
+    getReleasesObject(function (releasesText) {
+        var releases;
+        try {
+            releases = typeof releasesText === 'string' ? JSON.parse(releasesText) : releasesText;
+        } catch (e) {
+            releases = null;
         }
+        if (!Array.isArray(releases)) {
+            callback(undefined, undefined, updatedReleases);
+            return;
+        }
+        var baseAppRegExp = new RegExp(getBaseAppPattern(), 'i');
+        releases.forEach(function (release) {
+            if (!release || !Array.isArray(release.assets)) return;
+            var tag = release.tag_name || '';
+            var releaseVersion = tag.replace(/^v?([\d.]+).*/, '$1');
+            var releaseChannel = tag.replace(/^[v\d.]+/, '');
+            var releaseHtmlUrl = release.html_url || '';
+
+            release.assets.forEach(function (asset) {
+                if (!asset || !asset.browser_download_url) return;
+                var fileName = asset.name || asset.browser_download_url;
+                if (!baseAppRegExp.test(fileName) && !baseAppRegExp.test(asset.browser_download_url)) return;
+
+                var releaseFile = asset.browser_download_url;
+                var assetTag = tag || releaseFile.replace(/^.*\/download\/([^/]+)\/.*$/, '$1');
+                var assetVersion = releaseVersion || assetTag.replace(/^v?([\d.]+).*/, '$1');
+                var assetChannel = releaseChannel || assetTag.replace(/^[v\d.]+/, '');
+                var assetUrl = releaseHtmlUrl || releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
+
+                // Compare the releases using a version-type comparison
+                if (assetVersion.localeCompare(currentRelease, { numeric: true, sensitivity: 'base' }) === 1) {
+                    if (!channelMatchedTag && currentReleaseChannel === assetChannel) {
+                        channelMatchedTag = assetTag;
+                        channelMatchedUpdateUrl = assetUrl;
+                    }
+                    if (!updateTag) updateTag = assetTag;
+                    if (!updateUrl) updateUrl = assetUrl;
+                    updatedReleases.push(releaseFile);
+                }
+            });
+        });
         // We should now have a list of all candidate updates, and candidate channel update
         // Compare the channel-matched update with the update, and if they are the same underlying
         // version number, choose the channel match.
