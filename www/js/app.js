@@ -4486,7 +4486,7 @@ function handleFileDrop (packet) {
                 });
             }
         }).catch(function (err) {
-            // Some contexts (e.g. the Electron file:// window) hand us a file system handle but then refuse
+            // Some contexts (e.g. a file:// window in the VS Code Browser) hand us a file system handle but then refuse
             // to read it, so fall back to the legacy file drop, which does not need the File System Access API
             console.warn('Unable to process the dropped file system handle', err);
             if (droppedFolder) {
