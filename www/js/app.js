@@ -4492,7 +4492,8 @@ function handleFileDrop (packet) {
             if (droppedFolder) {
                 // Falling back would void the folder the user already picked and then fail anyway
                 uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
-                    '<p>Please use the folder picker in Configuration instead, or drop the ZIM file or files rather than the folder.</p>', 'Cannot read dropped folder');
+                    '<p>Please drop the ZIM file itself instead of the folder, or, if the archive is split, drop all of its parts together.</p>',
+                'Cannot read dropped folder');
                 return;
             }
             console.warn('Falling back to the legacy file drop');
