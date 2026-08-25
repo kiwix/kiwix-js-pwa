@@ -911,6 +911,9 @@ function iterateAsyncDirEntries (entries, archives, noFilter) {
                 if (window.fs && !params.pickedFolder.path) {
                     entry.getFile().then(function (file) {
                         params.pickedFolder.path = file.path;
+                    }).catch(function (err) {
+                        // We only wanted the path, so log and carry on rather than leaving an unhandled rejection
+                        console.warn('Unable to get the path of ' + entry.name, err);
                     });
                 }
             }
