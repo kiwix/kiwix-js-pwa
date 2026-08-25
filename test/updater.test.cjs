@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
 const UPDATER_JS = path.join(__dirname, '..', 'www', 'js', 'lib', 'updater.js');
 
@@ -55,6 +56,34 @@ function run (mockResponse, context) {
                 updatedReleases: updatedReleases
             });
         });
+    });
+}
+
+/**
+ * Fetches the real releases list from the GitHub API, to check the code against the actual
+ * response shape rather than only hand-written fixtures. Resolves to null (rather than
+ * rejecting) if the API can't be reached, so a lack of network access skips the check instead
+ * of failing the suite.
+ *
+ * @returns {Promise<String|null>} The raw response text, or null if it could not be fetched
+ */
+function fetchLiveReleases () {
+    return new Promise(function (resolve) {
+        var req = https.get('https://api.github.com/repos/kiwix/kiwix-js-pwa/releases', {
+            headers: { 'User-Agent': 'kiwix-js-pwa-updater-test' },
+            timeout: 5000
+        }, function (res) {
+            if (res.statusCode !== 200) {
+                res.resume();
+                resolve(null);
+                return;
+            }
+            var data = '';
+            res.on('data', function (chunk) { data += chunk; });
+            res.on('end', function () { resolve(data); });
+        });
+        req.on('timeout', function () { req.destroy(); resolve(null); });
+        req.on('error', function () { resolve(null); });
     });
 }
 
@@ -156,6 +185,32 @@ async function runTests () {
 
     const emptyResponse = await run('', { appVersion: '3.8.0' });
     check('Handles empty response gracefully', emptyResponse.updateTag === undefined && emptyResponse.updatedReleases.length === 0);
+
+    section('Real API response shape (pretty-printed, one field per line)');
+    // GitHub's REST API pretty-prints its JSON responses with one field per line, which is
+    // what actually reaches this code in production - unlike the hand-minified fixtures above.
+    const prettyPrintedPayload = fs.readFileSync(path.join(__dirname, 'fixtures', 'github-releases-sample.json'), 'utf8');
+    const prettyRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
+    check('Detects highest version on a realistically pretty-printed response', prettyRes.updateTag === 'v4.0.0-E');
+    check('Download URL is not corrupted with JSON punctuation from neighbouring fields', /^https:\/\/[^\s"{}[\]]+$/.test(prettyRes.updatedReleases[0] || ''));
+
+    section('Live GitHub API (skipped if offline)');
+    const liveReleasesText = await fetchLiveReleases();
+    if (liveReleasesText === null) {
+        console.log('  skip  Could not reach the GitHub releases API - skipping live comparison');
+    } else {
+        let liveRes;
+        let threw = false;
+        try {
+            liveRes = await run(liveReleasesText, { appVersion: '0.0.1' });
+        } catch (e) {
+            threw = true;
+        }
+        check('Parses the live API response without throwing', !threw);
+        check('Every matched download URL is well-formed and unquoted', !threw && liveRes.updatedReleases.every(function (url) {
+            return /^https:\/\/[^\s"{}[\]]+$/.test(url);
+        }));
+    }
 
     section('Consecutive invocation idempotency');
     const firstCall = await run(minifiedPayload, { appVersion: '3.8.92-E' });

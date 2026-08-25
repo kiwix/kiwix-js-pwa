@@ -1,0 +1,78 @@
+[
+  {
+    "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/1",
+    "tag_name": "v4.0.0-E",
+    "target_commitish": "main",
+    "name": "v4.0.0-E",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "2026-08-01T10:00:00Z",
+    "published_at": "2026-08-01T10:05:00Z",
+    "html_url": "https://github.com/kiwix/kiwix-js-pwa/releases/tag/v4.0.0-E",
+    "body": "See the changelog for details. Download links are also mirrored at https://download.kiwix.org/release/kiwix-js-pwa/ for convenience.",
+    "assets": [
+      {
+        "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/assets/1001",
+        "id": 1001,
+        "name": "source.zip",
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "size": 5242880,
+        "uploader": {
+          "login": "bhuvan-somisetty",
+          "id": 123456,
+          "avatar_url": "https://avatars.githubusercontent.com/u/123456?v=4",
+          "html_url": "https://github.com/bhuvan-somisetty",
+          "type": "User"
+        },
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/source.zip"
+      },
+      {
+        "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/assets/1002",
+        "id": 1002,
+        "name": "kiwix-electron-4.0.0-E.exe",
+        "content_type": "application/x-msdownload",
+        "state": "uploaded",
+        "size": 104857600,
+        "uploader": {
+          "login": "bhuvan-somisetty",
+          "id": 123456,
+          "avatar_url": "https://avatars.githubusercontent.com/u/123456?v=4",
+          "html_url": "https://github.com/bhuvan-somisetty",
+          "type": "User"
+        },
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/2",
+    "tag_name": "v3.9.0-E",
+    "target_commitish": "main",
+    "name": "v3.9.0-E",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "2026-05-01T10:00:00Z",
+    "published_at": "2026-05-01T10:05:00Z",
+    "html_url": "https://github.com/kiwix/kiwix-js-pwa/releases/tag/v3.9.0-E",
+    "body": "Minor fixes.",
+    "assets": [
+      {
+        "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/assets/902",
+        "id": 902,
+        "name": "kiwix-electron-3.9.0-E.exe",
+        "content_type": "application/x-msdownload",
+        "state": "uploaded",
+        "size": 98765432,
+        "uploader": {
+          "login": "bhuvan-somisetty",
+          "id": 123456,
+          "avatar_url": "https://avatars.githubusercontent.com/u/123456?v=4",
+          "html_url": "https://github.com/bhuvan-somisetty",
+          "type": "User"
+        },
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v3.9.0-E/kiwix-electron-3.9.0-E.exe"
+      }
+    ]
+  }
+]

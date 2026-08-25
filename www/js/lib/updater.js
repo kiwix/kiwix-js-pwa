@@ -73,48 +73,34 @@ function getLatestUpdates (callback) {
     var channelMatchedTag;
     var updateUrl;
     var channelMatchedUpdateUrl;
-    getReleasesObject(function (releasesText) {
-        var releases;
-        try {
-            releases = typeof releasesText === 'string' ? JSON.parse(releasesText) : releasesText;
-        } catch (e) {
-            releases = null;
-        }
-        if (!Array.isArray(releases)) {
-            callback(undefined, undefined, updatedReleases);
-            return;
-        }
-        var baseAppRegExp = new RegExp(getBaseAppPattern(), 'i');
-        releases.forEach(function (release) {
-            if (!release || !Array.isArray(release.assets)) return;
-            var tag = release.tag_name || '';
-            var releaseVersion = tag.replace(/^v?([\d.]+).*/, '$1');
-            var releaseChannel = tag.replace(/^[v\d.]+/, '');
-            var releaseHtmlUrl = release.html_url || '';
-
-            release.assets.forEach(function (asset) {
-                if (!asset || !asset.browser_download_url) return;
-                var fileName = asset.name || asset.browser_download_url;
-                if (!baseAppRegExp.test(fileName) && !baseAppRegExp.test(asset.browser_download_url)) return;
-
-                var releaseFile = asset.browser_download_url;
-                var assetTag = tag || releaseFile.replace(/^.*\/download\/([^/]+)\/.*$/, '$1');
-                var assetVersion = releaseVersion || assetTag.replace(/^v?([\d.]+).*/, '$1');
-                var assetChannel = releaseChannel || assetTag.replace(/^[v\d.]+/, '');
-                var assetUrl = releaseHtmlUrl || releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
-
-                // Compare the releases using a version-type comparison
-                if (assetVersion.localeCompare(currentRelease, { numeric: true, sensitivity: 'base' }) === 1) {
-                    if (!channelMatchedTag && currentReleaseChannel === assetChannel) {
-                        channelMatchedTag = assetTag;
-                        channelMatchedUpdateUrl = assetUrl;
-                    }
-                    if (!updateTag) updateTag = assetTag;
-                    if (!updateUrl) updateUrl = assetUrl;
-                    updatedReleases.push(releaseFile);
+    getReleasesObject(function (releases) {
+        var releaseFile;
+        var releaseVersion;
+        var releaseChannel;
+        // Build the RegExp fresh on every call: baseApp depends on params.packagedFile, which
+        // may not be set yet when this module is first evaluated, and a module-level /g RegExp
+        // would also carry its lastIndex over between calls.
+        // [^"]+ is used in place of a plain wildcard so each capture group stays confined to the
+        // single JSON string value it started in, even if the payload is minified to one line.
+        var regexpMatchGitHubReleases = RegExp('"browser_download_url[":\\s]+"(https:[^"]*download\\/([^\\/"]+)[^"]*(?:' + getBaseAppPattern() + ')[^"]+)"', 'ig');
+        // Loop through every line in releases
+        var matchedRelease = regexpMatchGitHubReleases.exec(releases);
+        while (matchedRelease != null) {
+            releaseFile = matchedRelease[1];
+            releaseVersion = matchedRelease[2].replace(/^v?([\d.]+).*/, '$1');
+            releaseChannel = matchedRelease[2].replace(/^[v\d.]+/, '');
+            // Compare the releases using a version-type comparison
+            if (releaseVersion.localeCompare(currentRelease, { numeric: true, sensitivity: 'base' }) === 1) {
+                if (!channelMatchedTag && currentReleaseChannel === releaseChannel) {
+                    channelMatchedTag = matchedRelease[2];
+                    channelMatchedUpdateUrl = releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
                 }
-            });
-        });
+                if (!updateTag) updateTag = matchedRelease[2];
+                if (!updateUrl) updateUrl = releaseFile.replace(/\/download\//, '/tag/').replace(/[^/]+$/, '');
+                updatedReleases.push(releaseFile);
+            }
+            matchedRelease = regexpMatchGitHubReleases.exec(releases);
+        }
         // We should now have a list of all candidate updates, and candidate channel update
         // Compare the channel-matched update with the update, and if they are the same underlying
         // version number, choose the channel match.
