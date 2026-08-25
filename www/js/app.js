@@ -4463,41 +4463,71 @@ function handleFileDrop (packet) {
         params.pickedFolder = '';
         params.storedFile = '';
     }
+    // We have to grab the FileList synchronously, because the DataTransfer object is neutered
+    // once this event handler returns, and we may need it in an asynchronous fallback below
+    var files = packet.dataTransfer.files;
+    // For the same reason, note now whether a folder was dropped: the DataTransfer never contains a
+    // folder's contents, so there is no legacy fallback for a folder we are not allowed to read
+    var droppedFolder = false;
+    if (items && items.length === 1 && typeof items[0].webkitGetAsEntry === 'function') {
+        var droppedEntry = items[0].webkitGetAsEntry();
+        droppedFolder = !!(droppedEntry && droppedEntry.isDirectory);
+    }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
             if (handle.kind === 'file') {
-                processNativeFileHandle(handle);
+                return processNativeFileHandle(handle);
             } else if (handle.kind === 'directory') {
-                processNativeDirHandle(handle);
+                // Check we can actually read the directory before we delegate, because processNativeDirHandle
+                // reports its own errors to the user and so cannot signal to us that we should fall back
+                return handle.entries().next().then(function () {
+                    return processNativeDirHandle(handle);
+                });
             }
+        }).catch(function (err) {
+            // Some contexts (e.g. the Electron file:// window) hand us a file system handle but then refuse
+            // to read it, so fall back to the legacy file drop, which does not need the File System Access API
+            console.warn('Unable to process the dropped file system handle', err);
+            if (droppedFolder) {
+                // Falling back would void the folder the user already picked and then fail anyway
+                uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
+                    '<p>Please use the folder picker in Configuration instead, or drop the ZIM file or files rather than the folder.</p>', 'Cannot read dropped folder');
+                return;
+            }
+            console.warn('Falling back to the legacy file drop');
+            handleLegacyFileDrop(files);
         });
     } else {
-        var files = packet.dataTransfer.files;
-        // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
-        try {
-            archiveFilesLegacy.files = files;
-        } catch (err) {
-            console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
-            if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
-                uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
-                files = [files[0]];
-            }
-        }
-        document.getElementById('openLocalFiles').style.display = 'none';
-        document.getElementById('rescanStorage').style.display = 'block';
-        document.getElementById('usage').style.display = 'none';
-        // We have to void the previous picked folder, because dragged files don't have a folder
-        // This also prevents a file-not-found alert to the user when picking a new directory
-        params.pickedFolder = null;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        params.pickedFile = null;
-        params.storedFile = null;
-        params.rescan = false;
-        setLocalArchiveFromFileList(files);
-        // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
-        cache.idxDB('delete', 'pickedFSHandle', function () {});
+        handleLegacyFileDrop(files);
     }
+}
+
+// Loads dropped files without using the File System Access API (also used as a fallback if that API is blocked)
+function handleLegacyFileDrop (files) {
+    // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
+    try {
+        archiveFilesLegacy.files = files;
+    } catch (err) {
+        console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
+        if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
+            uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
+            files = [files[0]];
+        }
+    }
+    document.getElementById('openLocalFiles').style.display = 'none';
+    document.getElementById('rescanStorage').style.display = 'block';
+    document.getElementById('usage').style.display = 'none';
+    // We have to void the previous picked folder, because dragged files don't have a folder
+    // This also prevents a file-not-found alert to the user when picking a new directory
+    params.pickedFolder = null;
+    settingsStore.setItem('pickedFolder', '', Infinity);
+    params.pickedFile = null;
+    params.storedFile = null;
+    params.rescan = false;
+    setLocalArchiveFromFileList(files);
+    // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
 }
 
 function pickFileUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
