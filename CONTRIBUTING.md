@@ -54,6 +54,17 @@ Because this is an offline-first PWA, the app caches its own code, which means t
 * With DevTools open, a hard refresh with Ctrl-Shift-R is often needed to clear the old Service Worker and pick up your new code;
 * Remember to turn "Developer Mode" off again for your final round of testing, so that you are testing the app as users will actually experience it.
 
+### Testing in the browser built into VS Code
+
+The app runs in VS Code's built-in browser, Service Workers and all, so it is a convenient way to look at your changes without leaving the editor. Be aware, though, that this context does not allow the app to read a file or a directory from a File System Access API handle: `getFile()` and directory iteration both reject with `NotAllowedError`. The file and folder pickers will therefore open and let you choose an archive, and only then fail.
+
+To load an archive there, either:
+
+* drag and drop the ZIM file into the app (for a split archive, drop all of its parts together), which falls back to the classic File API; or
+* turn on "Use Private File System" in Configuration, and add an archive to the app's [Origin Private File System](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system), which is unaffected.
+
+Please treat this as a convenience for iterating, not as one of the browsers you test in: it is an unusual context, and a change that works there can still fail in a normal browser. Your testing rounds should be in the browsers listed above.
+
 **Please state in the PR body what testing you have done**: what you ran, in which modes, and on which platforms. There is no required format, but if you do not tell us, we reserve the right not to review the PR until you do.
 
 ## Using AI assistants
