@@ -1361,9 +1361,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // Filter value (add comma separators if required)
         size = size ? size[1] : '';
         var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
-        // Use the lookbehind reversal trick to add commas....
-        size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
-        var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
+        var sizeFormatted = size ? size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+        var megabytes$ = megabytes ? megabytes.toLocaleString('en-US') : '';
         doc = '';
         var kiwixMirrorUrl = '';
         var kiwixMirrorPriority = Infinity;
@@ -1387,7 +1386,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += '<h5';
         bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
-        bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
+        bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + sizeFormatted + ' bytes)' : '') + '</h5>\r\n';
         bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
         if (megabytes > 1000) {
             bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' +
