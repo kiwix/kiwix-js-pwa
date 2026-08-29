@@ -294,14 +294,15 @@ self.addEventListener('install', function (event) {
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
-    // Check all the cache keys, and delete any old caches
+    // Check all the cache keys, and delete any old app caches
+    var appCachePrefix = APP_CACHE.replace(/^([^\d]+).+/, '$1');
     event.waitUntil(
         Promise.all([
             // Clear old caches
             caches.keys().then(function (cacheNames) {
                 return Promise.all(
                     cacheNames.map(function (cacheName) {
-                        if (cacheName !== APP_CACHE) {
+                        if (cacheName.startsWith(appCachePrefix) && cacheName !== APP_CACHE) {
                             return caches.delete(cacheName);
                         }
                         return undefined; // Explicitly return for non-deleted caches
