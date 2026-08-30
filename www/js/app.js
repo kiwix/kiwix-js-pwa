@@ -156,7 +156,6 @@ function resizeIFrame (reload) {
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
         ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-        ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     }
     if (window.outerWidth <= 470) {
         document.getElementById('dropupContainer').classList.remove('col-4');
@@ -8302,7 +8301,6 @@ function setupTableOfContents () {
     });
     var ToCList = document.getElementById('ToCList');
     ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-    ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     ToCList.innerHTML = dropupHtml;
     Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
         listElement.addEventListener('click', function () {
