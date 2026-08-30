@@ -165,13 +165,13 @@ function idxDB (keyOrCommand, valueOrCallback, callback) {
         return;
     }
 
-    // Delete all non-curren IdxDB databases (only works in Chromium currently)
+    // Delete all deprecated/obsolete Kiwix IdxDB databases (only works in Chromium currently)
     if (keyOrCommand === 'deleteNonCurrent') {
         if (indexedDB.databases) {
             var result = 0;
             indexedDB.databases().then(function (dbs) {
                 dbs.forEach(function (db) {
-                    if (db.name !== CACHEIDB) {
+                    if (db.name && db.name.startsWith('kiwix') && db.name !== CACHEIDB) {
                         result++;
                         indexedDB.deleteDatabase(db.name);
                     }
