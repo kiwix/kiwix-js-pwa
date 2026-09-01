@@ -6211,8 +6211,12 @@ function kickMasonryRelayout (win) {
         win.dispatchEvent(ev);
         kicks++;
     };
-    console.debug('Masonry grid found in loaded document: arming relayout kicks');
-    // The observer catches the cards growing as their images arrive, which is exactly when Masonry needs to re-measure
+    var cards = doc.querySelectorAll('#content .item');
+    console.debug('Masonry grid found in loaded document: arming relayout kicks for ' + cards.length + ' cards');
+    // We watch the cards rather than the body, because the body is not a reliable proxy for them: as soon as Masonry
+    // has laid out it pins an explicit height on #content and positions every card out of flow, so a thumbnail that
+    // gains dimensions afterwards changes nothing the body can see. The cards are where the size change actually
+    // happens, and a card resizing is exactly the moment Masonry needs to measure again
     if (typeof win.ResizeObserver === 'function') {
         var relayoutTimeout;
         var observer = new win.ResizeObserver(function () {
@@ -6223,17 +6227,25 @@ function kickMasonryRelayout (win) {
                     observer.disconnect();
                     return;
                 }
-                fire('body resized');
+                fire('card resized');
             }, 250);
         });
-        observer.observe(doc.body);
+        for (var c = cards.length; c--;) {
+            observer.observe(cards[c]);
+        }
     } else {
         console.debug('No ResizeObserver in this window: falling back to timed kicks only');
     }
-    // Belt and braces for the case where the body never changes size because every image is still pending
-    win.addEventListener('load', function () {
-        if (kicks < maxKicks) fire('window load');
-    });
+    // Belt and braces for the case where no card ever changes size because every image is still pending. NB we are
+    // called from the container's own onload handler (see articleLoadedSW's callers), so the window load event has
+    // already fired by now and a listener for it would never run: check the readyState instead
+    if (doc.readyState === 'complete') {
+        fire('document already loaded');
+    } else {
+        win.addEventListener('load', function () {
+            if (kicks < maxKicks) fire('window load');
+        });
+    }
     setTimeout(function () {
         if (kicks < maxKicks) fire('1500ms settle');
     }, 1500);
@@ -7016,6 +7028,11 @@ var regexpMetaRedirect = /<meta\b(?=[^>]*\bhttp-equiv\s*=\s*["']?refresh\b)[^>]*
 // A regex to match the HTML character references that may appear in an attribute value
 var regexpHtmlEntities = /&(?:#(\d+)|#[xX]([\da-fA-F]+)|(amp|apos|quot|lt|gt));/g;
 
+// This matches a loading="lazy" attribute on an img tag, capturing everything before it so that a replace can drop the
+// attribute alone. NB the value has to be matched in full: an unanchored "lazy" would eat the first four characters of
+// a value such as "lazyload" and leave the rest of it welded to the tag name
+var regexpLazyLoadingAttribute = /(<img\b[^>]*?)\sloading\s*=\s*(?:"lazy"|'lazy'|lazy(?=[\s>]))/gi;
+
 // A string to hold any anchor parameter in clicked ZIM URLs (as we must strip these to find the article in the ZIM)
 var anchorParameter;
 // Counts consecutive HTML redirects we have followed, so that a circular chain of redirect stubs cannot loop forever
@@ -7261,10 +7278,15 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // own ratio once it has one, otherwise this", so it governs the pre-load box only.
         // DEV: this is injected ahead of the stylesheets resolved further down, but no main page stylesheet sets
         // aspect-ratio, so there is nothing for it to lose a specificity tie to [kiwix-js-pwa #946]
-        var isMasonryGridPage = /<body\b[^>]*\bclass\s*=\s*["'][^"']*\barticle-list-home\b/i.test(htmlArticle) ||
-            /<script\b[^>]*\bsrc\s*=\s*["'][^"']*masonry(?:\.min)?\.js/i.test(htmlArticle);
+        // NB the grid markup is required, not merely one of the identifying markers: an ordinary article can pull in
+        // masonry.min.js without being a grid at all (www/C/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2
+        // is one such), and stripping the lazy loading from an article's images would make it load them all eagerly for
+        // no reason. This mirrors the runtime gate in kickMasonryRelayout, so the two cannot disagree
+        var isMasonryGridPage = /<a\b[^>]*\bclass\s*=\s*["'][^"']*\bitem\b/i.test(htmlArticle) &&
+            (/<body\b[^>]*\bclass\s*=\s*["'][^"']*\barticle-list-home\b/i.test(htmlArticle) ||
+            /<script\b[^>]*\bsrc\s*=\s*["'][^"']*masonry(?:\.min)?\.js/i.test(htmlArticle));
         if (isMasonryGridPage) {
-            var lazyCount = (htmlArticle.match(/<img\b[^>]*?\sloading\s*=\s*["']?lazy["']?/gi) || []).length;
+            var lazyCount = (htmlArticle.match(regexpLazyLoadingAttribute) || []).length;
             console.debug('Masonry grid page ' + dirEntry.namespace + '/' + dirEntry.url + ' | landingPage: ' +
                 params.isLandingPage + ' | manipulateImages: ' + params.manipulateImages + ' | useLibzim: ' +
                 !!params.useLibzim + ' | cssCache: ' + params.cssCache + ' | imageDisplayMode: ' + params.imageDisplayMode);
@@ -7274,7 +7296,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // scrolls by hand. These pages are a grid of thumbnails and nothing else, so there is nothing worth
             // deferring. NB where the app extracts images itself, prepareImagesServiceWorker strips this attribute
             // already, but it is never reached on a landing page unless params.manipulateImages is set
-            htmlArticle = htmlArticle.replace(/(<img\b[^>]*?)\sloading\s*=\s*["']?lazy["']?/gi, '$1');
+            htmlArticle = htmlArticle.replace(regexpLazyLoadingAttribute, '$1');
             console.debug('Injected fallback aspect-ratio into head and stripped loading="lazy" from ' +
                 lazyCount + ' of ' + (htmlArticle.match(/<img\b/gi) || []).length + ' images');
         }
