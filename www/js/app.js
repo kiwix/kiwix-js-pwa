@@ -6194,7 +6194,12 @@ function applyWikimediaZimFixes (doc) {
  */
 function kickMasonryRelayout (win) {
     var doc = win ? win.document : null;
-    if (!doc || !doc.body || !doc.querySelector('#content .item figure')) return;
+    if (!doc || !doc.body) return;
+    // The grid markup on its own (`#content .item figure`) is generic enough to turn up in an unrelated archive, so we
+    // also require one of the two things that identify these pages in the transform: the mwoffliner body class, or the
+    // Masonry script itself. Without that, a chance match would collect ten stray resize events for nothing
+    if (!(doc.querySelector('#content .item figure') &&
+        (/\barticle-list-home\b/.test(doc.body.className) || doc.querySelector('script[src*="masonry"]')))) return;
     var kicks = 0;
     var maxKicks = 10; // Masonry settles in a handful of passes; the cap stops the observer feeding itself forever
     var fire = function (why) {
