@@ -6180,6 +6180,60 @@ function applyWikimediaZimFixes (doc) {
     }
 }
 
+/**
+ * Prods a Masonry-style grid page into laying itself out again once its thumbnails have dimensions
+ *
+ * These pages (the all-image landing pages of flavoured Wikimedia ZIMs) run Masonry exactly once, and they run it
+ * before any thumbnail has loaded. The ZIM gives the img tags no width or height attributes, so at that moment every
+ * card measures zero, Masonry stacks the lot in the first column and sets an explicit `height: 0` on its container.
+ * Nothing ever asks it to measure again, so the page stays blank however many images arrive afterwards. Masonry
+ * (through Outlayer) binds its own layout to the window resize event, and that is the only handle we have on it
+ * without a reference to the instance, so we dispatch one whenever the document changes size [kiwix-js-pwa #946]
+ *
+ * @param {Window} win The Window of the iframe or tab that contains the document
+ */
+function kickMasonryRelayout (win) {
+    var doc = win ? win.document : null;
+    if (!doc || !doc.body || !doc.querySelector('#content .item figure')) return;
+    var kicks = 0;
+    var maxKicks = 10; // Masonry settles in a handful of passes; the cap stops the observer feeding itself forever
+    var fire = function (why) {
+        var content = doc.getElementById('content');
+        console.debug('Kicking Masonry relayout (' + why + ') #' + (kicks + 1) + ' of ' + maxKicks +
+            '; #content inline height is currently "' + (content && content.style.height || 'unset') + '"');
+        var ev = doc.createEvent('Event'); // DEV: createEvent rather than the Event constructor, to match house style
+        ev.initEvent('resize', true, true);
+        win.dispatchEvent(ev);
+        kicks++;
+    };
+    console.debug('Masonry grid found in loaded document: arming relayout kicks');
+    // The observer catches the cards growing as their images arrive, which is exactly when Masonry needs to re-measure
+    if (typeof win.ResizeObserver === 'function') {
+        var relayoutTimeout;
+        var observer = new win.ResizeObserver(function () {
+            clearTimeout(relayoutTimeout);
+            relayoutTimeout = setTimeout(function () {
+                if (kicks >= maxKicks) {
+                    console.debug('Relayout kick cap reached: disconnecting observer');
+                    observer.disconnect();
+                    return;
+                }
+                fire('body resized');
+            }, 250);
+        });
+        observer.observe(doc.body);
+    } else {
+        console.debug('No ResizeObserver in this window: falling back to timed kicks only');
+    }
+    // Belt and braces for the case where the body never changes size because every image is still pending
+    win.addEventListener('load', function () {
+        if (kicks < maxKicks) fire('window load');
+    });
+    setTimeout(function () {
+        if (kicks < maxKicks) fire('1500ms settle');
+    }, 1500);
+}
+
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
     // console.debug('Checking if article loaded... ' + loaded);
@@ -6243,6 +6297,9 @@ var articleLoadedSW = function (dirEntry, container) {
             setupHeadings();
             applyWikimediaZimFixes(doc);
         }
+        // NB this is deliberately outside every image-handling gate below, because those are skipped on landing pages
+        // and with the libzim backend, which is exactly where the grid pages live [kiwix-js-pwa #946]
+        kickMasonryRelayout(articleWindow);
 
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
@@ -7186,6 +7243,36 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // so add some whitespace at the end of the document
         htmlArticle = htmlArticle.replace(/(<\/body>)/i, '\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1');
         htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, '$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n');
+        // Masonry-style grid pages (the all-image landing pages of flavoured Wikimedia ZIMs, and older main pages that
+        // pull in masonry.min.js) size their thumbnails with `.item img { width: 100%; height: auto }`, and the ZIM
+        // gives the img tags no width or height attributes. Until an image's bytes arrive it therefore has no intrinsic
+        // aspect ratio, so `height: auto` resolves to zero in Firefox. Masonry then measures every card at zero height,
+        // stacks them all in the first column and sets `#content { height: 0 }`, at which point the `overflow: hidden`
+        // on that container clips the cards out of existence. The images are `loading="lazy"`, so once clipped they can
+        // never intersect the viewport, never load, never gain dimensions, and Masonry is never asked to measure again:
+        // the page stays blank. Chrome escapes the deadlock only because it falls back to the 300x150 default object
+        // size, which happens to give the cards a plausible height on the first pass. Supplying a fallback ratio breaks
+        // the deadlock at the measuring step, in every engine. NB `aspect-ratio: auto <ratio>` means "use the image's
+        // own ratio once it has one, otherwise this", so it governs the pre-load box only.
+        // DEV: this is injected ahead of the stylesheets resolved further down, but no main page stylesheet sets
+        // aspect-ratio, so there is nothing for it to lose a specificity tie to [kiwix-js-pwa #946]
+        var isMasonryGridPage = /<body\b[^>]*\bclass\s*=\s*["'][^"']*\barticle-list-home\b/i.test(htmlArticle) ||
+            /<script\b[^>]*\bsrc\s*=\s*["'][^"']*masonry(?:\.min)?\.js/i.test(htmlArticle);
+        if (isMasonryGridPage) {
+            var lazyCount = (htmlArticle.match(/<img\b[^>]*?\sloading\s*=\s*["']?lazy["']?/gi) || []).length;
+            console.debug('Masonry grid page ' + dirEntry.namespace + '/' + dirEntry.url + ' | landingPage: ' +
+                params.isLandingPage + ' | manipulateImages: ' + params.manipulateImages + ' | useLibzim: ' +
+                !!params.useLibzim + ' | cssCache: ' + params.cssCache + ' | imageDisplayMode: ' + params.imageDisplayMode);
+            htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<style>.item img { aspect-ratio: auto 3 / 2; }</style>\r\n$1');
+            // Firefox evaluates loading="lazy" against the layout as it stood before Masonry repositioned every card,
+            // and does not re-evaluate when the layout later changes, so the thumbnails sit unloaded until the user
+            // scrolls by hand. These pages are a grid of thumbnails and nothing else, so there is nothing worth
+            // deferring. NB where the app extracts images itself, prepareImagesServiceWorker strips this attribute
+            // already, but it is never reached on a landing page unless params.manipulateImages is set
+            htmlArticle = htmlArticle.replace(/(<img\b[^>]*?)\sloading\s*=\s*["']?lazy["']?/gi, '$1');
+            console.debug('Injected fallback aspect-ratio into head and stripped loading="lazy" from ' +
+                lazyCount + ' of ' + (htmlArticle.match(/<img\b/gi) || []).length + ' images');
+        }
         var i;
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {

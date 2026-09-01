@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.92
 
+* FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
 * FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
 
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
