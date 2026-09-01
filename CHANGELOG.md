@@ -2,6 +2,8 @@
 
 ## Interim release 3.8.92
 
+* FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
+
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
 * FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
 * FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode

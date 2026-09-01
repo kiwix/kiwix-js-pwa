@@ -106,8 +106,11 @@ label {
 }
 
 #navigationButtons .dropup {
-    flex: 0 0 auto;
     position: relative;
+}
+
+#navigationButtons .dropup .btn {
+    width: 100%;
 }
 
 /* Position ToC dropdown above the button */
