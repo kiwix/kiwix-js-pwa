@@ -1,7 +1,11 @@
 # Changelog
 
-## Interim release 3.8.92
+## Interim release 3.8.93
 
+* FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
+* FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
+* FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
+* FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
 * FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
 * FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode

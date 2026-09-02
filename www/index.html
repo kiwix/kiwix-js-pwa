@@ -103,6 +103,7 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>[New] Fixed grid-style (masonry) landing pages staying blank in Firefox until the page was scrolled</li>
                                 <li>[New] Fixed security issue allowing for override of app's parameters with a malformed URL</li>
                                 <li>[New] Archives are no longer loaded in the background before user has chosen the trust level</li>
                                 <li>[New] Active content warnings and limited display mode warnings now restored</li>
@@ -1536,8 +1537,8 @@
                     <a class="btn btn-outline-secondary col-1" id="btnForward" title="Forward"><i class="fas fa-arrow-circle-right"></i></a>
                     <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><i class="fas fa-random"></i></a>
                     <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnToggleThemeAlt" title="Switch between light and dark modes"><i class="fas fa-adjust"></i></a>
-                    <div class="dropup">
-                        <a href="#" class="btn btn-outline-secondary dropdown-toggle col-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="dropup col-4" id="dropupContainer">
+                        <a href="#" class="btn btn-outline-secondary dropdown-toggle" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>&nbsp;ToC&nbsp;</b>
                             <span class="caret"></span>
                         </a>

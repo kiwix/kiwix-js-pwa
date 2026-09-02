@@ -156,21 +156,22 @@ function resizeIFrame (reload) {
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
         ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-        ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     }
     if (window.outerWidth <= 470) {
-        document.getElementById('dropup').classList.remove('col-xs-4');
-        document.getElementById('dropup').classList.add('col-xs-3');
+        document.getElementById('dropupContainer').classList.remove('col-4');
+        document.getElementById('dropupContainer').classList.add('col-3');
         if (window.outerWidth <= 360) {
-            document.getElementById('btnTop').classList.remove('col-xs-2');
-            document.getElementById('btnTop').classList.add('col-xs-1');
+            document.getElementById('btnTop').classList.remove('col-2');
+            document.getElementById('btnTop').classList.add('col-1');
         } else {
-            document.getElementById('btnTop').classList.remove('col-xs-1');
-            document.getElementById('btnTop').classList.add('col-xs-2');
+            document.getElementById('btnTop').classList.remove('col-1');
+            document.getElementById('btnTop').classList.add('col-2');
         }
     } else {
-        document.getElementById('dropup').classList.remove('col-xs-3');
-        document.getElementById('dropup').classList.add('col-xs-4');
+        document.getElementById('dropupContainer').classList.remove('col-3');
+        document.getElementById('dropupContainer').classList.add('col-4');
+        document.getElementById('btnTop').classList.remove('col-1');
+        document.getElementById('btnTop').classList.add('col-2');
     }
     if (settingsStore.getItem('reloadDispatched') === 'true') {
         setTimeout(function () {
@@ -1794,15 +1795,15 @@ function setOPFSUI () {
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
-        archiveFileLabel.classList.remove('col-xs-6');
-        archiveFileLabel.classList.add('col-xs-12');
+        archiveFileLabel.classList.remove('col-6');
+        archiveFileLabel.classList.add('col-12');
         archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>';
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
-        archiveFileCol.classList.remove('col-xs-6');
-        archiveFileCol.classList.add('col-xs-5');
-        archiveFilesCol.classList.remove('col-xs-6');
-        archiveFilesCol.classList.add('col-xs-7');
+        archiveFileCol.classList.remove('col-6');
+        archiveFileCol.classList.add('col-5');
+        archiveFilesCol.classList.remove('col-6');
+        archiveFilesCol.classList.add('col-7');
         archiveList.style.background = determinedTheme === 'dark' ? 'darkslategray' : 'lightcyan';
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
@@ -1810,23 +1811,23 @@ function setOPFSUI () {
         cache.populateOPFSStorageQuota();
     } else {
         useOPFS.checked = false;
-        archiveFileCol.classList.remove('col-xs-5');
-        archiveFileCol.classList.add('col-xs-6');
-        archiveFilesCol.classList.remove('col-xs-7');
-        archiveFilesCol.classList.add('col-xs-6');
+        archiveFileCol.classList.remove('col-5');
+        archiveFileCol.classList.add('col-6');
+        archiveFilesCol.classList.remove('col-7');
+        archiveFilesCol.classList.add('col-6');
         archiveList.style.background = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-6');
-            archiveFileLabel.classList.add('col-xs-12');
+            archiveFileLabel.classList.remove('col-6');
+            archiveFileLabel.classList.add('col-12');
             archiveFile.title = 'Select one or more files you wish to access during this session from your device\'s storage. You may load as many files as you wish, and they will be added to the selection list above.';
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFiles.style.display = '';
             archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-12');
-            archiveFileLabel.classList.add('col-xs-6');
+            archiveFileLabel.classList.remove('col-12');
+            archiveFileLabel.classList.add('col-6');
             archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.';
             archiveFile.value = 'Select file';
         }
@@ -4463,41 +4464,72 @@ function handleFileDrop (packet) {
         params.pickedFolder = '';
         params.storedFile = '';
     }
+    // We have to grab the FileList synchronously, because the DataTransfer object is neutered
+    // once this event handler returns, and we may need it in an asynchronous fallback below
+    var files = packet.dataTransfer.files;
+    // For the same reason, note now whether a folder was dropped: the DataTransfer never contains a
+    // folder's contents, so there is no legacy fallback for a folder we are not allowed to read
+    var droppedFolder = false;
+    if (items && items.length === 1 && typeof items[0].webkitGetAsEntry === 'function') {
+        var droppedEntry = items[0].webkitGetAsEntry();
+        droppedFolder = !!(droppedEntry && droppedEntry.isDirectory);
+    }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
             if (handle.kind === 'file') {
-                processNativeFileHandle(handle);
+                return processNativeFileHandle(handle);
             } else if (handle.kind === 'directory') {
-                processNativeDirHandle(handle);
+                // Check we can actually read the directory before we delegate, because processNativeDirHandle
+                // reports its own errors to the user and so cannot signal to us that we should fall back
+                return handle.entries().next().then(function () {
+                    return processNativeDirHandle(handle);
+                });
             }
+        }).catch(function (err) {
+            // Some contexts (e.g. a file:// window in the VS Code Browser) hand us a file system handle but then refuse
+            // to read it, so fall back to the legacy file drop, which does not need the File System Access API
+            console.warn('Unable to process the dropped file system handle', err);
+            if (droppedFolder) {
+                // Falling back would void the folder the user already picked and then fail anyway
+                uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
+                    '<p>Please drop the ZIM file itself instead of the folder, or, if the archive is split, drop all of its parts together.</p>',
+                'Cannot read dropped folder');
+                return;
+            }
+            console.warn('Falling back to the legacy file drop');
+            handleLegacyFileDrop(files);
         });
     } else {
-        var files = packet.dataTransfer.files;
-        // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
-        try {
-            archiveFilesLegacy.files = files;
-        } catch (err) {
-            console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
-            if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
-                uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
-                files = [files[0]];
-            }
-        }
-        document.getElementById('openLocalFiles').style.display = 'none';
-        document.getElementById('rescanStorage').style.display = 'block';
-        document.getElementById('usage').style.display = 'none';
-        // We have to void the previous picked folder, because dragged files don't have a folder
-        // This also prevents a file-not-found alert to the user when picking a new directory
-        params.pickedFolder = null;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        params.pickedFile = null;
-        params.storedFile = null;
-        params.rescan = false;
-        setLocalArchiveFromFileList(files);
-        // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
-        cache.idxDB('delete', 'pickedFSHandle', function () {});
+        handleLegacyFileDrop(files);
     }
+}
+
+// Loads dropped files without using the File System Access API (also used as a fallback if that API is blocked)
+function handleLegacyFileDrop (files) {
+    // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
+    try {
+        archiveFilesLegacy.files = files;
+    } catch (err) {
+        console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
+        if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
+            uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
+            files = [files[0]];
+        }
+    }
+    document.getElementById('openLocalFiles').style.display = 'none';
+    document.getElementById('rescanStorage').style.display = 'block';
+    document.getElementById('usage').style.display = 'none';
+    // We have to void the previous picked folder, because dragged files don't have a folder
+    // This also prevents a file-not-found alert to the user when picking a new directory
+    params.pickedFolder = null;
+    settingsStore.setItem('pickedFolder', '', Infinity);
+    params.pickedFile = null;
+    params.storedFile = null;
+    params.rescan = false;
+    setLocalArchiveFromFileList(files);
+    // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
 }
 
 function pickFileUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
@@ -6148,6 +6180,77 @@ function applyWikimediaZimFixes (doc) {
     }
 }
 
+/**
+ * Prods a Masonry-style grid page into laying itself out again once its thumbnails have dimensions
+ *
+ * These pages (the all-image landing pages of flavoured Wikimedia ZIMs) run Masonry exactly once, and they run it
+ * before any thumbnail has loaded. The ZIM gives the img tags no width or height attributes, so at that moment every
+ * card measures zero, Masonry stacks the lot in the first column and sets an explicit `height: 0` on its container.
+ * Nothing ever asks it to measure again, so the page stays blank however many images arrive afterwards. Masonry
+ * (through Outlayer) binds its own layout to the window resize event, and that is the only handle we have on it
+ * without a reference to the instance, so we dispatch one whenever the document changes size [kiwix-js-pwa #946]
+ *
+ * @param {Window} win The Window of the iframe or tab that contains the document
+ */
+function kickMasonryRelayout (win) {
+    var doc = win ? win.document : null;
+    if (!doc || !doc.body) return;
+    // The grid markup on its own (`#content .item figure`) is generic enough to turn up in an unrelated archive, so we
+    // also require one of the two things that identify these pages in the transform: the mwoffliner body class, or the
+    // Masonry script itself. Without that, a chance match would collect ten stray resize events for nothing
+    if (!(doc.querySelector('#content .item figure') &&
+        (/\barticle-list-home\b/.test(doc.body.className) || doc.querySelector('script[src*="masonry"]')))) return;
+    var kicks = 0;
+    var maxKicks = 10; // Masonry settles in a handful of passes; the cap stops the observer feeding itself forever
+    var fire = function (why) {
+        var content = doc.getElementById('content');
+        console.debug('Kicking Masonry relayout (' + why + ') #' + (kicks + 1) + ' of ' + maxKicks +
+            '; #content inline height is currently "' + (content && content.style.height || 'unset') + '"');
+        var ev = doc.createEvent('Event'); // DEV: createEvent rather than the Event constructor, to match house style
+        ev.initEvent('resize', true, true);
+        win.dispatchEvent(ev);
+        kicks++;
+    };
+    var cards = doc.querySelectorAll('#content .item');
+    console.debug('Masonry grid found in loaded document: arming relayout kicks for ' + cards.length + ' cards');
+    // We watch the cards rather than the body, because the body is not a reliable proxy for them: as soon as Masonry
+    // has laid out it pins an explicit height on #content and positions every card out of flow, so a thumbnail that
+    // gains dimensions afterwards changes nothing the body can see. The cards are where the size change actually
+    // happens, and a card resizing is exactly the moment Masonry needs to measure again
+    if (typeof win.ResizeObserver === 'function') {
+        var relayoutTimeout;
+        var observer = new win.ResizeObserver(function () {
+            clearTimeout(relayoutTimeout);
+            relayoutTimeout = setTimeout(function () {
+                if (kicks >= maxKicks) {
+                    console.debug('Relayout kick cap reached: disconnecting observer');
+                    observer.disconnect();
+                    return;
+                }
+                fire('card resized');
+            }, 250);
+        });
+        for (var c = cards.length; c--;) {
+            observer.observe(cards[c]);
+        }
+    } else {
+        console.debug('No ResizeObserver in this window: falling back to timed kicks only');
+    }
+    // Belt and braces for the case where no card ever changes size because every image is still pending. NB we are
+    // called from the container's own onload handler (see articleLoadedSW's callers), so the window load event has
+    // already fired by now and a listener for it would never run: check the readyState instead
+    if (doc.readyState === 'complete') {
+        fire('document already loaded');
+    } else {
+        win.addEventListener('load', function () {
+            if (kicks < maxKicks) fire('window load');
+        });
+    }
+    setTimeout(function () {
+        if (kicks < maxKicks) fire('1500ms settle');
+    }, 1500);
+}
+
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
     // console.debug('Checking if article loaded... ' + loaded);
@@ -6211,6 +6314,9 @@ var articleLoadedSW = function (dirEntry, container) {
             setupHeadings();
             applyWikimediaZimFixes(doc);
         }
+        // NB this is deliberately outside every image-handling gate below, because those are skipped on landing pages
+        // and with the libzim backend, which is exactly where the grid pages live [kiwix-js-pwa #946]
+        kickMasonryRelayout(articleWindow);
 
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
@@ -6922,6 +7028,11 @@ var regexpMetaRedirect = /<meta\b(?=[^>]*\bhttp-equiv\s*=\s*["']?refresh\b)[^>]*
 // A regex to match the HTML character references that may appear in an attribute value
 var regexpHtmlEntities = /&(?:#(\d+)|#[xX]([\da-fA-F]+)|(amp|apos|quot|lt|gt));/g;
 
+// This matches a loading="lazy" attribute on an img tag, capturing everything before it so that a replace can drop the
+// attribute alone. NB the value has to be matched in full: an unanchored "lazy" would eat the first four characters of
+// a value such as "lazyload" and leave the rest of it welded to the tag name
+var regexpLazyLoadingAttribute = /(<img\b[^>]*?)\sloading\s*=\s*(?:"lazy"|'lazy'|lazy(?=[\s>]))/gi;
+
 // A string to hold any anchor parameter in clicked ZIM URLs (as we must strip these to find the article in the ZIM)
 var anchorParameter;
 // Counts consecutive HTML redirects we have followed, so that a circular chain of redirect stubs cannot loop forever
@@ -7154,6 +7265,41 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // so add some whitespace at the end of the document
         htmlArticle = htmlArticle.replace(/(<\/body>)/i, '\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1');
         htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, '$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n');
+        // Masonry-style grid pages (the all-image landing pages of flavoured Wikimedia ZIMs, and older main pages that
+        // pull in masonry.min.js) size their thumbnails with `.item img { width: 100%; height: auto }`, and the ZIM
+        // gives the img tags no width or height attributes. Until an image's bytes arrive it therefore has no intrinsic
+        // aspect ratio, so `height: auto` resolves to zero in Firefox. Masonry then measures every card at zero height,
+        // stacks them all in the first column and sets `#content { height: 0 }`, at which point the `overflow: hidden`
+        // on that container clips the cards out of existence. The images are `loading="lazy"`, so once clipped they can
+        // never intersect the viewport, never load, never gain dimensions, and Masonry is never asked to measure again:
+        // the page stays blank. Chrome escapes the deadlock only because it falls back to the 300x150 default object
+        // size, which happens to give the cards a plausible height on the first pass. Supplying a fallback ratio breaks
+        // the deadlock at the measuring step, in every engine. NB `aspect-ratio: auto <ratio>` means "use the image's
+        // own ratio once it has one, otherwise this", so it governs the pre-load box only.
+        // DEV: this is injected ahead of the stylesheets resolved further down, but no main page stylesheet sets
+        // aspect-ratio, so there is nothing for it to lose a specificity tie to [kiwix-js-pwa #946]
+        // NB the grid markup is required, not merely one of the identifying markers: an ordinary article can pull in
+        // masonry.min.js without being a grid at all (www/C/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2
+        // is one such), and stripping the lazy loading from an article's images would make it load them all eagerly for
+        // no reason. This mirrors the runtime gate in kickMasonryRelayout, so the two cannot disagree
+        var isMasonryGridPage = /<a\b[^>]*\bclass\s*=\s*["'][^"']*\bitem\b/i.test(htmlArticle) &&
+            (/<body\b[^>]*\bclass\s*=\s*["'][^"']*\barticle-list-home\b/i.test(htmlArticle) ||
+            /<script\b[^>]*\bsrc\s*=\s*["'][^"']*masonry(?:\.min)?\.js/i.test(htmlArticle));
+        if (isMasonryGridPage) {
+            var lazyCount = (htmlArticle.match(regexpLazyLoadingAttribute) || []).length;
+            console.debug('Masonry grid page ' + dirEntry.namespace + '/' + dirEntry.url + ' | landingPage: ' +
+                params.isLandingPage + ' | manipulateImages: ' + params.manipulateImages + ' | useLibzim: ' +
+                !!params.useLibzim + ' | cssCache: ' + params.cssCache + ' | imageDisplayMode: ' + params.imageDisplayMode);
+            htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<style>.item img { aspect-ratio: auto 3 / 2; }</style>\r\n$1');
+            // Firefox evaluates loading="lazy" against the layout as it stood before Masonry repositioned every card,
+            // and does not re-evaluate when the layout later changes, so the thumbnails sit unloaded until the user
+            // scrolls by hand. These pages are a grid of thumbnails and nothing else, so there is nothing worth
+            // deferring. NB where the app extracts images itself, prepareImagesServiceWorker strips this attribute
+            // already, but it is never reached on a landing page unless params.manipulateImages is set
+            htmlArticle = htmlArticle.replace(regexpLazyLoadingAttribute, '$1');
+            console.debug('Injected fallback aspect-ratio into head and stripped loading="lazy" from ' +
+                lazyCount + ' of ' + (htmlArticle.match(/<img\b/gi) || []).length + ' images');
+        }
         var i;
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {
@@ -8269,7 +8415,6 @@ function setupTableOfContents () {
     });
     var ToCList = document.getElementById('ToCList');
     ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-    ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     ToCList.innerHTML = dropupHtml;
     Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
         listElement.addEventListener('click', function () {
