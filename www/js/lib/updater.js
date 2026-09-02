@@ -34,7 +34,13 @@ params.updateServer = {
     releases: 'releases'
 };
 
-// A RegExp prototype string to match the current app's releases
+/**
+ * Builds the RegExp prototype string that matches the current app's releases. Evaluated on each
+ * check rather than once at import time, because params.packagedFile is not necessarily populated
+ * when this module is first loaded.
+ *
+ * @returns {String} An alternation of filename fragments identifying this app's own packages
+ */
 function getBaseAppPattern () {
     return (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
         : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
@@ -80,10 +86,11 @@ function getLatestUpdates (callback) {
         // Build the RegExp fresh on every call: baseApp depends on params.packagedFile, which
         // may not be set yet when this module is first evaluated, and a module-level /g RegExp
         // would also carry its lastIndex over between calls.
-        // [^"]+ is used in place of a plain wildcard so each capture group stays confined to the
-        // single JSON string value it started in, even if the payload is minified to one line.
+        // [^"]* / [^"]+ is used in place of a plain wildcard so each capture group stays confined to the
+        // single JSON string value it started in, even if the payload is minified to one line: [^"] cannot
+        // match the quote that terminates a JSON string, so a match physically cannot run into the next field.
         var regexpMatchGitHubReleases = RegExp('"browser_download_url[":\\s]+"(https:[^"]*download\\/([^\\/"]+)[^"]*(?:' + getBaseAppPattern() + ')[^"]+)"', 'ig');
-        // Loop through every line in releases
+        // Loop through every matching asset URL
         var matchedRelease = regexpMatchGitHubReleases.exec(releases);
         while (matchedRelease != null) {
             releaseFile = matchedRelease[1];

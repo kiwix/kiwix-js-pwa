@@ -65,12 +65,23 @@ function run (mockResponse, context) {
  * rejecting) if the API can't be reached, so a lack of network access skips the check instead
  * of failing the suite.
  *
+ * GitHub varies the JSON formatting on the Accept header (note `Vary: Accept` on the response):
+ * send one and you get pretty-printed JSON, one field per line; omit it and you get everything
+ * minified onto a single line. https.get sends no Accept header by default, so with
+ * withAcceptHeader left false this exercises the minified path - the shape that actually breaks
+ * the old greedy-wildcard regex. Pass withAcceptHeader: true to fetch the pretty-printed shape
+ * instead, which is what the app itself receives (uiUtil.XHR uses XMLHttpRequest, and browsers
+ * add an `Accept: * / *` wildcard header to every request automatically).
+ *
+ * @param {Boolean} [withAcceptHeader] Send an explicit Accept header to request the pretty-printed shape
  * @returns {Promise<String|null>} The raw response text, or null if it could not be fetched
  */
-function fetchLiveReleases () {
+function fetchLiveReleases (withAcceptHeader) {
     return new Promise(function (resolve) {
+        var headers = { 'User-Agent': 'kiwix-js-pwa-updater-test' };
+        if (withAcceptHeader) headers.Accept = '*/*';
         var req = https.get('https://api.github.com/repos/kiwix/kiwix-js-pwa/releases', {
-            headers: { 'User-Agent': 'kiwix-js-pwa-updater-test' },
+            headers: headers,
             timeout: 5000
         }, function (res) {
             if (res.statusCode !== 200) {
@@ -78,6 +89,7 @@ function fetchLiveReleases () {
                 resolve(null);
                 return;
             }
+            res.setEncoding('utf8'); // Buffers multi-byte UTF-8 sequences split across TCP chunks
             var data = '';
             res.on('data', function (chunk) { data += chunk; });
             res.on('end', function () { resolve(data); });
@@ -187,8 +199,9 @@ async function runTests () {
     check('Handles empty response gracefully', emptyResponse.updateTag === undefined && emptyResponse.updatedReleases.length === 0);
 
     section('Real API response shape (pretty-printed, one field per line)');
-    // GitHub's REST API pretty-prints its JSON responses with one field per line, which is
-    // what actually reaches this code in production - unlike the hand-minified fixtures above.
+    // GitHub's REST API pretty-prints its JSON with one field per line when the request carries
+    // an Accept header - which is what actually reaches this code in production, since uiUtil.XHR
+    // goes through XMLHttpRequest and browsers add `Accept: */*` to every request automatically.
     const prettyPrintedPayload = fs.readFileSync(path.join(__dirname, 'fixtures', 'github-releases-sample.json'), 'utf8');
     const prettyRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
     check('Detects highest version on a realistically pretty-printed response', prettyRes.updateTag === 'v4.0.0-E');
@@ -210,6 +223,31 @@ async function runTests () {
         check('Every matched download URL is well-formed and unquoted', !threw && liveRes.updatedReleases.every(function (url) {
             return /^https:\/\/[^\s"{}[\]]+$/.test(url);
         }));
+
+        // Assert the detected tag against the newest matching release from the parsed payload
+        // itself, so this checks the answer and not just that the output happens to look well-formed
+        if (!threw) {
+            const baseAppPattern = /windows|electron|kiwixwebapp_/i;
+            const liveReleasesJson = JSON.parse(liveReleasesText);
+            const expectedRelease = liveReleasesJson.find(function (release) {
+                return (release.assets || []).some(function (asset) {
+                    return baseAppPattern.test(asset.browser_download_url || '');
+                });
+            });
+            check('Detected tag matches the newest matching release in the parsed payload',
+                !!expectedRelease && liveRes.updateTag === expectedRelease.tag_name);
+        }
+
+        // The Accept-header behaviour documented on fetchLiveReleases is exactly the assumption
+        // this fix rests on: assert the minified and pretty-printed shapes of the same live data
+        // produce identical results, as a direct test of that invariant
+        const liveReleasesTextWithAccept = await fetchLiveReleases(true);
+        if (liveReleasesTextWithAccept !== null) {
+            const liveResWithAccept = await run(liveReleasesTextWithAccept, { appVersion: '0.0.1' });
+            check('Minified (no Accept header) and pretty-printed (Accept: */*) responses agree',
+                liveResWithAccept.updateTag === liveRes.updateTag &&
+                JSON.stringify(liveResWithAccept.updatedReleases) === JSON.stringify(liveRes.updatedReleases));
+        }
     }
 
     section('Consecutive invocation idempotency');
