@@ -599,6 +599,26 @@ function lazyLoad (documentImages) {
         }, rate);
         scrollPos = container.pageYOffset;
     };
+    // Scrolling is not the only thing that can bring an image into view. Layout scripts such as Masonry (used by the
+    // all-image landing pages of flavoured Wikimedia ZIMs) reposition every card after we have taken the readings
+    // above, and they do so without any scroll, so the handler above never learns about it and the grid stays blank
+    // until the user scrolls by hand. Observing the document for resize supplies the missing trigger: Masonry sets an
+    // explicit height on its container as it lays out, and each image we extract resizes it again, so the observer
+    // drives the queue forward until there is nothing left to extract. NB we use the container's own constructor so
+    // that we observe an element from the same realm [kiwix-js-pwa #946]
+    if (typeof container.ResizeObserver === 'function' && container.document.body) {
+        console.debug('lazyLoad: watching article body for resize to re-poll ' + documentImages.length + ' images');
+        var relayoutTimeout;
+        new container.ResizeObserver(function () {
+            clearTimeout(relayoutTimeout);
+            relayoutTimeout = setTimeout(function () {
+                console.debug('lazyLoad: layout changed, re-polling image queue');
+                queueImages(documentImages, 'extract', 0, function () {
+                    queueImages(documentImages, 'extract', offset);
+                });
+            }, 250);
+        }).observe(container.document.body);
+    }
 }
 
 /**
