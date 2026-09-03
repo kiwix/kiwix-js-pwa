@@ -65,21 +65,17 @@ function run (mockResponse, context) {
  * rejecting) if the API can't be reached, so a lack of network access skips the check instead
  * of failing the suite.
  *
- * GitHub varies the JSON formatting on the Accept header (note `Vary: Accept` on the response):
- * send one and you get pretty-printed JSON, one field per line; omit it and you get everything
- * minified onto a single line. https.get sends no Accept header by default, so with
- * withAcceptHeader left false this exercises the minified path - the shape that actually breaks
- * the old greedy-wildcard regex. Pass withAcceptHeader: true to fetch the pretty-printed shape
- * instead, which is what the app itself receives (uiUtil.XHR uses XMLHttpRequest, and browsers
- * add an `Accept: * / *` wildcard header to every request automatically).
+ * GitHub serves both a pretty-printed (one field per line) and a fully minified shape of the
+ * identical content, unpredictably, for identical requests a few minutes apart - it is not
+ * selected by the Accept header, HTTP version or User-Agent. So this fetches once and the
+ * caller derives the other shape locally with JSON.parse/JSON.stringify rather than relying on
+ * two live fetches to land on different shapes.
  *
- * @param {Boolean} [withAcceptHeader] Send an explicit Accept header to request the pretty-printed shape
  * @returns {Promise<String|null>} The raw response text, or null if it could not be fetched
  */
-function fetchLiveReleases (withAcceptHeader) {
+function fetchLiveReleases () {
     return new Promise(function (resolve) {
         var headers = { 'User-Agent': 'kiwix-js-pwa-updater-test' };
-        if (withAcceptHeader) headers.Accept = '*/*';
         var req = https.get('https://api.github.com/repos/kiwix/kiwix-js-pwa/releases', {
             headers: headers,
             timeout: 5000
@@ -207,6 +203,35 @@ async function runTests () {
     check('Detects highest version on a realistically pretty-printed response', prettyRes.updateTag === 'v4.0.0-E');
     check('Download URL is not corrupted with JSON punctuation from neighbouring fields', /^https:\/\/[^\s"{}[\]]+$/.test(prettyRes.updatedReleases[0] || ''));
 
+    section('BaseApp packaging filter (realistic asset naming, from fixture)');
+    // Real flavour assets (e.g. kiwix-js-wikivoyage-3.8.2-E-arm64.nsis.7z) don't contain
+    // "electron"/"windows"/"kiwixwebapp_", so they must not be picked up by a default-build
+    // check, and a flavour check must only pick up its own flavour's asset.
+    const wikivoyageFixtureRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikivoyage_en_all_maxi.zim' });
+    check('Wikivoyage packagedFile only captures the wikivoyage asset from the fixture',
+        wikivoyageFixtureRes.updatedReleases.length === 1 && /wikivoyage/.test(wikivoyageFixtureRes.updatedReleases[0]));
+
+    const wikimedFixtureRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikimed_en_all_maxi.zim' });
+    check('WikiMed packagedFile only captures the wikimed asset from the fixture',
+        wikimedFixtureRes.updatedReleases.length === 1 && /wikimed/.test(wikimedFixtureRes.updatedReleases[0]));
+
+    check('Default (non-flavour) check on the fixture does not pick up flavour assets',
+        prettyRes.updatedReleases.every(function (url) { return !/wikivoyage|wikimed/.test(url); }));
+
+    section('Minified/pretty-printed equivalence (fixture, always runs offline)');
+    // Derive both JSON shapes locally from the same parsed data, rather than depending on the
+    // network to hand back both shapes for the same content (see the live section below for why).
+    const fixtureParsed = JSON.parse(prettyPrintedPayload);
+    const fixtureAsMinified = JSON.stringify(fixtureParsed);
+    const fixtureAsPretty = JSON.stringify(fixtureParsed, null, 2) + '\n';
+    check('Derived minified fixture shape is a single line', fixtureAsMinified.split('\n').length === 1);
+    check('Derived pretty-printed fixture shape spans many lines', fixtureAsPretty.split('\n').length > 10);
+    const fixtureMinRes = await run(fixtureAsMinified, { appVersion: '3.8.92-E' });
+    const fixturePrettyRes = await run(fixtureAsPretty, { appVersion: '3.8.92-E' });
+    check('Minified and pretty-printed fixture shapes agree',
+        fixtureMinRes.updateTag === fixturePrettyRes.updateTag &&
+        JSON.stringify(fixtureMinRes.updatedReleases) === JSON.stringify(fixturePrettyRes.updatedReleases));
+
     section('Live GitHub API (skipped if offline)');
     const liveReleasesText = await fetchLiveReleases();
     if (liveReleasesText === null) {
@@ -236,17 +261,19 @@ async function runTests () {
             });
             check('Detected tag matches the newest matching release in the parsed payload',
                 !!expectedRelease && liveRes.updateTag === expectedRelease.tag_name);
-        }
 
-        // The Accept-header behaviour documented on fetchLiveReleases is exactly the assumption
-        // this fix rests on: assert the minified and pretty-printed shapes of the same live data
-        // produce identical results, as a direct test of that invariant
-        const liveReleasesTextWithAccept = await fetchLiveReleases(true);
-        if (liveReleasesTextWithAccept !== null) {
-            const liveResWithAccept = await run(liveReleasesTextWithAccept, { appVersion: '0.0.1' });
-            check('Minified (no Accept header) and pretty-printed (Accept: */*) responses agree',
-                liveResWithAccept.updateTag === liveRes.updateTag &&
-                JSON.stringify(liveResWithAccept.updatedReleases) === JSON.stringify(liveRes.updatedReleases));
+            // Derive both JSON shapes locally from this single fetch instead of relying on a
+            // second live fetch to happen to land on a different shape (see fetchLiveReleases doc)
+            const liveAsMinified = JSON.stringify(liveReleasesJson);
+            const liveAsPretty = JSON.stringify(liveReleasesJson, null, 2) + '\n';
+            check('Derived minified live shape is a single line', liveAsMinified.split('\n').length === 1);
+            check('Derived pretty-printed live shape spans many lines', liveAsPretty.split('\n').length > 10);
+
+            const liveMinRes = await run(liveAsMinified, { appVersion: '0.0.1' });
+            const livePrettyRes = await run(liveAsPretty, { appVersion: '0.0.1' });
+            check('Minified and pretty-printed shapes of the same live data agree',
+                liveMinRes.updateTag === livePrettyRes.updateTag &&
+                JSON.stringify(liveMinRes.updatedReleases) === JSON.stringify(livePrettyRes.updatedReleases));
         }
     }
 

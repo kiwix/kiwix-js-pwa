@@ -30,8 +30,8 @@
       {
         "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/assets/1002",
         "id": 1002,
-        "name": "kiwix-electron-4.0.0-E.exe",
-        "content_type": "application/x-msdownload",
+        "name": "kiwix-js-electron-4.0.0-E-x64.nsis.7z",
+        "content_type": "application/x-7z-compressed",
         "state": "uploaded",
         "size": 104857600,
         "uploader": {
@@ -41,15 +41,15 @@
           "html_url": "https://github.com/bhuvan-somisetty",
           "type": "User"
         },
-        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E.exe"
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-js-electron-4.0.0-E-x64.nsis.7z"
       },
       {
-        "name": "kiwix-electron-4.0.0-E-wikivoyage.exe",
-        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E-wikivoyage.exe"
+        "name": "kiwix-js-wikivoyage-4.0.0-E-arm64.nsis.7z",
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-js-wikivoyage-4.0.0-E-arm64.nsis.7z"
       },
       {
-        "name": "kiwix-electron-4.0.0-E-wikimed.exe",
-        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E-wikimed.exe"
+        "name": "kiwix-js-wikimed-4.0.0-E-arm64.nsis.7z",
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-js-wikimed-4.0.0-E-arm64.nsis.7z"
       }
     ]
   },
@@ -68,8 +68,8 @@
       {
         "url": "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases/assets/902",
         "id": 902,
-        "name": "kiwix-electron-3.9.0-E.exe",
-        "content_type": "application/x-msdownload",
+        "name": "kiwix-js-electron-3.9.0-E-x64.nsis.7z",
+        "content_type": "application/x-7z-compressed",
         "state": "uploaded",
         "size": 98765432,
         "uploader": {
@@ -79,7 +79,7 @@
           "html_url": "https://github.com/bhuvan-somisetty",
           "type": "User"
         },
-        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v3.9.0-E/kiwix-electron-3.9.0-E.exe"
+        "browser_download_url": "https://github.com/kiwix/kiwix-js-pwa/releases/download/v3.9.0-E/kiwix-js-electron-3.9.0-E-x64.nsis.7z"
       }
     ]
   }
