@@ -1478,7 +1478,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
                     var downloadArchiveWithFSA = function () {
                         downloadSize = megabytes;
-                        uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Downloading archive... 0%', true);
+                        uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Downloading archive... 0%', true);
                         return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
                             return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
                             (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
@@ -2051,7 +2051,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
     // Remembered now (before the name is known) so that even a crash during the initial fetch
     // or hash-check of on-disk data is still offered for resumption on the next launch
     persistActiveTorrent(torrentUrl, savePath);
-    uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Starting BitTorrent download...', true);
+    uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Starting BitTorrent download...', true);
     torrentClient.start(torrentUrl, savePath, {
         onProgress: function (s) {
             if (s.verifying) {
@@ -2141,7 +2141,7 @@ function reportDownloadProgress (received, total) {
             var percentageData = Math.floor(dataMB / downloadSize * 100);
             if (percentageData > percentageComplete) {
                 percentageComplete = percentageData;
-                uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Do not quit app:</b> Downloading archive... ' + percentageComplete + '% (' + formattedData + ')', true);
+                uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Do not quit app:</b> Downloading archive... ' + percentageComplete + '% (' + formattedData + ')', true);
             }
         }
     }
