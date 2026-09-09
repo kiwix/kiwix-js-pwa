@@ -2293,7 +2293,8 @@ var refreshFullScreen = function (evt) {
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
     if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
-    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /fa-(compress|expand)/.test(evt.target.className) || (evt.target.closest && evt.target.closest('#btnAbout')))) {
+    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' ||
+        (evt.target.parentElement && evt.target.parentElement.id === 'btnAbout'))) {
         if (uiUtil.appIsFullScreen()) {
             // Cancel fullscreen mode
             uiUtil.lockDisplayOrientation().then(function () {
