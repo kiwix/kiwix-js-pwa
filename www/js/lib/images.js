@@ -70,12 +70,18 @@ function extractImages (images, callback) {
     };
     Array.prototype.slice.call(images).forEach(function (image) {
         if (image.tagName !== 'IMG') {
-            insertMediaBlobsJQuery(image);
+            extractorBusy++;
+            insertMediaBlobsJQuery(image, function () {
+                checkBatch();
+            });
             return;
         }
         var imageUrl = image.getAttribute('data-kiwixurl');
         if (!imageUrl) {
-            remaining--; return;
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
+            return;
         // Create data-kiwixsrc needed for stylesheets
         } else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
@@ -402,14 +408,16 @@ function prepareImagesJQuery (win, forPrinting) {
 /**
  * Extracts media blobs in Restricted mode and offers to download them
  * @param {Node} medium A DOM node representing a medium
+ * @param {Function} [callback] An optional callback invoked when all media sources have settled
  */
-function insertMediaBlobsJQuery (medium) {
+function insertMediaBlobsJQuery (medium, callback) {
     var trackBlob;
     var media = [medium];
     // Ensure we have a source or sources
     if (!medium.getAttribute('src')) {
         media = medium.querySelectorAll('source');
     }
+    var validMedia = [];
     Array.prototype.slice.call(media).forEach(function (mediaSource) {
         var source = mediaSource.getAttribute('src');
         source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, params.baseURL) : null;
@@ -417,6 +425,20 @@ function insertMediaBlobsJQuery (medium) {
             if (source) console.error('No usable media source was found for: ' + source);
             return;
         }
+        validMedia.push({ mediaSource: mediaSource, source: source });
+    });
+    if (!validMedia.length) {
+        if (callback) callback();
+        return;
+    }
+    var remainingSources = validMedia.length;
+    var checkMediaDone = function () {
+        remainingSources--;
+        if (!remainingSources && callback) callback();
+    };
+    validMedia.forEach(function (item) {
+        var mediaSource = item.mediaSource;
+        var source = item.source;
         var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
         // If the "controls" property is missing, we need to add it to ensure jQuery-only users can operate the video. See kiwix-js #760.
         if (/audio|video/i.test(mediaElement.tagName) && !mediaElement.hasAttribute('controls')) mediaElement.setAttribute('controls', '');
@@ -428,6 +450,10 @@ function insertMediaBlobsJQuery (medium) {
         }
         // Load media file
         appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
+            if (!dirEntry) {
+                checkMediaDone();
+                return;
+            }
             return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                 var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                 var blob = new Blob([mediaArray], {
@@ -436,7 +462,10 @@ function insertMediaBlobsJQuery (medium) {
                 mediaSource.src = URL.createObjectURL(blob);
                 // In Firefox and Chromium it is necessary to re-register the inserted media source
                 // but do not reload for text tracks (closed captions / subtitles)
-                if (/track/i.test(mediaSource.tagName)) return;
+                if (/track/i.test(mediaSource.tagName)) {
+                    checkMediaDone();
+                    return;
+                }
                 mediaElement.load();
                 // Add a download link in case media source not supported
                 if (container.kiwixType === 'iframe') {
@@ -496,7 +525,11 @@ function insertMediaBlobsJQuery (medium) {
                         });
                     });
                 }
+                checkMediaDone();
             });
+        }).catch(function (e) {
+            console.error('Could not find DirEntry for media: ' + source, e);
+            checkMediaDone();
         });
     });
     // For TED ZIMs, the initial video div height is set incorectly, so we correct it
