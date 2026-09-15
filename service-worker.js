@@ -302,7 +302,6 @@ self.addEventListener('activate', function (event) {
     // there the update reload loses the file anyway (the File System Access API reaches only the OPFS on Android, so
     // no file handle survives). Against that, the cache holds Zimit assets already rewritten by the ReplayWorker, which
     // an update could otherwise not correct, and clearing on update is its only eviction besides a manual reset
-    // [kiwix-js-pwa #938]
     event.waitUntil(
         Promise.all([
             // Clear old caches
