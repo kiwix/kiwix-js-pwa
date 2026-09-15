@@ -232,7 +232,6 @@ async function runTests () {
         }
 
         assert('Calls completion callback within timeout for mixed collections with multimedia', completed);
-        assert('Does not count media elements against extractorBusy', sandbox.getExtractorBusy() === 0);
     }
 
     console.log('\nMedia-only collections');
@@ -240,9 +239,14 @@ async function runTests () {
         const sandbox = createMockEnvironment();
         const videoNode = createMockNode('video', { src: 'M/video.mp4' });
 
+        sandbox.extractImages([videoNode], function () {});
+        assert('Does not count media elements against extractorBusy', sandbox.getExtractorBusy() === 0);
+
         let completed = false;
         try {
-            completed = await extractWithTimeout(sandbox, [videoNode]);
+            const freshSandbox = createMockEnvironment();
+            const freshVideoNode = createMockNode('video', { src: 'M/video.mp4' });
+            completed = await extractWithTimeout(freshSandbox, [freshVideoNode]);
         } catch (err) {
             console.error('    Error:', err.message);
         }
