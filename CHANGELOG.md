@@ -4,6 +4,7 @@
 
 * FEATURE: ZIM archives can now be opened from the file manager in the Electron app on macOS and in the Linux deb and rpm packages (the AppImage has to be integrated with the desktop, for example with AppImageLauncher, before the OS can offer it)
 * FIX: Opening a ZIM from the OS while the Electron app is already running no longer moves the app to a different port, and hence loses its settings and caches, on next launch
+* FIX: When the Electron app finds its usual port taken by another program, it now loads from the port it has just switched to, instead of from the other program for that session
 * FIX: Classic Zimit archives read with the legacy method no longer loop endlessly (sometimes locking the app) when the experimental libzim reader is turned on, and the two settings can no longer be turned on together
 * FIX: Reset app now deletes all IndexedDB databases, including the assets cache and Zimit collections, which an incorrect database name had caused it to skip
 * FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page (port of kiwix-js #1413)

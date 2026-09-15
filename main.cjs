@@ -415,16 +415,19 @@ app.whenReady().then(() => {
     });
 
     // Function to start the Express server and check for port availability
-    startServer = (port, binding = currentBinding, callback) => {
-        if (port > 3999) { // Set a reasonable maximum
+    startServer = (serverPort, binding = currentBinding, callback) => {
+        if (serverPort > 3999) { // Set a reasonable maximum
             console.error('Unable to find available port in acceptable range');
             // Remove the expressPort key from the store so app will try again on restart
             store.delete('expressPort');
             app.quit();
             return;
         }
-        expressServer = server.listen(port, binding, () => {
-            console.log(`Server running on port ${port} bound to ${binding}`);
+        expressServer = server.listen(serverPort, binding, () => {
+            console.log(`Server running on port ${serverPort} bound to ${binding}`);
+            // Record the port actually bound, which differs from the stored one if that was taken: the window is loaded
+            // from this port, and restartServer rebinds to it, so neither may be left pointing at another program's server
+            port = serverPort;
             // Create window and register listeners on initial startup (after server is listening)
             if (!mainWindow) {
                 createWindow();
@@ -434,8 +437,8 @@ app.whenReady().then(() => {
             if (callback) callback();
         }).on('error', (err) => {
             if (err.code === 'EADDRINUSE') {
-                const newPort = port + 10;
-                console.log(`Port ${port} is already in use, trying port ${newPort}`);
+                const newPort = serverPort + 10;
+                console.log(`Port ${serverPort} is already in use, trying port ${newPort}`);
                 store.set('expressPort', newPort);
                 startServer(newPort, binding, callback); // Try the next port with same binding
             } else {
