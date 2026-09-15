@@ -295,6 +295,14 @@ self.addEventListener('install', function (event) {
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
     // Check all the cache keys, and delete any old caches
+    // DEV: This deliberately deletes ASSETS_CACHE too, unlike upstream (which keeps it), and every other cache on the
+    // origin, without a name filter, which could miss names changed in a later version [kiwix-js #1413]. We accept the
+    // cost: the assets cache holds only CSS and JS (see regexpCachedContentTypes), so clearing it means those are read
+    // from the ZIM once more after an update. That cost is highest on Android with a picked file on slow storage, but
+    // there the update reload loses the file anyway (the File System Access API reaches only the OPFS on Android, so
+    // no file handle survives). Against that, the cache holds Zimit assets already rewritten by the ReplayWorker, which
+    // an update could otherwise not correct, and clearing on update is its only eviction besides a manual reset
+    // [kiwix-js-pwa #938]
     event.waitUntil(
         Promise.all([
             // Clear old caches
