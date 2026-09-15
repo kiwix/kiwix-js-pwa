@@ -71,11 +71,17 @@ function extractImages (images, callback) {
     Array.prototype.slice.call(images).forEach(function (image) {
         if (image.tagName !== 'IMG') {
             insertMediaBlobsJQuery(image);
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
             return;
         }
         var imageUrl = image.getAttribute('data-kiwixurl');
         if (!imageUrl) {
-            remaining--; return;
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
+            return;
         // Create data-kiwixsrc needed for stylesheets
         } else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
@@ -428,6 +434,7 @@ function insertMediaBlobsJQuery (medium) {
         }
         // Load media file
         appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
+            if (!dirEntry) return;
             return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                 var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                 var blob = new Blob([mediaArray], {
@@ -497,6 +504,8 @@ function insertMediaBlobsJQuery (medium) {
                     });
                 }
             });
+        }).catch(function (e) {
+            console.error('Could not find DirEntry for media: ' + source, e);
         });
     });
     // For TED ZIMs, the initial video div height is set incorectly, so we correct it
