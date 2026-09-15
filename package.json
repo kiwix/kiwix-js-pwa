@@ -89,7 +89,21 @@
           ]
         }
       ],
-      "category": "public.app-category.education"
+      "category": "public.app-category.education",
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive",
+          "description": "Compressed ZIM file archive",
+          "role": "Viewer"
+        },
+        {
+          "ext": "zimaa",
+          "name": "Split ZIM Archive",
+          "description": "First part of a split ZIM file archive",
+          "role": "Viewer"
+        }
+      ]
     },
     "linux": {
       "executableName": "kiwix-js-electron",
@@ -122,7 +136,21 @@
           ]
         }
       ],
-      "category": "Education"
+      "category": "Education",
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive",
+          "description": "ZIM archive",
+          "mimeType": "application/org.kiwix.desktop.x-zim"
+        },
+        {
+          "ext": "zimaa",
+          "name": "Split ZIM Archive",
+          "description": "ZIM archive",
+          "mimeType": "application/org.kiwix.desktop.x-zim"
+        }
+      ]
     },
     "nsis": {
       "oneClick": "false",

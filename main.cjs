@@ -134,6 +134,14 @@ function createWindow () {
 
     // mainWindow.loadFile('www/index.html');
     mainWindow.loadURL('http://localhost:' + port + '/www/index.html');
+
+    // Send the renderer the path of any archive it should open, once its scripts have run (see the note on
+    // 'get-launch-file-path-sync' below). This belongs to every window rather than only the first, because on
+    // macOS the app keeps running after its window is closed and the dock icon or Finder can open a new one,
+    // whose preload script would otherwise report a launch file that is never sent [kiwix-js-pwa #917]
+    mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.send('get-launch-file-path', launchFilePath);
+    });
 }
 
 function registerListeners () {
@@ -272,6 +280,9 @@ function registerListeners () {
     });
 }
 
+// Matches ZIM archives, including the first part of a split archive (.zimaa)
+const regexpZimFile = /\.zim(?:\w\w)?$/i;
+
 // Get the launch file path
 function processLaunchFilePath (arg) {
     console.log('Scanning for launch file path...');
@@ -279,7 +290,7 @@ function processLaunchFilePath (arg) {
     if (arg && arg.length >= 2) {
         for (var i = 0; i < arg.length; i++) {
             console.log('Arg ' + i + ': ' + arg[i]);
-            if (/\.zim(?:\w\w)?$/i.test(arg[i])) {
+            if (regexpZimFile.test(arg[i])) {
                 openFilePath = arg[i];
                 break;
             }
@@ -289,13 +300,39 @@ function processLaunchFilePath (arg) {
     return openFilePath;
 }
 
-// The 'get-launch-file-path' message below is sent on did-finish-load, i.e. after all the renderer's scripts
-// have run, which is too late for the renderer to know at startup that it should not also load the last-used
+// The path of the ZIM archive that the OS most recently asked us to open, or null if there is none. On Windows
+// and Linux the OS passes it on the command line, but on macOS Launch Services delivers it through the 'open-file'
+// event, which on a cold launch fires before the app has a window. Both routes therefore store the path here, and
+// the renderer is always given this value, so that what it is told at startup and what it loads stay in step
+let launchFilePath = processLaunchFilePath(process.argv);
+
+// Opens an archive that the OS has asked us to open after startup (or, on macOS, during it)
+function openLaunchFile (filePath) {
+    if (filePath) launchFilePath = filePath;
+    // Still starting up: the window has not been created yet, and will pick up the stored path when it is
+    if (!mainWindow) return;
+    if (mainWindow.isDestroyed()) {
+        // On macOS the app stays running after its window is closed, so open a new one (which reads the stored path)
+        createWindow();
+        return;
+    }
+    if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+    }
+    mainWindow.focus();
+    // While the page is (re)loading it may not yet be listening, so leave it to did-finish-load to send the path
+    if (!mainWindow.webContents.isLoading()) {
+        mainWindow.webContents.send('get-launch-file-path', filePath);
+    }
+}
+
+// The 'get-launch-file-path' message is sent on did-finish-load (see createWindow), i.e. after all the renderer's
+// scripts have run, which is too late for the renderer to know at startup that it should not also load the last-used
 // archive (this caused the archive to be loaded, and verified, twice: see kiwix-js-pwa #915). We therefore
 // also expose the path synchronously, for the preload script to read before any page script runs. This is
 // registered at module level so that it is always in place by the time a preload can ask for it
 ipcMain.on('get-launch-file-path-sync', function (event) {
-    event.returnValue = processLaunchFilePath(process.argv);
+    event.returnValue = launchFilePath;
 });
 
 // Prevent launching multiple instances for now (they are not isolated)
@@ -309,14 +346,17 @@ if (!gotSingleInstanceLock) {
         // User requested a second instance of the app.
         // argv has the process.argv arguments of the second instance.
         if (app.hasSingleInstanceLock()) {
-            if (mainWindow) {
-                if (mainWindow.isMinimized()) {
-                    mainWindow.restore();
-                }
-                mainWindow.focus();
-                const launchFilePath = processLaunchFilePath(argv);
-                mainWindow.webContents.send('get-launch-file-path', launchFilePath);
-            }
+            openLaunchFile(processLaunchFilePath(argv));
+        }
+    });
+    // On macOS, opening a ZIM from Finder does not put its path in argv: Launch Services sends it through this event
+    // instead, both when the app is already running and on a cold launch. In the latter case it can fire before the
+    // app is ready, which is why it is registered here rather than in whenReady [kiwix-js-pwa #917]
+    app.on('open-file', (event, filePath) => {
+        event.preventDefault();
+        console.log('Received request to open file: ' + filePath);
+        if (regexpZimFile.test(filePath)) {
+            openLaunchFile(filePath);
         }
     });
 }
@@ -328,6 +368,10 @@ if (!gotSingleInstanceLock) {
 // };
 
 app.whenReady().then(() => {
+    // app.quit() above is asynchronous, so a second instance still gets here before it exits. It must not start a
+    // server: finding the port taken by the first instance, it would store the next one, moving the app (and all its
+    // origin-scoped storage) to a different port on next launch every time a ZIM was opened while the app was running
+    if (!gotSingleInstanceLock) return;
     server = express();
 
     // Add security headers
@@ -385,10 +429,6 @@ app.whenReady().then(() => {
             if (!mainWindow) {
                 createWindow();
                 registerListeners();
-                mainWindow.webContents.on('did-finish-load', () => {
-                    const launchFilePath = processLaunchFilePath(process.argv);
-                    mainWindow.webContents.send('get-launch-file-path', launchFilePath);
-                });
             }
             // Call the callback if provided (used by restartServer)
             if (callback) callback();
