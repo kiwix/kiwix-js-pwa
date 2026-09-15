@@ -2,6 +2,8 @@
 
 ## Interim release 3.8.93
 
+* FIX: Clicking the fullscreen icon to exit fullscreen now works again, after it stopped responding to clicks following the Bootstrap 3 to FontAwesome icon migration
+* FIX: The spinning progress icon is now shown again during OPFS imports and in-app downloads, and the fullscreen prompt icon is no longer missing, after residual Bootstrap 3 glyphicon references stopped rendering with the FontAwesome migration
 * FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
 * FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
