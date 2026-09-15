@@ -295,6 +295,13 @@ self.addEventListener('install', function (event) {
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
     // Check all the cache keys, and delete any old caches
+    // DEV: This deliberately deletes ASSETS_CACHE too, unlike upstream (which keeps it), and every other cache on the
+    // origin, without a name filter, which could miss names changed in a later version [kiwix-js #1413]. We accept the
+    // cost: the assets cache holds only CSS and JS (see regexpCachedContentTypes), so clearing it means those are read
+    // from the ZIM once more after an update. That cost is highest on Android with a picked file on slow storage, but
+    // there the update reload loses the file anyway (the File System Access API reaches only the OPFS on Android, so
+    // no file handle survives). Against that, the cache holds Zimit assets already rewritten by the ReplayWorker, which
+    // an update could otherwise not correct, and clearing on update is its only eviction besides a manual reset
     event.waitUntil(
         Promise.all([
             // Clear old caches
@@ -352,6 +359,23 @@ if (isReplayWorkerAvailable) {
             console.debug('[SW] No ReplayWorker collections to reload');
         }
     });
+    // The ReplayWorker holds its connection to collDB open for the life of the Service Worker, and does not listen for
+    // versionchange, so a request to delete the database from the app (on reset) or from DevTools is blocked for as long
+    // as the Service Worker runs, which a page reload does not end. We therefore release the connection when asked. NB
+    // the collections list is unusable in this Service Worker from then on, but the reset unregisters it anyway, and a
+    // new one reopens (and if necessary recreates) the database on startup [kiwix-js-pwa #957]
+    if (self.sw.collections._init_db) {
+        self.sw.collections._init_db.then(function () {
+            var colldb = self.sw.collections.colldb;
+            if (!colldb) return;
+            colldb.addEventListener('versionchange', function () {
+                console.debug('[SW] Closing the ReplayWorker connection to collDB, so that it can be deleted or upgraded');
+                colldb.close();
+            });
+        }).catch(function (err) {
+            console.warn('[SW] Unable to listen for deletion of collDB', err);
+        });
+    }
 }
 
 // For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled

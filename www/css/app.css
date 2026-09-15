@@ -505,12 +505,6 @@ div:not(.card.border-success .card-body):not(.alert-message) {
     height: 50px;
 }
 
-.fa.spinning {
-    color: white;
-    -webkit-animation: spin 1s linear infinite;
-    animation: spin 1s linear infinite;
-}
-
 .range {
     width: 300px;
 }
