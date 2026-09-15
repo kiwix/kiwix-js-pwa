@@ -2270,7 +2270,8 @@ document.getElementById('useLibzimReaderCheck').addEventListener('change', funct
     refreshAPIStatus();
 });
 document.getElementById('useLegacyZimitSupportCheck').addEventListener('change', function (e) {
-    if (e.target.checked && params.useLibzim) {
+    // A libzim reader the app has turned off for the current archive is still the user's saved choice
+    if (e.target.checked && (params.useLibzim || appstate.libzimSuspended)) {
         e.target.checked = false;
         return uiUtil.systemAlert('You cannot use legacy Zimit support together with the experimental libzim reader. Please turn off the libzim reader first.');
     }
@@ -4908,6 +4909,13 @@ function archiveReadyCallback (archive) {
     // When a new ZIM is loaded, we turn this flag to null, so that we don't get false positive attempts to use the Worker
     // It will be defined as false or true when the first article is loaded
     appstate.isReplayWorkerAvailable = null;
+    // Restore the libzim reader if the app turned it off for the previous archive (see handleUnsupportedReplayWorker).
+    // DEV: This must not happen before the new archive is ready, because params.useLibzim routes the requests of whichever
+    // archive is selected, and the previous one remains selected while this one is loading, or if it fails to load
+    if (appstate.libzimSuspended) {
+        params.useLibzim = true;
+        appstate.libzimSuspended = false;
+    }
     // Restore the user's own content injection mode when opening a new archive, in case the app switched to
     // Restricted mode for the previous one (it does that for a historical ZIM, and when the user declines the
     // trust prompt, in both cases by changing params only, so the Store still holds their real choice).

@@ -74,12 +74,11 @@ var LZ;
 function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
     that.file = null;
-    // Restore the libzim reader if the app turned it off for the previous archive (see handleUnsupportedReplayWorker in app.js).
-    // DEV: This must happen here rather than in archiveReadyCallback, because params.useLibzim decides below how the archive is loaded
-    if (appstate.libzimSuspended) {
-        params.useLibzim = true;
-        appstate.libzimSuspended = false;
-    }
+    // Whether this archive is to be read with libzim. We read the user's choice here, including a choice the app has turned off
+    // temporarily for the previous archive (see handleUnsupportedReplayWorker in app.js), without changing params.useLibzim:
+    // that still routes requests for the previous archive until archiveReadyCallback restores it, so it must not be switched
+    // back on before this archive has loaded. Reading it once also keeps the two whenZimReady calls below consistent.
+    var useLibzim = params.useLibzim || appstate.libzimSuspended;
     var whenZimReady = function () {
         // Add time-critical metadata from the M/ namespace that you need early access to here
         // Note that adding metadata here delays the reporting of the ZIM archive as ready
@@ -152,19 +151,19 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                 var isSplitZim = /\.zima.$/i.test(that.file._files[0].name);
                 var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
-                if ((that.file.fullTextIndex || params.useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
+                if ((that.file.fullTextIndex || useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
                 // Note that NWJS currently throws due to problems with Web Worker context
                 !(window.nw && that.file._files[0].readMode === 'electron'))) {
                     that.libzimReady = 'loading';
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
-                    if (params.useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
+                    if (useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that.file._files }).then(function () {
                         that.libzimReady = 'ready';
                         // If user is using libzim for reading the file, we have delayed the callback till now
-                        if (params.useLibzim) whenZimReady();
+                        if (useLibzim) whenZimReady();
                         params.searchProvider = 'fulltext: ' + libzimReaderType;
                         // Update the API panel
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
@@ -194,7 +193,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 return that.addMetadataToZIMFile('Scraper').then(function () {
                     params.zimType = that.setZimType();
                     // If user is not using libzim for reading the file, we can call the ready callback now
-                    if (!params.useLibzim) whenZimReady();
+                    if (!useLibzim) whenZimReady();
                 });
             }).catch(function (err) {
                 console.warn('Error setting archive listings: ', err);
