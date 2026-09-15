@@ -153,7 +153,8 @@ function getIndexedDBNames () {
 
 // Deletes a single IndexedDB database, returning a Promise that always resolves, so that one failure cannot hold up the
 // reset. NB if another connection to the database is still open, the deletion is blocked, but it stays queued and
-// completes as soon as that connection closes, at the latest when the app reloads at the end of a full reset
+// completes as soon as that connection closes. A page reload closes the page's own connections, but not one held by the
+// Service Worker, which is why the Service Worker closes its connection to collDB on versionchange [kiwix-js-pwa #957]
 function deleteIndexedDB (dbName) {
     return new Promise(function (resolve) {
         console.debug('Deleting IndexedDB database ' + dbName + '...');

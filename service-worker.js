@@ -352,6 +352,23 @@ if (isReplayWorkerAvailable) {
             console.debug('[SW] No ReplayWorker collections to reload');
         }
     });
+    // The ReplayWorker holds its connection to collDB open for the life of the Service Worker, and does not listen for
+    // versionchange, so a request to delete the database from the app (on reset) or from DevTools is blocked for as long
+    // as the Service Worker runs, which a page reload does not end. We therefore release the connection when asked. NB
+    // the collections list is unusable in this Service Worker from then on, but the reset unregisters it anyway, and a
+    // new one reopens (and if necessary recreates) the database on startup [kiwix-js-pwa #957]
+    if (self.sw.collections._init_db) {
+        self.sw.collections._init_db.then(function () {
+            var colldb = self.sw.collections.colldb;
+            if (!colldb) return;
+            colldb.addEventListener('versionchange', function () {
+                console.debug('[SW] Closing the ReplayWorker connection to collDB, so that it can be deleted or upgraded');
+                colldb.close();
+            });
+        }).catch(function (err) {
+            console.warn('[SW] Unable to listen for deletion of collDB', err);
+        });
+    }
 }
 
 // For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled
