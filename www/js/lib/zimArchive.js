@@ -74,6 +74,12 @@ var LZ;
 function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
     that.file = null;
+    // Restore the libzim reader if the app turned it off for the previous archive (see handleUnsupportedReplayWorker in app.js).
+    // DEV: This must happen here rather than in archiveReadyCallback, because params.useLibzim decides below how the archive is loaded
+    if (appstate.libzimSuspended) {
+        params.useLibzim = true;
+        appstate.libzimSuspended = false;
+    }
     var whenZimReady = function () {
         // Add time-critical metadata from the M/ namespace that you need early access to here
         // Note that adding metadata here delays the reporting of the ZIM archive as ready

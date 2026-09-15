@@ -2256,13 +2256,24 @@ document.getElementById('useLibzimReaderCheck').addEventListener('change', funct
         uiUtil.systemAlert('You cannot use the libzim reader if you have disabled it in the dropdown above!');
         this.checked = false;
         params.useLibzim = false;
+    } else if (this.checked && params.useLegacyZimitSupport) {
+        // The libzim reader serves Zimit content untransformed, so legacy Zimit pages navigate the app in a loop
+        uiUtil.systemAlert('You cannot use the libzim reader together with legacy Zimit support. Please turn off legacy Zimit support first.');
+        this.checked = false;
+        params.useLibzim = false;
     } else {
         params.useLibzim = e.target.checked;
     }
+    // The user has now made an explicit choice, so it overrides any temporary switch made in handleUnsupportedReplayWorker
+    appstate.libzimSuspended = false;
     settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
     refreshAPIStatus();
 });
 document.getElementById('useLegacyZimitSupportCheck').addEventListener('change', function (e) {
+    if (e.target.checked && params.useLibzim) {
+        e.target.checked = false;
+        return uiUtil.systemAlert('You cannot use legacy Zimit support together with the experimental libzim reader. Please turn off the libzim reader first.');
+    }
     if (navigator.serviceWorker.controller) {
         params.useLegacyZimitSupport = e.target.checked;
         refreshAPIStatus();
@@ -6675,14 +6686,24 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     appstate.isReplayWorkerAvailable = false;
     // params.originalContentInjectionMode = params.contentInjectionMode;
     // params.contentInjectionMode = 'jquery';
+    // The libzim reader serves content untransformed, bypassing the legacy Zimit transformations, so the pages navigate the
+    // app in an endless loop that can lock the UI. We turn it off for this archive by changing params only, so the Settings
+    // Store keeps the user's choice, and the ZIMArchive constructor restores it when the next archive is opened
+    var libzimSuspended = params.useLibzim;
+    if (libzimSuspended) {
+        params.useLibzim = false;
+        appstate.libzimSuspended = true;
+    }
     readArticle(unhandledDirEntry);
-    if (!params.hideActiveContentWarning) {
+    if (!params.hideActiveContentWarning || libzimSuspended) {
         // We only get here for a classic Zimit archive that has to fall back to the legacy reader, so name the type:
         // called with no argument, the warning silently matched none of its branches and nothing was shown [kiwix-js-pwa #928]
-        uiUtil.displayActiveContentWarning('zimit');
+        if (!params.hideActiveContentWarning) uiUtil.displayActiveContentWarning('zimit');
         return uiUtil.systemAlert('<p>You are attempting to open a Zimit (classic) archive, ' +
             'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
-            'fallback method to read this archive, but some highly dynamic content may not work.</p>',
+            'fallback method to read this archive, but some highly dynamic content may not work.</p>' +
+            (libzimSuspended ? '<p>The experimental libzim reader cannot read archives with this method, so it has been turned ' +
+            'off for this archive.</p>' : ''),
             'Legacy support for Zimit archives'
         );
     }
