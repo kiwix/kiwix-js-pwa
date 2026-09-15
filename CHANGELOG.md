@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.93
 
+* FIX: Classic Zimit archives read with the legacy method no longer loop endlessly (sometimes locking the app) when the experimental libzim reader is turned on, and the two settings can no longer be turned on together
 * FIX: Reset app now deletes all IndexedDB databases, including the assets cache and Zimit collections, which an incorrect database name had caused it to skip
 * FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page (port of kiwix-js #1413)
 * FIX: Clicking the fullscreen icon to exit fullscreen now works again, after it stopped responding to clicks following the Bootstrap 3 to FontAwesome icon migration
