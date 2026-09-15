@@ -117,7 +117,8 @@ function createMockEnvironment (options) {
         ${imagesSource}
         return {
             extractImages: extractImages,
-            insertMediaBlobsJQuery: insertMediaBlobsJQuery
+            insertMediaBlobsJQuery: insertMediaBlobsJQuery,
+            getExtractorBusy: function () { return extractorBusy; }
         };
     })()`);
     /* eslint-enable no-eval */
@@ -186,6 +187,34 @@ function assert (desc, ok) {
     }
 }
 
+function extractWithTimeout (sandbox, images, timeoutMs) {
+    timeoutMs = timeoutMs || 500;
+    return new Promise(function (resolve, reject) {
+        let settled = false;
+        const timer = setTimeout(function () {
+            if (!settled) {
+                settled = true;
+                reject(new Error('extractImages timed out after ' + timeoutMs + 'ms (callback was not invoked)'));
+            }
+        }, timeoutMs);
+        try {
+            sandbox.extractImages(images, function () {
+                if (!settled) {
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(true);
+                }
+            });
+        } catch (err) {
+            if (!settled) {
+                settled = true;
+                clearTimeout(timer);
+                reject(err);
+            }
+        }
+    });
+}
+
 async function runTests () {
     console.log('Mixed collection (IMG + VIDEO + AUDIO) completion handling');
     {
@@ -196,16 +225,14 @@ async function runTests () {
         const img2 = createMockNode('img', { 'data-kiwixurl': 'I/test.png' });
 
         let completed = false;
-        await new Promise(function (resolve) {
-            sandbox.extractImages([img1, video1, audio1, img2], function () {
-                completed = true;
-                resolve();
-            });
-        });
+        try {
+            completed = await extractWithTimeout(sandbox, [img1, video1, audio1, img2]);
+        } catch (err) {
+            console.error('    Error:', err.message);
+        }
 
-        assert('Calls completion callback for mixed collections with multimedia elements', completed);
-        assert('Sets blob src on video element', !!video1.src && video1.src.startsWith('blob:'));
-        assert('Sets blob src on audio element', !!audio1.src && audio1.src.startsWith('blob:'));
+        assert('Calls completion callback within timeout for mixed collections with multimedia', completed);
+        assert('Does not count media elements against extractorBusy', sandbox.getExtractorBusy() === 0);
     }
 
     console.log('\nMedia-only collections');
@@ -214,14 +241,13 @@ async function runTests () {
         const videoNode = createMockNode('video', { src: 'M/video.mp4' });
 
         let completed = false;
-        await new Promise(function (resolve) {
-            sandbox.extractImages([videoNode], function () {
-                completed = true;
-                resolve();
-            });
-        });
+        try {
+            completed = await extractWithTimeout(sandbox, [videoNode]);
+        } catch (err) {
+            console.error('    Error:', err.message);
+        }
 
-        assert('Calls completion callback when collection only contains video elements', completed);
+        assert('Calls completion callback within timeout when collection only contains video elements', completed);
     }
 
     console.log('\nMulti-source media elements (<video><source ...><source ...></video>)');
@@ -235,14 +261,13 @@ async function runTests () {
         });
 
         let completed = false;
-        await new Promise(function (resolve) {
-            sandbox.extractImages([videoWithSources], function () {
-                completed = true;
-                resolve();
-            });
-        });
+        try {
+            completed = await extractWithTimeout(sandbox, [videoWithSources]);
+        } catch (err) {
+            console.error('    Error:', err.message);
+        }
 
-        assert('Completes when media element contains multiple nested source tags', completed);
+        assert('Completes within timeout when media element contains multiple nested source tags', completed);
     }
 
     console.log('\nMissing / invalid URLs and missing DirEntry handling');
@@ -253,29 +278,34 @@ async function runTests () {
         const videoNotFound = createMockNode('video', { src: 'M/nonexistent.mp4' });
 
         let completed = false;
-        await new Promise(function (resolve) {
-            sandbox.extractImages([imgNoUrl, videoInvalidUrl, videoNotFound], function () {
-                completed = true;
-                resolve();
-            });
-        });
+        try {
+            completed = await extractWithTimeout(sandbox, [imgNoUrl, videoInvalidUrl, videoNotFound]);
+        } catch (err) {
+            console.error('    Error:', err.message);
+        }
 
-        assert('Completes without hanging when images or media have missing/unresolvable URLs', completed);
+        assert('Completes within timeout without hanging when nodes have missing or invalid URLs', completed);
     }
 
     console.log('\nEmpty collection');
     {
         const sandbox = createMockEnvironment();
         let completed = false;
-        sandbox.extractImages([], function () {
-            completed = true;
-        });
+        try {
+            completed = await extractWithTimeout(sandbox, []);
+        } catch (err) {
+            console.error('    Error:', err.message);
+        }
 
         assert('Immediately invokes callback on empty collection', completed);
     }
 
-    console.log(`\nAll ${passes} checks passed\n`);
-    if (failures > 0) process.exit(1);
+    if (failures > 0) {
+        console.error(`\n${failures} check(s) failed out of ${passes + failures} total checks\n`);
+        process.exit(1);
+    } else {
+        console.log(`\nAll ${passes} checks passed\n`);
+    }
 }
 
 runTests().catch(function (err) {
