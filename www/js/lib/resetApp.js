@@ -57,40 +57,40 @@ function reset (object) {
             }));
         }
 
-        // 3. Clear IndexedDB
+        // 3. Clear all IndexedDB databases on the origin
+        // DEV: This deliberately deletes every database, not only those with a kiwix prefix, because a prefix filter
+        // would silently miss any database renamed in a future version [kiwix-js #1413]. The old code here deleted
+        // params.indexedDB, which is never set, so kiwix-assetsCache and the ReplayWorker's databases survived a reset
         if (!object || object === 'indexedDB') {
             if (/indexedDB/.test(assetsCache.capability)) {
-                promises.push(new Promise(resolve => {
-                    window.indexedDB.deleteDatabase(params.indexedDB);
-                    console.debug('All IndexedDB entries were deleted...');
-                    resolve();
+                promises.push(getIndexedDBNames().then(function (dbNames) {
+                    return Promise.all(dbNames.map(deleteIndexedDB));
+                }).then(function () {
+                    console.debug('All IndexedDB databases were deleted...');
+                }).catch(function (err) {
+                    console.error('Error deleting IndexedDB databases:', err);
                 }));
             }
         }
 
-        // 4. Clear Cache API caches
+        // 4. Clear all Cache API caches on the origin (no filter, for the same reason as above)
+        // DEV: We read the names directly rather than asking the Service Worker, which only reports the current app and
+        // assets caches, and cannot report anything at all when no Service Worker is controlling the page
         if (!object || object === 'cacheAPI') {
-            promises.push(new Promise((resolve) => {
-                getCacheNames(function (cacheNames) {
-                    if (cacheNames && !cacheNames.error) {
-                        Promise.all(
-                            Object.values(cacheNames).map(cacheName =>
-                                caches.delete(cacheName)
-                                    .catch(err => console.error(`Failed to delete cache ${cacheName}:`, err))
-                            )
-                        ).then(function () {
-                            console.debug('All Cache API caches were deleted...');
-                            resolve();
-                        }).catch(function (err) {
-                            console.error('Error clearing caches:', err);
-                            resolve();
-                        });
-                    } else {
-                        console.debug('No Cache API caches were in use.');
-                        resolve();
-                    }
-                });
-            }));
+            if ('caches' in window) {
+                promises.push(caches.keys().then(function (cacheNames) {
+                    return Promise.all(cacheNames.map(function (cacheName) {
+                        console.debug('Deleting cache ' + cacheName + '...');
+                        return caches.delete(cacheName);
+                    }));
+                }).then(function () {
+                    console.debug('All Cache API caches were deleted...');
+                }).catch(function (err) {
+                    console.error('Error deleting Cache API caches:', err);
+                }));
+            } else {
+                console.debug('Cache API is not available.');
+            }
         }
 
         // 5. Clear any Origin Private File System Archives
@@ -139,6 +139,40 @@ function reset (object) {
     }
 }
 
+// Gets the names of all IndexedDB databases on the origin. indexedDB.databases() is not available in older browsers
+// (e.g. Firefox before 126), so there we fall back to the names we know about: our own assets cache, and the database in
+// which the ReplayWorker keeps its list of Zimit collections (each collection's own database will be missed)
+function getIndexedDBNames () {
+    if (window.indexedDB.databases) {
+        return window.indexedDB.databases().then(function (dbs) {
+            return dbs.map(function (db) { return db.name; }).filter(Boolean);
+        });
+    }
+    return Promise.resolve([params.cacheIDB, 'collDB']);
+}
+
+// Deletes a single IndexedDB database, returning a Promise that always resolves, so that one failure cannot hold up the
+// reset. NB if another connection to the database is still open, the deletion is blocked, but it stays queued and
+// completes as soon as that connection closes. A page reload closes the page's own connections, but not one held by the
+// Service Worker, which is why the Service Worker closes its connection to collDB on versionchange [kiwix-js-pwa #957]
+function deleteIndexedDB (dbName) {
+    return new Promise(function (resolve) {
+        console.debug('Deleting IndexedDB database ' + dbName + '...');
+        var request = window.indexedDB.deleteDatabase(dbName);
+        request.onsuccess = function () {
+            resolve();
+        };
+        request.onerror = function (err) {
+            console.error('Error deleting IndexedDB database ' + dbName + ':', err);
+            resolve();
+        };
+        request.onblocked = function () {
+            console.warn('Deletion of IndexedDB database ' + dbName + ' is blocked by an open connection, and will complete on reload');
+            resolve();
+        };
+    });
+}
+
 // Gets cache names from Service Worker, as we cannot rely on having them in params.cacheNames
 function getCacheNames (callback) {
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
@@ -171,7 +205,6 @@ function reloadApp () {
         // Restricted mode, and the registrations were in any case just unregistered above. Without this test the
         // throw was caught below, which called reboot() a second time, throwing again uncaught and leaving the app
         // sitting there unreset. Nothing is waiting to skip in that state anyway, so go straight to the reload.
-        // NB getCacheNames() above already guards the same call this way
         if (navigator.serviceWorker && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
         }
