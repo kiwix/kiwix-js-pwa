@@ -239,7 +239,7 @@
     "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
     "electron": "^43.2.0",
-    "electron-builder": "^26.15.7",
+    "electron-builder": "^26.16.1",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
