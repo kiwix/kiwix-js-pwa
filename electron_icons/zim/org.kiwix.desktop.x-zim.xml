@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The shared-mime-info definition for ZIM archives, installed by the deb and rpm packages.
+
+  This is shipped rather than left to the one electron-builder generates from
+  build.linux.fileAssociations, which cannot express any of the following:
+
+  * <icon>, which electron-builder hardcodes to "x-office-document", so ZIM files could never
+    show an icon of their own;
+  * both globs under a single type: it writes "*.${ext}" per association, which would emit the
+    type twice and list it twice on the desktop entry's MimeType line;
+  * weight, which is what lets this claim on *.zim outrank the weight-50 glob that an installed
+    Kiwix JS PWA writes into the user's own MIME database, mapping *.zim to
+    application/octet-stream (see kiwix-js-pwa #964);
+  * <magic>, so that a ZIM is recognized by content even when it has been renamed.
+
+  The type, the icon name and the magic number match kiwix-desktop's own definition, so that
+  both apps are offered for the same type rather than competing over two names for one format.
+-->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/org.kiwix.desktop.x-zim">
+    <comment>ZIM archive</comment>
+    <magic priority="50">
+      <match type="little32" value="72173914" offset="0"/>
+    </magic>
+    <glob pattern="*.zim" weight="60"/>
+    <glob pattern="*.zimaa" weight="60"/>
+    <icon name="org.kiwix.desktop.x-zim"/>
+  </mime-type>
+</mime-info>

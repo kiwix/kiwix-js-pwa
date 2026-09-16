@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.93
 
+* FEATURE: ZIM archives now show a ZIM icon in the file manager on Windows, macOS and Linux, matching the icon kiwix-desktop uses
 * FEATURE: ZIM archives can now be opened from the file manager in the Electron app on macOS and in the Linux deb and rpm packages (the AppImage has to be integrated with the desktop, for example with AppImageLauncher, before the OS can offer it)
 * FIX: Opening a ZIM from the OS while the Electron app is already running no longer moves the app to a different port, and hence loses its settings and caches, on next launch
 * DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image (it passed the certificate password where the keychain password was required)
