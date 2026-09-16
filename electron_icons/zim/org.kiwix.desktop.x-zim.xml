@@ -19,7 +19,13 @@
   to the name derived from the type itself, "application-org.kiwix.desktop.x-zim", which is what
   our packages install: our icon is used when this app is the only one installed, and
   kiwix-desktop's declaration wins outright wherever both are, rather than by order of
-  installation. See build.linux.fpm in package.json for where the icons are installed.
+  installation. See build.deb.fpm and build.rpm.fpm in package.json for where the icons are installed.
+
+  The <generic-icon> names that same icon, rather than leaving the default, "application-x-generic".
+  GTK looks icon names up theme by theme, trying every name in the current theme before falling
+  back to the next, and our icon is only in hicolor, the last theme of all. Ubuntu's Yaru has its
+  own application-x-generic, so with the default generic icon Yaru's blank page won before hicolor
+  was ever reached. Naming our own icon as the generic one leaves nothing for Yaru to match.
 
   The type and the magic number match kiwix-desktop's own definition, so that both apps are
   offered for the same type rather than competing over two names for one format.
@@ -27,6 +33,7 @@
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
   <mime-type type="application/org.kiwix.desktop.x-zim">
     <comment>ZIM archive</comment>
+    <generic-icon name="application-org.kiwix.desktop.x-zim"/>
     <magic priority="50">
       <match type="little32" value="72173914" offset="0"/>
     </magic>

@@ -13,7 +13,10 @@ unplated source, and scaling 256 down beats scaling 48 up.
 `org.kiwix.desktop.x-zim.xml` is the shared-mime-info definition installed by the deb and rpm.
 It deliberately declares no `<icon>`, so these PNGs are installed under the name derived from the
 MIME type, `application-org.kiwix.desktop.x-zim`, which kiwix-desktop's own `<icon>` declaration
-takes precedence over wherever both apps are installed. See `build.linux.fpm` in `package.json`.
+takes precedence over wherever both apps are installed. It names that same icon as its
+`<generic-icon>`, because otherwise the default `application-x-generic` in the desktop's own theme
+(Yaru on Ubuntu) is found before GTK ever reaches hicolor. See `build.deb.fpm` / `build.rpm.fpm`
+in `package.json`.
 
 `../zim.ico` and `../zim.icns` are generated from these PNGs with electron-builder's own icon
 converter, for the Windows and macOS associations, which look them up by the `icon` field of each
