@@ -22,6 +22,8 @@
 *.RTF	 diff=astextplain
 
 *.png	binary
+*.ico	binary
+*.icns	binary
 *.jpeg	binary
 *.jpg	binary
 *.gif	binary

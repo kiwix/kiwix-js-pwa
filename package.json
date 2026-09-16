@@ -30,12 +30,14 @@
         {
           "ext": "zim",
           "name": "ZIM Archive",
-          "description": "Compressed ZIM file archive"
+          "description": "Compressed ZIM file archive",
+          "icon": "zim"
         },
         {
           "ext": "zimaa",
           "name": "Split ZIM Archive",
-          "description": "First part of a split ZIM file archive"
+          "description": "First part of a split ZIM file archive",
+          "icon": "zim"
         }
       ],
       "publish": [
@@ -89,7 +91,23 @@
           ]
         }
       ],
-      "category": "public.app-category.education"
+      "category": "public.app-category.education",
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive",
+          "description": "Compressed ZIM file archive",
+          "role": "Viewer",
+          "icon": "zim"
+        },
+        {
+          "ext": "zimaa",
+          "name": "Split ZIM Archive",
+          "description": "First part of a split ZIM file archive",
+          "role": "Viewer",
+          "icon": "zim"
+        }
+      ]
     },
     "linux": {
       "executableName": "kiwix-js-electron",
@@ -122,7 +140,30 @@
           ]
         }
       ],
-      "category": "Education"
+      "category": "Education",
+      "mimeTypes": [
+        "application/org.kiwix.desktop.x-zim"
+      ]
+    },
+    "deb": {
+      "fpm": [
+        "electron_icons/zim/org.kiwix.desktop.x-zim.xml=/usr/share/mime/packages/kiwix-js-electron.xml",
+        "electron_icons/zim/16x16.png=/usr/share/icons/hicolor/16x16/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/24x24.png=/usr/share/icons/hicolor/24x24/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/32x32.png=/usr/share/icons/hicolor/32x32/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/48x48.png=/usr/share/icons/hicolor/48x48/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/256x256.png=/usr/share/icons/hicolor/256x256/mimetypes/application-org.kiwix.desktop.x-zim.png"
+      ]
+    },
+    "rpm": {
+      "fpm": [
+        "electron_icons/zim/org.kiwix.desktop.x-zim.xml=/usr/share/mime/packages/kiwix-js-electron.xml",
+        "electron_icons/zim/16x16.png=/usr/share/icons/hicolor/16x16/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/24x24.png=/usr/share/icons/hicolor/24x24/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/32x32.png=/usr/share/icons/hicolor/32x32/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/48x48.png=/usr/share/icons/hicolor/48x48/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/256x256.png=/usr/share/icons/hicolor/256x256/mimetypes/application-org.kiwix.desktop.x-zim.png"
+      ]
     },
     "nsis": {
       "oneClick": "false",
@@ -211,7 +252,7 @@
     "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
     "electron": "^43.2.0",
-    "electron-builder": "^26.15.7",
+    "electron-builder": "^26.16.1",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
