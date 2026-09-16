@@ -22,9 +22,18 @@ in `package.json`.
 converter, for the Windows and macOS associations, which look them up by the `icon` field of each
 entry in `build.win.fileAssociations` / `build.mac.fileAssociations`. To regenerate them, delete
 both files first — the converter treats an existing one as an already-converted source and
-returns it untouched:
+returns it untouched. Then run this with Node from the repository root. It converts to each format
+in turn, and copies the `icon.ico` or `icon.icns` the converter writes into its output directory
+back here as `zim.ico` or `zim.icns`:
 
 ```js
 const { convertIcon } = require('app-builder-lib/out/util/iconConverter.js');
-await convertIcon({ sources: ['electron_icons/zim'], fallbackSources: [], roots: [process.cwd()], format: 'ico', outDir: 'some/temp/dir' });
+const fs = require('fs');
+(async () => {
+    for (const format of ['ico', 'icns']) {
+        const outDir = fs.mkdtempSync(require('os').tmpdir() + '/zim-');
+        const { icons } = await convertIcon({ sources: ['electron_icons/zim'], fallbackSources: [], roots: [process.cwd()], format, outDir });
+        fs.copyFileSync(icons[0].file, 'electron_icons/zim.' + format);
+    }
+})();
 ```
