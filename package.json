@@ -146,12 +146,11 @@
       ],
       "fpm": [
         "electron_icons/zim/org.kiwix.desktop.x-zim.xml=/usr/share/mime/packages/kiwix-js-electron.xml",
-        "electron_icons/zim/24x24.png=/usr/share/icons/hicolor/24x24/mimetypes/org.kiwix.desktop.x-zim.png",
-        "electron_icons/zim/32x32.png=/usr/share/icons/hicolor/32x32/mimetypes/org.kiwix.desktop.x-zim.png",
-        "electron_icons/zim/48x48.png=/usr/share/icons/hicolor/48x48/mimetypes/org.kiwix.desktop.x-zim.png",
-        "electron_icons/zim/128x128.png=/usr/share/icons/hicolor/128x128/mimetypes/org.kiwix.desktop.x-zim.png",
-        "electron_icons/zim/256x256.png=/usr/share/icons/hicolor/256x256/mimetypes/org.kiwix.desktop.x-zim.png",
-        "electron_icons/zim/512x512.png=/usr/share/icons/hicolor/512x512/mimetypes/org.kiwix.desktop.x-zim.png"
+        "electron_icons/zim/16x16.png=/usr/share/icons/hicolor/16x16/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/24x24.png=/usr/share/icons/hicolor/24x24/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/32x32.png=/usr/share/icons/hicolor/32x32/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/48x48.png=/usr/share/icons/hicolor/48x48/mimetypes/application-org.kiwix.desktop.x-zim.png",
+        "electron_icons/zim/256x256.png=/usr/share/icons/hicolor/256x256/mimetypes/application-org.kiwix.desktop.x-zim.png"
       ]
     },
     "nsis": {

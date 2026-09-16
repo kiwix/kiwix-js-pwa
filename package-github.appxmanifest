@@ -40,7 +40,7 @@
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="zimarchive" DesiredView="default">
             <uap:DisplayName>ZIM Archive</uap:DisplayName>
-            <uap:Logo>images\Kiwix_midnightblue_icon_transparent_530.png</uap:Logo>
+            <uap:Logo>images\Square44x44Logo.png</uap:Logo>
             <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
             <uap:SupportedFileTypes>
               <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
