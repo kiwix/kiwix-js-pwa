@@ -7,6 +7,7 @@ const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
 const fs = require('fs');
 const os = require('os');
+const { fileURLToPath } = require('url');
 // In-app BitTorrent downloader (lazily imports WebTorrent on first use)
 const torrentDownloader = require('./torrentDownloader.cjs');
 // const https = require('https');
@@ -283,6 +284,19 @@ function registerListeners () {
 // Matches ZIM archives, including the first part of a split archive (.zimaa)
 const regexpZimFile = /\.zim(?:\w\w)?$/i;
 
+// Linux file managers hand the app a file:// URI, because the .desktop entry electron-builder generates launches
+// it with %U, and a percent-encoded URI is not a path any of our filesystem code can open. Anything else, including
+// the plain paths Windows and macOS supply, is returned untouched [kiwix-js-pwa #917]
+function pathFromFileUri (arg) {
+    if (!/^file:\/\//i.test(arg)) return arg;
+    try {
+        return fileURLToPath(arg);
+    } catch (err) {
+        console.error('Could not convert ' + arg + ' to a file path', err);
+        return arg;
+    }
+}
+
 // Get the launch file path
 function processLaunchFilePath (arg) {
     console.log('Scanning for launch file path...');
@@ -291,7 +305,7 @@ function processLaunchFilePath (arg) {
         for (var i = 0; i < arg.length; i++) {
             console.log('Arg ' + i + ': ' + arg[i]);
             if (regexpZimFile.test(arg[i])) {
-                openFilePath = arg[i];
+                openFilePath = pathFromFileUri(arg[i]);
                 break;
             }
         }
