@@ -199,7 +199,7 @@
     ]
   },
   "scripts": {
-    "test": "node test/overrideParams.test.cjs && node test/updater.test.cjs && node test/extractImagesMedia.test.cjs",
+    "test": "node test/overrideParams.test.cjs && node test/updater.test.cjs && node test/extractImagesMedia.test.cjs && node test/zimDirEntry.test.cjs",
     "serve": "vite",
     "preview": "del-cli dist && npm run build-src && vite preview",
     "prebuild": "del-cli dist",

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * zimDirEntry.js: Container to hold data of a ZIM directory entry.
  *
  * Copyright 2015 Mossroy and contributors
@@ -36,6 +36,15 @@ function DirEntry (zimfile, dirEntryData) {
     this.fromArticleList = dirEntryData.fromArticleList || false;
 }
 
+function safeDecode (str) {
+    if (!str) return '';
+    try {
+        return decodeURIComponent(str);
+    } catch (e) {
+        return str;
+    }
+}
+
 /**
  * Serialize some attributes of a DirEntry, to be able to store them in a HTML tag attribute,
  * and retrieve them later.
@@ -44,7 +53,8 @@ function DirEntry (zimfile, dirEntryData) {
  */
 DirEntry.prototype.toStringId = function () {
     return this.offset + '|' + this.mimetypeInteger + '|' + this.namespace + '|' + this.cluster + '|' +
-            this.blob + '|' + this.url + '|' + this.title + '|' + this.redirect + '|' + this.redirectTarget;
+            this.blob + '|' + encodeURIComponent(this.url || '') + '|' + encodeURIComponent(this.title || '') + '|' +
+            this.redirect + '|' + this.redirectTarget;
 };
 
 /**
@@ -77,10 +87,10 @@ DirEntry.fromStringId = function (zimfile, stringId) {
     data.namespace = idParts[2];
     data.cluster = parseInt(idParts[3], 10);
     data.blob = parseInt(idParts[4], 10);
-    data.url = idParts[5];
-    data.title = idParts[6];
+    data.url = safeDecode(idParts[5]);
+    data.title = safeDecode(idParts[6]);
     data.redirect = (idParts[7] === 'true');
-    data.redirectTarget = idParts[8];
+    data.redirectTarget = idParts[8] !== 'undefined' ? parseInt(idParts[8], 10) : undefined;
     data.fromArticleList = true;
     return new DirEntry(zimfile, data);
 };
