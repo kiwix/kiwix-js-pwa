@@ -2,7 +2,7 @@
 
 ## Interim release 3.8.93
 
-* FIX: On Linux, the installed PWA no longer becomes the default app for every unrecognized binary file, nor hides the Electron app from *Open With* for ZIM archives, because its file handler now declares the ZIM type that kiwix-desktop uses instead of `application/octet-stream`
+* FIX: Installed PWA no longer becomes the default app for every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
 * FEATURE: ZIM archives now show the Kiwix icon in the file manager on macOS and Linux, matching the icon Windows already shows, and the Store app now uses that same icon in place of an older blue one
 * FEATURE: ZIM archives can now be opened from the file manager in the Electron app on macOS and in the Linux deb and rpm packages (the AppImage has to be integrated with the desktop, for example with AppImageLauncher, before the OS can offer it)
 * FIX: Opening a ZIM from the OS while the Electron app is already running no longer moves the app to a different port, and hence loses its settings and caches, on next launch
