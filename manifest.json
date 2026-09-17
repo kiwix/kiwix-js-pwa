@@ -53,7 +53,7 @@
     {
       "action": "www/index.html",
       "accept": {
-        "application/octet-stream": [ ".zim" ]
+        "application/org.kiwix.desktop.x-zim": [ ".zim" ]
       },
       "icons": [
         {
