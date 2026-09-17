@@ -1,4 +1,4 @@
-/**
+﻿/**
  * uiUtil.js : Utility functions for the User Interface
  *
  * Copyright 2013-2024 Mossroy, Jaifroid and contributors
@@ -1862,7 +1862,6 @@ export default {
     checkServerIsAccessible: checkServerIsAccessible,
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
-    requestOrCancelFullScreen: requestOrCancelFullScreen,
     windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
     setThemeColorFromNavbar: setThemeColorFromNavbar,
     setTitleBarState: setTitleBarState,
