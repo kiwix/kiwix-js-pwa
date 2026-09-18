@@ -20,6 +20,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const assert = require('node:assert/strict');
+const { describe, it } = require('node:test');
 
 const INIT_JS = path.join(__dirname, '..', 'www', 'js', 'init.js');
 
@@ -79,141 +81,177 @@ const ELECTRON = { appType: 'Electron|PWA|Windows', hostname: 'localhost', proto
 const UWP = { appType: 'UWP|PWA|Windows', hostname: '', protocol: 'ms-appx-web:' };
 const NWJS = { appType: 'Electron|PWA|Windows', hostname: '', protocol: 'file:' };
 
-// ---------------------------------------------------------------------------------------------------
-// Checks
-// ---------------------------------------------------------------------------------------------------
-
-let failures = 0;
-let total = 0;
-
-function section (title) {
-    console.log('\n' + title);
-}
-
-function check (description, passed) {
-    total++;
-    if (passed) {
-        console.log('  ok    ' + description);
-    } else {
-        failures++;
-        console.log('  FAIL  ' + description);
-    }
-}
-
 // NB always test for own properties: 'toString' in {} is true through the prototype chain, which would
 // make several of the checks below pass without testing anything
 function stored (result, key) {
     return Object.prototype.hasOwnProperty.call(result.store, key);
 }
 
-let r;
-
-section('Parameters that are never accepted from the querystring');
-[['on the production origin', PRODUCTION], ['on a development origin', DEV_SERVER],
-    ['on a self-hosted origin', SELF_HOSTED], ['in the Electron app', ELECTRON], ['in the UWP app', UWP],
-    ['in NW.js, running from file:', NWJS]].forEach(function (pair) {
-    r = run('?sourceVerification=false', pair[1]);
-    check('sourceVerification is ignored ' + pair[0],
-        !stored(r, 'sourceVerification') && r.params.sourceVerification === undefined);
-});
-
-section('Parameters restricted to a development context');
-r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fpwa.kiwix.org%2F', PRODUCTION);
-check('noPrompts is ignored on the production origin', r.params.noPrompts === undefined);
-check('PWAServer is ignored on the production origin, even with an allowed value',
-    r.params.PWAServer === undefined && !stored(r, 'PWAServer'));
-r = run('?noPrompts=true', ELECTRON);
-check('noPrompts is ignored in the Electron app, which also runs on localhost',
-    r.params.noPrompts === undefined);
-r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fkiwix.github.io%2Fkiwix-js-pwa%2Fdist%2F', DEV_SERVER);
-check('noPrompts is honoured on a development origin', r.params.noPrompts === true);
-check('PWAServer is honoured on a development origin when it matches the allowlist',
-    r.params.PWAServer === 'https://kiwix.github.io/kiwix-js-pwa/dist/');
-r = run('?PWAServer=https%3A%2F%2Fexample.com%2F', DEV_SERVER);
-check('PWAServer is refused on a development origin when it does not match the allowlist',
-    r.params.PWAServer === undefined);
-
-section('Development server workflow');
-r = run('?appCache=false', DEV_SERVER);
-check('appCache is honoured and stored on the development server (vite opens the app with this)',
-    r.store.appCache === 'false' && r.params.appCache === false);
-
-section("Settings passed between the app's own contexts");
-r = run('?allowInternetAccess=true&packagedFile=wikimed.zim&fileVersion=2024-01&lastSelectedArchive=my.zim',
-    PRODUCTION);
-check('allowInternetAccess is stored', r.store.allowInternetAccess === 'true' && r.params.allowInternetAccess === true);
-check('packagedFile is stored', r.store.packagedFile === 'wikimed.zim');
-check('fileVersion is stored', r.store.fileVersion === '2024-01');
-check('lastSelectedArchive is stored under its own key', r.store.lastSelectedArchive === 'my.zim');
-check('lastSelectedArchive is aliased to params.storedFile', r.params.storedFile === 'my.zim');
-r = run('?contentInjectionMode=serviceworker&manipulateImages=false&allowHTMLExtraction=false', PRODUCTION);
-check('contentInjectionMode is stored', r.store.contentInjectionMode === 'serviceworker');
-check('manipulateImages is stored', r.store.manipulateImages === 'false' && r.params.manipulateImages === false);
-check('allowHTMLExtraction is stored', r.store.allowHTMLExtraction === 'false');
-r = run('?allowInternetAccess=false&contentInjectionMode=jquery', PRODUCTION);
-check('contentInjectionMode accepts the app\'s other mode, used by the UWP handoff and resetApp',
-    r.store.contentInjectionMode === 'jquery');
-r = run('?lastPageVisit=A%2FSome_page', PRODUCTION);
-check('lastPageVisit applies to the current page load', r.params.lastPageVisit === 'A/Some_page');
-check('lastPageVisit is not stored, as init.js never reads it back under that key',
-    !stored(r, 'lastPageVisit'));
-
-section('Endpoint parameters restricted to Kiwix hosts');
-[['kiwixDownloadServer', 'https://staging.download.kiwix.org/zim/'],
-    ['kiwixCatalogEntries', 'https://opds.library.kiwix.org/catalog/v2/entries?count=-1'],
-    ['kiwixMirrorServer', 'https://mirror.download.kiwix.org'],
-    ['kiwixLibraryBrowser', 'https://browse.library.kiwix.org']].forEach(function (pair) {
-    r = run('?' + pair[0] + '=' + encodeURIComponent(pair[1]), PRODUCTION);
-    check(pair[0] + ' accepts ' + pair[1], r.store[pair[0]] === pair[1]);
-});
-['https://example.com/zim/', 'https://kiwix.org.example.com/', 'https://notkiwix.org/',
-    'https://kiwix.github.io.example.com/', 'http://opds.library.kiwix.org/'].forEach(function (url) {
-    r = run('?kiwixDownloadServer=' + encodeURIComponent(url), PRODUCTION);
-    check('kiwixDownloadServer refuses ' + url,
-        !stored(r, 'kiwixDownloadServer') && r.params.kiwixDownloadServer === undefined);
-});
-
-section('The content injection mode is restricted to the modes the app implements');
-// setContentInjectionMode() in app.js branches on 'jquery' and 'serviceworker' only, and the radio buttons in
-// index.html carry those same two values, so any other mode name leaves the app in a state it cannot show the
-// user: no radio button is selected, and the mode matches neither branch at the call sites that switch on it
-['serviceworkerlocal', 'jQuery', 'serviceworker ', 'anything'].forEach(function (mode) {
-    r = run('?contentInjectionMode=' + encodeURIComponent(mode), PRODUCTION);
-    check('contentInjectionMode refuses "' + mode + '"',
-        !stored(r, 'contentInjectionMode') && r.params.contentInjectionMode === undefined);
-});
-
-section('Keys that could alter the params prototype');
-r = run('?toString=x', PRODUCTION);
-check('an inherited property name does not throw, and is not stored', !stored(r, 'toString'));
-r = run('?__proto__=x&constructor=y&prototype=z', PRODUCTION);
-check('__proto__, constructor and prototype are skipped',
-    !stored(r, '__proto__') && !stored(r, 'constructor') && !stored(r, 'prototype'));
-check('the params prototype is intact', Object.getPrototypeOf(r.params) === Object.prototype);
-
-section('Unlisted parameters apply to the current page load only');
-r = run('?debugLibzimASM=wasm&useLibzim=true', PRODUCTION);
-check('an unlisted parameter is applied', r.params.debugLibzimASM === 'wasm');
-check('an unlisted parameter is not stored', !stored(r, 'debugLibzimASM'));
-check('an unlisted Boolean is converted', r.params.useLibzim === true);
-check('an unlisted Boolean is not stored', !stored(r, 'useLibzim'));
-
-section('Empty values clear a setting rather than being skipped');
-r = run('?allowInternetAccess=true&lastSelectedArchivePath=&lastSelectedArchive=my.zim', PRODUCTION);
-check('an empty value is parsed and clears the setting',
-    stored(r, 'lastSelectedArchivePath') && r.store.lastSelectedArchivePath === '');
-check('the parameter before an empty one is still parsed', r.store.allowInternetAccess === 'true');
-check('the parameter after an empty one is still parsed', r.store.lastSelectedArchive === 'my.zim');
-r = run('?kiwixDownloadServer=', PRODUCTION);
-check('an empty value does not satisfy an endpoint pattern', !stored(r, 'kiwixDownloadServer'));
-r = run('?sourceVerification=', DEV_SERVER);
-check('an empty value does not bypass a never-accepted parameter', !stored(r, 'sourceVerification'));
-
-section('The title parameter is reserved for the router');
-r = run('?title=A%2FSome_article', PRODUCTION);
-check('title is neither stored nor applied', !stored(r, 'title') && r.params.title === undefined);
-
+// ---------------------------------------------------------------------------------------------------
+// Checks
 // ---------------------------------------------------------------------------------------------------
 
-console.log('\n' + (failures ? failures + ' of ' + total + ' checks FAILED' : 'All ' + total + ' checks passed') + '\n');
-process.exit(failures ? 1 : 0);
+describe('Parameters that are never accepted from the querystring', function () {
+    [['on the production origin', PRODUCTION], ['on a development origin', DEV_SERVER],
+        ['on a self-hosted origin', SELF_HOSTED], ['in the Electron app', ELECTRON], ['in the UWP app', UWP],
+        ['in NW.js, running from file:', NWJS]].forEach(function (pair) {
+        it('sourceVerification is ignored ' + pair[0], function () {
+            const r = run('?sourceVerification=false', pair[1]);
+            assert.ok(!stored(r, 'sourceVerification') && r.params.sourceVerification === undefined);
+        });
+    });
+});
+
+describe('Parameters restricted to a development context', function () {
+    it('noPrompts is ignored on the production origin', function () {
+        const r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fpwa.kiwix.org%2F', PRODUCTION);
+        assert.equal(r.params.noPrompts, undefined);
+    });
+
+    it('PWAServer is ignored on the production origin, even with an allowed value', function () {
+        const r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fpwa.kiwix.org%2F', PRODUCTION);
+        assert.ok(r.params.PWAServer === undefined && !stored(r, 'PWAServer'));
+    });
+
+    it('noPrompts is ignored in the Electron app, which also runs on localhost', function () {
+        const r = run('?noPrompts=true', ELECTRON);
+        assert.equal(r.params.noPrompts, undefined);
+    });
+
+    it('noPrompts is honoured on a development origin', function () {
+        const r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fkiwix.github.io%2Fkiwix-js-pwa%2Fdist%2F', DEV_SERVER);
+        assert.equal(r.params.noPrompts, true);
+    });
+
+    it('PWAServer is honoured on a development origin when it matches the allowlist', function () {
+        const r = run('?noPrompts=true&PWAServer=https%3A%2F%2Fkiwix.github.io%2Fkiwix-js-pwa%2Fdist%2F', DEV_SERVER);
+        assert.equal(r.params.PWAServer, 'https://kiwix.github.io/kiwix-js-pwa/dist/');
+    });
+
+    it('PWAServer is refused on a development origin when it does not match the allowlist', function () {
+        const r = run('?PWAServer=https%3A%2F%2Fexample.com%2F', DEV_SERVER);
+        assert.equal(r.params.PWAServer, undefined);
+    });
+});
+
+describe('Development server workflow', function () {
+    it('appCache is honoured and stored on the development server (vite opens the app with this)', function () {
+        const r = run('?appCache=false', DEV_SERVER);
+        assert.ok(r.store.appCache === 'false' && r.params.appCache === false);
+    });
+});
+
+describe("Settings passed between the app's own contexts", function () {
+    it('allowInternetAccess, packagedFile, fileVersion and lastSelectedArchive are stored', function () {
+        const r = run('?allowInternetAccess=true&packagedFile=wikimed.zim&fileVersion=2024-01&lastSelectedArchive=my.zim',
+            PRODUCTION);
+        assert.ok(r.store.allowInternetAccess === 'true' && r.params.allowInternetAccess === true);
+        assert.equal(r.store.packagedFile, 'wikimed.zim');
+        assert.equal(r.store.fileVersion, '2024-01');
+        assert.equal(r.store.lastSelectedArchive, 'my.zim');
+        assert.equal(r.params.storedFile, 'my.zim');
+    });
+
+    it('contentInjectionMode, manipulateImages and allowHTMLExtraction are stored', function () {
+        const r = run('?contentInjectionMode=serviceworker&manipulateImages=false&allowHTMLExtraction=false', PRODUCTION);
+        assert.equal(r.store.contentInjectionMode, 'serviceworker');
+        assert.ok(r.store.manipulateImages === 'false' && r.params.manipulateImages === false);
+        assert.equal(r.store.allowHTMLExtraction, 'false');
+    });
+
+    it("contentInjectionMode accepts the app's other mode, used by the UWP handoff and resetApp", function () {
+        const r = run('?allowInternetAccess=false&contentInjectionMode=jquery', PRODUCTION);
+        assert.equal(r.store.contentInjectionMode, 'jquery');
+    });
+
+    it('lastPageVisit applies to the current page load but is not stored', function () {
+        const r = run('?lastPageVisit=A%2FSome_page', PRODUCTION);
+        assert.equal(r.params.lastPageVisit, 'A/Some_page');
+        assert.ok(!stored(r, 'lastPageVisit'));
+    });
+});
+
+describe('Endpoint parameters restricted to Kiwix hosts', function () {
+    [['kiwixDownloadServer', 'https://staging.download.kiwix.org/zim/'],
+        ['kiwixCatalogEntries', 'https://opds.library.kiwix.org/catalog/v2/entries?count=-1'],
+        ['kiwixMirrorServer', 'https://mirror.download.kiwix.org'],
+        ['kiwixLibraryBrowser', 'https://browse.library.kiwix.org']].forEach(function (pair) {
+        it(pair[0] + ' accepts ' + pair[1], function () {
+            const r = run('?' + pair[0] + '=' + encodeURIComponent(pair[1]), PRODUCTION);
+            assert.equal(r.store[pair[0]], pair[1]);
+        });
+    });
+
+    ['https://example.com/zim/', 'https://kiwix.org.example.com/', 'https://notkiwix.org/',
+        'https://kiwix.github.io.example.com/', 'http://opds.library.kiwix.org/'].forEach(function (url) {
+        it('kiwixDownloadServer refuses ' + url, function () {
+            const r = run('?kiwixDownloadServer=' + encodeURIComponent(url), PRODUCTION);
+            assert.ok(!stored(r, 'kiwixDownloadServer') && r.params.kiwixDownloadServer === undefined);
+        });
+    });
+});
+
+describe('The content injection mode is restricted to the modes the app implements', function () {
+    // setContentInjectionMode() in app.js branches on 'jquery' and 'serviceworker' only, and the radio buttons in
+    // index.html carry those same two values, so any other mode name leaves the app in a state it cannot show the
+    // user: no radio button is selected, and the mode matches neither branch at the call sites that switch on it
+    ['serviceworkerlocal', 'jQuery', 'serviceworker ', 'anything'].forEach(function (mode) {
+        it('contentInjectionMode refuses "' + mode + '"', function () {
+            const r = run('?contentInjectionMode=' + encodeURIComponent(mode), PRODUCTION);
+            assert.ok(!stored(r, 'contentInjectionMode') && r.params.contentInjectionMode === undefined);
+        });
+    });
+});
+
+describe('Keys that could alter the params prototype', function () {
+    it('an inherited property name does not throw, and is not stored', function () {
+        const r = run('?toString=x', PRODUCTION);
+        assert.ok(!stored(r, 'toString'));
+    });
+
+    it('__proto__, constructor and prototype are skipped, and the params prototype is intact', function () {
+        const r = run('?__proto__=x&constructor=y&prototype=z', PRODUCTION);
+        assert.ok(!stored(r, '__proto__') && !stored(r, 'constructor') && !stored(r, 'prototype'));
+        assert.equal(Object.getPrototypeOf(r.params), Object.prototype);
+    });
+});
+
+describe('Unlisted parameters apply to the current page load only', function () {
+    it('an unlisted parameter is applied but not stored', function () {
+        const r = run('?debugLibzimASM=wasm&useLibzim=true', PRODUCTION);
+        assert.equal(r.params.debugLibzimASM, 'wasm');
+        assert.ok(!stored(r, 'debugLibzimASM'));
+    });
+
+    it('an unlisted Boolean is converted but not stored', function () {
+        const r = run('?debugLibzimASM=wasm&useLibzim=true', PRODUCTION);
+        assert.equal(r.params.useLibzim, true);
+        assert.ok(!stored(r, 'useLibzim'));
+    });
+});
+
+describe('Empty values clear a setting rather than being skipped', function () {
+    it('an empty value is parsed and clears the setting, without disturbing its neighbours', function () {
+        const r = run('?allowInternetAccess=true&lastSelectedArchivePath=&lastSelectedArchive=my.zim', PRODUCTION);
+        assert.ok(stored(r, 'lastSelectedArchivePath') && r.store.lastSelectedArchivePath === '');
+        assert.equal(r.store.allowInternetAccess, 'true');
+        assert.equal(r.store.lastSelectedArchive, 'my.zim');
+    });
+
+    it('an empty value does not satisfy an endpoint pattern', function () {
+        const r = run('?kiwixDownloadServer=', PRODUCTION);
+        assert.ok(!stored(r, 'kiwixDownloadServer'));
+    });
+
+    it('an empty value does not bypass a never-accepted parameter', function () {
+        const r = run('?sourceVerification=', DEV_SERVER);
+        assert.ok(!stored(r, 'sourceVerification'));
+    });
+});
+
+describe('The title parameter is reserved for the router', function () {
+    it('title is neither stored nor applied', function () {
+        const r = run('?title=A%2FSome_article', PRODUCTION);
+        assert.ok(!stored(r, 'title') && r.params.title === undefined);
+    });
+});

@@ -1,0 +1,20 @@
+# Workflow to run the unit test suites under test/ on every push and pull request
+
+name: Run unit tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
