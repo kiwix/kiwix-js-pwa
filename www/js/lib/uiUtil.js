@@ -1461,6 +1461,11 @@ function requestOrCancelFullScreen (el) {
         console.debug('Display is already full screen');
         return Promise.resolve(true);
     }
+    // Don't do anything if already not in full-screen mode, and user requested to exit full-screen mode
+    if (!el && !appIsFullScreen()) {
+        console.debug('Display is already not full screen');
+        return Promise.resolve(false);
+    }
     // Choose the correct method to request or cancel full-screen mode
     var rq = function (sel) {
         var fn = sel
@@ -1480,7 +1485,7 @@ function requestOrCancelFullScreen (el) {
         console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled');
         return !!el;
     }).catch(function (err) {
-        console.log('Error enabling full-screen mode', err);
+        console.log(el ? 'Error enabling full-screen mode' : 'Error disabling full-screen mode', err);
         throw err;
     });
 }
