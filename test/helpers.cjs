@@ -12,8 +12,7 @@
  * that give each test its meaning (what a mocked function returns, how many times it was called,
  * etc.) stay in the individual test files.
  *
- * Requires Node 20+ to run (Node 21+ on Windows, since `npm test` passes `node --test` a glob that
- * only Node itself expands from Node 21 onwards - see CONTRIBUTING.md).
+ * Requires Node 22.12+ to run, matching the floor declared in package.json - see CONTRIBUTING.md.
  */
 
 const fs = require('fs');

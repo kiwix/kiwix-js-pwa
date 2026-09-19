@@ -34,7 +34,7 @@ Be sure you have set up the development tools, and test your PR thoroughly, foll
 
 There is one important difference from upstream, however: **this Repo's automated test coverage is much lighter than upstream's**. We do have a small unit test suite under `test/`, run with `npm test`, and CI runs it on every push and pull request, but there is no end-to-end test suite, so this means that you must do a lot more manual testing.
 
-`npm test` needs Node 20 or later on Linux/macOS. On Windows it needs Node 21 or later: `npm test` passes the suites to `node --test` as a glob (`test/*.test.cjs`) because npm's Windows shell doesn't expand it itself, and `node --test` only gained its own glob expansion in Node 21.
+`npm test` needs Node 22.12 or later, which is the floor the Electron toolchain already requires and the version CI runs. Note that the suites are passed to `node --test` as a glob (`test/*.test.cjs`), which npm's Windows shell does not expand itself, so on Windows this needs a Node that expands globs on its own; that arrived in Node 21 and is covered by the floor above.
 
 You will need to obtain a ZIM archive to test this app properly. Please follow in-app instructions, and obtain one (ideally a Wikipedia subset and one more dynamic type).
 

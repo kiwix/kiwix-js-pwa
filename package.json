@@ -198,8 +198,11 @@
       "!**/*.dev.{js,wasm}"
     ]
   },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "test": "node --test test/*.test.cjs",
+    "test": "node --test --test-reporter=spec test/*.test.cjs",
     "serve": "vite",
     "preview": "del-cli dist && npm run build-src && vite preview",
     "prebuild": "del-cli dist",

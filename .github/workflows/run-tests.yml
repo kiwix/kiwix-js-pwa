@@ -15,6 +15,6 @@ jobs:
       - uses: actions/checkout@main
       - uses: actions/setup-node@main
         with:
-          node-version: 20
+          node-version: 22
       - run: npm ci
       - run: npm test
