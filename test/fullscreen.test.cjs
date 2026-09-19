@@ -69,12 +69,29 @@ function createMockEnvironment (options) {
 
     const mockAppstate = {};
 
+    // The code under test logs the failure path with console.warn. In the test that provokes that
+    // failure deliberately, the warning is captured for assertion rather than printed, which keeps
+    // the expected error and its stack out of the runner's output. Every other level, and every
+    // warning a test has not opted to capture, still reaches the real console, so an unexpected
+    // diagnostic is never silently swallowed.
+    const warnings = [];
+    const mockConsole = {
+        log: function () { console.log.apply(console, arguments); },
+        debug: function () { console.debug.apply(console, arguments); },
+        error: function () { console.error.apply(console, arguments); },
+        warn: function () {
+            warnings.push(Array.prototype.slice.call(arguments));
+            if (!options.captureWarnings) console.warn.apply(console, arguments);
+        }
+    };
+
     /* eslint-disable no-eval */
     const sandbox = eval(`(function () {
         var document = mockDocument;
         var screen = mockScreen;
         var params = mockParams;
         var appstate = mockAppstate;
+        var console = mockConsole;
         var window = { innerHeight: 800 };
         function getComputedStyle () { return { height: '0px', marginTop: '0px', marginBottom: '0px' }; }
         ${uiUtilSource}
@@ -87,6 +104,7 @@ function createMockEnvironment (options) {
             getRequestFullscreenCalled: function () { return requestFullscreenCalled; },
             getOrientationUnlockCalled: function () { return orientationUnlockCalled; },
             getOrientationLockCalled: function () { return orientationLockCalled; },
+            getWarnings: function () { return warnings; },
             setIsFullscreen: function (val) {
                 isFullscreen = val;
                 mockDocument.fullscreenElement = val ? mockDocumentElement : null;
@@ -155,9 +173,15 @@ describe('Entering and exiting full-screen mode normally', function () {
 
 describe('Error handling when exitFullscreen fails in active fullscreen', function () {
     it('propagates rejection when document.exitFullscreen() fails in active fullscreen', async function () {
-        const sandbox = createMockEnvironment({ isFullscreen: true, failExit: true });
+        const sandbox = createMockEnvironment({ isFullscreen: true, failExit: true, captureWarnings: true });
         await assert.rejects(function () {
             return sandbox.requestOrCancelFullScreen();
         });
+        // Assert on the captured warning rather than just suppressing it, so that a change to what
+        // the failure path reports fails the test instead of passing unnoticed
+        const warnings = sandbox.getWarnings();
+        assert.equal(warnings.length, 1);
+        assert.equal(warnings[0][0], 'Error disabling full-screen mode');
+        assert.ok(warnings[0][1] instanceof Error);
     });
 });

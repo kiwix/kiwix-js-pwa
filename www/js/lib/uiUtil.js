@@ -1485,7 +1485,7 @@ function requestOrCancelFullScreen (el) {
         console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled');
         return !!el;
     }).catch(function (err) {
-        console.log(el ? 'Error enabling full-screen mode' : 'Error disabling full-screen mode', err);
+        console.warn(el ? 'Error enabling full-screen mode' : 'Error disabling full-screen mode', err);
         throw err;
     });
 }
