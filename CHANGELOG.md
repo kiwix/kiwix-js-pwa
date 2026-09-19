@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.8.93
+## Interim release 3.9.0
 
 * FIX: The url and title in a directory entry id are now URI-encoded, so a literal "|" is no longer read as the field separator, and titles with "|" are not truncated in the "Return to" link (port of kiwix-js #1492)
 * DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
