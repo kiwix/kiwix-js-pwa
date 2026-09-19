@@ -99,46 +99,32 @@ function createMockEnvironment (options) {
 }
 
 describe('Cancelling full-screen mode when already in windowed mode (#961)', function () {
-    const sandbox = createMockEnvironment({ isFullscreen: false });
-    let result;
-    let threw = false;
-
-    it('resolves cleanly without throwing when cancelling while not in fullscreen', async function () {
+    it('resolves cleanly, returns false, and does not call document.exitFullscreen()', async function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
+        let result;
+        let threw = false;
         try {
             result = await sandbox.requestOrCancelFullScreen();
         } catch (err) {
             threw = true;
         }
         assert.equal(threw, false);
-    });
-
-    it('returns false when full-screen mode cancelled in windowed mode', function () {
         assert.equal(result, false);
-    });
-
-    it('does not call document.exitFullscreen() when already in windowed mode', function () {
         assert.equal(sandbox.getExitFullscreenCalled(), 0);
     });
 });
 
 describe('Resetting display orientation lock in windowed mode (#961)', function () {
-    const sandbox = createMockEnvironment({ isFullscreen: false });
-    let threw = false;
-
-    it('lockDisplayOrientation("") resolves cleanly in windowed mode without throwing', async function () {
+    it('resolves cleanly, unlocks screen orientation, and does not call document.exitFullscreen()', async function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
+        let threw = false;
         try {
             await sandbox.lockDisplayOrientation('');
         } catch (err) {
             threw = true;
         }
         assert.equal(threw, false);
-    });
-
-    it('unlocks screen orientation', function () {
         assert.equal(sandbox.getOrientationUnlockCalled(), 1);
-    });
-
-    it('does not call document.exitFullscreen()', function () {
         assert.equal(sandbox.getExitFullscreenCalled(), 0);
     });
 });
