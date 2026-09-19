@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.93
 
+* FIX: Article titles containing a "|" (common in Zimit and Stack Exchange archives) are no longer truncated in the search results and ZIM Index lists once selected (port of kiwix-js #1492)
 * DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. by pressing Esc) no longer logs a spurious error, and the navbar icon now correctly switches back from "Return to fullscreen"
 * FIX: Installed PWA no longer becomes the default app for every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
