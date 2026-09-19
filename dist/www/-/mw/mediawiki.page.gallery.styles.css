@@ -1,0 +1,239 @@
+/* start https://en.wikipedia.org/w/load.php?lang=en&modules=mediawiki.page.gallery.styles&only=styles&skin=vector-2022 */
+ul.gallery.gallery.gallery {
+    margin: 2px;
+    padding: 2px;
+    display: block
+}
+
+li.gallerycaption {
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    word-wrap: break-word
+}
+
+li.gallerybox {
+    vertical-align: top;
+    display: inline-block
+}
+
+li.gallerybox div.thumb {
+    text-align: center;
+    margin: 2px
+}
+
+li.gallerybox div.thumb img {
+    display: block;
+    margin: 0 auto
+}
+
+div.gallerytext {
+    overflow: hidden;
+    font-size: 94%;
+    padding: 9px 4px 17px;
+    word-wrap: break-word
+}
+
+div.gallerytext p {
+    margin: 0
+}
+
+.galleryfilename {
+    display: block
+}
+
+.galleryfilename-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+ul.mw-gallery-nolines li.gallerybox div.thumb {
+    background-color: transparent;
+    border: 0
+}
+
+ul.mw-gallery-nolines li.gallerybox div.gallerytext {
+    text-align: center
+}
+
+ul.mw-gallery-packed,ul.mw-gallery-packed-overlay,ul.mw-gallery-packed-hover {
+    text-align: center
+}
+
+ul.mw-gallery-packed li.gallerybox div.thumb,ul.mw-gallery-packed-overlay li.gallerybox div.thumb,ul.mw-gallery-packed-hover li.gallerybox div.thumb {
+    background-color: transparent;
+    border: 0
+}
+
+ul.mw-gallery-packed li.gallerybox div.thumb img,ul.mw-gallery-packed-overlay li.gallerybox div.thumb img,ul.mw-gallery-packed-hover li.gallerybox div.thumb img {
+    margin: 0 auto
+}
+
+ul.mw-gallery-packed-hover li.gallerybox,ul.mw-gallery-packed-overlay li.gallerybox {
+    position: relative
+}
+
+ul.mw-gallery-packed-hover div.gallerytextwrapper {
+    overflow: hidden;
+    height: 0
+}
+
+ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper {
+    position: absolute;
+    background: var(--background-color-backdrop-light,rgba(255,255,255,0.65));
+    padding: 5px 10px;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    max-height: 40%;
+    overflow: hidden;
+    font-weight: bold;
+    margin: 2px
+}
+
+ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper p,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper p,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper p {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden
+}
+
+ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper:hover,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper:hover,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper:hover {
+    overflow: visible;
+    max-height: none
+}
+
+ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper:hover p,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper:hover p,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper:hover p {
+    text-overflow: clip;
+    white-space: normal;
+    overflow: visible
+}
+
+ul.gallery.gallery.gallery.mw-gallery-slideshow {
+    display: block;
+    margin: 4em 0
+}
+
+.mw-gallery-slideshow {
+}
+
+.mw-gallery-slideshow .gallerycaption {
+    font-size: 1.3em;
+    margin: 0
+}
+
+.mw-gallery-slideshow .gallerycarousel {
+    display: block;
+    text-align: center
+}
+
+.mw-gallery-slideshow .gallerycarousel.mw-gallery-slideshow-thumbnails-toggled {
+    margin-bottom: 1.3em
+}
+
+.mw-gallery-slideshow .mw-gallery-slideshow-buttons {
+    opacity: 0.5;
+    padding: 1.3em 0;
+    white-space: nowrap
+}
+
+.mw-gallery-slideshow .mw-gallery-slideshow-buttons .oo-ui-buttonElement {
+    margin: 0 2em
+}
+
+.mw-gallery-slideshow .mw-gallery-slideshow-buttons .oo-ui-buttonElement:first-child {
+    margin-left: 0
+}
+
+.mw-gallery-slideshow .mw-gallery-slideshow-buttons .oo-ui-buttonElement:last-child {
+    margin-right: 0
+}
+
+.mw-gallery-slideshow .gallerybox.slideshow-current {
+    background: var(--background-color-interactive,#eaecf0)
+}
+
+.mw-gallery-slideshow .gallerybox > div {
+    max-width: 120px
+}
+
+.mw-gallery-slideshow .gallerybox div.thumb {
+    border: 0;
+    background: transparent
+}
+
+.mw-gallery-slideshow-img-container a {
+    display: block
+}
+
+@media screen {
+    li.gallerybox div.thumb {
+        background-color: var(--background-color-neutral-subtle,#f8f9fa);
+        border: 1px solid var(--border-color-subtle,#c8ccd1)
+    }
+}
+
+.mw-gallery-traditional .gallerybox > .thumb::before {
+    content: '';
+    vertical-align: middle;
+    display: inline-block;
+    height: 100%
+}
+
+.mw-gallery-traditional .gallerybox > .thumb > * {
+    vertical-align: middle;
+    display: inline-block
+}
+
+@media print {
+    li.gallerybox {
+        vertical-align: top;
+        display: inline-block
+    }
+
+    li.gallerybox div.thumb {
+        background-color: #fff;
+        border: 1px solid #ccc
+    }
+
+    ul.gallery.gallery.gallery {
+        margin: 2px;
+        padding: 2px;
+        display: block
+    }
+
+    li.gallerycaption {
+        font-weight: bold;
+        text-align: center;
+        display: block;
+        word-wrap: break-word
+    }
+
+    div.gallerytext {
+        overflow: visible;
+        padding: 8px auto
+    }
+
+    ul.mw-gallery-packed-hover div.gallerytextwrapper {
+        overflow: visible;
+        height: auto
+    }
+
+    ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper {
+        position: static;
+        background: transparent;
+        padding: 0;
+        max-height: none;
+        overflow: visible;
+        font-weight: normal;
+        margin: 0
+    }
+
+    ul.mw-gallery-packed-hover li.gallerybox:hover div.gallerytextwrapper p,ul.mw-gallery-packed-overlay li.gallerybox div.gallerytextwrapper p,ul.mw-gallery-packed-hover li.gallerybox.mw-gallery-focused div.gallerytextwrapper p {
+        text-overflow: clip;
+        white-space: normal;
+        overflow: visible
+    }
+}
+
+/* end   https://en.wikipedia.org/w/load.php?lang=en&modules=mediawiki.page.gallery.styles&only=styles&skin=vector-2022 */
