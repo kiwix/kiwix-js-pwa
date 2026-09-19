@@ -148,22 +148,22 @@ describe('Resetting display orientation lock in windowed mode (#961)', function 
 });
 
 describe('Entering and exiting full-screen mode normally', function () {
-    const sandbox = createMockEnvironment({ isFullscreen: false });
+    // These steps run as one test because each asserts on the state the previous one left behind,
+    // so they cannot be split without either sharing state across tests or re-entering full-screen
+    // mode for every step
+    it('enters full-screen mode, ignores a repeat request, and exits again', async function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
 
-    it('enters fullscreen mode successfully', async function () {
         const enterResult = await sandbox.requestOrCancelFullScreen(sandbox.getDocumentElement());
         assert.equal(enterResult, true);
         assert.equal(sandbox.getRequestFullscreenCalled(), 1);
         assert.equal(sandbox.appIsFullScreen(), true);
-    });
 
-    it('does not re-invoke requestFullscreen when re-requesting fullscreen while already fullscreen', async function () {
+        // Re-requesting while already in full-screen mode resolves true without calling the API again
         const reEnterResult = await sandbox.requestOrCancelFullScreen(sandbox.getDocumentElement());
         assert.equal(reEnterResult, true);
         assert.equal(sandbox.getRequestFullscreenCalled(), 1);
-    });
 
-    it('exits fullscreen when in fullscreen', async function () {
         const exitResult = await sandbox.requestOrCancelFullScreen();
         assert.equal(exitResult, false);
         assert.equal(sandbox.getExitFullscreenCalled(), 1);
