@@ -2,6 +2,7 @@
 
 ## Interim release 3.8.93
 
+* DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. by pressing Esc) no longer logs a spurious error, and the navbar icon now correctly switches back from "Return to fullscreen"
 * FIX: Installed PWA no longer becomes the default app for every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
 * FEATURE: ZIM archives now show the Kiwix icon in the file manager on macOS and Linux, matching the icon Windows already shows, and the Store app now uses that same icon in place of an older blue one

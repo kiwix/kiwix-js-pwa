@@ -7,18 +7,13 @@
 
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
+const assert = require('node:assert/strict');
+const { describe, it } = require('node:test');
+const { loadModuleSource, createMockDocument } = require('./helpers.cjs');
 
 const IMAGES_JS = path.join(__dirname, '..', 'www', 'js', 'lib', 'images.js');
-
-function extractImagesFunctions (source) {
-    return source
-        .replace(/^\s*import\s+.*?;\s*$/gm, '')
-        .replace(/^\s*export\s+default\s+[\s\S]*?;\s*$/gm, '');
-}
-
-const imagesSource = extractImagesFunctions(fs.readFileSync(IMAGES_JS, 'utf8'));
+const imagesSource = loadModuleSource(IMAGES_JS);
 
 function createMockEnvironment (options) {
     options = options || {};
@@ -81,16 +76,15 @@ function createMockEnvironment (options) {
 
     const mockContainer = { // eslint-disable-line no-unused-vars
         kiwixType: 'iframe',
-        document: {
+        document: createMockDocument({
             getElementById: function (id) {
                 if (id === 'kiwixCCMenu') return {};
                 return mockElement;
             },
-            querySelectorAll: function () { return []; },
             createElement: function () {
                 return mockElement;
             }
-        }
+        })
     };
 
     global.URL = {
@@ -174,19 +168,6 @@ function createMockNode (tagName, attrs) {
     return node;
 }
 
-let passes = 0;
-let failures = 0;
-
-function assert (desc, ok) {
-    if (ok) {
-        console.log(`  ok    ${desc}`);
-        passes++;
-    } else {
-        console.error(`  FAIL  ${desc}`);
-        failures++;
-    }
-}
-
 function extractWithTimeout (sandbox, images, timeoutMs) {
     timeoutMs = timeoutMs || 500;
     return new Promise(function (resolve, reject) {
@@ -215,47 +196,39 @@ function extractWithTimeout (sandbox, images, timeoutMs) {
     });
 }
 
-async function runTests () {
-    console.log('Mixed collection (IMG + VIDEO + AUDIO) completion handling');
-    {
+describe('Mixed collection (IMG + VIDEO + AUDIO) completion handling', function () {
+    it('calls completion callback within timeout for mixed collections with multimedia', async function () {
         const sandbox = createMockEnvironment();
         const img1 = createMockNode('img', { 'data-kiwixurl': 'I/test.png' });
         const video1 = createMockNode('video', { src: 'M/video.mp4' });
         const audio1 = createMockNode('audio', { src: 'M/audio.mp3' });
         const img2 = createMockNode('img', { 'data-kiwixurl': 'I/test.png' });
 
-        let completed = false;
-        try {
-            completed = await extractWithTimeout(sandbox, [img1, video1, audio1, img2]);
-        } catch (err) {
-            console.error('    Error:', err.message);
-        }
+        const completed = await extractWithTimeout(sandbox, [img1, video1, audio1, img2]);
+        assert.equal(completed, true);
+    });
+});
 
-        assert('Calls completion callback within timeout for mixed collections with multimedia', completed);
-    }
-
-    console.log('\nMedia-only collections');
-    {
+describe('Media-only collections', function () {
+    it('does not count media elements against extractorBusy', function () {
         const sandbox = createMockEnvironment();
         const videoNode = createMockNode('video', { src: 'M/video.mp4' });
 
         sandbox.extractImages([videoNode], function () {});
-        assert('Does not count media elements against extractorBusy', sandbox.getExtractorBusy() === 0);
+        assert.equal(sandbox.getExtractorBusy(), 0);
+    });
 
-        let completed = false;
-        try {
-            const freshSandbox = createMockEnvironment();
-            const freshVideoNode = createMockNode('video', { src: 'M/video.mp4' });
-            completed = await extractWithTimeout(freshSandbox, [freshVideoNode]);
-        } catch (err) {
-            console.error('    Error:', err.message);
-        }
+    it('calls completion callback within timeout when collection only contains video elements', async function () {
+        const sandbox = createMockEnvironment();
+        const videoNode = createMockNode('video', { src: 'M/video.mp4' });
 
-        assert('Calls completion callback within timeout when collection only contains video elements', completed);
-    }
+        const completed = await extractWithTimeout(sandbox, [videoNode]);
+        assert.equal(completed, true);
+    });
+});
 
-    console.log('\nMulti-source media elements (<video><source ...><source ...></video>)');
-    {
+describe('Multi-source media elements (<video><source ...><source ...></video>)', function () {
+    it('completes within timeout when media element contains multiple nested source tags', async function () {
         const sandbox = createMockEnvironment();
         const videoWithSources = createMockNode('video', {
             sources: [
@@ -264,55 +237,27 @@ async function runTests () {
             ]
         });
 
-        let completed = false;
-        try {
-            completed = await extractWithTimeout(sandbox, [videoWithSources]);
-        } catch (err) {
-            console.error('    Error:', err.message);
-        }
+        const completed = await extractWithTimeout(sandbox, [videoWithSources]);
+        assert.equal(completed, true);
+    });
+});
 
-        assert('Completes within timeout when media element contains multiple nested source tags', completed);
-    }
-
-    console.log('\nMissing / invalid URLs and missing DirEntry handling');
-    {
+describe('Missing / invalid URLs and missing DirEntry handling', function () {
+    it('completes within timeout without hanging when nodes have missing or invalid URLs', async function () {
         const sandbox = createMockEnvironment();
         const imgNoUrl = createMockNode('img', {});
         const videoInvalidUrl = createMockNode('video', { src: 'invalid-url' });
         const videoNotFound = createMockNode('video', { src: 'M/nonexistent.mp4' });
 
-        let completed = false;
-        try {
-            completed = await extractWithTimeout(sandbox, [imgNoUrl, videoInvalidUrl, videoNotFound]);
-        } catch (err) {
-            console.error('    Error:', err.message);
-        }
+        const completed = await extractWithTimeout(sandbox, [imgNoUrl, videoInvalidUrl, videoNotFound]);
+        assert.equal(completed, true);
+    });
+});
 
-        assert('Completes within timeout without hanging when nodes have missing or invalid URLs', completed);
-    }
-
-    console.log('\nEmpty collection');
-    {
+describe('Empty collection', function () {
+    it('immediately invokes callback on empty collection', async function () {
         const sandbox = createMockEnvironment();
-        let completed = false;
-        try {
-            completed = await extractWithTimeout(sandbox, []);
-        } catch (err) {
-            console.error('    Error:', err.message);
-        }
-
-        assert('Immediately invokes callback on empty collection', completed);
-    }
-
-    if (failures > 0) {
-        console.error(`\n${failures} check(s) failed out of ${passes + failures} total checks\n`);
-        process.exit(1);
-    } else {
-        console.log(`\nAll ${passes} checks passed\n`);
-    }
-}
-
-runTests().catch(function (err) {
-    console.error('Test suite failed:', err);
-    process.exit(1);
+        const completed = await extractWithTimeout(sandbox, []);
+        assert.equal(completed, true);
+    });
 });

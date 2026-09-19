@@ -10,19 +10,12 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const assert = require('node:assert/strict');
+const { describe, it } = require('node:test');
+const { loadModuleSource } = require('./helpers.cjs');
 
 const UPDATER_JS = path.join(__dirname, '..', 'www', 'js', 'lib', 'updater.js');
-
-function extractUpdaterFunctions (source) {
-    // Strip ES module import and export to evaluate inside a CommonJS sandbox
-    const transformed = source
-        .replace(/^\s*import\s+.*?;\s*$/gm, '')
-        .replace(/^\s*export\s+default\s+[\s\S]*?;\s*$/gm, '');
-
-    return transformed;
-}
-
-const updaterSource = extractUpdaterFunctions(fs.readFileSync(UPDATER_JS, 'utf8'));
+const updaterSource = loadModuleSource(UPDATER_JS);
 
 /**
  * Runs updater.getLatestUpdates() against a mocked environment
@@ -95,29 +88,7 @@ function fetchLiveReleases () {
     });
 }
 
-// ---------------------------------------------------------------------------------------------------
-// Checks
-// ---------------------------------------------------------------------------------------------------
-
-let failures = 0;
-let total = 0;
-
-function section (title) {
-    console.log('\n' + title);
-}
-
-function check (description, passed) {
-    total++;
-    if (passed) {
-        console.log('  ok    ' + description);
-    } else {
-        failures++;
-        console.log('  FAIL  ' + description);
-    }
-}
-
-async function runTests () {
-    section('Minified JSON handling and multi-asset parsing');
+describe('Minified JSON handling and multi-asset parsing', function () {
     const minifiedPayload = JSON.stringify([
         {
             tag_name: 'v4.0.0-E',
@@ -136,12 +107,15 @@ async function runTests () {
         }
     ]);
 
-    let res = await run(minifiedPayload, { appVersion: '3.8.92-E' });
-    check('Detects highest version v4.0.0-E on minified JSON', res.updateTag === 'v4.0.0-E');
-    check('Download URL contains clean uncorrupted URL', res.updatedReleases[0] === 'https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E.exe');
-    check('Collects all newer matching releases in updatedReleases list', res.updatedReleases.length === 2);
+    it('detects highest version v4.0.0-E on minified JSON', async function () {
+        const res = await run(minifiedPayload, { appVersion: '3.8.92-E' });
+        assert.equal(res.updateTag, 'v4.0.0-E');
+        assert.equal(res.updatedReleases[0], 'https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E.exe');
+        assert.equal(res.updatedReleases.length, 2);
+    });
+});
 
-    section('Channel matching logic');
+describe('Channel matching logic', function () {
     const multiChannelPayload = [
         {
             tag_name: 'v3.9.5',
@@ -159,13 +133,18 @@ async function runTests () {
         }
     ];
 
-    res = await run(multiChannelPayload, { appVersion: '3.8.92-E' });
-    check('Prefers channel match (-E) when same underlying version exists', res.updateTag === 'v3.9.5-E');
+    it('prefers channel match (-E) when same underlying version exists', async function () {
+        const res = await run(multiChannelPayload, { appVersion: '3.8.92-E' });
+        assert.equal(res.updateTag, 'v3.9.5-E');
+    });
 
-    const nonChannelApp = await run(multiChannelPayload, { appVersion: '3.8.92' });
-    check('Non-channel client matches non-channel release', nonChannelApp.updateTag === 'v3.9.5');
+    it('matches a non-channel client to the non-channel release', async function () {
+        const res = await run(multiChannelPayload, { appVersion: '3.8.92' });
+        assert.equal(res.updateTag, 'v3.9.5');
+    });
+});
 
-    section('BaseApp packaging filter');
+describe('BaseApp packaging filter', function () {
     const packagedReleases = [
         {
             tag_name: 'v3.9.0',
@@ -178,117 +157,153 @@ async function runTests () {
         }
     ];
 
-    const wikivoyageRes = await run(packagedReleases, { appVersion: '3.8.0', packagedFile: 'wikivoyage_en_all.zim' });
-    check('Wikivoyage packaged app only captures wikivoyage asset', wikivoyageRes.updatedReleases.length === 1 && /wikivoyage/.test(wikivoyageRes.updatedReleases[0]));
+    it('captures only the wikivoyage asset for the wikivoyage packaged app', async function () {
+        const res = await run(packagedReleases, { appVersion: '3.8.0', packagedFile: 'wikivoyage_en_all.zim' });
+        assert.equal(res.updatedReleases.length, 1);
+        assert.match(res.updatedReleases[0], /wikivoyage/);
+    });
 
-    const wikimedRes = await run(packagedReleases, { appVersion: '3.8.0', packagedFile: 'wikimed_en_all.zim' });
-    check('WikiMed packaged app only captures wikimed asset', wikimedRes.updatedReleases.length === 1 && /wikimed/.test(wikimedRes.updatedReleases[0]));
+    it('captures only the wikimed asset for the WikiMed packaged app', async function () {
+        const res = await run(packagedReleases, { appVersion: '3.8.0', packagedFile: 'wikimed_en_all.zim' });
+        assert.equal(res.updatedReleases.length, 1);
+        assert.match(res.updatedReleases[0], /wikimed/);
+    });
 
-    section('Up to date and malformed response handling');
-    const alreadyLatest = await run(packagedReleases, { appVersion: '3.9.0' });
-    check('Returns undefined updateTag when already on latest version', alreadyLatest.updateTag === undefined);
+    it('returns undefined updateTag when already on latest version', async function () {
+        const res = await run(packagedReleases, { appVersion: '3.9.0' });
+        assert.equal(res.updateTag, undefined);
+    });
+});
 
-    const malformedJson = await run('not valid json {[[', { appVersion: '3.8.0' });
-    check('Handles malformed JSON gracefully without throwing', malformedJson.updateTag === undefined && malformedJson.updatedReleases.length === 0);
+describe('Malformed response handling', function () {
+    it('handles malformed JSON gracefully without throwing', async function () {
+        const res = await run('not valid json {[[', { appVersion: '3.8.0' });
+        assert.equal(res.updateTag, undefined);
+        assert.equal(res.updatedReleases.length, 0);
+    });
 
-    const emptyResponse = await run('', { appVersion: '3.8.0' });
-    check('Handles empty response gracefully', emptyResponse.updateTag === undefined && emptyResponse.updatedReleases.length === 0);
+    it('handles an empty response gracefully', async function () {
+        const res = await run('', { appVersion: '3.8.0' });
+        assert.equal(res.updateTag, undefined);
+        assert.equal(res.updatedReleases.length, 0);
+    });
+});
 
-    section('Real API response shape (pretty-printed, one field per line)');
+describe('Real API response shape (pretty-printed, one field per line)', function () {
     // GitHub's REST API pretty-prints its JSON with one field per line when the request carries
     // an Accept header - which is what actually reaches this code in production, since uiUtil.XHR
     // goes through XMLHttpRequest and browsers add `Accept: */*` to every request automatically.
     const prettyPrintedPayload = fs.readFileSync(path.join(__dirname, 'fixtures', 'github-releases-sample.json'), 'utf8');
-    const prettyRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
-    check('Detects highest version on a realistically pretty-printed response', prettyRes.updateTag === 'v4.0.0-E');
-    check('Download URL is not corrupted with JSON punctuation from neighbouring fields', /^https:\/\/[^\s"{}[\]]+$/.test(prettyRes.updatedReleases[0] || ''));
 
-    section('BaseApp packaging filter (realistic asset naming, from fixture)');
+    it('detects the highest version on a realistically pretty-printed response', async function () {
+        const res = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
+        assert.equal(res.updateTag, 'v4.0.0-E');
+        assert.match(res.updatedReleases[0] || '', /^https:\/\/[^\s"{}[\]]+$/);
+    });
+
+    it('does not corrupt the download URL with JSON punctuation from neighbouring fields', async function () {
+        const res = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
+        assert.match(res.updatedReleases[0] || '', /^https:\/\/[^\s"{}[\]]+$/);
+    });
+
     // Real flavour assets (e.g. kiwix-js-wikivoyage-3.8.2-E-arm64.nsis.7z) don't contain
     // "electron"/"windows"/"kiwixwebapp_", so they must not be picked up by a default-build
     // check, and a flavour check must only pick up its own flavour's asset.
-    const wikivoyageFixtureRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikivoyage_en_all_maxi.zim' });
-    check('Wikivoyage packagedFile only captures the wikivoyage asset from the fixture',
-        wikivoyageFixtureRes.updatedReleases.length === 1 && /wikivoyage/.test(wikivoyageFixtureRes.updatedReleases[0]));
+    it('captures only the wikivoyage asset from the fixture for the wikivoyage packagedFile', async function () {
+        const res = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikivoyage_en_all_maxi.zim' });
+        assert.equal(res.updatedReleases.length, 1);
+        assert.match(res.updatedReleases[0], /wikivoyage/);
+    });
 
-    const wikimedFixtureRes = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikimed_en_all_maxi.zim' });
-    check('WikiMed packagedFile only captures the wikimed asset from the fixture',
-        wikimedFixtureRes.updatedReleases.length === 1 && /wikimed/.test(wikimedFixtureRes.updatedReleases[0]));
+    it('captures only the wikimed asset from the fixture for the WikiMed packagedFile', async function () {
+        const res = await run(prettyPrintedPayload, { appVersion: '3.8.92-E', packagedFile: 'wikimed_en_all_maxi.zim' });
+        assert.equal(res.updatedReleases.length, 1);
+        assert.match(res.updatedReleases[0], /wikimed/);
+    });
 
-    check('Default (non-flavour) check on the fixture does not pick up flavour assets',
-        prettyRes.updatedReleases.every(function (url) { return !/wikivoyage|wikimed/.test(url); }));
+    it('does not pick up flavour assets on a default (non-flavour) check of the fixture', async function () {
+        const res = await run(prettyPrintedPayload, { appVersion: '3.8.92-E' });
+        assert.ok(res.updatedReleases.every(function (url) { return !/wikivoyage|wikimed/.test(url); }));
+    });
+});
 
-    section('Minified/pretty-printed equivalence (fixture, always runs offline)');
+describe('Minified/pretty-printed equivalence (fixture, always runs offline)', function () {
     // Derive both JSON shapes locally from the same parsed data, rather than depending on the
     // network to hand back both shapes for the same content (see the live section below for why).
+    const prettyPrintedPayload = fs.readFileSync(path.join(__dirname, 'fixtures', 'github-releases-sample.json'), 'utf8');
     const fixtureParsed = JSON.parse(prettyPrintedPayload);
     const fixtureAsMinified = JSON.stringify(fixtureParsed);
     const fixtureAsPretty = JSON.stringify(fixtureParsed, null, 2) + '\n';
-    check('Derived minified fixture shape is a single line', fixtureAsMinified.split('\n').length === 1);
-    check('Derived pretty-printed fixture shape spans many lines', fixtureAsPretty.split('\n').length > 10);
-    const fixtureMinRes = await run(fixtureAsMinified, { appVersion: '3.8.92-E' });
-    const fixturePrettyRes = await run(fixtureAsPretty, { appVersion: '3.8.92-E' });
-    check('Minified and pretty-printed fixture shapes agree',
-        fixtureMinRes.updateTag === fixturePrettyRes.updateTag &&
-        JSON.stringify(fixtureMinRes.updatedReleases) === JSON.stringify(fixturePrettyRes.updatedReleases));
 
-    section('Live GitHub API (skipped if offline)');
-    const liveReleasesText = await fetchLiveReleases();
-    if (liveReleasesText === null) {
-        console.log('  skip  Could not reach the GitHub releases API - skipping live comparison');
-    } else {
-        let liveRes;
-        let threw = false;
-        try {
-            liveRes = await run(liveReleasesText, { appVersion: '0.0.1' });
-        } catch (e) {
-            threw = true;
+    it('derives a single-line minified fixture shape', function () {
+        assert.equal(fixtureAsMinified.split('\n').length, 1);
+    });
+
+    it('derives a multi-line pretty-printed fixture shape', function () {
+        assert.ok(fixtureAsPretty.split('\n').length > 10);
+    });
+
+    it('agrees between minified and pretty-printed fixture shapes', async function () {
+        const fixtureMinRes = await run(fixtureAsMinified, { appVersion: '3.8.92-E' });
+        const fixturePrettyRes = await run(fixtureAsPretty, { appVersion: '3.8.92-E' });
+        assert.equal(fixtureMinRes.updateTag, fixturePrettyRes.updateTag);
+        assert.equal(JSON.stringify(fixtureMinRes.updatedReleases), JSON.stringify(fixturePrettyRes.updatedReleases));
+    });
+});
+
+describe('Live GitHub API (skipped if offline)', function () {
+    it('parses the live API response without throwing, and agrees across JSON shapes', async function (t) {
+        const liveReleasesText = await fetchLiveReleases();
+        if (liveReleasesText === null) {
+            t.skip('Could not reach the GitHub releases API');
+            return;
         }
-        check('Parses the live API response without throwing', !threw);
-        check('Every matched download URL is well-formed and unquoted', !threw && liveRes.updatedReleases.every(function (url) {
+
+        const liveRes = await run(liveReleasesText, { appVersion: '0.0.1' });
+        assert.ok(liveRes.updatedReleases.every(function (url) {
             return /^https:\/\/[^\s"{}[\]]+$/.test(url);
         }));
 
         // Assert the detected tag against the newest matching release from the parsed payload
         // itself, so this checks the answer and not just that the output happens to look well-formed
-        if (!threw) {
-            const baseAppPattern = /windows|electron|kiwixwebapp_/i;
-            const liveReleasesJson = JSON.parse(liveReleasesText);
-            const expectedRelease = liveReleasesJson.find(function (release) {
-                return (release.assets || []).some(function (asset) {
-                    return baseAppPattern.test(asset.browser_download_url || '');
-                });
+        const baseAppPattern = /windows|electron|kiwixwebapp_/i;
+        const liveReleasesJson = JSON.parse(liveReleasesText);
+        const expectedRelease = liveReleasesJson.find(function (release) {
+            return (release.assets || []).some(function (asset) {
+                return baseAppPattern.test(asset.browser_download_url || '');
             });
-            check('Detected tag matches the newest matching release in the parsed payload',
-                !!expectedRelease && liveRes.updateTag === expectedRelease.tag_name);
+        });
+        assert.ok(expectedRelease);
+        assert.equal(liveRes.updateTag, expectedRelease.tag_name);
 
-            // Derive both JSON shapes locally from this single fetch instead of relying on a
-            // second live fetch to happen to land on a different shape (see fetchLiveReleases doc)
-            const liveAsMinified = JSON.stringify(liveReleasesJson);
-            const liveAsPretty = JSON.stringify(liveReleasesJson, null, 2) + '\n';
-            check('Derived minified live shape is a single line', liveAsMinified.split('\n').length === 1);
-            check('Derived pretty-printed live shape spans many lines', liveAsPretty.split('\n').length > 10);
+        // Derive both JSON shapes locally from this single fetch instead of relying on a
+        // second live fetch to happen to land on a different shape (see fetchLiveReleases doc)
+        const liveAsMinified = JSON.stringify(liveReleasesJson);
+        const liveAsPretty = JSON.stringify(liveReleasesJson, null, 2) + '\n';
+        assert.equal(liveAsMinified.split('\n').length, 1);
+        assert.ok(liveAsPretty.split('\n').length > 10);
 
-            const liveMinRes = await run(liveAsMinified, { appVersion: '0.0.1' });
-            const livePrettyRes = await run(liveAsPretty, { appVersion: '0.0.1' });
-            check('Minified and pretty-printed shapes of the same live data agree',
-                liveMinRes.updateTag === livePrettyRes.updateTag &&
-                JSON.stringify(liveMinRes.updatedReleases) === JSON.stringify(livePrettyRes.updatedReleases));
-        }
-    }
+        const liveMinRes = await run(liveAsMinified, { appVersion: '0.0.1' });
+        const livePrettyRes = await run(liveAsPretty, { appVersion: '0.0.1' });
+        assert.equal(liveMinRes.updateTag, livePrettyRes.updateTag);
+        assert.equal(JSON.stringify(liveMinRes.updatedReleases), JSON.stringify(livePrettyRes.updatedReleases));
+    });
+});
 
-    section('Consecutive invocation idempotency');
-    const firstCall = await run(minifiedPayload, { appVersion: '3.8.92-E' });
-    const secondCall = await run(minifiedPayload, { appVersion: '3.8.92-E' });
-    check('First call detects correct update', firstCall.updateTag === 'v4.0.0-E');
-    check('Second call detects identical update without state leakage', secondCall.updateTag === 'v4.0.0-E');
-
-    if (failures > 0) {
-        console.error('\n' + failures + ' of ' + total + ' checks failed.');
-        process.exit(1);
-    } else {
-        console.log('\nAll ' + total + ' checks passed\n');
-    }
-}
-
-runTests();
+describe('Consecutive invocation idempotency', function () {
+    it('detects an identical update on a second call without state leakage', async function () {
+        const minifiedPayload = JSON.stringify([
+            {
+                tag_name: 'v4.0.0-E',
+                html_url: 'https://github.com/kiwix/kiwix-js-pwa/releases/tag/v4.0.0-E',
+                assets: [
+                    { name: 'kiwix-electron-4.0.0-E.exe', browser_download_url: 'https://github.com/kiwix/kiwix-js-pwa/releases/download/v4.0.0-E/kiwix-electron-4.0.0-E.exe' }
+                ]
+            }
+        ]);
+        const firstCall = await run(minifiedPayload, { appVersion: '3.8.92-E' });
+        const secondCall = await run(minifiedPayload, { appVersion: '3.8.92-E' });
+        assert.equal(firstCall.updateTag, 'v4.0.0-E');
+        assert.equal(secondCall.updateTag, 'v4.0.0-E');
+    });
+});

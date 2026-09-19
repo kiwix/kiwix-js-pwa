@@ -32,7 +32,9 @@ The app's source is ES6, which is transpiled by [rollup.js](https://rollupjs.org
 
 Be sure you have set up the development tools, and test your PR thoroughly, following the instructions in upstream's [CONTRIBUTING](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md), for all steps that apply (there is no need to test this app in an extension).
 
-There is one important difference from upstream, however: **this Repo has no unit or end-to-end test suite**. Upstream runs automated tests on every PR, whereas here the CI only checks that the app builds. This means that you must do a lot more manual testing.
+There is one important difference from upstream, however: **this Repo's automated test coverage is much lighter than upstream's**. We do have a small unit test suite under `test/`, run with `npm test`, and CI runs it on every push and pull request, but there is no end-to-end test suite, so this means that you must do a lot more manual testing.
+
+`npm test` needs Node 20 or later on Linux/macOS. On Windows it needs Node 21 or later: `npm test` passes the suites to `node --test` as a glob (`test/*.test.cjs`) because npm's Windows shell doesn't expand it itself, and `node --test` only gained its own glob expansion in Node 21.
 
 You will need to obtain a ZIM archive to test this app properly. Please follow in-app instructions, and obtain one (ideally a Wikipedia subset and one more dynamic type).
 
