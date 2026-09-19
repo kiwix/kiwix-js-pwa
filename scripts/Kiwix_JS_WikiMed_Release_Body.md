@@ -14,7 +14,7 @@ Please choose the correct version:
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E.AppImage)
-    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-arm64.AppImage)
+    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, OpenSUSE, Raspberry Pi OS 64-bit on Pi 3 or later): [WikiMed-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-arm64.AppImage)
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/WikiMed%20by%20Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian): [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v<<base_tag>>/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)

@@ -17,7 +17,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 * **Linux** (see installation instructions below screenshot):
   - **Portable (Electron)** - *recommended*
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage) [**AUTO**]
-    * AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, opnSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.AppImage) [**AUTO**]
+    * AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, OpenSUSE, Raspberry Pi OS 64-bit on Pi 3 or later): [Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-arm64.AppImage) [**AUTO**]
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage) [**AUTO**]
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_amd64.deb)

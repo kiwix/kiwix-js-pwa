@@ -90,7 +90,7 @@ try switching the app to Restricted mode (see Content injection mode in Configur
 * As an application implemented with the following frameworks:
 
   + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows, macOS): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
-    + Builds available for ia32, x86, x64, ARM64, M1/M2/M3
+    + Builds available for ia32, x86, x64, ARM64 (including Raspberry Pi OS 64-bit), M1/M2/M3
   + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://apps.microsoft.com/detail/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
