@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.8.93
+## Interim release 3.9.0
 
 * DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. by pressing Esc) no longer logs a spurious error, and the navbar icon now correctly switches back from "Return to fullscreen"
