@@ -1831,6 +1831,57 @@ function setExpressServerUI (port, ipaddress) {
 }
 
 /**
+ * Determines whether a ZIM entry about to be read must be opened in a new top-level window instead of
+ * being loaded into the article iframe.
+ *
+ * In pureMode the Service Worker acts as a transparent passthrough, so the entry would otherwise be given
+ * to the iframe whatever its mimetype. That iframe is sandboxed twice over, by its own sandbox attribute
+ * and by the Content-Security-Policy the Service Worker sets on every ZIM response, and Chromium will not
+ * instantiate its PDF viewer, or any comparable internal viewer, in a sandboxed nested frame: the frame is
+ * left on the browser's block page, which the user can neither retry nor dismiss without reloading the app
+ * [kiwix-js-pwa #980]. A top-level window is not subject to that restriction.
+ *
+ * @param {DirEntry} dirEntry The directory entry about to be read
+ * @param {String} mimeType The entry's mimetype, as returned by dirEntry.getMimetype()
+ * @returns {Boolean} True if the entry must be opened in a new container rather than in the iframe
+ */
+function entryRequiresNewContainer (dirEntry, mimeType) {
+    // Only pureMode passes content through untouched. Everything else either transforms the content or
+    // already routes non-HTML elsewhere, and Replay-backed Zimit archives (which never set pureMode) serve
+    // every entry through Replay's own top frame, which is always HTML
+    if (!appstate.pureMode) return false;
+    // A top-level window has no nested-frame restriction, so there is nothing to divert
+    if (appstate.target === 'window') return false;
+    // A redirect entry carries no usable mimetype at this point: it is left for the Service Worker to
+    // resolve, and an unknown mimetype is not evidence that the iframe cannot cope
+    if (!mimeType || dirEntry.isRedirect()) return false;
+    // HTML is exactly what the iframe is for
+    if (/\bx?html\b/i.test(mimeType)) return false;
+    // Mirrors the exclusion that the PDF branch of filterClickEvent has carried since it was written:
+    // legacy EdgeHTML UWP was found not to cope, and the app cannot touch an opened window's DOM there
+    if (/UWP/.test(params.appType)) return false;
+    return true;
+}
+
+/**
+ * Opens the given URL in a new tab or a new window, according to the user's windowOpener setting.
+ *
+ * This is the single place that knows how a new container is opened, so that callers only have to decide
+ * *whether* to open one. Note that `name` is the browsing context's name, which is what targets an existing
+ * window, so it must be unique per document: a ZIM entry's title is not (titles are empty in some ZIMs, and
+ * the literal string 'null' for every asset in ZIMs built with mwoffliner >= 1.15), so callers should derive
+ * it from the url instead [kiwix-js-pwa #976]. It is ignored when the user has chosen to open tabs.
+ *
+ * @param {String} url The URL to open
+ * @param {String} name A name unique to the document being opened, used to target the new window
+ * @returns {Window|null} The newly opened window, or null if the browser blocked it
+ */
+function openUrlInNewContainer (url, name) {
+    return window.open(url, params.windowOpener === 'tab' ? '_blank' : name,
+        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+}
+
+/**
  * Functions and classes exposed by this module
  */
 export default {
@@ -1869,6 +1920,8 @@ export default {
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
     warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
+    entryRequiresNewContainer: entryRequiresNewContainer,
+    openUrlInNewContainer: openUrlInNewContainer,
     setupConfigurationToggles: setupConfigurationToggles,
     closestAnchorEnclosingElement: closestAnchorEnclosingElement,
     handleTitleClick: handleTitleClick,
