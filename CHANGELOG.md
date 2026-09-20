@@ -2,6 +2,7 @@
 
 ## Interim release 3.9.0
 
+* FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
 * FIX: Two PDF links on the same page that share a caption, such as "Download PDF", now open in a window each, instead of replacing one another in a single shared window
 * REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives now open in a new window again, instead of being blocked by the browser in the sandboxed article frame, which left the app stuck on a dead page
 * FIX: With "Open in new window" enabled, each image or other non-HTML entry opened from a ZIM now gets its own window

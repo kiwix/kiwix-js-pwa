@@ -415,6 +415,13 @@ function Hilitor (node, tag) {
         return retval;
     }
 
+    // Escapes the characters that have a special meaning in a regular expression, so that the text typed by the
+    // user is searched for literally. A "|" goes in a character class rather than behind a backslash, because
+    // setRegex() uses "|" to join words and trims a leading or trailing one, which would strip the tail of "\|"
+    function escapeRegExp (input) {
+        return input.replace(/[.*+?^${}()[\]\\]/g, '\\$&').replace(/\|/g, '[|]');
+    }
+
     this.setRegex = function (input) {
         input = input.replace(/\\([^u]|$)/g, '$1');
         // Replace any spaces with regex OR
@@ -446,7 +453,7 @@ function Hilitor (node, tag) {
         strippedText = strippedText.replace(/\s+/g, ' ');
         if (!strippedText.length) return 0;
         input = input.replace(/[\s.,;:?!¿¡-]+/g, ' ');
-        var inputMatcher = new RegExp(input, 'ig');
+        var inputMatcher = new RegExp(escapeRegExp(input), 'ig');
         var matches = strippedText.match(inputMatcher);
         if (matches) return matches.length;
         else return 0;
@@ -469,7 +476,7 @@ function Hilitor (node, tag) {
         // Normalize spaces
         input = input.replace(/\s+/g, ' ');
         var inputWords = input.split(' ');
-        var testInput = addAccents(input);
+        var testInput = addAccents(escapeRegExp(input));
         testInput = new RegExp(testInput, 'i');
         var hilitedNodes = node.getElementsByClassName(className);
         var subNodes = [];
@@ -569,6 +576,7 @@ function Hilitor (node, tag) {
     this.apply = function (input) {
         this.remove();
         if (input === undefined || !(input = input.replace(/(^\s+|\s+$)/g, ''))) return;
+        input = escapeRegExp(input);
         input = addAccents(input);
         input = convertCharStr2jEsc(input);
         if (this.setRegex(input)) {
