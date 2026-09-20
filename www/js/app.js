@@ -5901,8 +5901,8 @@ function readArticle (dirEntry) {
             } else if (params.contentInjectionMode === 'serviceworker') {
                 // NB The second argument is the window's *name*, which is what targets an existing window, so it needs to be
                 // unique per document: titles are not (they are empty in some ZIMs, and the literal string 'null' for
-                // every asset in ZIMs built with mwoffliner >= 1.15), whereas the namespace and url together always are
-                var windowName = encodeURIComponent(dirEntry.namespace + '/' + dirEntry.url);
+                // every asset in ZIMs built with mwoffliner >= 1.15), whereas the url always is
+                var windowName = encodeURIComponent(dirEntry.url);
                 articleContainer = window.open('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodeURIComponent(dirEntry.url),
                     params.windowOpener === 'tab' ? '_blank' : windowName,
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
