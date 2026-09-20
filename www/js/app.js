@@ -5766,6 +5766,34 @@ function isDirEntryExpectedToBeDisplayed (dirEntry) {
 }
 
 /**
+ * Opens the given ZIM entry in a new window or tab (according to the user's windowOpener setting), and
+ * redirects the app's output there. This is used for entries that cannot be displayed in the article
+ * iframe, because the iframe is sandboxed (both by its own sandbox attribute and by the Content-Security-Policy
+ * the Service Worker sets on every ZIM response), and Chromium will not instantiate its PDF viewer, or any
+ * comparable internal viewer, in a sandboxed nested frame. A top-level window is not subject to that
+ * restriction, so the browser can either display the document or offer it as a download [kiwix-js-pwa #980].
+ * @param {DirEntry} dirEntry The directory entry of the document to open
+ * @param {String} encodedUrl The URL-encoded ZIM url of the document (without the namespace)
+ * @returns {Window|null} The newly opened window, or null if the browser blocked it
+ */
+function openEntryInNewWindow (dirEntry, encodedUrl) {
+    // The window name must be unique per document, so we derive it from the url, never the title [#976]
+    var windowName = encodeURIComponent(dirEntry.url);
+    var newWindow = uiUtil.openUrlInNewContainer('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl, windowName);
+    if (newWindow) {
+        appstate.target = 'window';
+        articleContainer = newWindow;
+        articleWindow = newWindow;
+        // This throws in the UWP app, which has no access to the content of opened windows
+        if (!/UWP/.test(params.appType)) articleContainer.kiwixType = appstate.target;
+    } else {
+        console.warn('The browser blocked the new window for ' + dirEntry.namespace + '/' + dirEntry.url);
+    }
+    uiUtil.clearSpinner();
+    return newWindow;
+}
+
+/**
  * Read the article corresponding to the given dirEntry
  * @param {DirEntry} dirEntry The directory entry of the article to read
  */
@@ -5793,6 +5821,14 @@ function readArticle (dirEntry) {
         var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
             return encodeURIComponent(matchedSubstring);
         });
+
+        // This branch would otherwise set the iframe's src whatever the mimetype, so non-HTML entries that the
+        // sandboxed iframe cannot host have to be diverted to a new window (see the helper for why) [#980].
+        // We pass encodedUrl, which preserves '/', because that is the exact url the iframe would have been given.
+        if (uiUtil.entryRequiresNewContainer(dirEntry, mimeType)) {
+            openEntryInNewWindow(dirEntry, encodedUrl);
+            return;
+        }
 
         // Set up article onload handler
         articleLoader(dirEntry, mimeType);
@@ -5899,19 +5935,7 @@ function readArticle (dirEntry) {
                     uiUtil.clearSpinner();
                 });
             } else if (params.contentInjectionMode === 'serviceworker') {
-                // NB The second argument is the window's *name*, which is what targets an existing window, so it needs to be
-                // unique per document: titles are not (they are empty in some ZIMs, and the literal string 'null' for
-                // every asset in ZIMs built with mwoffliner >= 1.15), whereas the url always is
-                var windowName = encodeURIComponent(dirEntry.url);
-                articleContainer = window.open('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodeURIComponent(dirEntry.url),
-                    params.windowOpener === 'tab' ? '_blank' : windowName,
-                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
-                if (articleContainer) {
-                    appstate.target = 'window';
-                    articleContainer.kiwixType = appstate.target;
-                    articleWindow = articleContainer;
-                }
-                uiUtil.clearSpinner();
+                openEntryInNewWindow(dirEntry, encodeURIComponent(dirEntry.url));
                 return;
             }
         }
@@ -6105,8 +6129,9 @@ function filterClickEvent (event) {
             event.stopPropagation();
             console.debug('filterClickEvent opening new window for PDF');
             clickedAnchor.newcontainer = true;
-            window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
-                params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+            // The href is unique per document, whereas the anchor's title is usually empty and is shared by every
+            // link that repeats a caption such as "Download PDF", which would land them all in one window [#976]
+            uiUtil.openUrlInNewContainer(clickedAnchor.href, encodeURIComponent(clickedAnchor.href));
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
