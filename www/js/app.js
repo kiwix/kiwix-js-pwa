@@ -4173,10 +4173,8 @@ function setLocalArchiveFromArchiveList (archive) {
                             }
                             if (file) {
                                 if (/\.zim\w\w$/i.test(file.name)) {
-                                    var genericFileName = file.name.replace(/(\.zim)\w\w$/i, '$1');
-                                    var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                     for (i = 0; i < files.length; i++) {
-                                        if (testFileName.test(files[i].name)) {
+                                        if (util.isPartOfArchive(file.name, files[i].name)) {
                                             // This converts a UWP storage file object into a standard JavaScript web file object
                                             fileset.push(MSApp.createFileFromStorageFile(files[i]));
                                         }
@@ -4326,10 +4324,8 @@ function processDirectoryOfFiles (fileHandles, archive) {
         if (fileHandle) {
             // Deal with split archives
             if (/\.zim\w\w$/i.test(fileHandle.name)) {
-                var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
-                var testFileName = new RegExp(genericFileName + '\\w\\w$');
                 for (i = 0; i < fileHandles.length; i++) {
-                    if (testFileName.test(fileHandles[i].name)) {
+                    if (util.isPartOfArchive(fileHandle.name, fileHandles[i].name)) {
                         if (fileHandles[i].getFile) {
                             // This gets a JS File object from a file handle
                             fileset.push(fileHandles[i].getFile().then(function (file) {
@@ -5205,15 +5201,12 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
             } else if (fileNames) {
                 // Deal with split archives
                 if (/\.zim\w{0,2}$/i.test(fileHandle)) {
-                    var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
-                    var fileFilter = new RegExp(genericFileName + '\\w\\w$');
-                    if (/\.zim$/i.test(fileHandle)) { fileFilter = new RegExp(genericFileName); }
                     for (var i = 0; i < fileNames.length; i++) {
                         // Filter filenames so we only get zim or zimaa
                         if (/\.zim(aa)?$/i.test(fileNames[i])) {
                             selectedFileNamesSet.push(fileNames[i]);
                         }
-                        if (fileFilter.test(fileNames[i])) {
+                        if (util.isPartOfArchive(fileHandle, fileNames[i])) {
                             count++;
                             // This gets a pseudo File object from a file handle
                             createFakeFileObjectNode(fileNames[i], folder + '/' + fileNames[i], function (file) {
