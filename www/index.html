@@ -103,31 +103,31 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For updates since v3.8.8, please see the <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a></li>
-                                <li>[New] Fixed grid-style (masonry) landing pages staying blank in Firefox until the page was scrolled</li>
-                                <li>[New] Fixed security issue allowing for override of app's parameters with a malformed URL</li>
-                                <li>[New] Archives are no longer loaded in the background before user has chosen the trust level</li>
-                                <li>[New] Active content warnings and limited display mode warnings now restored</li>
-                                <li>[New] A content injection mode passed as a parameter is now checked against actually supported modes</li>
-                                <li>[New] Fixed the window buttons of recent Edge versions covering the app's own navigation buttons</li>
-                                <li>[New] Restored the draggable area for moving the app window</li>
-                                <li>[New] Setting in Configuration &gt; Display settings to emulate the title bar</li>
-                                <li>[New] In-app library can now browse the whole ZIM catalogue (including uncategorized archives), with a filter textbox for searching</li>
-                                <li>[New] Fix non-responsive links that are formatted as headings in Zimit archives</li>
-                                <li>[New] Redirects via HTML meta refresh are now properly handled in Restricted Mode</li>
-                                <li>[3.8.8] Fast, resumable downloads of ZIM archives over BitTorrent directly in-app (Electron only)</li>
-                                <li>[3.8.8] Optionally seed a downloaded archive while the app remains open to help the community</li>
-                                <li>[3.8.8] More reliable ZIM download library with richer descriptions, now using the Kiwix catalogue service (OPDS)</li>
-                                <li>[3.8.8] MacOS packages are now signed and notarized, and signing of Windows packages has recommenced</li>
-                                <li>[3.8.8] Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)</li>
-                                <li>[3.8.8] App now reloads current article immediately when switching between Restricted and ServiceWorker Modes</li>
-                                <li>[3.8.8] Fixed regression whereby Windows Setup and self-extracting portable packages failed to decompress during installation</li>
-                                <li>[3.8.8] Fixed regression with the Windows 7/8/8.1 package which was being built against an incompatible Electron version</li>
-                                <li>[3.8.8] New keyboard shortcuts for article search: <b>/</b>, <b>Ctrl-K</b> and <b>Home</b></li>
-                                <li>Fixed error clicking links in Zimit-based archives in the NWJS app</li>
-                                <li>[3.8.8] Fixed broken printing of articles</li>
-                                <li>[3.8.8] Fixed display of grid-style (masonry) landing pages</li>
-                                <li>[3.8.8] Updated Electron and NWJS frameworks, plus many security updates to dependencies</li>
+                                <li>ZIM archives can now be opened from the file manager on macOS and Linux (deb/rpm) (Electron)</li>
+                                <li>ZIM archives also now show the Kiwix icon on Linux (deb/rpm) and macOS, like in Windows (Electron)</li>
+                                <li>In-app library can now browse the whole ZIM catalogue (including uncategorized archives)</li>
+                                <li>New filter textbox for fast searching of archive list in in-app library</li>
+                                <li>The library's Language, Subject and Date filters now apply instantly, and are remembered when you return to the list</li>
+                                <li>New setting in Configuration &gt; Display settings to show a title bar when the browser's window controls are drawn over the app</li>
+                                <li>macOS app now installs from a disk image (.dmg), and updates itself automatically</li>
+                                <li>Hardened the handling of settings passed to the app in its address</li>
+                                <li>Archives are no longer loaded in the background before you have chosen whether to trust them</li>
+                                <li>PDFs and other documents open in a new window again, instead of leaving a dead page</li>
+                                <li>Each PDF or image opened in a new window now gets its own window, and the "Open in new window instead" option is back in Configuration</li>
+                                <li>Fixed the window buttons of recent Edge versions covering the app's own navigation buttons, and restored the draggable area for moving the app window</li>
+                                <li>Active content and limited display mode warnings are shown again</li>
+                                <li>Historical Wikipedia archives again switch automatically to the display mode they need</li>
+                                <li>Find in article no longer hangs when you type characters such as brackets or asterisks</li>
+                                <li>Fixed grid-style (masonry) landing pages staying blank in Firefox until the page was scrolled</li>
+                                <li>Images now finish loading on pages that also contain video or audio</li>
+                                <li>Fixed non-responsive links that are formatted as headings in Zimit archives</li>
+                                <li>Redirect pages now lead to the right article in Restricted mode</li>
+                                <li>Double-clicking a ZIM archive no longer opens it twice, so you are asked only once whether to trust it</li>
+                                <li>Dropping a ZIM archive onto the app now works where the browser blocks direct file access</li>
+                                <li>Popover previews of Wikipedia links now work with the experimental libzim reader</li>
+                                <li>Clicking the fullscreen icon to exit fullscreen works again</li>
+                                <li>Reset app now reliably clears all stored data and caches</li>
+                                <li>Numerous security and stability improvements</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

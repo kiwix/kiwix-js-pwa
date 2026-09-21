@@ -1,78 +1,85 @@
 # Changelog
 
-## Interim release 3.9.0
+## Release 3.9.1/3.9.2
 
-* FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
-* FIX: Two PDF links on the same page that share a caption, such as "Download PDF", now open in a window each, instead of replacing one another in a single shared window
-* REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives now open in a new window again, instead of being blocked by the browser in the sandboxed article frame, which left the app stuck on a dead page
-* FIX: With "Open in new window" enabled, each image or other non-HTML entry opened from a ZIM now gets its own window
-* FIX: The url and title in a directory entry id are now URI-encoded, so a literal "|" is no longer read as the field separator, and titles with "|" are not truncated in the "Return to" link (port of kiwix-js #1492)
-* DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
-* FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. by pressing Esc) no longer logs a spurious error, and the navbar icon now correctly switches back from "Return to fullscreen"
-* FIX: Installed PWA no longer becomes the default app for every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
-* FEATURE: ZIM archives now show the Kiwix icon in the file manager on macOS and Linux, matching the icon Windows already shows, and the Store app now uses that same icon in place of an older blue one
-* FEATURE: ZIM archives can now be opened from the file manager in the Electron app on macOS and in the Linux deb and rpm packages (the AppImage has to be integrated with the desktop, for example with AppImageLauncher, before the OS can offer it)
-* FIX: Opening a ZIM from the OS while the Electron app is already running no longer moves the app to a different port, and hence loses its settings and caches, on next launch
-* DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image (it passed the certificate password where the keychain password was required)
-* FIX: When the Electron app finds its usual port taken by another program, it now loads from the port it has just switched to, instead of from the other program for that session
-* FIX: Classic Zimit archives read with the legacy method no longer loop endlessly (sometimes locking the app) when the experimental libzim reader is turned on, and the two settings can no longer be turned on together
-* FIX: Reset app now deletes all IndexedDB databases, including the assets cache and Zimit collections, which an incorrect database name had caused it to skip
-* FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page (port of kiwix-js #1413)
-* FIX: Clicking the fullscreen icon to exit fullscreen now works again, after it stopped responding to clicks following the Bootstrap 3 to FontAwesome icon migration
-* FIX: The spinning progress icon is now shown again during OPFS imports and in-app downloads, and the fullscreen prompt icon is no longer missing, after residual Bootstrap 3 glyphicon references stopped rendering with the FontAwesome migration
-* FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
-* FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
-* FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
-* FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
-* FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
-* FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
-* FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
-* REGRESSION: App now auto-switches to appropriate display mode when openinig historical Wikipedia archives
-* REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
-* REGRISSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
-* REGRESSION: Links in the active content warnings are now legible in dark mode
-* DEV: Developer Mode can now be turned on and off while the app is in Restricted mode
-* DEV: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable
-* FIX: A misspelt setting name meant the app ignored user choice to disable assets cache
-* FIX: Reset app no longer fails with an error when no Service Worker is controlling the page
-* SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level
-* FIX: The content injection mode is now checked against the modes the app actually supports, so an unrecognized value can no longer leave the app in an invalid state
-* DEV: Harmonized the checks on the content injection mode string with upstream, and removed vestigial handling of a mode this app does not implement
-* DEV: Added unit tests covering the validation of the content injection mode value
-* SECURITY: Settings supplied in the app's URL are no longer saved permanently, apart from the few the app passes between its own windows, and source verification can now only be changed in Configuration
-* FEATURE: New setting to show a title bar when the browser draws the window controls overlay over the app, restoring the choice that recent versions of Edge removed
-* FEATURE: In-app library can now browse the whole ZIM catalogue as well as by category, so archives that declare no category in their metadata can now be found
+* FEATURE: ZIM archives now show the Kiwix icon in file managers with macOS and Linux Electron apps, as on Windows
+* FEATURE: ZIM archives can now be opened from the file manager on macOS and in the Linux deb/rpm packages
+* FEATURE: New setting to show a title bar under the window controls overlay, restoring an option that recent versions of Edge removed
+* FEATURE: In-app library can now browse the whole ZIM catalogue, not just by category, so uncategorized archives can be found
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
-* ENHANCEMENT: When the app supplies its own title bar, it stays in place as the navigation bar slides away on scroll
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
-* ENHANCEMENT: The top navigation bar now matches the height of the window controls overlay, and follows it when the user shows or hides the title bar
-* FIX: The library's Language, Subject and Date filters now apply instantly, without rebuilding the list, and no longer reset when returning to the list
-* FIX: Auto-updates now enabled for the macOS Electron app
-* FIX: The colour of the window frame now follows the app's navigation bar, so the window buttons no longer sit in a contrasting block in light mode
-* FIX: Popover previews of Wikimedia article links now work when reading the archive with the experimental libzim reader
-* FIX: The popover's open-in-new-window icon now opens a new window or tab when reading with the experimental libzim reader, instead of loading the article in place
-* FIX: Opening an article in a new window or tab no longer blanks or hides the article you were reading in the original window
-* FIX: Zimit (classic) archives read with the experimental libzim reader no longer sometimes stay hidden after a page loads
-* FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
-* FIX: Launching a ZIM by double-clicking it in the OS no longer opens the archive twice, so the file permission request and the "trusted source" security prompt are no longer shown twice
-* FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives can be opened by double-clicking them in File Explorer
-* FIX: When the Windows Store app is launched by double-clicking a ZIM file, the stored location of the previously opened archive is now cleared as intended, instead of being left in place
-* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, which was lost in the Bootstrap 4 migration (latest browsers turn the overlay on by default, so the window buttons were covering the app's controls)
-* REGRESSION: Restored the draggable area in the top navigation bar, which was lost in the Bootstrap 4 migration, so the app window can be moved again when the window controls overlay is shown
-* REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
-* REGRESSION: Fix serious bootloop when a new GitHub release is found
+* ENHANCEMENT: Auto-updates now enabled for the macOS Electron app
+* SECURITY: Settings supplied in the app's URL are no longer saved permanently (except those the app passes between its own windows), and source verification can only be changed in Configuration
+* SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level
 * INFO: Document the Electron app's server feature in README
+* INFO: Document the Electron app's BitTorrent downloads in the About section and README
+* INFO: Add CONTRIBUTING.md, moving the contributor instructions out of README
+* INFO: Mention support for Raspberry Pi OS (64-bit) in README and release notes
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
+* REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives open in a new window again
+* REGRESSION: The "Open in new window instead" option is visible again in Configuration (hidden since the Bootstrap 4 migration)
+* REGRESSION: App now auto-switches to appropriate display mode when opening historical Wikipedia archives
+* REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
+* REGRESSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
+* REGRESSION: Links in the active content warnings are now legible in dark mode
+* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, lost in the Bootstrap 4 migration, so the window buttons no longer cover the app's controls
+* REGRESSION: Restored the draggable area of the top navigation bar when the window controls overlay is shown
+* REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
+* FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
+* FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
+* FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
+* FIX: A "|" in an article's url or title no longer breaks its directory entry id or truncates the "Return to" link
+* FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
+* FIX: Images on pages that also contain video or audio now finish loading, and printing such pages no longer hangs
+* FIX: Opening an article in a new window or tab no longer blanks or hides the article you were reading in the original window
+* FIX: PDF links that share a caption, such as "Download PDF", now each open in their own window instead of replacing one another
+* FIX: With "Open in new window" enabled, each image or other non-HTML entry opened from a ZIM now gets its own window
+* FIX: Popover previews of Wikimedia article links now work when reading the archive with the experimental libzim reader
+* FIX: The popover's open-in-new-window icon now opens a new window or tab with the experimental libzim reader, instead of loading the article in place
+* FIX: Zimit (classic) archives read with the experimental libzim reader no longer sometimes stay hidden after a page loads
+* FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
+* FIX: Classic Zimit archives no longer loop endlessly (sometimes locking the app) when legacy Zimit support and the experimental libzim reader are both on; the two settings are now mutually exclusive
+* FIX: Double-clicking a ZIM in the OS no longer opens it twice, so the file permission and "trusted source" prompts appear only once
+* FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives open by double-clicking in File Explorer
+* FIX: Launching the Windows Store app by double-clicking a ZIM now clears the stored location of the previous archive, as intended
+* FIX: Installed PWA no longer claims every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
+* FIX: Opening a ZIM from the OS while the Electron app is running no longer moves it to a new port on next launch, which lost its settings and caches
+* FIX: If the Electron app's usual port is taken by another program, the app now loads from the port it has switched to, not from that program
+* FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
+* FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
+* FIX: Clicking the fullscreen icon to exit fullscreen works again (broken by the FontAwesome icon migration)
+* FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. with Esc) no longer logs an error, and the navbar icon now switches back from "Return to fullscreen"
+* FIX: The spinner during OPFS imports and in-app downloads, and the fullscreen prompt icon, are shown again (leftover Bootstrap 3 glyphicons had stopped rendering)
+* FIX: The ToC and Top buttons now resize correctly on narrow screens, as does the archive picker in Configuration when OPFS is on
+* FIX: The window frame colour now follows the navigation bar, so the window buttons no longer sit in a contrasting block in light mode
+* FIX: The library's Language, Subject and Date filters now apply instantly, and no longer reset when returning to the list
+* FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
+* FIX: An unrecognized content injection mode value can no longer leave the app in an invalid state
+* FIX: A misspelt setting name meant the app ignored user choice to disable assets cache
+* FIX: Reset app now deletes all IndexedDB databases, including the assets cache and Zimit collections, previously skipped due to a wrong database name
+* FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page
+* FIX: Reset app no longer fails with an error when no Service Worker is controlling the page
+* DEV: Unit tests now run in CI on every push and pull request, using Node's built-in test runner (`node --test`) with shared scaffolding in `test/helpers.cjs`
+* DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image
+* DEV: Developer Mode can now be turned on and off while the app is in Restricted mode
+* DEV: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable
+* DEV: Harmonized the content injection mode checks with upstream, and removed handling of a mode this app does not implement
+* DEV: Added unit tests covering the validation of the content injection mode value
 * DEV: Publish releases with a new script instead of electron-builder's GitHub publisher, using smart routing for human vs autoupdate releases
 * DEV: Derive `minimumSystemVersion` from the built app rather than hardcoding it
 * DEV: Fail the publish if any modern macOS variant is missing
 * DEV: Verify each disk image in CI by mounting it and re-checking the signature, notarization, etc.
 * DEV: Publish disk images rather than zips to download.kiwix.org and S3
-* DEV: For the NW.js app, `npm start` now runs the x64 version
 * DEV: When running Create-DraftRelease with winget switch, select correct setup package
 * DEV: Update javascript-libzim to v0.95
+* DEV: Tighten the ESLint semicolon rule and fix missing semicolons
+* DEV: Make the updater's release-matching regular expressions robust to single-line API responses, with unit tests
+* DEV: Declare Node 22.12 as the minimum version in `engines`, and run the tests on Node 22
+* DEV: Add a Node script to scan a ZIM's directory entries (`scripts/scan-zim-dirents.cjs`)
+* DEV: Add a release checklist (`RELEASE_CHECKLIST.md`)
+* DEV: Security updates to dependencies (including express, qs, js-yaml, @xmldom/xmldom and fast-uri)
 
 ## Release 3.8.7 / 3.8.8
 
@@ -85,6 +92,7 @@
 * REGRESSION: Fixed the Windows 7/8/8.1 package which was built against an incompatible Electron version
 * REGRESSION: Fix error clicking Zimit-style links in NWJS app
 * REGRESSION: Fix NWJS build script defaulting to ia32 instead of x64
+* REGRESSION: Fix serious bootloop when a new GitHub release is found
 * DEV: Enable Hardened Runtime and add an entitlements file for macOS Electron builds
 * DEV: Sign and notarize macOS packages in CI, verifying signature, notarization ticket and Gatekeeper assessment before publication
 * DEV: Single workflow dispatch option now controls signing of both Windows and macOS packages; nightlies are always unsigned
@@ -94,6 +102,7 @@
 * DEV: Update Electron to 43.2.0 and Electron Builder to 26.15.7
 * DEV: Update Rollup to 29.0.3 and fix syntax change for strict require
 * DEV: Several security updates to dependencies 
+* DEV: For the NW.js app, `npm start` now runs the x64 version
 
 ## Release 3.8.5 / 3.8.6
 
