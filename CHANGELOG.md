@@ -1,11 +1,12 @@
 # Changelog
 
-## Interim release 3.9.0
+## Release 3.9.1/3.9.2
 
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
 * FIX: Two PDF links on the same page that share a caption, such as "Download PDF", now open in a window each, instead of replacing one another in a single shared window
 * REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives now open in a new window again, instead of being blocked by the browser in the sandboxed article frame, which left the app stuck on a dead page
 * FIX: With "Open in new window" enabled, each image or other non-HTML entry opened from a ZIM now gets its own window
+* REGRESSION: The "Open in new window instead" option in Configuration is shown again when "Open links in a new tab" is ticked, after the Bootstrap 4 migration hid it permanently
 * FIX: The url and title in a directory entry id are now URI-encoded, so a literal "|" is no longer read as the field separator, and titles with "|" are not truncated in the "Return to" link (port of kiwix-js #1492)
 * DEV: The unit test suites under `test/` now run in CI (`npm ci && npm test`) on every push and pull request, migrated to Node's built-in test runner (`node --test`) with the shared scaffolding factored into `test/helpers.cjs`
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. by pressing Esc) no longer logs a spurious error, and the navbar icon now correctly switches back from "Return to fullscreen"
@@ -21,15 +22,16 @@
 * FIX: Clicking the fullscreen icon to exit fullscreen now works again, after it stopped responding to clicks following the Bootstrap 3 to FontAwesome icon migration
 * FIX: The spinning progress icon is now shown again during OPFS imports and in-app downloads, and the fullscreen prompt icon is no longer missing, after residual Bootstrap 3 glyphicon references stopped rendering with the FontAwesome migration
 * FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
-* FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens
+* FIX: Images on pages that also contain video or audio now finish loading, and printing such pages no longer hangs while waiting for the images
+* FIX: The ToC and Top buttons in the bottom navigation bar now resize correctly on narrow screens, as does the archive picker in Configuration when OPFS is turned on
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
 * FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
 * FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
 * FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
-* REGRESSION: App now auto-switches to appropriate display mode when openinig historical Wikipedia archives
+* REGRESSION: App now auto-switches to appropriate display mode when opening historical Wikipedia archives
 * REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
-* REGRISSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
+* REGRESSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
 * REGRESSION: Links in the active content warnings are now legible in dark mode
 * DEV: Developer Mode can now be turned on and off while the app is in Restricted mode
 * DEV: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable
@@ -62,6 +64,9 @@
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
 * INFO: Document the Electron app's server feature in README
+* INFO: Document the Electron app's BitTorrent downloads in the About section and README
+* INFO: Add CONTRIBUTING.md, moving the contributor instructions out of README
+* INFO: Mention support for Raspberry Pi OS (64-bit) in README and release notes
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
@@ -73,6 +78,12 @@
 * DEV: For the NW.js app, `npm start` now runs the x64 version
 * DEV: When running Create-DraftRelease with winget switch, select correct setup package
 * DEV: Update javascript-libzim to v0.95
+* DEV: Tighten the ESLint semicolon rule and fix missing semicolons
+* DEV: Make the updater's release-matching regular expressions robust to single-line API responses, with unit tests
+* DEV: Declare Node 22.12 as the minimum version in `engines`, and run the tests on Node 22
+* DEV: Add a Node script to scan a ZIM's directory entries (`scripts/scan-zim-dirents.cjs`)
+* DEV: Add a release checklist (`RELEASE_CHECKLIST.md`)
+* DEV: Security updates to dependencies (including express, qs, js-yaml, @xmldom/xmldom and fast-uri)
 
 ## Release 3.8.7 / 3.8.8
 
