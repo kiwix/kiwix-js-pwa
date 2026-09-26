@@ -21,6 +21,22 @@ let startServer; // Function to start the server
 let restartServer; // Function to restart the server with new binding
 const connections = new Set(); // Track active connections for clean shutdown
 
+// Identifies this app in Kiwix's server statistics, e.g. kiwix/3.9.1 (js-electron-windows), in the format proposed in
+// kiwix/operations#797. Packaged apps add their flavour after the parenthesis, e.g. (js-electron-windows) wikimed, so
+// that they count as the same reader; it is taken from the productName in the flavour branch's package.json. It is sent
+// only to Kiwix's own servers, rather than set app-wide with app.userAgentFallback, which would also change
+// navigator.userAgent, read by the renderer to detect the runtime [kiwix-js-pwa #986]
+const appFlavour = /wikivoyage/i.test(app.getName()) ? ' wikivoyage' : /wikimed/i.test(app.getName()) ? ' wikimed' : '';
+const kiwixUserAgent = 'kiwix/' + app.getVersion().replace(/-E$/i, '') + ' (js-electron-' +
+    ({ win32: 'windows', darwin: 'macos' }[process.platform] || process.platform) + ')' + appFlavour;
+const isKiwixUrl = function (url) {
+    try {
+        return /(^|\.)kiwix\.org$/i.test(new URL(url).hostname);
+    } catch (err) {
+        return false;
+    }
+};
+
 // Helper function to get local IP address
 function getLocalIPAddress () {
     const interfaces = os.networkInterfaces();
@@ -218,6 +234,7 @@ function registerListeners () {
         // event to the right torrent (progress and done statuses carry their own infoHash)
         let infoHash = null;
         try {
+            args.userAgent = isKiwixUrl(args.torrentUrl) ? kiwixUserAgent : undefined;
             const status = await torrentDownloader.startDownload(args, {
                 onProgress: (s) => sendToRenderer('torrent-progress', s),
                 onDone: (s) => sendToRenderer('torrent-done', s),
@@ -512,6 +529,12 @@ app.whenReady().then(() => {
             }
         });
     };
+
+    // Send kiwixUserAgent on all requests the app's windows make to Kiwix's servers (catalogue, meta4, downloads)
+    session.defaultSession.webRequest.onBeforeSendHeaders({ urls: ['*://*.kiwix.org/*'] }, (details, callback) => {
+        details.requestHeaders['User-Agent'] = kiwixUserAgent;
+        callback({ requestHeaders: details.requestHeaders });
+    });
 
     // Start the server (this will create the window and register listeners once ready)
     startServer(port);

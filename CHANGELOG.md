@@ -2,6 +2,7 @@
 
 ## Interim release 3.9.0
 
+* FEATURE: The Electron and NW.js apps now identify themselves to Kiwix's servers with a User-Agent such as `kiwix/3.9.1 (js-electron-windows)`, followed by `wikimed` or `wikivoyage` for a packaged flavour, sent only on requests to *.kiwix.org, so that their traffic can be told apart in Kiwix's statistics (kiwix/operations#797)
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
 * FIX: Two PDF links on the same page that share a caption, such as "Download PDF", now open in a window each, instead of replacing one another in a single shared window
 * REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives now open in a new window again, instead of being blocked by the browser in the sandboxed article frame, which left the app stuck on a dead page
