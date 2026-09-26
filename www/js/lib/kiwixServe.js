@@ -1888,6 +1888,39 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
     }
 }
 
+/**
+ * In NW.js, identifies the app in Kiwix's server statistics by sending e.g. kiwix/3.9.1 (js-nwjs-windows) on all
+ * requests to Kiwix's own servers, in the format proposed in kiwix/operations#797 (the Electron app does the same in
+ * main.cjs). The manifest's user-agent field is not used, because it would also change navigator.userAgent and the
+ * User-Agent sent to every other server [kiwix-js-pwa #986]
+ */
+function sendKiwixUserAgentInNWJS () {
+    if (!window.nw || !window.chrome || !window.chrome.webRequest) return;
+    var webRequest = window.chrome.webRequest;
+    var platform = window.nw.process.platform;
+    var userAgent = 'kiwix/' + window.nw.App.manifest.version.replace(/-N$/i, '') + ' (js-nwjs-' +
+        ({ win32: 'windows', darwin: 'macos' }[platform] || platform) + ')';
+    var setUserAgent = function (details) {
+        var headers = details.requestHeaders.filter(function (header) {
+            return !/^user-agent$/i.test(header.name);
+        });
+        headers.push({ name: 'User-Agent', value: userAgent });
+        return { requestHeaders: headers };
+    };
+    var filter = { urls: ['*://*.kiwix.org/*'] };
+    try {
+        webRequest.onBeforeSendHeaders.addListener(setUserAgent, filter, ['blocking', 'requestHeaders', 'extraHeaders']);
+    } catch (err) {
+        // Chromium before 72 (e.g. NW.js 0.14.7 for XP/Vista) has no 'extraHeaders' option, and does not need it
+        try {
+            webRequest.onBeforeSendHeaders.addListener(setUserAgent, filter, ['blocking', 'requestHeaders']);
+        } catch (err) {
+            console.warn('Unable to set the User-Agent for requests to Kiwix servers', err);
+        }
+    }
+}
+sendKiwixUserAgentInNWJS();
+
 var percentageComplete = 0;
 var downloadSize = 0;
 
