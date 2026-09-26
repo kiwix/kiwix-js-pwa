@@ -22,13 +22,13 @@ let restartServer; // Function to restart the server with new binding
 const connections = new Set(); // Track active connections for clean shutdown
 
 // Identifies this app in Kiwix's server statistics, e.g. kiwix/3.9.1 (js-electron-windows), in the format proposed in
-// kiwix/operations#797, with the flavour appended for packaged apps, e.g. (js-electron-windows_wikimed), taken from the
-// productName in the flavour branch's package.json. It is sent only to Kiwix's own servers, rather than set app-wide
-// with app.userAgentFallback, which would also change navigator.userAgent, read by the renderer to detect the runtime
-// [kiwix-js-pwa #986]
-const appFlavour = /wikivoyage/i.test(app.getName()) ? '_wikivoyage' : /wikimed/i.test(app.getName()) ? '_wikimed' : '';
+// kiwix/operations#797. Packaged apps add their flavour after the parenthesis, e.g. (js-electron-windows) wikimed, so
+// that they count as the same reader; it is taken from the productName in the flavour branch's package.json. It is sent
+// only to Kiwix's own servers, rather than set app-wide with app.userAgentFallback, which would also change
+// navigator.userAgent, read by the renderer to detect the runtime [kiwix-js-pwa #986]
+const appFlavour = /wikivoyage/i.test(app.getName()) ? ' wikivoyage' : /wikimed/i.test(app.getName()) ? ' wikimed' : '';
 const kiwixUserAgent = 'kiwix/' + app.getVersion().replace(/-E$/i, '') + ' (js-electron-' +
-    ({ win32: 'windows', darwin: 'macos' }[process.platform] || process.platform) + appFlavour + ')';
+    ({ win32: 'windows', darwin: 'macos' }[process.platform] || process.platform) + ')' + appFlavour;
 const isKiwixUrl = function (url) {
     try {
         return /(^|\.)kiwix\.org$/i.test(new URL(url).hostname);

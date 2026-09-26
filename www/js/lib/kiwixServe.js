@@ -1891,8 +1891,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
 /**
  * In NW.js, identifies the app in Kiwix's server statistics by sending e.g. kiwix/3.9.1 (js-nwjs-windows) on all
  * requests to Kiwix's own servers, in the format proposed in kiwix/operations#797 (the Electron app does the same in
- * main.cjs). Packaged apps append their flavour, e.g. (js-nwjs-windows_wikimed), detected from the packaged file as
- * for the auto-updater in app.js, because the NW.js manifest has the same name in every flavour. The manifest's
+ * main.cjs). Packaged apps add their flavour after the parenthesis, e.g. (js-nwjs-windows) wikimed, detected from the
+ * packaged file as for the auto-updater in app.js, because the NW.js manifest has the same name in every flavour. The manifest's
  * user-agent field is not used, because it would also change navigator.userAgent and the User-Agent sent to every
  * other server [kiwix-js-pwa #986]
  */
@@ -1900,10 +1900,10 @@ function sendKiwixUserAgentInNWJS () {
     if (!window.nw || !window.chrome || !window.chrome.webRequest) return;
     var webRequest = window.chrome.webRequest;
     var platform = window.nw.process.platform;
-    var flavour = /wikivoyage/.test(params.packagedFile) ? '_wikivoyage'
-        : /wikimed|mdwiki/.test(params.packagedFile) ? '_wikimed' : '';
+    var flavour = /wikivoyage/.test(params.packagedFile) ? ' wikivoyage'
+        : /wikimed|mdwiki/.test(params.packagedFile) ? ' wikimed' : '';
     var userAgent = 'kiwix/' + window.nw.App.manifest.version.replace(/-N$/i, '') + ' (js-nwjs-' +
-        ({ win32: 'windows', darwin: 'macos' }[platform] || platform) + flavour + ')';
+        ({ win32: 'windows', darwin: 'macos' }[platform] || platform) + ')' + flavour;
     var setUserAgent = function (details) {
         var headers = details.requestHeaders.filter(function (header) {
             return !/^user-agent$/i.test(header.name);
