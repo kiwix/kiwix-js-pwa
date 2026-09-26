@@ -7150,16 +7150,17 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     console.log('** HTML received for article ' + dirEntry.url + ' **');
 
     if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
-        // Construct an HTML document to wrap the content
-        htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
+        // Write an empty HTML document to wrap the content, then insert the content as text, so that it is displayed verbatim
+        // and never parsed as markup
         var articleDoc = articleWindow.document;
         articleDoc.open();
-        articleDoc.write(htmlArticle);
+        articleDoc.write('<html><body style="color:yellow;background:darkblue;"><pre></pre></body></html>');
         articleDoc.close();
+        articleDoc.querySelector('pre').textContent = htmlArticle;
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
