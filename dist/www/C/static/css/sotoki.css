@@ -1,0 +1,241 @@
+﻿/* we don't include SE's topbar */
+body {
+    padding-top: 0;
+}
+/* outbound array icon for all external links */
+a.external-link {
+   /* overriden in template to account for relative path */
+    background-image: url('../../static/img/external-link-ltr-icon.svg');
+    background-position: center right;
+    background-repeat: no-repeat;
+    padding-right: 13px;
+}
+/* kiwix-serve hack so we don't break the magnifier icon */
+.kiwix_searchform input.ui-autocomplete-input {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.kiwix_searchform {
+    font-size: 14px;
+}
+/* Small width screen adaptations (mobile) */
+.mobile-only {
+    display: none;
+}
+@media screen and (max-width: 640px) {
+    .mobile-only {
+        display: block;
+   }
+    .desktop-only {
+        display: none;
+   }
+    .post-layout--left, .post-layout--left.votecell {
+        padding-right: 0;
+   }
+    html.html__responsive:not(.html__unpinned-leftnav) #content {
+        padding-left: 8px;
+        padding-right: 8px;
+   }
+    html.html__responsive:not(.html__unpinned-leftnav) .question-summary {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+   }
+    body.tagged-questions-page #questions.pl24 .mln24 {
+        margin-left: 0 !important;
+   }
+   /* User profile: display all blocks as rows */
+    body.user-page .profile-box {
+        display: block !important;
+   }
+    body.user-page .reputation-box, .metadata-box {
+        margin: auto;
+        flex-shrink: unset 
+   }
+    body.user-page .metadata-box {
+        max-width: unset;
+   }
+    body.user-page .profile-user--name {
+        text-align: center;
+   }
+    body.user-page .flex-spacer {
+        display: none;
+        flex-grow: unset;
+   }
+}
+/* Top bar design copied from SE's mobile.css https://cdn.sstatic.net/Sites/alcoholmeta/mobile.css */
+.topbar{
+    background:#0c0d0e;
+    height:44px 
+}
+.topbar .topbar-icon,.topbar .date-group-toggle,.topbar .icon-help>.triangle{
+    background-color:transparent;
+    background-repeat:no-repeat 
+}
+.topbar .network-items{
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:stretch;
+    align-items:stretch;
+    height:44px 
+}
+.topbar .site-name{
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+    overflow:hidden 
+}
+.topbar .site-name a{
+    color:#fff;
+    display:block;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+    width:100% 
+}
+.topbar .site-name small{
+    color:#9199a1;
+    font-size:11px;
+    text-transform:uppercase;
+    display:block 
+}
+.topbar .-actions{
+    display:-webkit-flex;
+    display:flex;
+    margin-left:auto 
+}
+.topbar .topbar-icon{
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+    justify-content:center;
+    height:44px;
+    margin-bottom:0;
+    padding:0 10px;
+    color:#9199a1 
+}
+.topbar .topbar-icon-on{
+    background-color:#eff0f1 
+}
+.topbar .icon-inbox .unread-count{
+    background-color:#d1383d 
+}
+.topbar .icon-achievements .unread-count{
+    background-color:#33A030 
+}
+.topbar ._danger-indicator:after{
+    content:'';
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    position:absolute;
+    box-sizing:content-box;
+    right:2px;
+    top:10px;
+    background:#d1383d;
+    z-index:2;
+    border:2px solid #0c0d0e;
+    transition:top cubic-bezier(.165, .84, .44, 1) .15s 
+}
+.topbar ._danger-indicator.topbar-icon-on:after{
+    border:2px solid #eff0f1 
+}
+.topbar .icon-site-switcher-bubble{
+    width:46px;
+    background-position:20px 11px;
+    background-repeat:no-repeat;
+    background-size:auto 24px;
+    background-image:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB3aWR0aD0iMzhweCIgaGVpZ2h0PSI0OHB4IiB2aWV3Qm94PSIwIDAgMzggNDgiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+ICAgICAgICA8dGl0bGU+bG9nbzwvdGl0bGU+ICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPiAgICA8ZGVmcz48L2RlZnM+ICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPGcgaWQ9ImxvZ28iPiAgICAgICAgICAgIDxwYXRoIGQ9Ik0zOC4wMDAwMDEyLDIxIEwzOC4wMDAwMDEyLDI5IEwtMS4xOTIwOTE3M2UtMDksMjkgTC0xLjE5MjA5MTczZS0wOSwyMSBMMzguMDAwMDAxMiwyMSBaIiBpZD0iU2hhcGUiIGZpbGw9IiMzODYzQTAiPjwvcGF0aD4gICAgICAgICAgICA8cGF0aCBkPSJNMzguMDAwMDAxMiwxMC45OTEgTDM4LjAwMDAwMTIsMTguOTk5OTk5OCBMLTEuMTkyMDkxNzNlLTA5LDE4Ljk5OTk5OTggTC0xLjE5MjA5MTczZS0wOSwxMC45OTEgTDM4LjAwMDAwMTIsMTAuOTkxIFoiIGlkPSJTaGFwZSIgZmlsbD0iIzRDOTdDNiI+PC9wYXRoPiAgICAgICAgICAgIDxwYXRoIGQ9Ik01Ljk5OTk5OTk3LDYuNjc1NzIwNDJlLTA5IEMxLjk5OTk5OTk3LDYuNjc1NzIwNDJlLTA5IC0xLjgxMTk4MTMyZS0wOCwzLjAxNzAwMDAxIC0xLjgxMTk4MTMyZS0wOCw2LjUwMDAwMDAxIEwtMi44NjEwMjMwNmUtMDgsOS4wMDAwMDAwMSBMMzgsOS4wMDAwMDAwMSBMMzgsNi41MDAwMDAwMSBDMzgsMy4wMTYwMDAwMSAzNiw2LjY3NTcyMDQyZS0wOSAzMiw2LjY3NTcyMDQyZS0wOSBMNS45OTk5OTk5Nyw2LjY3NTcyMDQyZS0wOSBaIiBpZD0iU2hhcGUiIGZpbGw9IiM5MEQyRTgiPjwvcGF0aD4gICAgICAgICAgICA8cGF0aCBkPSJNMC4wMDEwMDAwMDA4MywzMy4wNTIgQzAuMDAxMDAwMDAwODMsMzYuNTM2IDIuNjU2LDM5IDYsMzkgTDIxLDM5IEwyMSw0OCBMMzAsMzkgTDMxLjUsMzkgQzM0Ljg0NywzOSAzOCwzNi45ODMgMzgsMzMuNSBMMzgsMzEgTDguMzQ0NjEzODllLTEwLDMxIEwwLjAwMTAwMDAwMDgzLDMzLjA1MiBaIiBpZD0iU2hhcGUiIGZpbGw9IiMyNjQ5ODEiPjwvcGF0aD4gICAgICAgICAgICA8cGF0aCBkPSJNNi41LDM5IEMzLjE1NiwzOSAtMS4xOTIwOTE3NmUtMDksMzYuOTgzIC0xLjE5MjA5MTc2ZS0wOSwzMy41IEwtMS4xOTIwOTE3NmUtMDksMzEgTDE1LDMxIEw3LDM5IEw2LjUsMzkgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjNDM1QjhFIj48L3BhdGg+ICAgICAgICAgICAgPHBhdGggZD0iTTguMzQ0NjQ5NDJlLTEwLDE4Ljk5OTk5OTggTDguMzQ0NjQ5NDJlLTEwLDEwLjk5MSBMMzQuODE0LDEwLjk5MSBMMjcuMDAwMDAwNywxOC45OTk5OTk4IEw4LjM0NDY0OTQyZS0xMCwxOC45OTk5OTk4IFoiIGlkPSJTaGFwZSIgZmlsbD0iIzY3QTNDQyI+PC9wYXRoPiAgICAgICAgICAgIDxwYXRoIGQ9Ik0tMS4xOTIwOTUzMWUtMDksMjkgTC0xLjE5MjA5NTMxZS0wOSwyMSBMMjQuOTk5OTk5MywyMSBMMTYuOTk5OTk5MywyOSBMLTEuMTkyMDk1MzFlLTA5LDI5IFoiIGlkPSJTaGFwZSIgZmlsbD0iIzUzNzJBQSI+PC9wYXRoPiAgICAgICAgPC9nPiAgICA8L2c+PC9zdmc+');
+    position:relative;
+    transition:background-position .1s ease-in-out;
+    margin-right:5px 
+}
+.topbar .icon-site-switcher-bubble .icon-hamburger,.topbar .icon-site-switcher-bubble .icon-hamburger:before,.topbar .icon-site-switcher-bubble .icon-hamburger:after{
+    position:absolute;
+    left:0;
+    top:50%;
+    margin-top:-1px;
+    display:inline-block;
+    width:8px;
+    height:2px;
+    background:#6a737c;
+    border-radius:0 2px 2px 0;
+    transition:width .1s ease-in-out 
+}
+.topbar .icon-site-switcher-bubble .icon-hamburger:before,.topbar .icon-site-switcher-bubble .icon-hamburger:after{
+    content:'';
+    margin-top:-6px 
+}
+.topbar .icon-site-switcher-bubble .icon-hamburger:after{
+    margin-top:4px 
+}
+.topbar .icon-site-switcher-bubble.topbar-icon-on{
+    background-position:13px 11px 
+}
+.topbar .icon-site-switcher-bubble.topbar-icon-on .icon-hamburger,.topbar .icon-site-switcher-bubble.topbar-icon-on .icon-hamburger:before,.topbar .icon-site-switcher-bubble.topbar-icon-on .icon-hamburger:after{
+    width:0 
+}
+.topbar .siteSwitcher-dialog,.topbar .inbox-dialog,.topbar .achievements-dialog,.topbar .modInbox-dialog{
+    min-width:300px;
+    width:100% 
+}
+.topbar .login-links-container{
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center 
+}
+.topbar .login-links-container a{
+    display:inline-block;
+    padding:0 10px;
+    font-size:13px;
+    color:#fff 
+}
+.topbar .unread-count{
+    display:inline-block;
+    color:#fff;
+    text-align:center;
+    text-indent:0;
+    border-radius:2px;
+    padding:4px 6px 3px;
+    font-size:11px;
+    line-height:1;
+    position:absolute;
+    min-width:22px 
+}
+.nav{
+    background-color:#242729;
+    box-shadow:inset 0 -1px 0 rgba(0,0,0,0.1);
+    width:100%;
+    text-align:center;
+    height:44px;
+    font-size:0 
+}
+.nav ul{
+    margin:0 
+}
+.nav li{
+    display:inline-block;
+    list-style:none;
+    padding:8px 0 
+}
+.nav a,.nav a:visited{
+    font-size:11px;
+    color:rgba(255,255,255,0.7);
+    line-height:20px;
+    display:inline-block;
+    padding:4px 5px;
+    border-radius:1px 
+}
+.nav li.current{
+    margin:0 3px 
+}
+.nav li.current a{
+    background:#fff;
+    color:#242729;
+    padding-right:7px;
+    padding-left:7px;
+    font-weight:500 
+}
+
