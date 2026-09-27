@@ -72,6 +72,72 @@ if (store.has('expressPort')) {
 }
 console.log('Express Port: ' + port);
 
+// The folders whose ZIM archives the renderer may read through window.fs (see preload.cjs, which enforces this). Only the main
+// process adds to this list, from paths it obtained itself: the file and folder dialogues, the launch file, and files the user
+// dropped or picked in the app window (reported by the preload from trusted events). Picked folders are remembered across
+// launches, so that the app can reopen the last archive; the packaged archive folder is always allowed, so that packaged apps
+// (e.g. WikiMed) open their archive without the user having to pick it
+const ALLOWED_FOLDERS_KEY = 'fsAllowedFolders';
+const MAX_ALLOWED_FOLDERS = 50;
+const appRootDirectory = __dirname.replace(/[\\/]app\.asar$/, '');
+const packagedArchiveFolders = [path.join(appRootDirectory, 'archives')];
+if (process.resourcesPath) packagedArchiveFolders.push(path.join(process.resourcesPath, 'archives'));
+
+function normalizeFolder (folder) {
+    folder = path.resolve(folder);
+    return process.platform === 'win32' ? folder.toLowerCase() : folder;
+}
+
+function getStoredAllowedFolders () {
+    const stored = store.get(ALLOWED_FOLDERS_KEY);
+    return Array.isArray(stored) ? stored.filter(folder => typeof folder === 'string' && folder) : [];
+}
+
+function getAllowedFolders () {
+    return packagedArchiveFolders.concat(getStoredAllowedFolders());
+}
+
+function isAllowedFolder (folder) {
+    if (typeof folder !== 'string' || !folder) return false;
+    const normalized = normalizeFolder(folder);
+    return getAllowedFolders().some(allowed => normalizeFolder(allowed) === normalized);
+}
+
+// Adds folders to the remembered list (most recent last, oldest dropped beyond the limit) and sends the new list to the preload
+function allowFolders (folders) {
+    let stored = getStoredAllowedFolders();
+    folders.forEach(function (folder) {
+        if (typeof folder !== 'string' || !folder) return;
+        folder = path.resolve(folder);
+        stored = stored.filter(existing => normalizeFolder(existing) !== normalizeFolder(folder));
+        stored.push(folder);
+    });
+    store.set(ALLOWED_FOLDERS_KEY, stored.slice(-MAX_ALLOWED_FOLDERS));
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('fs-allowed-folders', getAllowedFolders());
+    }
+}
+
+// Read synchronously by the preload before any page script runs
+ipcMain.on('fs-get-allowed-folders', function (event) {
+    event.returnValue = getAllowedFolders();
+});
+
+// Folders of ZIM files the user has dropped or picked in the app window; this channel is not exposed to page script
+ipcMain.on('fs-allow-user-folders', function (event, folders) {
+    if (Array.isArray(folders)) allowFolders(folders);
+});
+
+// The only electron-store keys the renderer may read or write
+const rendererStoreKeys = ['expressPort'];
+
+// The in-app BitTorrent downloader only fetches Kiwix torrents
+const regexpKiwixTorrentUrl = /^https?:\/\/(?:[a-z0-9-]+\.)*kiwix\.org\/[^?#]+\.torrent$/i;
+
+// The download the renderer may later ask to discard (its folder and file name), recorded here rather than taken from the
+// renderer, so that the discard request can only ever delete the partial file of the app's own download
+const TORRENT_IN_PROGRESS_KEY = 'torrentInProgress';
+
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 
 contextMenu({
@@ -154,6 +220,8 @@ function registerListeners () {
             properties: ['openFile']
         }).then(function ({ filePaths }) {
             if (filePaths.length) {
+                // The folder, not just the file, because the other parts of a split archive sit beside it
+                allowFolders([path.dirname(filePaths[0])]);
                 event.reply('file-dialog', filePaths[0]);
             }
         });
@@ -163,6 +231,7 @@ function registerListeners () {
             properties: ['openDirectory']
         }).then(function ({ filePaths }) {
             if (filePaths.length) {
+                allowFolders([filePaths[0]]);
                 event.reply('dir-dialog', filePaths[0]);
             }
         });
@@ -173,16 +242,34 @@ function registerListeners () {
     });
     // Set a value using the Electron Store API
     ipcMain.on('set-store-value', function (event, key, value) {
+        if (!rendererStoreKeys.includes(key)) {
+            console.warn('Refusing to set store value for key ' + key);
+            return;
+        }
         console.log('Setting store value for key ' + key + ' to ' + value);
         store.set(key, value);
     });
     // Get a value from the Electron Store API
     ipcMain.on('get-store-value', function (event, key) {
+        if (!rendererStoreKeys.includes(key)) {
+            console.warn('Refusing to get store value for key ' + key);
+            return;
+        }
         var value = store.get(key);
         console.log('Store value for key ' + key + ' is ' + value);
         event.reply('get-store-value', key, value);
     });
     ipcMain.on('open-external', function (event, url) {
+        let protocol = '';
+        try {
+            protocol = new URL(url).protocol;
+        } catch (err) {
+            protocol = '';
+        }
+        if (protocol !== 'http:' && protocol !== 'https:') {
+            console.warn('Refusing to open external URL: ' + url);
+            return;
+        }
         console.log('Opening external URL: ' + url);
         shell.openExternal(url);
     });
@@ -214,16 +301,39 @@ function registerListeners () {
         }
     };
     ipcMain.handle('torrent-start', async (event, args) => {
+        // Only Kiwix torrents, and only into a folder the user has picked
+        if (!args || typeof args.torrentUrl !== 'string' || !regexpKiwixTorrentUrl.test(args.torrentUrl)) {
+            return { ok: false, error: 'Only torrents from kiwix.org can be downloaded' };
+        }
+        if (!isAllowedFolder(args.savePath)) {
+            return { ok: false, error: 'The download folder has not been picked in the app: please choose it again' };
+        }
         // The infoHash of this download, once known: it lets the renderer route the error
         // event to the right torrent (progress and done statuses carry their own infoHash)
         let infoHash = null;
+        // Set once the download has finished or failed, which can happen before startDownload resolves (e.g. when resuming
+        // a file that was already complete), in which case it must not be recorded as discardable
+        let settled = false;
+        // Forgets the recorded download once it can no longer be discarded (it finished, failed or was stopped)
+        const forgetTorrentInProgress = function () {
+            settled = true;
+            const record = store.get(TORRENT_IN_PROGRESS_KEY);
+            if (record && record.infoHash === infoHash) store.delete(TORRENT_IN_PROGRESS_KEY);
+        };
         try {
-            const status = await torrentDownloader.startDownload(args, {
+            const status = await torrentDownloader.startDownload({ torrentUrl: args.torrentUrl, savePath: args.savePath }, {
                 onProgress: (s) => sendToRenderer('torrent-progress', s),
-                onDone: (s) => sendToRenderer('torrent-done', s),
-                onError: (err) => sendToRenderer('torrent-error', { infoHash: infoHash, message: err.message })
+                onDone: (s) => {
+                    forgetTorrentInProgress();
+                    sendToRenderer('torrent-done', s);
+                },
+                onError: (err) => {
+                    forgetTorrentInProgress();
+                    sendToRenderer('torrent-error', { infoHash: infoHash, message: err.message });
+                }
             });
             infoHash = status.infoHash;
+            if (!settled) store.set(TORRENT_IN_PROGRESS_KEY, { infoHash: infoHash, savePath: path.resolve(args.savePath), name: status.name });
             return { ok: true, status: status };
         } catch (err) {
             console.error('Torrent start failed:', err);
@@ -231,6 +341,8 @@ function registerListeners () {
         }
     });
     ipcMain.handle('torrent-stop', async (event, infoHash, deletePartial) => {
+        const record = store.get(TORRENT_IN_PROGRESS_KEY);
+        if (record && record.infoHash === infoHash) store.delete(TORRENT_IN_PROGRESS_KEY);
         return torrentDownloader.stopTorrent(infoHash, deletePartial);
     });
     ipcMain.handle('torrent-status', (event, infoHash) => {
@@ -240,9 +352,17 @@ function registerListeners () {
         console.log('Setting torrent seeding to ' + value);
         torrentDownloader.setKeepSeeding(value);
     });
-    ipcMain.handle('torrent-delete-partial', async (event, savePath, name) => {
+    // Deletes the partial file of the download recorded at 'torrent-start' (any arguments from the renderer are ignored)
+    ipcMain.handle('torrent-delete-partial', async () => {
+        const record = store.get(TORRENT_IN_PROGRESS_KEY);
+        store.delete(TORRENT_IN_PROGRESS_KEY);
+        if (!record || typeof record.savePath !== 'string' || typeof record.name !== 'string') {
+            return { ok: true, deleted: false };
+        }
+        const name = path.basename(record.name);
+        if (!regexpZimFile.test(name)) return { ok: true, deleted: false };
         try {
-            return { ok: true, deleted: await torrentDownloader.deletePartialFile(savePath, name) };
+            return { ok: true, deleted: await torrentDownloader.deletePartialFile(record.savePath, name) };
         } catch (err) {
             console.error('Torrent partial-file delete failed:', err);
             return { ok: false, error: err.message };
@@ -319,10 +439,14 @@ function processLaunchFilePath (arg) {
 // event, which on a cold launch fires before the app has a window. Both routes therefore store the path here, and
 // the renderer is always given this value, so that what it is told at startup and what it loads stay in step
 let launchFilePath = processLaunchFilePath(process.argv);
+if (launchFilePath) allowFolders([path.dirname(launchFilePath)]);
 
 // Opens an archive that the OS has asked us to open after startup (or, on macOS, during it)
 function openLaunchFile (filePath) {
-    if (filePath) launchFilePath = filePath;
+    if (filePath) {
+        launchFilePath = filePath;
+        allowFolders([path.dirname(filePath)]);
+    }
     // Still starting up: the window has not been created yet, and will pick up the stored path when it is
     if (!mainWindow) return;
     if (mainWindow.isDestroyed()) {
@@ -387,6 +511,19 @@ app.whenReady().then(() => {
     // origin-scoped storage) to a different port on next launch every time a ZIM was opened while the app was running
     if (!gotSingleInstanceLock) return;
     server = express();
+
+    // Only answer requests addressed to this machine by loopback name, IP address or local network name, so that a web page
+    // cannot reach the server through a DNS name of its own that it has pointed at this machine
+    const localHostName = os.hostname().toLowerCase();
+    server.use((req, res, next) => {
+        const hostName = (req.hostname || '').toLowerCase().replace(/^\[|\]$/g, '');
+        if (hostName === 'localhost' || hostName === localHostName || /\.local$/.test(hostName) ||
+            /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostName) || hostName.indexOf(':') !== -1) {
+            return next();
+        }
+        console.warn('Refusing request for host ' + req.headers.host);
+        res.status(421).end();
+    });
 
     // Add security headers
     server.use((req, res, next) => {
