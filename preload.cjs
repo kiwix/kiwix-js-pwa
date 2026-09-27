@@ -66,7 +66,14 @@ function isAllowedFolder (folder) {
 function isAllowedZimFile (filePath) {
     if (typeof filePath !== 'string' || !filePath) return false;
     const resolved = path.resolve(filePath);
-    return regexpZimFileName.test(path.basename(resolved)) && isAllowedFolder(path.dirname(resolved));
+    if (!regexpZimFileName.test(path.basename(resolved)) || !isAllowedFolder(path.dirname(resolved))) return false;
+    // path.resolve() does not follow links, so the file the name points to must be a ZIM archive too (it may be stored
+    // elsewhere: some users keep links to their archives in one folder)
+    try {
+        return regexpZimFileName.test(path.basename(fs.realpathSync(resolved)));
+    } catch (err) {
+        return false;
+    }
 }
 
 // Fails the call the way a missing file would, so that the app's usual "please pick the file again" handling runs
@@ -165,6 +172,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     },
     getStoreValue: function (key) {
         ipcRenderer.send('get-store-value', key);
+    },
+    // Forgets the folders the user has given the app (used by a full reset of the app)
+    resetAllowedFolders: function () {
+        return ipcRenderer.invoke('fs-reset-allowed-folders');
     },
     openExternal: function (url) {
         ipcRenderer.send('open-external', url);

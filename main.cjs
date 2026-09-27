@@ -129,11 +129,24 @@ ipcMain.on('fs-allow-user-folders', function (event, folders) {
     if (Array.isArray(folders)) allowFolders(folders);
 });
 
+// A full reset of the app forgets the remembered folders, keeping only the folder of any file the app was launched with (which
+// the reloaded app opens again) and the packaged archive folder
+ipcMain.handle('fs-reset-allowed-folders', function () {
+    store.delete(ALLOWED_FOLDERS_KEY);
+    allowFolders(launchFilePath ? [path.dirname(launchFilePath)] : []);
+});
+
 // Whether the renderer may read the given file: a ZIM archive (or part of a split archive) in an allowed folder
 function isAllowedZimFile (filePath) {
     if (typeof filePath !== 'string' || !filePath) return false;
     const resolved = path.resolve(filePath);
-    return regexpZimFile.test(path.basename(resolved)) && isAllowedFolder(path.dirname(resolved));
+    if (!regexpZimFile.test(path.basename(resolved)) || !isAllowedFolder(path.dirname(resolved))) return false;
+    // As in preload.cjs, the file the name points to (following any link) must be a ZIM archive too
+    try {
+        return regexpZimFile.test(path.basename(fs.realpathSync(resolved)));
+    } catch (err) {
+        return false;
+    }
 }
 
 // libzim for the archives the renderer knows only by their path (see libzimNodeWorker.cjs)
@@ -356,7 +369,9 @@ function registerListeners () {
                 }
             });
             infoHash = status.infoHash;
-            if (!settled) store.set(TORRENT_IN_PROGRESS_KEY, { infoHash: infoHash, savePath: path.resolve(args.savePath), name: status.name });
+            // If it settled early, infoHash was not yet known, so forget now any record of it left by an earlier session
+            if (settled) forgetTorrentInProgress();
+            else store.set(TORRENT_IN_PROGRESS_KEY, { infoHash: infoHash, savePath: path.resolve(args.savePath), name: status.name });
             return { ok: true, status: status };
         } catch (err) {
             console.error('Torrent start failed:', err);

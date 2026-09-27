@@ -93,7 +93,16 @@ function reset (object) {
             }
         }
 
-        // 5. Clear any Origin Private File System Archives
+        // 5. In Electron, forget the folders the user has given the app access to (these are remembered by the main process)
+        if (!object && window.electronAPI && window.electronAPI.resetAllowedFolders) {
+            promises.push(window.electronAPI.resetAllowedFolders().then(function () {
+                console.debug('The folders the app may read were forgotten...');
+            }).catch(function (err) {
+                console.error('Error forgetting the folders the app may read:', err);
+            }));
+        }
+
+        // 6. Clear any Origin Private File System Archives
         // DEV: Method is currently behind a flag, so wait till fully implemented
         // if (!object || object === 'OPFS') {
         //     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {

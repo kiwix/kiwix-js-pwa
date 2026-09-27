@@ -2,7 +2,7 @@
 
 ## Interim release 3.9.01
 
-* SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once)
+* SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need
 * SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch)
 * CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
