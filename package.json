@@ -255,7 +255,7 @@
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
-    "electron": "^43.2.0",
+    "electron": "^43.7.5",
     "electron-builder": "^26.16.1",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
