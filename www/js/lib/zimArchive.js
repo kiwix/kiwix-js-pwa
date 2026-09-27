@@ -153,9 +153,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
                 if ((that.file.fullTextIndex || useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
-                (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
-                // Note that NWJS currently throws due to problems with Web Worker context
-                !(window.nw && that.file._files[0].readMode === 'electron'))) {
+                (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm'))) {
                     that.libzimReady = 'loading';
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     if (useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);

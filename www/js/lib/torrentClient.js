@@ -35,8 +35,8 @@ var bufferedEvents = [];
 
 // Backend detection: 'electron' via the preload API, but only where the runtime can actually
 // run WebTorrent (Node 20+ and a non-ia32 arch, decided in preload.cjs as torrentSupported, so
-// old/32-bit Electron builds never offer the feature); NWJS will be added here later
-// (e.g. window.nw && parseInt(nw.process.versions.node) >= 20)
+// old/32-bit Electron builds never offer the feature); NW.js runs the app without Node, so it
+// has no backend
 var backend = window.electronAPI && window.electronAPI.startTorrentDownload && window.electronAPI.torrentSupported ? 'electron' : null;
 
 /**

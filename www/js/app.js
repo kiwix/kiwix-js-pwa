@@ -50,7 +50,7 @@ import resetApp from './lib/resetApp.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
+/* global params, appstate, assetsCache, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -111,9 +111,9 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 }
 
 // At launch, we set the correct content injection mode
-if (params.contentInjectionMode === 'serviceworker' && window.nw) {
+if (params.contentInjectionMode === 'serviceworker' && params.isNWJS) {
     // Failsafe for Windows XP version: reset app to Restricted mode because it cannot run in SW mode in Windows XP
-    if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
+    if (params.isNWJSXP) setContentInjectionMode('jquery');
 } else {
     setContentInjectionMode(params.contentInjectionMode);
 }
@@ -2099,7 +2099,7 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
             uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
                 '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
                 '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
-        } else if (window.nw) {
+        } else if (params.isNWJS) {
             uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
         } else if (params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive &&
             !/wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive.file.name)) {
@@ -3297,7 +3297,7 @@ document.addEventListener('DOMContentLoaded', function () {
     appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
         /^https:/i.test(location.protocol) ? 'UWP (PWA) '
         : /UWP/.test(params.appType) ? 'UWP '
-        : window.nw ? 'NWJS '
+        : params.isNWJS ? 'NWJS '
         : /Electron/.test(params.appType) ? 'Electron '
         : /PWA/.test(params.appType) ? 'PWA ' : '';
     // Hide notice to download an archive if we are in a packaged ZIM app
@@ -3621,7 +3621,7 @@ function setContentInjectionMode (value) {
             });
             return;
         }
-        if (window.nw && nw.process.versions.nw === '0.14.7') {
+        if (params.isNWJSXP) {
             uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to Restricted mode...')
             .then(function () {
                 setContentInjectionMode('jquery');
@@ -4608,7 +4608,7 @@ function processFakeFile (fakeFileList) {
         params.storedFilePath = fakeFile.path;
         settingsStore.removeItem('pickedFolder');
         params.pickedFolder = '';
-        if (window.nw && window.showOpenFilePicker) {
+        if (params.isNWJS && window.showOpenFilePicker) {
             populateDropDownListOfArchives([fakeFile.name]);
         } else {
             populateDropDownListOfArchives([fakeFile.name]);
@@ -5855,7 +5855,7 @@ function readArticle (dirEntry) {
         }
 
         // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to Restricted mode
-        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !window.nw) {
+        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !params.isNWJS) {
             return handleUnsupportedReplayWorker(dirEntry);
         }
         // If we are dealing with a classic Zimit ZIM, we need to instruct Replay to add the file as a new collection
@@ -6624,7 +6624,7 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    if (/Android/.test(params.appType) || window.nw) {
+                    if (/Android/.test(params.appType) || params.isNWJS) {
                         // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
                         // so we need to download the PDF instead
                         var readAndDownloadBinaryContent = function (zimUrl) {

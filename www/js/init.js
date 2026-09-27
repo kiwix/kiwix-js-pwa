@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* global Windows, launchArgumentsUWP, webpHero */
+/* global Windows, launchArgumentsUWP, webpHero, chrome */
 /* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
@@ -66,6 +66,17 @@ var params = {};
  * @type Object
  */
 var appstate = {};
+
+// NW.js runs the app with Node switched off ("nodejs": false in package.json.nwjs), so it no longer provides window.nw:
+// we recognise it by the flag it adds to its app manifest instead, and its Windows XP build (NW.js 0.14.7) by its Chromium version
+params['isNWJS'] = (function () {
+    try {
+        return !!chrome.runtime.getManifest().__nwjs_app;
+    } catch (err) {
+        return false;
+    }
+})();
+params['isNWJSXP'] = params.isNWJS && /Chrome\/50\./.test(navigator.userAgent);
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '3.9.01'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
@@ -157,7 +168,7 @@ params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alph
 // the default: an unrecognized mode matches neither branch of setContentInjectionMode() in app.js, which leaves
 // the app in a hybrid state with no radio button selected. This also heals a value stored before that was so
 params['contentInjectionMode'] = /^(?:jquery|serviceworker)$/.test(getSetting('contentInjectionMode'))
-    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !params.isNWJS) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
@@ -461,7 +472,7 @@ params.navbarHeight = parseInt(getComputedStyle(document.getElementById('navbar'
 function getAppType () {
     var type = 'HTML5';
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
-    if (window.fs || window.nw) type = 'Electron';
+    if (window.fs || params.isNWJS) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
     if (/Windows/i.test(navigator.userAgent)) type += '|Windows';
     else if (/Android/i.test(navigator.userAgent)) type += '|Android';
