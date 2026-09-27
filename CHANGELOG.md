@@ -2,6 +2,7 @@
 
 ## Interim release 3.9.01
 
+* FIX: Choosing a folder for an in-app BitTorrent download no longer replaces the archive folder (which could cause the app to open a different archive on next launch): the download folder is remembered separately, and the app offers to open the archive once it has downloaded
 * SECURITY: Tightened the Content Security Policy applied to articles displayed in Restricted mode, and non-HTML entries are now always displayed as plain text
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
 * FIX: Two PDF links on the same page that share a caption, such as "Download PDF", now open in a window each, instead of replacing one another in a single shared window

@@ -1927,14 +1927,31 @@ function clearActiveTorrent () {
     settingsStore.removeItem(ACTIVE_TORRENT_KEY);
 }
 
-// If the user had to pick a folder before a torrent could start, the chosen path arrives
-// here (as well as in app.js, which scans the folder and sets params.pickedFolder)
+// settingsStore key remembering the folder the user last chose for BitTorrent downloads, which
+// is kept separate from the archive folder (picking a download folder must not replace it)
+var TORRENT_FOLDER_KEY = 'torrentDownloadFolder';
+
+// Set by app.js: makes a folder the archive folder and opens an archive in it
+var downloadedArchiveOpener = null;
+
+/**
+ * Registers the function used to open an archive once it has been downloaded
+ * @param {Function} opener A function taking the folder path and the archive's file name
+ */
+function setDownloadedArchiveOpener (opener) {
+    downloadedArchiveOpener = opener;
+}
+
+// If the user had to pick a folder before a torrent could start, the chosen path arrives here
+// (app.js ignores it, because appstate.dirDialogPurpose shows it was picked for a download)
 if (window.dialog && torrentClient.isAvailable()) {
     window.dialog.on('dir-dialog', function (fullPath) {
-        if (pendingTorrentUrl && fullPath) {
+        if (appstate.dirDialogPurpose === 'torrent' && pendingTorrentUrl && fullPath) {
             var torrentUrl = pendingTorrentUrl;
             pendingTorrentUrl = null;
-            beginTorrentDownload(torrentUrl, fullPath.replace(/\\/g, '/'));
+            fullPath = fullPath.replace(/\\/g, '/');
+            settingsStore.setItem(TORRENT_FOLDER_KEY, fullPath, Infinity);
+            beginTorrentDownload(torrentUrl, fullPath);
         }
     });
 }
@@ -1997,11 +2014,12 @@ function startTorrentDownload (torrentUrl, sizeMB) {
         });
         return;
     }
-    // The torrent backend runs in the Node context and needs a real filesystem path, which is
-    // derived from the picked folder (including FSA directory handles) where possible; we
-    // resolve it before showing the dialogue so the destination (or the need to pick one) can
-    // be stated up front
-    torrentClient.resolveSavePath(params.pickedFolder).then(function (savePath) {
+    // The torrent backend runs in the Node context and needs a real filesystem path: this is the
+    // folder the user last chose for downloads, or else is derived from the picked archive folder
+    // (including FSA directory handles) where possible; we resolve it before showing the dialogue
+    // so the destination (or the need to pick one) can be stated up front
+    var downloadFolder = settingsStore.getItem(TORRENT_FOLDER_KEY);
+    (downloadFolder ? Promise.resolve(downloadFolder) : torrentClient.resolveSavePath(params.pickedFolder)).then(function (savePath) {
         var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
             (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
             (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
@@ -2020,9 +2038,10 @@ function startTorrentDownload (torrentUrl, sizeMB) {
                 beginTorrentDownload(torrentUrl, savePath);
             } else if (window.dialog) {
                 // No path could be derived, or the user asked to change folder: open the
-                // native (path-returning) folder picker, whose result is also stored as the
-                // new picked folder for subsequent downloads
+                // native (path-returning) folder picker, whose result is stored as the
+                // download folder for subsequent downloads
                 pendingTorrentUrl = torrentUrl;
+                appstate.dirDialogPurpose = 'torrent';
                 window.dialog.openDirectory();
             } else {
                 uiUtil.systemAlert('<p>Unable to establish a folder to download the archive into. Please pick your ZIM folder in Configuration first.</p>', 'No download folder');
@@ -2080,12 +2099,19 @@ function beginTorrentDownload (torrentUrl, savePath) {
                 torrentClient.detach(s.infoHash);
             }
             reportDownloadProgress('completed');
-            uiUtil.systemAlert('<p>The archive <i>' + escapeHtml(s.name) + '</i> has been downloaded to your device' +
+            uiUtil.systemAlert('<p>The archive <i>' + escapeHtml(s.name) + '</i> has been downloaded to <b>' + escapeHtml(savePath) + '</b>' +
                 (s.verified ? ' and its data has been verified' : '') + '.</p>' +
-                (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : ''),
-            'Download complete').then(function () {
-                var btnRefresh = document.getElementById('btnRefresh');
-                if (btnRefresh) btnRefresh.click();
+                (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : '') +
+                (downloadedArchiveOpener ? '<p>Do you want to open it now?</p>' : ''),
+            'Download complete', !!downloadedArchiveOpener, 'Not now', 'Open archive').then(function (open) {
+                if (open && downloadedArchiveOpener) {
+                    // This makes the download folder the archive folder
+                    downloadedArchiveOpener(savePath, s.name);
+                } else {
+                    // The archive shows up in the list if it was downloaded to the archive folder
+                    var btnRefresh = document.getElementById('btnRefresh');
+                    if (btnRefresh) btnRefresh.click();
+                }
             });
         },
         onError: function (message) {
@@ -2198,6 +2224,7 @@ function clearSeedingStatus () {
 }
 
 export default {
+    setDownloadedArchiveOpener: setDownloadedArchiveOpener,
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
     reportDownloadProgress: reportDownloadProgress,
