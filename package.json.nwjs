@@ -4,6 +4,7 @@
   "version": "3.9.0-N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
+  "nodejs": false,
   "domain": "kiwix.js.windows",
   "window": {
     "width": 1280,

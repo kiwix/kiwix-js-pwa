@@ -50,7 +50,7 @@ import resetApp from './lib/resetApp.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
+/* global params, appstate, assetsCache, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -111,12 +111,8 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 }
 
 // At launch, we set the correct content injection mode
-if (params.contentInjectionMode === 'serviceworker' && window.nw) {
-    // Failsafe for Windows XP version: reset app to Restricted mode because it cannot run in SW mode in Windows XP
-    if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
-} else {
-    setContentInjectionMode(params.contentInjectionMode);
-}
+// Failsafe for the Windows XP version of NW.js: reset the app to Restricted mode, because it cannot run in SW mode
+setContentInjectionMode(params.isNWJSXP ? 'jquery' : params.contentInjectionMode);
 
 // Test caching capability
 cache.test(function () {});
@@ -1714,6 +1710,7 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         pickFolderNativeFS();
     } else if (window.fs && window.dialog) {
         // Electron fallback
+        appstate.dirDialogPurpose = 'archives';
         dialog.openDirectory();
     } else if (params.webkitdirectory) {
         // Legacy webkitdirectory file picker
@@ -2098,7 +2095,7 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
             uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
                 '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
                 '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
-        } else if (window.nw) {
+        } else if (params.isNWJS) {
             uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
         } else if (params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive &&
             !/wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive.file.name)) {
@@ -3296,7 +3293,7 @@ document.addEventListener('DOMContentLoaded', function () {
     appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
         /^https:/i.test(location.protocol) ? 'UWP (PWA) '
         : /UWP/.test(params.appType) ? 'UWP '
-        : window.nw ? 'NWJS '
+        : params.isNWJS ? 'NWJS '
         : /Electron/.test(params.appType) ? 'Electron '
         : /PWA/.test(params.appType) ? 'PWA ' : '';
     // Hide notice to download an archive if we are in a packaged ZIM app
@@ -3620,7 +3617,7 @@ function setContentInjectionMode (value) {
             });
             return;
         }
-        if (window.nw && nw.process.versions.nw === '0.14.7') {
+        if (params.isNWJSXP) {
             uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to Restricted mode...')
             .then(function () {
                 setContentInjectionMode('jquery');
@@ -4573,15 +4570,31 @@ if (window.dialog) {
         createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
     });
     dialog.on('dir-dialog', function (fullPath) {
+        // A folder picked as the destination of a BitTorrent download is handled by kiwixServe.js,
+        // and must not replace the archive folder
+        if (appstate.dirDialogPurpose === 'torrent') return;
         console.log('Path: ' + fullPath);
-        fullPath = fullPath.replace(/\\/g, '/');
-        // The natively picked folder supersedes any previously picked FSA folder, so delete
-        // the stored directory handle: it would otherwise resurrect the previous folder when
-        // the archive list is refreshed or the app is relaunched
-        cache.idxDB('delete', 'pickedFSHandle', function () {});
-        scanNodeFolderforArchives(fullPath);
+        openNodeFolder(fullPath);
     });
 }
+
+/**
+ * Makes a folder picked with a native (path-returning) picker the archive folder, and optionally opens an archive in it
+ * @param {String} folderPath The path of the folder
+ * @param {String} archiveName Optional name of an archive in the folder to open
+ */
+function openNodeFolder (folderPath, archiveName) {
+    folderPath = folderPath.replace(/\\/g, '/');
+    // The natively picked folder supersedes any previously picked FSA folder, so delete
+    // the stored directory handle: it would otherwise resurrect the previous folder when
+    // the archive list is refreshed or the app is relaunched
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
+    scanNodeFolderforArchives(folderPath, archiveName ? function () {
+        setLocalArchiveFromArchiveList(archiveName);
+    } : undefined);
+}
+// Lets the in-app BitTorrent client offer to open an archive it has just downloaded
+kiwixServe.setDownloadedArchiveOpener(openNodeFolder);
 
 function processFakeFile (fakeFileList) {
     var fakeFile = fakeFileList[0];
@@ -4591,7 +4604,7 @@ function processFakeFile (fakeFileList) {
         params.storedFilePath = fakeFile.path;
         settingsStore.removeItem('pickedFolder');
         params.pickedFolder = '';
-        if (window.nw && window.showOpenFilePicker) {
+        if (params.isNWJS && window.showOpenFilePicker) {
             populateDropDownListOfArchives([fakeFile.name]);
         } else {
             populateDropDownListOfArchives([fakeFile.name]);
@@ -5838,7 +5851,7 @@ function readArticle (dirEntry) {
         }
 
         // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to Restricted mode
-        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !window.nw) {
+        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !params.isNWJS) {
             return handleUnsupportedReplayWorker(dirEntry);
         }
         // If we are dealing with a classic Zimit ZIM, we need to instruct Replay to add the file as a new collection
@@ -6607,7 +6620,7 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    if (/Android/.test(params.appType) || window.nw) {
+                    if (/Android/.test(params.appType) || params.isNWJS) {
                         // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
                         // so we need to download the PDF instead
                         var readAndDownloadBinaryContent = function (zimUrl) {
@@ -7150,16 +7163,17 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     console.log('** HTML received for article ' + dirEntry.url + ' **');
 
     if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
-        // Construct an HTML document to wrap the content
-        htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
+        // Write an empty HTML document to wrap the content, then insert the content as text, so that it is displayed verbatim
+        // and never parsed as markup
         var articleDoc = articleWindow.document;
         articleDoc.open();
-        articleDoc.write(htmlArticle);
+        articleDoc.write('<html><body style="color:yellow;background:darkblue;"><pre></pre></body></html>');
         articleDoc.close();
+        articleDoc.querySelector('pre').textContent = htmlArticle;
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
@@ -7523,8 +7537,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     params.containsMathTex = params.useMathJax ? /<(script|span)\s+(type|class)\s*=\s*['"]\s*(math\/tex|latex)\s*['"]/i.test(htmlArticle) : false;
     params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
-    // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened
-    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
+    // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened.
+    // Restricted mode runs no inline script, so, as in article.html, it allows inline code only for styles (ZIM scripts run only in SW mode)
+    var cspSources = '\'self\' data: file: blob: bingmaps: about:';
+    var csp = params.contentInjectionMode === 'jquery'
+        ? 'default-src ' + cspSources + '; style-src ' + cspSources + ' \'unsafe-inline\'; script-src \'self\' file: chrome-extension: ms-appx-web: \'unsafe-eval\';'
+        : 'default-src ' + cspSources + ' \'unsafe-inline\' \'unsafe-eval\';';
+    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="' + csp + '"></meta>\n    ');
 
     // Maker return links
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
