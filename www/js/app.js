@@ -7525,9 +7525,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
     // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened.
-    // Restricted mode runs no inline script, so its script policy matches that of article.html (ZIM scripts run only in SW mode)
-    var cspScriptSrc = params.contentInjectionMode === 'jquery' ? ' script-src \'self\' file: chrome-extension: ms-appx-web: \'unsafe-eval\';' : '';
-    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';' + cspScriptSrc + '"></meta>\n    ');
+    // Restricted mode runs no inline script, so, as in article.html, it allows inline code only for styles (ZIM scripts run only in SW mode)
+    var cspSources = '\'self\' data: file: blob: bingmaps: about:';
+    var csp = params.contentInjectionMode === 'jquery'
+        ? 'default-src ' + cspSources + '; style-src ' + cspSources + ' \'unsafe-inline\'; script-src \'self\' file: chrome-extension: ms-appx-web: \'unsafe-eval\';'
+        : 'default-src ' + cspSources + ' \'unsafe-inline\' \'unsafe-eval\';';
+    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="' + csp + '"></meta>\n    ');
 
     // Maker return links
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
