@@ -59,14 +59,6 @@
                 }
             }, false);
         }
-        // If we're running in NWJS context, rename NWJS require and add needed functions
-        var nwjsVersion = '';
-        if (typeof window.nw !== 'undefined') {
-            window.requireNode = window.require;
-            window.require = undefined;
-            window.fs = requireNode('fs');
-            nwjsVersion = nw.process.versions.nw;
-        } 
     </script>
 </head>
 <body role="application" class="dark">

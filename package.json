@@ -195,6 +195,7 @@
       "preload.cjs",
       "main.cjs",
       "torrentDownloader.cjs",
+      "libzimNodeWorker.cjs",
       "!**/*.dev.{js,wasm}"
     ]
   },

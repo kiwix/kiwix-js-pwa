@@ -1981,7 +1981,7 @@ if (torrentClient.isAvailable()) {
                     beginTorrentDownload(pendingResume.torrentUrl, pendingResume.savePath);
                 } else {
                     clearActiveTorrent();
-                    torrentClient.deletePartial(pendingResume.savePath, pendingResume.name).catch(function (err) {
+                    torrentClient.deletePartial().catch(function (err) {
                         console.warn('[kiwixServe] Could not delete discarded partial download', err);
                     });
                 }
