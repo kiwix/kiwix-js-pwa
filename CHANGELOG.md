@@ -2,6 +2,7 @@
 
 ## Interim release 3.9.01
 
+* FEATURE: The Electron and NW.js apps now identify themselves to Kiwix's servers with a User-Agent such as `kiwix/3.9.1 (js-electron-windows)`, followed by `wikimed` or `wikivoyage` for a packaged flavour, sent only on requests to *.kiwix.org, so that their traffic can be told apart in Kiwix's statistics (kiwix/operations#797)
 * SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need
 * SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch)
