@@ -1714,6 +1714,7 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         pickFolderNativeFS();
     } else if (window.fs && window.dialog) {
         // Electron fallback
+        appstate.dirDialogPurpose = 'archives';
         dialog.openDirectory();
     } else if (params.webkitdirectory) {
         // Legacy webkitdirectory file picker
@@ -4573,15 +4574,31 @@ if (window.dialog) {
         createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
     });
     dialog.on('dir-dialog', function (fullPath) {
+        // A folder picked as the destination of a BitTorrent download is handled by kiwixServe.js,
+        // and must not replace the archive folder
+        if (appstate.dirDialogPurpose === 'torrent') return;
         console.log('Path: ' + fullPath);
-        fullPath = fullPath.replace(/\\/g, '/');
-        // The natively picked folder supersedes any previously picked FSA folder, so delete
-        // the stored directory handle: it would otherwise resurrect the previous folder when
-        // the archive list is refreshed or the app is relaunched
-        cache.idxDB('delete', 'pickedFSHandle', function () {});
-        scanNodeFolderforArchives(fullPath);
+        openNodeFolder(fullPath);
     });
 }
+
+/**
+ * Makes a folder picked with a native (path-returning) picker the archive folder, and optionally opens an archive in it
+ * @param {String} folderPath The path of the folder
+ * @param {String} archiveName Optional name of an archive in the folder to open
+ */
+function openNodeFolder (folderPath, archiveName) {
+    folderPath = folderPath.replace(/\\/g, '/');
+    // The natively picked folder supersedes any previously picked FSA folder, so delete
+    // the stored directory handle: it would otherwise resurrect the previous folder when
+    // the archive list is refreshed or the app is relaunched
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
+    scanNodeFolderforArchives(folderPath, archiveName ? function () {
+        setLocalArchiveFromArchiveList(archiveName);
+    } : undefined);
+}
+// Lets the in-app BitTorrent client offer to open an archive it has just downloaded
+kiwixServe.setDownloadedArchiveOpener(openNodeFolder);
 
 function processFakeFile (fakeFileList) {
     var fakeFile = fakeFileList[0];
