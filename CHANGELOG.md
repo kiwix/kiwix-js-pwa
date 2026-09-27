@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim release 3.9.0
+## Interim release 3.9.01
 
 * SECURITY: Tightened the Content Security Policy applied to articles displayed in Restricted mode, and non-HTML entries are now always displayed as plain text
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
