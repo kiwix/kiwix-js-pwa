@@ -10,6 +10,7 @@ const os = require('os');
 const { fileURLToPath } = require('url');
 // In-app BitTorrent downloader (lazily imports WebTorrent on first use)
 const torrentDownloader = require('./torrentDownloader.cjs');
+const { createLibzimHost } = require('./libzimNodeWorker.cjs');
 // const https = require('https');
 
 const store = new Store();
@@ -128,6 +129,16 @@ ipcMain.on('fs-allow-user-folders', function (event, folders) {
     if (Array.isArray(folders)) allowFolders(folders);
 });
 
+// Whether the renderer may read the given file: a ZIM archive (or part of a split archive) in an allowed folder
+function isAllowedZimFile (filePath) {
+    if (typeof filePath !== 'string' || !filePath) return false;
+    const resolved = path.resolve(filePath);
+    return regexpZimFile.test(path.basename(resolved)) && isAllowedFolder(path.dirname(resolved));
+}
+
+// libzim for the archives the renderer knows only by their path (see libzimNodeWorker.cjs)
+const libzimHost = createLibzimHost({ isAllowedZimFile: isAllowedZimFile });
+
 // The only electron-store keys the renderer may read or write
 const rendererStoreKeys = ['expressPort'];
 
@@ -188,11 +199,14 @@ function createWindow () {
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'),
             nativeWindowOpen: true,
-            nodeIntegrationInWorker: true,
+            // The page's Web Workers do not need Node.js: libzim reads archives through Node's fs in the main process
+            // instead (see libzimNodeWorker.cjs)
+            nodeIntegrationInWorker: false,
             nodeIntegration: false,
+            // The preload script needs Node.js, and Electron sandboxes the renderer unless this is set explicitly
+            sandbox: false,
             contextIsolation: true
             // enableRemoteModule: false,
-            // sandbox: true
         }
     });
 
@@ -209,6 +223,12 @@ function createWindow () {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContents.send('get-launch-file-path', launchFilePath);
     });
+
+    // The page's own Web Workers end with the page, but the libzim worker in the main process has to be stopped when the page
+    // is reloaded (e.g. by resetting the app) or closed
+    mainWindow.webContents.on('did-navigate', () => libzimHost.terminate());
+    mainWindow.webContents.on('render-process-gone', () => libzimHost.terminate());
+    mainWindow.on('closed', () => libzimHost.terminate());
 }
 
 function registerListeners () {
@@ -236,6 +256,9 @@ function registerListeners () {
             }
         });
     });
+    // Requests for libzim, for an archive the renderer knows only by its path (see libzimNodeWorker.cjs, which validates them)
+    ipcMain.handle('libzim-call', (event, data) => libzimHost.call(data));
+    ipcMain.on('libzim-terminate', () => libzimHost.terminate());
     ipcMain.on('check-updates', function (event) {
         console.log('Auto-update check request received...\n');
         autoUpdater.checkForUpdates();
@@ -698,6 +721,7 @@ app.on('window-all-closed', function () {
 app.on('before-quit', () => {
     // Stop any active or seeding torrents (partial downloads are kept on disk for later resume)
     torrentDownloader.destroyAll();
+    libzimHost.terminate();
     if (expressServer) {
         console.log('Shutting down server...');
         // Forcefully close all active connections

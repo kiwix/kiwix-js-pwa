@@ -204,6 +204,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     deletePartialTorrentFile: function () {
         return ipcRenderer.invoke('torrent-delete-partial');
     },
+    // libzim in the main process, for archives the app knows only by their path (see libzimNodeWorker.cjs and zimArchive.js)
+    callLibzim: function (data) {
+        return ipcRenderer.invoke('libzim-call', data);
+    },
+    terminateLibzim: function () {
+        ipcRenderer.send('libzim-terminate');
+    },
     // The path of any ZIM the app was launched with (null if there is none). The renderer is also sent this
     // path over IPC once the page has loaded (which is what actually opens the archive), but that arrives
     // after the renderer's startup autoload has run, so we read it synchronously here to let the renderer
