@@ -161,14 +161,15 @@ params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippe
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
-// DEV: NW.js is excluded from the ServiceWorker default below because it primarily targets Windows XP. If that
-// changes, note that params.sourceVerification (set further down) becomes live in NW.js as a result, and NW.js
-// runs from file: - see the notes on the trusted context in overrideParams() below before altering this line.
+// DEV: only the Windows XP build of NW.js is excluded from the ServiceWorker default below, because its Chromium
+// cannot run the app in SW mode. The modern NW.js builds default to SW mode like the browser PWA, so
+// params.sourceVerification (set further down) is live in them - see also the notes on the trusted context in
+// overrideParams() below before altering this line.
 // NB the stored value is checked against the modes this app actually supports, and anything else falls back to
 // the default: an unrecognized mode matches neither branch of setContentInjectionMode() in app.js, which leaves
 // the app in a hybrid state with no radio button selected. This also heals a value stored before that was so
 params['contentInjectionMode'] = /^(?:jquery|serviceworker)$/.test(getSetting('contentInjectionMode'))
-    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !params.isNWJS) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !params.isNWJSXP) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
@@ -274,9 +275,10 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // the context we must not trust with the parameters in devOnlyParams.
     // The packaged app types are excluded before the origin is examined, because their origins are
     // indistinguishable from a developer's: the Electron app serves itself from http://localhost via its
-    // bundled Express server, and NW.js runs from file:. Trusting those origins would trust every desktop
-    // install rather than the developer. DEV: this is why changing the default contentInjectionMode for NW.js
-    // (see params.contentInjectionMode above) does not open a hole here - do not reduce this to an origin test.
+    // bundled Express server, and NW.js (whose appType is also Electron) runs from chrome-extension:. Trusting
+    // those origins would trust every desktop install rather than the developer. DEV: this is why defaulting
+    // NW.js to SW mode (see params.contentInjectionMode above) does not open a hole here - do not reduce this
+    // to an origin test.
     // Both clauses below still fire for the cases they are meant for, i.e. a browser pointed at the dev server
     // on localhost, or at www/index.html opened directly from disk.
     var trustedContext = !/Electron|UWP/.test(params.appType) &&

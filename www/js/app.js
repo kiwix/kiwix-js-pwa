@@ -111,12 +111,8 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 }
 
 // At launch, we set the correct content injection mode
-if (params.contentInjectionMode === 'serviceworker' && params.isNWJS) {
-    // Failsafe for Windows XP version: reset app to Restricted mode because it cannot run in SW mode in Windows XP
-    if (params.isNWJSXP) setContentInjectionMode('jquery');
-} else {
-    setContentInjectionMode(params.contentInjectionMode);
-}
+// Failsafe for the Windows XP version of NW.js: reset the app to Restricted mode, because it cannot run in SW mode
+setContentInjectionMode(params.isNWJSXP ? 'jquery' : params.contentInjectionMode);
 
 // Test caching capability
 cache.test(function () {});
