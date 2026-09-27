@@ -105,6 +105,12 @@ window.addEventListener('change', function (e) {
     if (e.isTrusted && e.target && e.target.type === 'file') allowFoldersOfUserFiles(e.target.files);
 }, true);
 
+// The only channels from the main process that the page may listen to (the others, such as 'fs-allowed-folders', are for the
+// preload alone): add any new channel that app code listens to with electronAPI.on() or dialog.on() here
+const rendererEventChannels = ['update-available', 'get-store-value', 'dl-received', 'get-launch-file-path', 'torrent-progress',
+    'torrent-done', 'torrent-error'];
+const rendererDialogChannels = ['file-dialog', 'dir-dialog'];
+
 // DEV: FOR ELECTRON ^12 DO IT THIS WAY:
 // Keep window.fs an object with these method names: parts of the app detect Electron by its presence
 contextBridge.exposeInMainWorld('fs', {
@@ -220,6 +226,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     isAppxOrMSIX: isAppxOrMSIX(),
     __dirname: __dirname,
     on: function (event, callback) {
+        if (!rendererEventChannels.includes(event)) return;
         ipcRenderer.on(event, function (_, data1, data2) {
             callback(data1, data2);
         });
@@ -236,6 +243,7 @@ contextBridge.exposeInMainWorld('dialog', {
     },
     // Provide an easier way to listen to events
     on: function (channel, callback) {
+        if (!rendererDialogChannels.includes(channel)) return;
         ipcRenderer.on(channel, function (_, data) {
             callback(data);
         });
