@@ -9,6 +9,11 @@
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * ENHANCEMENT: Auto-updates now enabled for the macOS Electron app
+* CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
+* SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders
+* SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need
+* SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch)
+* SECURITY: Tightened the Content Security Policy for articles displayed in Restricted mode, and non-HTML entries are now always displayed as plain text
 * SECURITY: Settings supplied in the app's URL are no longer saved permanently (except those the app passes between its own windows), and source verification can only be changed in Configuration
 * SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level
 * INFO: Document the Electron app's server feature in README
@@ -40,6 +45,7 @@
 * FIX: The popover's open-in-new-window icon now opens a new window or tab with the experimental libzim reader, instead of loading the article in place
 * FIX: Zimit (classic) archives read with the experimental libzim reader no longer sometimes stay hidden after a page loads
 * FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
+* FIX: Opening another archive now stops the previous archive's libzim worker (used for full-text search), which had lingered with its memory until the app was closed
 * FIX: Classic Zimit archives no longer loop endlessly (sometimes locking the app) when legacy Zimit support and the experimental libzim reader are both on; the two settings are now mutually exclusive
 * FIX: Double-clicking a ZIM in the OS no longer opens it twice, so the file permission and "trusted source" prompts appear only once
 * FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives open by double-clicking in File Explorer
@@ -49,6 +55,7 @@
 * FIX: If the Electron app's usual port is taken by another program, the app now loads from the port it has switched to, not from that program
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
 * FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
+* FIX: Choosing a folder for an in-app BitTorrent download no longer replaces the archive folder (which could make the app open a different archive on next launch), and the app offers to open the archive once downloaded
 * FIX: Clicking the fullscreen icon to exit fullscreen works again (broken by the FontAwesome icon migration)
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. with Esc) no longer logs an error, and the navbar icon now switches back from "Return to fullscreen"
 * FIX: The spinner during OPFS imports and in-app downloads, and the fullscreen prompt icon, are shown again (leftover Bootstrap 3 glyphicons had stopped rendering)

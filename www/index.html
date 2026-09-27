@@ -59,14 +59,6 @@
                 }
             }, false);
         }
-        // If we're running in NWJS context, rename NWJS require and add needed functions
-        var nwjsVersion = '';
-        if (typeof window.nw !== 'undefined') {
-            window.requireNode = window.require;
-            window.require = undefined;
-            window.fs = requireNode('fs');
-            nwjsVersion = nw.process.versions.nw;
-        } 
     </script>
 </head>
 <body role="application" class="dark">
@@ -111,6 +103,7 @@
                                 <li>New setting in Configuration &gt; Display settings to show a title bar when the browser's window controls are drawn over the app</li>
                                 <li>macOS app now installs from a disk image (.dmg), and updates itself automatically</li>
                                 <li>Hardened the handling of settings passed to the app in its address</li>
+                                <li>Tightened the security of Restricted mode and of the Electron and NW.js apps</li>
                                 <li>Archives are no longer loaded in the background before you have chosen whether to trust them</li>
                                 <li>PDFs and other documents open in a new window again, instead of leaving a dead page</li>
                                 <li>Each PDF or image opened in a new window now gets its own window, and the "Open in new window instead" option is back in Configuration</li>
@@ -124,6 +117,7 @@
                                 <li>Redirect pages now lead to the right article in Restricted mode</li>
                                 <li>Double-clicking a ZIM archive no longer opens it twice, so you are asked only once whether to trust it</li>
                                 <li>Dropping a ZIM archive onto the app now works where the browser blocks direct file access</li>
+                                <li>Choosing a BitTorrent download folder no longer changes which archive opens on next launch (Electron)</li>
                                 <li>Popover previews of Wikipedia links now work with the experimental libzim reader</li>
                                 <li>Clicking the fullscreen icon to exit fullscreen works again</li>
                                 <li>Reset app now reliably clears all stored data and caches</li>

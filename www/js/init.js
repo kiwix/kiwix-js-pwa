@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* global Windows, launchArgumentsUWP, webpHero */
+/* global Windows, launchArgumentsUWP, webpHero, chrome */
 /* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
@@ -66,6 +66,17 @@ var params = {};
  * @type Object
  */
 var appstate = {};
+
+// NW.js runs the app with Node switched off ("nodejs": false in package.json.nwjs), so it no longer provides window.nw:
+// we recognise it by the flag it adds to its app manifest instead, and its Windows XP build (NW.js 0.14.7) by its Chromium version
+params['isNWJS'] = (function () {
+    try {
+        return !!chrome.runtime.getManifest().__nwjs_app;
+    } catch (err) {
+        return false;
+    }
+})();
+params['isNWJSXP'] = params.isNWJS && /Chrome\/50\./.test(navigator.userAgent);
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '3.9.0'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
@@ -150,14 +161,15 @@ params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippe
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
-// DEV: NW.js is excluded from the ServiceWorker default below because it primarily targets Windows XP. If that
-// changes, note that params.sourceVerification (set further down) becomes live in NW.js as a result, and NW.js
-// runs from file: - see the notes on the trusted context in overrideParams() below before altering this line.
+// DEV: only the Windows XP build of NW.js is excluded from the ServiceWorker default below, because its Chromium
+// cannot run the app in SW mode. The modern NW.js builds default to SW mode like the browser PWA, so
+// params.sourceVerification (set further down) is live in them - see also the notes on the trusted context in
+// overrideParams() below before altering this line.
 // NB the stored value is checked against the modes this app actually supports, and anything else falls back to
 // the default: an unrecognized mode matches neither branch of setContentInjectionMode() in app.js, which leaves
 // the app in a hybrid state with no radio button selected. This also heals a value stored before that was so
 params['contentInjectionMode'] = /^(?:jquery|serviceworker)$/.test(getSetting('contentInjectionMode'))
-    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !params.isNWJSXP) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
@@ -263,9 +275,10 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // the context we must not trust with the parameters in devOnlyParams.
     // The packaged app types are excluded before the origin is examined, because their origins are
     // indistinguishable from a developer's: the Electron app serves itself from http://localhost via its
-    // bundled Express server, and NW.js runs from file:. Trusting those origins would trust every desktop
-    // install rather than the developer. DEV: this is why changing the default contentInjectionMode for NW.js
-    // (see params.contentInjectionMode above) does not open a hole here - do not reduce this to an origin test.
+    // bundled Express server, and NW.js (whose appType is also Electron) runs from chrome-extension:. Trusting
+    // those origins would trust every desktop install rather than the developer. DEV: this is why defaulting
+    // NW.js to SW mode (see params.contentInjectionMode above) does not open a hole here - do not reduce this
+    // to an origin test.
     // Both clauses below still fire for the cases they are meant for, i.e. a browser pointed at the dev server
     // on localhost, or at www/index.html opened directly from disk.
     var trustedContext = !/Electron|UWP/.test(params.appType) &&
@@ -461,7 +474,7 @@ params.navbarHeight = parseInt(getComputedStyle(document.getElementById('navbar'
 function getAppType () {
     var type = 'HTML5';
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
-    if (window.fs || window.nw) type = 'Electron';
+    if (window.fs || params.isNWJS) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
     if (/Windows/i.test(navigator.userAgent)) type += '|Windows';
     else if (/Android/i.test(navigator.userAgent)) type += '|Android';
