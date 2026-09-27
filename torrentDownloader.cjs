@@ -213,7 +213,8 @@ function checkFreeSpace (torrent, savePath) {
  * savePath, WebTorrent verifies the pieces already on disk and resumes from where it left off.
  * @param {Object} args An object with keys torrentUrl (URL of the .torrent file, which for Kiwix
  *   archives includes both trackers and mirror web seeds) and savePath (absolute directory path
- *   into which the archive will be saved under its torrent name)
+ *   into which the archive will be saved under its torrent name), plus optionally userAgent (the
+ *   User-Agent with which to fetch the .torrent file)
  * @param {Object} callbacks An object with optional keys onProgress, onDone, onError; each
  *   receives a status object (onError receives an Error). onProgress fires about once a second,
  *   including while seeding after completion.
@@ -245,7 +246,7 @@ async function startDownload (args, callbacks) {
         throw new Error('The download location is not a folder: ' + args.savePath);
     }
     const cl = await getClient();
-    const response = await fetch(args.torrentUrl);
+    const response = await fetch(args.torrentUrl, args.userAgent ? { headers: { 'User-Agent': args.userAgent } } : undefined);
     if (!response.ok) {
         throw new Error('Could not fetch torrent file (HTTP ' + response.status + ') from ' + args.torrentUrl);
     }

@@ -69,6 +69,7 @@
 * FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page
 * FIX: Reset app no longer fails with an error when no Service Worker is controlling the page
 * DEV: Unit tests now run in CI on every push and pull request, using Node's built-in test runner (`node --test`) with shared scaffolding in `test/helpers.cjs`
+* DEF: The Electron and NW.js apps now identify themselves to Kiwix's servers with a User-Agent such as `kiwix/3.9.1 (js-electron-windows)`, followed by `wikimed` or `wikivoyage` for a packaged flavour, sent only on requests to *.kiwix.org, so that their traffic can be told apart in Kiwix's statistics (kiwix/operations#797)
 * DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image
 * DEV: Developer Mode can now be turned on and off while the app is in Restricted mode
 * DEV: Developer Mode now also turns off the ZIM assets cache for as long as it is on, and marks those buttons unavailable
