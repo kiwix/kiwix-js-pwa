@@ -535,23 +535,22 @@ jobs:
         cp ./package.json ./dist/package.json
         cp ./package-lock.json ./dist/package-lock.json
         npm install
-        cd dist && npm uninstall electron && npm install electron --save-dev && cd ..
+        # Install in dist exactly the Electron that root just installed from the lockfile, which is
+        # what the Windows and Linux jobs build with. A bare "npm install electron" takes the latest
+        # release whatever package.json asks for, and so shipped Electron 44 (macOS 13+) in a
+        # release pinned to 43 (#970) - dropping Monterey without anyone deciding to.
+        EXPECTED_VERSION=$(node -p "require('./node_modules/electron/package.json').version")
+        cd dist && npm uninstall electron && npm install "electron@$EXPECTED_VERSION" --save-exact --save-dev && cd ..
         echo "Verifying Electron versions before building..."
         echo "Checking package.json electron entry:"
         grep '"electron":' ./package.json
-        echo "Root Electron version:"
-        npx electron --version
-        echo "Dist Electron version:"
-        cd dist && npx electron --version && cd ..
-        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/' | sed -E 's/^[\^~]//')
-        echo "DEBUG: Extracted EXPECTED_VERSION='$EXPECTED_VERSION'"
-        ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
-        echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
+        ACTUAL_VERSION=$(cd dist && node -p "require('./node_modules/electron/package.json').version")
+        echo "Expected (root, from lockfile): $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
           echo "ERROR: Electron version mismatch! Expected $EXPECTED_VERSION but got $ACTUAL_VERSION"
-        else
-          echo "✓ Electron versions verified successfully"
+          exit 1
         fi
+        echo "✓ Electron versions verified successfully"
         # Honour the signing decision made by the certificate check (see High Sierra step)
         SIGN_FLAGS=""
         if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
