@@ -2,8 +2,8 @@
 
 ## Release 3.9.1/3.9.2
 
-* FEATURE: ZIM archives now show the Kiwix icon in file managers with macOS and Linux Electron apps, as on Windows
-* FEATURE: ZIM archives can now be opened from the file manager on macOS and in the Linux deb/rpm packages
+* FEATURE: ZIM archives can now be opened from the file manager on macOS and in the Linux deb/rpm packages (Electron)
+* FEATURE: Archives now also show the Kiwix icon in file managers on macOS and Linux Electron apps (like Windows)
 * FEATURE: New setting to show a title bar under the window controls overlay, restoring an option that recent versions of Edge removed
 * FEATURE: In-app library can now browse the whole ZIM catalogue, not just by category, so uncategorized archives can be found
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
