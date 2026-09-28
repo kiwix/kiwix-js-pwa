@@ -33,6 +33,7 @@
 * REGRESSION: Restored the draggable area of the top navigation bar when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
+* FIX: Split ZIM archives whose names contain regex characters now load all their parts, and file parts are matched more strictly
 * FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
 * FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: A "|" in an article's url or title no longer breaks its directory entry id or truncates the "Return to" link
@@ -87,6 +88,7 @@
 * DEV: Declare Node 22.12 as the minimum version in `engines`, and run the tests on Node 22
 * DEV: Add a Node script to scan a ZIM's directory entries (`scripts/scan-zim-dirents.cjs`)
 * DEV: Add a release checklist (`RELEASE_CHECKLIST.md`)
+* DEV: Bump Electron to 43.7.5 for modern builds, and NWJS to 0.117.0 
 * DEV: Security updates to dependencies (including express, qs, js-yaml, @xmldom/xmldom and fast-uri)
 
 ## Release 3.8.7 / 3.8.8
