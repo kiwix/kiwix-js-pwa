@@ -592,7 +592,9 @@ app.whenReady().then(() => {
 
     whitelistedRootFiles.forEach(file => {
         server.get(`/${file}`, (_req, res) => {
-            res.sendFile(path.join(__dirname, file));
+            // The root option confines send's dotfile check to the file name. Without it, send 1.x (Express 5) refuses any
+            // path with a dot-segment, such as the /tmp/.mount_* directory that an AppImage runs from
+            res.sendFile(file, { root: __dirname });
         });
     });
 
