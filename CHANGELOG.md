@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 3.9.3
+
+* FIX: The Linux AppImage could not use ServiceWorker mode and fell back to Restricted mode (regression in 3.9.2)
+* FIX: In the Electron app, picking a protected folder (e.g. Documents itself) hung the file and folder pickers until restart; the app now explains and offers to choose another location
+
 ## Release 3.9.1/3.9.2
 
 * FEATURE: ZIM archives can now be opened from the file manager on macOS and in the Linux deb/rpm packages (Electron)

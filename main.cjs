@@ -741,6 +741,21 @@ app.whenReady().then(() => {
             return true; // Note: return value, not callback
         }
     });
+
+    // Electron emits this when the user picks a file or folder that Chromium's blocklist protects (e.g. ~/Documents itself).
+    // With no listener the request is never answered, so the picker never settles and Chromium then refuses every later
+    // picker as "already active" until a restart [kiwix-js-pwa #992]. Legacy Electrons (Win7, High Sierra) lack the event.
+    session.defaultSession.on('file-system-access-restricted', async (event, details, callback) => {
+        const { response } = await dialog.showMessageBox(mainWindow, {
+            type: 'warning',
+            message: 'This ' + (details.isDirectory ? 'folder' : 'file') + ' cannot be opened because it contains system files.',
+            detail: details.path + '\n\nPlease choose a subfolder, or a different location.',
+            buttons: ['Choose another location', 'Cancel'],
+            defaultId: 0,
+            cancelId: 1
+        });
+        callback(response === 0 ? 'tryAgain' : 'deny');
+    });
 });
 
 // Quit when all windows are closed.
