@@ -2107,6 +2107,9 @@ function beginTorrentDownload (torrentUrl, savePath) {
     // Guards against a race where a torrent completes (or fails) before the start Promise
     // resolves, e.g. when resuming a file that is already fully downloaded
     var finished = false;
+    // The last percentage of the initial hash check of data already on disk shown in the ops
+    // panel, or -1 when no check is in progress
+    var checkPercent = -1;
     // Remembered now (before the name is known) so that even a crash during the initial fetch
     // or hash-check of on-disk data is still offered for resumption on the next launch
     persistActiveTorrent(torrentUrl, savePath);
@@ -2115,10 +2118,27 @@ function beginTorrentDownload (torrentUrl, savePath) {
         onProgress: function (s) {
             if (s.verifying) {
                 // The download has completed and the data written to disk is being hash-checked
+                // (any pieces that fail are then downloaded again, tracked by progress)
                 serverResponse.style.display = 'inline';
                 serverResponse.style.setProperty('color', 'goldenrod', 'important');
-                serverResponse.innerHTML = 'Verifying downloaded data&hellip; ' + Math.round(s.progress * 100) + '%';
+                serverResponse.innerHTML = 'Verifying downloaded data&hellip; ' + Math.round((s.checking ? s.checkProgress : s.progress) * 100) + '%';
+            } else if (s.checking) {
+                // Data left on disk by an earlier attempt is being hash-checked before the
+                // download resumes, which can take many minutes for the largest archives
+                var percent = Math.floor(s.checkProgress * 100);
+                serverResponse.style.display = 'inline';
+                serverResponse.style.setProperty('color', 'goldenrod', 'important');
+                serverResponse.innerHTML = 'Checking data already on disk&hellip; ' + percent + '%';
+                if (percent !== checkPercent) {
+                    checkPercent = percent;
+                    uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Checking data already on disk... ' + percent + '%', true);
+                }
             } else if (!s.done) {
+                if (checkPercent >= 0) {
+                    // The check has finished: make the next progress report replace its message
+                    checkPercent = -1;
+                    percentageComplete = -1;
+                }
                 reportDownloadProgress(s.received, s.total);
                 serverResponse.innerHTML += ' | ' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') +
                     ' | ' + (s.downloadSpeed / 1048576).toFixed(2) + ' MB/s';

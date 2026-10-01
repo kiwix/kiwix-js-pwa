@@ -87,6 +87,10 @@ async function getClient () {
                 // own File System Access reads of the completed archive, and tools like
                 // Get-FileHash - so a torrent that is only seeding must hold read-only handles
                 this.readOnly = false;
+                // The number of piece reads completed: before a torrent is ready, WebTorrent reads
+                // every piece once to hash-check the data already on disk (each torrent add gets a
+                // new store), so this measures the progress of that check
+                this.piecesRead = 0;
                 this._handleClosers = [];
                 this.files.forEach(function (file) {
                     let opened = null; // Memoized result; reset on failure so a retry is possible
@@ -124,6 +128,18 @@ async function getClient () {
                 });
             }
 
+            get (index, opts, cb) {
+                if (typeof opts === 'function') {
+                    cb = opts;
+                    opts = null;
+                }
+                const self = this;
+                super.get(index, opts, function () {
+                    self.piecesRead++;
+                    cb.apply(null, arguments);
+                });
+            }
+
             // Closes all open file handles and reopens subsequent access read-only; call this
             // once the torrent is complete and verified, so that seeding does not keep the
             // archive locked against readers (see the readOnly comment above)
@@ -152,6 +168,9 @@ async function getClient () {
  */
 function makeStatus (torrent) {
     const record = downloads.get(torrent.infoHash);
+    // Until the torrent is ready, WebTorrent is hash-checking the data already on disk
+    const checking = !torrent.ready && !torrent.destroyed;
+    const store = checking ? findTolerantStore(torrent) : null;
     return {
         infoHash: torrent.infoHash,
         name: torrent.name,
@@ -164,45 +183,75 @@ function makeStatus (torrent) {
         numPeers: torrent.numPeers,
         done: torrent.done,
         verifying: !!(record && record.verifying),
-        seeding: !!(torrent.done && !torrent.destroyed && !(record && record.verifying))
+        seeding: !!(torrent.done && !torrent.destroyed && !(record && record.verifying)),
+        checking: checking,
+        // The fraction of pieces hash-checked so far (progress cannot be used for this: it
+        // counts only valid pieces, so it stalls while missing or corrupt ones are checked)
+        checkProgress: store && torrent.pieces.length ? Math.min(1, store.piecesRead / torrent.pieces.length) : 0
     };
+}
+
+/**
+ * Finds a torrent's TolerantStore: WebTorrent wraps the raw store in caching layers, so this
+ * walks down the .store chain
+ * @param {Object} torrent The torrent whose store to find
+ * @returns {Object|null} The TolerantStore, or null if there is none (e.g. not yet created)
+ */
+function findTolerantStore (torrent) {
+    if (!TolerantStore) return null;
+    let store = torrent.store;
+    while (store && store.store && !(store instanceof TolerantStore)) {
+        store = store.store;
+    }
+    return store instanceof TolerantStore ? store : null;
 }
 
 /**
  * Switches a completed torrent's chunk store to read-only file handles. Seeding only ever
  * reads, but the store's handles were opened read-write for the download, and on Windows an
  * open read-write handle blocks other openers of the archive (including the app itself
- * trying to load it); WebTorrent wraps the raw store in caching layers, so this walks down
- * the .store chain to find the TolerantStore and asks it to reopen its files read-only
+ * trying to load it); this asks the torrent's TolerantStore to reopen its files read-only
  * @param {Object} torrent The completed torrent whose store should stop holding write access
  */
 function releaseWriteHandles (torrent) {
-    let store = torrent.store;
-    while (store && store.store && !(TolerantStore && store instanceof TolerantStore)) {
-        store = store.store;
-    }
-    if (TolerantStore && store instanceof TolerantStore) {
+    const store = findTolerantStore(torrent);
+    if (store) {
         store.setReadOnly();
         console.log('[torrentDownloader] Reopened ' + torrent.name + ' read-only for seeding');
     }
 }
 
 /**
- * Checks whether the drive containing savePath has enough free space for the part of the
- * torrent that remains to be downloaded (bytes already on disk and verified need no new space)
- * @param {Object} torrent The torrent, which must be ready (so that progress reflects any
- *   existing data on disk that has been verified)
+ * Checks whether the drive containing savePath has enough free space to complete the torrent.
+ * The space still needed is each file's full length minus the disk space it already takes up,
+ * NOT the length of the data still missing: WebTorrent first requests pieces near the end of
+ * the torrent, and on a filesystem without automatic sparse files (e.g. NTFS) writing one
+ * extends the file to full size and allocates all of it at once, so a partial download can
+ * already occupy almost all the space it will ever need. Pieces that are missing or corrupt
+ * are later written into that allocated space, so they need no more.
+ * @param {Object} store The torrent's TolerantStore (which knows the files' paths on disk)
  * @param {String} savePath The directory the torrent is downloading into
  * @returns {Promise<Number>} A Promise for the shortfall in bytes (zero or negative if there
  *   is enough space, or if free space cannot be determined on this platform)
  */
-function checkFreeSpace (torrent, savePath) {
-    if (!fs.promises.statfs) return Promise.resolve(0);
-    return fs.promises.statfs(savePath).then(function (stats) {
-        const free = stats.bsize * stats.bavail;
-        const needed = Math.round(torrent.length * (1 - torrent.progress));
-        return needed - free;
-    }, function () {
+function checkFreeSpace (store, savePath) {
+    if (!fs.promises.statfs || !store) return Promise.resolve(0);
+    return Promise.all(store.files.map(function (file) {
+        return fs.promises.stat(file.path).then(function (stats) {
+            // blocks reflects the holes in a sparse file (Linux, macOS); where it is not
+            // reported, the size is the best measure of the space allocated
+            const allocated = stats.blocks > 0 ? Math.min(stats.size, stats.blocks * 512) : stats.size;
+            return Math.max(0, file.length - allocated);
+        }, function () {
+            // The file does not exist yet
+            return file.length;
+        });
+    })).then(function (needs) {
+        const needed = needs.reduce(function (sum, need) { return sum + need; }, 0);
+        return fs.promises.statfs(savePath).then(function (stats) {
+            return needed - stats.bsize * stats.bavail;
+        });
+    }).catch(function () {
         // If free space cannot be determined, do not block the download
         return 0;
     });
@@ -211,6 +260,8 @@ function checkFreeSpace (torrent, savePath) {
 /**
  * Starts (or resumes) a torrent download. If a partial file from a previous attempt exists in
  * savePath, WebTorrent verifies the pieces already on disk and resumes from where it left off.
+ * The returned Promise settles once the free-space check is done, which is before that
+ * verification: statuses report its progress with checking and checkProgress.
  * @param {Object} args An object with keys torrentUrl (URL of the .torrent file, which for Kiwix
  *   archives includes both trackers and mirror web seeds) and savePath (absolute directory path
  *   into which the archive will be saved under its torrent name), plus optionally userAgent (the
@@ -276,7 +327,11 @@ async function startDownload (args, callbacks) {
                     callbacks.onError(err instanceof Error ? err : new Error(String(err)));
                 }
             });
-            torrent.on('ready', function () {
+            // 'metadata' fires as soon as the store exists, before WebTorrent hash-checks any
+            // data already on disk (a check that reads the whole file if it is full size, which
+            // takes many minutes for the largest archives), so the record is created here to
+            // let progress reports track that check and the user stop it
+            torrent.on('metadata', function () {
                 if (phase === 'verify') return;
                 record = {
                     torrent: torrent,
@@ -291,9 +346,9 @@ async function startDownload (args, callbacks) {
                 };
                 downloads.set(torrent.infoHash, record);
                 console.log('[torrentDownloader] Added torrent ' + torrent.name + ' (' + torrent.infoHash + '), saving to ' + args.savePath);
-                // 'ready' fires after any existing on-disk data has been verified, so
-                // torrent.progress now tells us how much remains to be downloaded
-                checkFreeSpace(torrent, args.savePath).then(function (shortfall) {
+                // The space check does not depend on the hash check, so a shortfall is reported
+                // before that starts rather than after it
+                checkFreeSpace(findTolerantStore(torrent), args.savePath).then(function (shortfall) {
                     if (shortfall > 0 && downloads.has(torrent.infoHash)) {
                         const err = new Error('There is not enough free space on the destination drive: the download needs about ' +
                             Math.ceil(shortfall / 1048576) + ' MB more than is available. Free up some space and try again.');
@@ -311,13 +366,19 @@ async function startDownload (args, callbacks) {
                     }
                 });
             });
+            torrent.on('ready', function () {
+                if (phase === 'verify') return;
+                console.log('[torrentDownloader] Checked data already on disk: ' + (torrent.progress * 100).toFixed(1) + '% of ' + torrent.name + ' is present');
+            });
             torrent.on('done', function () {
                 const infoHash = torrent.infoHash;
                 const rec = downloads.get(infoHash);
                 if (!rec || rec.torrent !== torrent) return; // Stopped or superseded meanwhile
-                if (phase === 'download' && torrent.downloaded > 0) {
+                // DEV: received counts the bytes received in this session, whereas downloaded
+                // counts all valid data, including what was already on disk
+                if (phase === 'download' && torrent.received > 0) {
                     // Data was received in this session, so the file on disk needs checking
-                    // (when nothing was downloaded, everything on disk was already verified
+                    // (when nothing was received, everything on disk was already verified
                     // during the add and a second check would be redundant)
                     console.log('[torrentDownloader] Download complete; verifying on-disk data: ' + torrent.name);
                     rec.verifying = true;
@@ -331,7 +392,7 @@ async function startDownload (args, callbacks) {
                 console.log('[torrentDownloader] Download complete' + (phase === 'verify' ? ' and verified: ' : ': ') + torrent.name);
                 const status = makeStatus(torrent);
                 // Either every piece passed the verify phase's hash check, or (if nothing was
-                // downloaded this session) the whole file was verified when the torrent was added
+                // received this session) the whole file was verified when the torrent was added
                 status.verified = true;
                 if (!keepSeeding) {
                     // Destroy the torrent but keep the completed file on disk
@@ -460,5 +521,6 @@ module.exports = {
     deletePartialFile: deletePartialFile,
     getStatus: getStatus,
     setKeepSeeding: setKeepSeeding,
-    destroyAll: destroyAll
+    destroyAll: destroyAll,
+    checkFreeSpace: checkFreeSpace
 };
