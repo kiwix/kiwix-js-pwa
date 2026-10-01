@@ -76,6 +76,22 @@ describe('checkFreeSpace', { skip: !realStatfs && 'fs.promises.statfs is not ava
         assert.equal(await checkFreeSpace(storeFor('sparse.zim'), tmpDir), 2 * MB);
     });
 
+    it('needs the full length for a sparse file that is all holes', async function () {
+        fs.promises.stat = async function () {
+            return { size: LENGTH, blocks: 0 };
+        };
+        mockFreeSpace(1 * MB);
+        assert.equal(await checkFreeSpace(storeFor('holes.zim'), tmpDir), 3 * MB);
+    });
+
+    it('falls back to the size where the allocated blocks are not reported', async function () {
+        fs.promises.stat = async function () {
+            return { size: LENGTH };
+        };
+        mockFreeSpace(1 * MB);
+        assert.ok(await checkFreeSpace(storeFor('noblocks.zim'), tmpDir) <= 0);
+    });
+
     it('does not block the download when free space cannot be determined', async function () {
         fs.promises.statfs = async function () {
             throw new Error('statfs failed');

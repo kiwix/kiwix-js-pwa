@@ -238,9 +238,11 @@ function checkFreeSpace (store, savePath) {
     if (!fs.promises.statfs || !store) return Promise.resolve(0);
     return Promise.all(store.files.map(function (file) {
         return fs.promises.stat(file.path).then(function (stats) {
-            // blocks reflects the holes in a sparse file (Linux, macOS); where it is not
-            // reported, the size is the best measure of the space allocated
-            const allocated = stats.blocks > 0 ? Math.min(stats.size, stats.blocks * 512) : stats.size;
+            // blocks counts the space actually allocated, which is less than the size for a
+            // sparse file (Linux, macOS), and zero for one that is all holes (or a tiny file
+            // held in the NTFS file table); Node reports it on Windows too, so the size is
+            // used only where it is missing
+            const allocated = Number.isFinite(stats.blocks) ? Math.min(stats.size, stats.blocks * 512) : stats.size;
             return Math.max(0, file.length - allocated);
         }, function () {
             // The file does not exist yet
