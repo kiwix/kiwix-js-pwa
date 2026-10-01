@@ -410,6 +410,12 @@ function registerListeners () {
         const name = path.basename(record.name);
         if (!regexpZimFile.test(name)) return { ok: true, deleted: false };
         try {
+            // If the download is still running (e.g. the renderer was reloaded meanwhile), stop it
+            // first rather than deleting the file out from under it; its data is kept here and
+            // deleted below, because WebTorrent's own deletion does not report failures
+            if (record.infoHash && torrentDownloader.getStatus(record.infoHash)) {
+                await torrentDownloader.stopTorrent(record.infoHash, false);
+            }
             return { ok: true, deleted: await torrentDownloader.deletePartialFile(record.savePath, name) };
         } catch (err) {
             console.error('Torrent partial-file delete failed:', err);
