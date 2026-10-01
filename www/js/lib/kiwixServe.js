@@ -1997,7 +1997,8 @@ if (window.dialog && torrentClient.isAvailable()) {
 }
 
 // If a BitTorrent download was still in progress when the app last quit (or crashed), offer to
-// resume it now. Deferred to DOMContentLoaded, and further delayed with setTimeout, because the
+// resume it (or reattach to it, if the app was only reloaded and it is still running).
+// Deferred to DOMContentLoaded, and further delayed with setTimeout, because the
 // modal dialogue depends on bootstrap/jQuery having been injected, which is not guaranteed yet
 // at this point on all platforms (see the similar splash-screen modal delay in app.js)
 if (torrentClient.isAvailable()) {
@@ -2013,6 +2014,24 @@ if (torrentClient.isAvailable()) {
         }
         if (!pendingResume || !pendingResume.torrentUrl || !pendingResume.savePath) return;
         setTimeout(function () {
+            // A reload of the app (e.g. on entering Developer mode) does not stop a download in
+            // the main process: if one is still running, reattach to it rather than offering
+            // to resume it (which would fail) or discard it
+            torrentClient.getStatus().then(function (statuses) {
+                return Array.isArray(statuses) && statuses.some(function (s) {
+                    return !s.done || s.verifying;
+                });
+            }).catch(function () {
+                return false;
+            }).then(function (running) {
+                if (running) {
+                    beginTorrentDownload(pendingResume.torrentUrl, pendingResume.savePath);
+                } else {
+                    offerResume();
+                }
+            });
+        }, 1500);
+        function offerResume () {
             uiUtil.systemAlert('<p>A BitTorrent download of <i>' + escapeHtml(pendingResume.name || 'an archive') +
                 '</i> did not finish because the app was closed.</p>' +
                 '<p>Do you want to resume it now? (<i>The data already downloaded has been kept.</i>)</p>',
@@ -2026,7 +2045,7 @@ if (torrentClient.isAvailable()) {
                     });
                 }
             });
-        }, 1500);
+        }
     });
 }
 

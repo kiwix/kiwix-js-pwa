@@ -14,7 +14,7 @@ let WebTorrent = null; // Lazily imported WebTorrent constructor
 let TolerantStore = null; // Chunk-store class that fixes downloads to a drive root (see getClient)
 let client = null; // Singleton WebTorrent client (created on first download)
 let keepSeeding = true; // Whether to go on seeding a completed torrent until the app quits
-const downloads = new Map(); // infoHash -> { torrent, progressTimer, callbacks, torrentUrl }
+const downloads = new Map(); // infoHash -> { torrent, progressTimer, callbacks, torrentUrl, savePath, verifying }
 
 // Interval in ms between progress reports to the caller
 const PROGRESS_INTERVAL = 1000;
@@ -266,6 +266,9 @@ function checkFreeSpace (store, savePath) {
  *   archives includes both trackers and mirror web seeds) and savePath (absolute directory path
  *   into which the archive will be saved under its torrent name), plus optionally userAgent (the
  *   User-Agent with which to fetch the .torrent file)
+ * If the same torrent is still downloading (or verifying) into the same folder, the callbacks
+ * are attached to it in place of the previous ones, and the Promise resolves with its current
+ * status: the caller may have lost track of it, e.g. when the renderer has been reloaded.
  * @param {Object} callbacks An object with optional keys onProgress, onDone, onError; each
  *   receives a status object (onError receives an Error). onProgress fires about once a second,
  *   including while seeding after completion.
@@ -275,11 +278,16 @@ async function startDownload (args, callbacks) {
     callbacks = callbacks || {};
     // If the same torrent has already finished downloading and is merely seeding, stop it
     // (keeping the file) so that the fresh add below hash-checks the file on disk and repairs
-    // it if needed; a torrent that is still downloading or verifying is a genuine duplicate
+    // it if needed; one that is still downloading or verifying is taken over by the new
+    // callbacks if it is going to the same folder, and is otherwise a genuine duplicate
     for (const [infoHash, record] of downloads) {
         if (record.torrentUrl === args.torrentUrl) {
             if (record.torrent.done && !record.verifying) {
                 await stopTorrent(infoHash, false);
+            } else if (path.resolve(record.savePath) === path.resolve(args.savePath)) {
+                console.log('[torrentDownloader] Reattached to download in progress: ' + record.torrent.name);
+                record.callbacks = callbacks;
+                return makeStatus(record.torrent);
             } else {
                 throw new Error('This torrent is already being downloaded');
             }
@@ -305,6 +313,11 @@ async function startDownload (args, callbacks) {
     return new Promise(function (resolve, reject) {
         let settled = false;
         let record = null;
+        // The current callbacks: those of the record once it exists, as a later start of the
+        // same download may replace them (see above)
+        const currentCallbacks = function () {
+            return record ? record.callbacks : callbacks;
+        };
         // The torrent is added in up to two phases. The 'download' phase gets the data; on
         // completion, the torrent is removed (keeping the file) and re-added in a 'verify'
         // phase, which forces WebTorrent to hash-check the data actually written to disk:
@@ -323,8 +336,8 @@ async function startDownload (args, callbacks) {
                 if (!settled) {
                     settled = true;
                     reject(err instanceof Error ? err : new Error(String(err)));
-                } else if (callbacks.onError) {
-                    callbacks.onError(err instanceof Error ? err : new Error(String(err)));
+                } else if (currentCallbacks().onError) {
+                    currentCallbacks().onError(err instanceof Error ? err : new Error(String(err)));
                 }
             });
             // 'metadata' fires as soon as the store exists, before WebTorrent hash-checks any
@@ -336,11 +349,12 @@ async function startDownload (args, callbacks) {
                 record = {
                     torrent: torrent,
                     torrentUrl: args.torrentUrl,
+                    savePath: args.savePath,
                     callbacks: callbacks,
                     verifying: false,
                     progressTimer: setInterval(function () {
-                        if (callbacks.onProgress && !record.torrent.destroyed) {
-                            callbacks.onProgress(makeStatus(record.torrent));
+                        if (record.callbacks.onProgress && !record.torrent.destroyed) {
+                            record.callbacks.onProgress(makeStatus(record.torrent));
                         }
                     }, PROGRESS_INTERVAL)
                 };
@@ -357,8 +371,8 @@ async function startDownload (args, callbacks) {
                         if (!settled) {
                             settled = true;
                             reject(err);
-                        } else if (callbacks.onError) {
-                            callbacks.onError(err);
+                        } else if (currentCallbacks().onError) {
+                            currentCallbacks().onError(err);
                         }
                     } else if (!settled) {
                         settled = true;
@@ -403,7 +417,7 @@ async function startDownload (args, callbacks) {
                     // open it while it goes on seeding
                     releaseWriteHandles(torrent);
                 }
-                if (callbacks.onDone) callbacks.onDone(status);
+                if (rec.callbacks.onDone) rec.callbacks.onDone(status);
             });
         }
     });

@@ -5,6 +5,7 @@
 * FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
+* FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
 
 ## Release 3.9.3
 
