@@ -53,6 +53,27 @@ function patchMkdirForDriveRoots () {
 }
 
 /**
+ * Stops WebTorrent's Torrent class from logging through a client it no longer has. Destroying a
+ * torrent clears its client and ends its peer connections, but a connection can still have a
+ * piece request outstanding (always likely at completion, when the last pieces are requested
+ * from several peers at once), and its 30-second request timer is not cancelled: when it fires,
+ * the torrent's handler logs the timeout with _debug, which reads the cleared client and throws
+ * an uncaught TypeError in the main process (still the case in WebTorrent 3.0.21). The torrent
+ * is already destroyed by then, so the message is simply dropped. We destroy torrents with peers
+ * connected whenever a download completes (to verify it) or is stopped.
+ * @param {Function} Torrent WebTorrent's Torrent class
+ */
+function guardDestroyedTorrentDebug (Torrent) {
+    const debugTorrent = Torrent.prototype._debug;
+    if (typeof debugTorrent !== 'function' || debugTorrent.guarded) return;
+    Torrent.prototype._debug = function () {
+        if (!this.client) return;
+        debugTorrent.apply(this, arguments);
+    };
+    Torrent.prototype._debug.guarded = true;
+}
+
+/**
  * Lazily imports WebTorrent and creates the singleton client
  * @returns {Promise<Object>} A Promise for the WebTorrent client
  */
@@ -67,6 +88,7 @@ async function getClient () {
         // dependencies) are loaded, so that all of them see the corrected behaviour
         patchMkdirForDriveRoots();
         WebTorrent = (await import('webtorrent')).default;
+        guardDestroyedTorrentDebug((await import('webtorrent/lib/torrent.js')).default);
         // fs-chunk-store and random-access-file are webtorrent's own dependencies (kept in step
         // with it by the lockfile); we need them to build a store that can save to a drive root
         const FSChunkStore = (await import('fs-chunk-store')).default;
@@ -538,5 +560,6 @@ module.exports = {
     getStatus: getStatus,
     setKeepSeeding: setKeepSeeding,
     destroyAll: destroyAll,
-    checkFreeSpace: checkFreeSpace
+    checkFreeSpace: checkFreeSpace,
+    guardDestroyedTorrentDebug: guardDestroyedTorrentDebug
 };

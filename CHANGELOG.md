@@ -6,6 +6,7 @@
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
+* FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
 
 ## Release 3.9.3
 

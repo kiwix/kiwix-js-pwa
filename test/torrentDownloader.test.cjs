@@ -3,7 +3,8 @@
  * Checks the free-space calculation in torrentDownloader.cjs: the space a torrent still needs is
  * its length minus the space its files already take up on disk, so a partial download that has
  * already been extended to full size (WebTorrent requests pieces near the end of the torrent
- * first) must not be asked to find that space a second time.
+ * first) must not be asked to find that space a second time. Also checks the guard against
+ * WebTorrent logging through the client of a destroyed torrent.
  *
  * Usage: npm test
  */
@@ -15,7 +16,7 @@ const os = require('os');
 const path = require('path');
 const assert = require('node:assert/strict');
 const { describe, it, before, after, afterEach } = require('node:test');
-const { checkFreeSpace } = require('../torrentDownloader.cjs');
+const { checkFreeSpace, guardDestroyedTorrentDebug } = require('../torrentDownloader.cjs');
 
 const MB = 1048576;
 const LENGTH = 4 * MB;
@@ -102,5 +103,40 @@ describe('checkFreeSpace', { skip: !realStatfs && 'fs.promises.statfs is not ava
     it('does not block the download without a store', async function () {
         mockFreeSpace(0);
         assert.equal(await checkFreeSpace(null, tmpDir), 0);
+    });
+});
+
+describe('guardDestroyedTorrentDebug', function () {
+    let Torrent = null;
+
+    before(async function () {
+        Torrent = (await import('webtorrent/lib/torrent.js')).default;
+        guardDestroyedTorrentDebug(Torrent);
+    });
+
+    it('drops log messages from a destroyed torrent', function () {
+        // As WebTorrent leaves a torrent after destroying it, when a peer connection's request
+        // timer fires and the torrent's handler logs the timeout
+        const torrent = Object.create(Torrent.prototype);
+        torrent.client = null;
+        torrent._debugId = 'abcdef0';
+        assert.doesNotThrow(function () {
+            torrent._debug('wire timeout (%s)', '127.0.0.1:6881');
+        });
+    });
+
+    it('still logs from a live torrent', function () {
+        const torrent = Object.create(Torrent.prototype);
+        torrent.client = { _debugId: '1234567' };
+        torrent._debugId = 'abcdef0';
+        assert.doesNotThrow(function () {
+            torrent._debug('wire timeout (%s)', '127.0.0.1:6881');
+        });
+    });
+
+    it('is applied only once', function () {
+        const guarded = Torrent.prototype._debug;
+        guardDestroyedTorrentDebug(Torrent);
+        assert.equal(Torrent.prototype._debug, guarded);
     });
 });
