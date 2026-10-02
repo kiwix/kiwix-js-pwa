@@ -3003,6 +3003,11 @@ function switchCSSTheme (container) {
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
+            // The polling only has to bridge a document that is replaced soon after loading: later replacements are picked
+            // up when articleLoader calls this function again, so we always stop after 3 seconds [kiwix-js-pwa #797]
+            setTimeout(function () {
+                clearInterval(interval);
+            }, 3000);
             // If the interval has not succeeded after 3 seconds, give up
             if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
                 setTimeout(function (zimitf, articleC) {
