@@ -2630,7 +2630,7 @@ function initializeUISettings () {
         uiSettings.oncolorvalueschanged = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
     // Support for other contexts (Firefox, Chromium, Electron, NWJS)
@@ -2639,7 +2639,7 @@ function initializeUISettings () {
         uiSettings.onchange = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
 }
@@ -2693,7 +2693,7 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change', function () {
@@ -2708,7 +2708,7 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change', function () {
@@ -2725,7 +2725,7 @@ document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change'
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     settingsStore.setItem('customDarkTheme', params.customDarkTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
@@ -2741,7 +2741,7 @@ document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('cha
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     // If the darkReader theme has been turned off or on (and this is a change), then we need to reload the page
     if (params.cssTheme !== params.cssThemeOriginal && (params.cssTheme === 'darkReader' || params.cssThemeOriginal === 'darkReader')) {
         params.themeChanged = true;
@@ -2832,19 +2832,23 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * DEVELOPER NOTE: To force the legacy custom dark theme on new Wikipedia ZIMs for testing:
  * - Open DevTools console and type: params.customDarkTheme = true
  * - Then navigate to a new article to see the custom theme applied
+ *
+ * @param {HTMLIFrameElement|Window} [container] The container to theme, defaulting to the current articleContainer
  */
-function switchCSSTheme () {
+function switchCSSTheme (container) {
+    container = container || articleContainer;
+    if (!container) return;
     // The article may be in our iframe or in a window or tab that the user opened, so we take the document of either. Only
-    // the iframe can be hidden or shown, so any use of articleContainer.style below must be guarded [kiwix-js-pwa #797]
+    // the iframe can be hidden or shown, so any use of container.style below must be guarded [kiwix-js-pwa #797]
     var getContainerDocument = function () {
-        return articleContainer ? articleContainer.contentDocument || articleContainer.document : '';
+        return container.contentDocument || container.document;
     };
     // Choose the document, either the container's document or else the replay_iframe contentDocument
     var doc = getContainerDocument();
     // Zimit articles opened in a window are not themed here, because Replay handles their display (and we have never done so)
-    if (!articleContainer.contentDocument && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
+    if (!container.contentDocument && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
     var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? container : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var resizeEvent;
@@ -2912,7 +2916,7 @@ function switchCSSTheme () {
             if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
                 // Display the article since we've handled the theme
                 if (document.getElementById('configuration').style.display === 'none') {
-                    if (articleContainer.style) articleContainer.style.display = '';
+                    if (container.style) container.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
                     // Force repaint - using createEvent for IE11 compatibility
                     resizeEvent = document.createEvent('Event');
@@ -2943,7 +2947,7 @@ function switchCSSTheme () {
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         link.onload = function () {
             if (document.getElementById('configuration').style.display === 'none') {
-                if (articleContainer.style) articleContainer.style.display = '';
+                if (container.style) container.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
                 // Force repaint - using createEvent for IE11 compatibility
                 resizeEvent = document.createEvent('Event');
@@ -2964,7 +2968,7 @@ function switchCSSTheme () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
                     if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
-                        articleContainer.style.display = '';
+                        container.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
                             // Force repaint - using createEvent for IE11 compatibility
@@ -2989,7 +2993,7 @@ function switchCSSTheme () {
                     // Oops, we no longer have a handle on the article document, so get it again
                     doc = getContainerDocument();
                     zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-                        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                        : appstate.selectedArchive.zimType === 'zimit2' ? container : null;
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
@@ -3003,11 +3007,11 @@ function switchCSSTheme () {
                     resizeEvent = document.createEvent('Event');
                     resizeEvent.initEvent('resize', true, true);
                     window.dispatchEvent(resizeEvent);
-                }, 3000, zimitIframe, articleContainer);
+                }, 3000, zimitIframe, container);
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
-            if (articleContainer.style) articleContainer.style.display = '';
+            if (container.style) container.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
             // Force repaint - using createEvent for IE11 compatibility
             resizeEvent = document.createEvent('Event');
@@ -3022,6 +3026,36 @@ function switchCSSTheme () {
     document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
+}
+
+// The article windows and tabs that the app has opened, so that a change of theme can reach all of them [kiwix-js-pwa #797]
+var openedArticleWindows = [];
+
+/**
+ * Remembers an article window or tab that the app has opened, so that later changes of theme are applied to it
+ * @param {Window} win The window or tab that was opened
+ */
+function trackArticleWindow (win) {
+    if (win && openedArticleWindows.indexOf(win) === -1) openedArticleWindows.push(win);
+}
+
+/**
+ * Applies the current theme to the article iframe, and to every article window or tab that the app has opened and that is
+ * still open. This is for changes of theme: when an article loads, switchCSSTheme is called for its own container only.
+ * DEV: A Window reference stays valid when the user navigates within that window, so the window keeps receiving changes
+ */
+function switchCSSThemeEverywhere () {
+    switchCSSTheme(iframe);
+    openedArticleWindows = openedArticleWindows.filter(function (win) {
+        if (win.closed) return false;
+        try {
+            switchCSSTheme(win);
+        } catch (err) {
+            // The window may now show something whose document we cannot reach or theme (e.g. in the UWP app)
+            console.warn('Unable to apply the theme to an article window', err);
+        }
+        return true;
+    });
 }
 
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
@@ -8234,6 +8268,7 @@ function addListenersToLink (a, href, baseUrl) {
                 if (articleContainer) {
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
         }
