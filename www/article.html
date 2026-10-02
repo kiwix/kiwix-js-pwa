@@ -6,6 +6,10 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: file: about: chrome-extension: ms-appx-web:; style-src 'self' data: blob: file: about: chrome-extension: ms-appx-web: 'unsafe-inline'; script-src 'self' file: chrome-extension: ms-appx-web: 'unsafe-eval';">
         <meta name="description" content="Placeholder for injecting an article into the iframe or window">
         <link rel="icon" href="data:,">
+        <!-- A mid-grey placeholder, because a flash of grey by day is far less jarring than a flash of white at night.
+             NB This must stay in a style block in the head, not on the html tag: Restricted mode writes articles into this
+             document by replacing documentElement.innerHTML, which keeps the html element's own attributes -->
+        <style>html { background-color: darkgrey; }</style>
     </head>
     <body></body>
 </html>

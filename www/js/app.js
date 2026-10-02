@@ -2834,8 +2834,15 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * - Then navigate to a new article to see the custom theme applied
  */
 function switchCSSTheme () {
-    // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
-    var doc = articleContainer ? articleContainer.contentDocument : '';
+    // The article may be in our iframe or in a window or tab that the user opened, so we take the document of either. Only
+    // the iframe can be hidden or shown, so any use of articleContainer.style below must be guarded [kiwix-js-pwa #797]
+    var getContainerDocument = function () {
+        return articleContainer ? articleContainer.contentDocument || articleContainer.document : '';
+    };
+    // Choose the document, either the container's document or else the replay_iframe contentDocument
+    var doc = getContainerDocument();
+    // Zimit articles opened in a window are not themed here, because Replay handles their display (and we have never done so)
+    if (!articleContainer.contentDocument && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
     var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
         : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
@@ -2905,7 +2912,7 @@ function switchCSSTheme () {
             if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
                 // Display the article since we've handled the theme
                 if (document.getElementById('configuration').style.display === 'none') {
-                    articleContainer.style.display = '';
+                    if (articleContainer.style) articleContainer.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
                     // Force repaint - using createEvent for IE11 compatibility
                     resizeEvent = document.createEvent('Event');
@@ -2936,7 +2943,7 @@ function switchCSSTheme () {
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         link.onload = function () {
             if (document.getElementById('configuration').style.display === 'none') {
-                articleContainer.style.display = '';
+                if (articleContainer.style) articleContainer.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
                 // Force repaint - using createEvent for IE11 compatibility
                 resizeEvent = document.createEvent('Event');
@@ -2971,16 +2978,16 @@ function switchCSSTheme () {
                 darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
                 doc.head.appendChild(darkReader);
             };
-            // Use setInterval to keep attempting to load darkReader until doc.defaultView.DarkReader is available
+            // Use setInterval to keep attempting to load darkReader until doc.defaultView is available
             var interval = setInterval(function () {
                 if (doc && doc.defaultView) {
-                    if (!doc.defaultView.DarkReader) {
-                        clearInterval(interval);
-                            loadDarkReader();
-                    }
+                    // We stop polling whether or not we load DarkReader here: in SW mode it is usually already in the document,
+                    // because it is injected into the article's HTML, and if we waited for it to be absent we would poll forever
+                    clearInterval(interval);
+                    if (!doc.defaultView.DarkReader) loadDarkReader();
                 } else {
-                    // Oops, we no longer have a handle on the iframe document, so get it again
-                    doc = articleContainer ? articleContainer.contentDocument : '';
+                    // Oops, we no longer have a handle on the article document, so get it again
+                    doc = getContainerDocument();
                     zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
                         : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
@@ -3000,7 +3007,7 @@ function switchCSSTheme () {
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
-            articleContainer.style.display = '';
+            if (articleContainer.style) articleContainer.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
             // Force repaint - using createEvent for IE11 compatibility
             resizeEvent = document.createEvent('Event');

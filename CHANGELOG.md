@@ -7,6 +7,8 @@
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
 * FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
+* FIX: Articles opened in a new window or tab now follow the theme chosen in the app, instead of the system theme or always light
+* FIX: A newly opened window no longer flashes bright white in dark mode while the article loads
 
 ## Release 3.9.3
 
