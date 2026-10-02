@@ -8593,7 +8593,11 @@ params.preloadAllImages = function () {
 };
 
 /**
- * Changes the URL of the browser page, so that the user might go back to it
+ * Pushes the current article title or search term to the window's history state
+ * so that the user can navigate back and forward.
+ * The browser URL is updated with the page pathname (clearing any launch querystring)
+ * while deliberately omitting the title or search query from the URL to protect user privacy
+ * and prevent parameter corruption.
  *
  * @param {String} title The title of the article to store (if storing an article)
  * @param {String} titleSearch The title of the search (if storing a search)
@@ -8602,7 +8606,6 @@ function pushBrowserHistoryState (title, titleSearch) {
     // DEV: Note that appstate.target will always be 'iframe' for title searches, so we do not need to account for that
     var targetWin = appstate.target === 'iframe' ? window : articleWindow;
     var stateObj = {};
-    var urlParameters;
     var stateLabel;
     if (title && !(title === '')) {
         // Prevents creating a double history for the same page (wrapped to prevent exception in IE and Edge Legacy for tabs)
@@ -8610,19 +8613,17 @@ function pushBrowserHistoryState (title, titleSearch) {
             if (targetWin.history.state && targetWin.history.state.title === title) return;
         } catch (err) { console.error('Unable to access History for this window', err); return; }
         stateObj.title = title;
-        urlParameters = '?title=' + title;
         stateLabel = 'Wikipedia Article : ' + title;
     } else if (titleSearch && !(titleSearch === '')) {
         stateObj.titleSearch = titleSearch;
-        urlParameters = '?titleSearch=' + titleSearch;
         stateLabel = 'Wikipedia search : ' + titleSearch;
     } else return;
     // Edge Legacy and IE cannot push history state to another window/tab and produce an exception;
     // independent navigation history is therefore disabled for these browsers
     try {
-        targetWin.history.pushState(stateObj, stateLabel, urlParameters);
+        targetWin.history.pushState(stateObj, stateLabel, targetWin.location.pathname);
     } catch (error) {
-        history.pushState(stateObj, stateLabel, urlParameters);
+        history.pushState(stateObj, stateLabel, window.location.pathname);
     }
 }
 
