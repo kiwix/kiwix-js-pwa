@@ -2985,10 +2985,16 @@ function switchCSSTheme (container) {
             // Use setInterval to keep attempting to load darkReader until doc.defaultView is available
             var interval = setInterval(function () {
                 if (doc && doc.defaultView) {
-                    // We stop polling whether or not we load DarkReader here: in SW mode it is usually already in the document,
-                    // because it is injected into the article's HTML, and if we waited for it to be absent we would poll forever
-                    clearInterval(interval);
-                    if (!doc.defaultView.DarkReader) loadDarkReader();
+                    if (!doc.defaultView.DarkReader) {
+                        clearInterval(interval);
+                        loadDarkReader();
+                    } else if (!zimitIframe) {
+                        // Outside Zimit, DarkReader is injected into the article's HTML in SW mode, so it is normally already
+                        // present, and there is nothing to wait for (we would otherwise poll forever) [kiwix-js-pwa #797]
+                        clearInterval(interval);
+                    }
+                    // DEV: With Zimit, a document that already has DarkReader may be one that Replay is about to replace, so we
+                    // keep polling until we lose it and pick up its replacement; the timeout below ends the polling in any case
                 } else {
                     // Oops, we no longer have a handle on the article document, so get it again
                     doc = getContainerDocument();
@@ -5018,6 +5024,10 @@ function archiveReadyCallback (archive) {
         }
     }
     if (params.contentInjectionMode === 'serviceworker') {
+        // Start every archive from the theme that the user chose, which is the stored one: the Zimit override below changes
+        // params.cssTheme only in memory, so it must not carry over to the next archive, whatever its type [kiwix-js-pwa #797]
+        params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
+        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme === 'darkReader';
         if (!appstate.wikimediaZimLoaded) {
             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
@@ -5043,10 +5053,6 @@ function archiveReadyCallback (archive) {
             // if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
             params.noWarning = false;
-            params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-            // if (params.cssTheme === 'auto') {
-                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-            // }
         }
     }
     // The archive is set : go back to home page to start searching
