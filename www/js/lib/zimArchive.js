@@ -304,13 +304,23 @@ ZIMArchive.prototype.setZimType = function () {
 ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
     if (this.isReady()) {
         var mainPageUrlIndex = this.file.mainPage;
+        if (mainPageUrlIndex === 0xffffffff || mainPageUrlIndex === null || typeof mainPageUrlIndex === 'undefined') {
+            if (callback) callback(null);
+            return Promise.resolve(null);
+        }
         var that = this;
-        this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
+        return this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
             // Filter out Zimit files that we cannot handle without error
             if (that.zimType === 'zimit' && !appstate.isReplayWorkerAvailable) dirEntry = transformZimit.filterReplayFiles(dirEntry);
-            callback(dirEntry);
+            if (callback) callback(dirEntry);
+            return dirEntry;
+        }).catch(function () {
+            if (callback) callback(null);
+            return null;
         });
     }
+    if (callback) callback(null);
+    return Promise.resolve(null);
 };
 
 /**
@@ -1012,8 +1022,12 @@ ZIMArchive.prototype.addMetadataToZIMFile = function (key) {
  */
 ZIMArchive.prototype.setZimitMetadata = function () {
     var that = this;
+    if (this.file.mainPage === 0xffffffff || this.file.mainPage === null || typeof this.file.mainPage === 'undefined') {
+        return Promise.resolve();
+    }
     // Get the landing page
     return this.file.dirEntryByUrlIndex(this.file.mainPage).then(function (dirEntry) {
+        if (!dirEntry) return;
         var findRedirectTarget = dirEntry.redirect ? function (dirEntry) {
             // If the landing page is a redirect, we need to find the target
             return that.file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (newEntry) {
@@ -1023,6 +1037,7 @@ ZIMArchive.prototype.setZimitMetadata = function () {
             return Promise.resolve(dirEntry);
         };
         return findRedirectTarget(dirEntry).then(function (reEntry) {
+            if (!reEntry) return;
             // Note that in the case of zimit classic, the values below will be overwritten in the conditional clause
             that.zimitPseudoContentNamespace = reEntry.namespace + '/';
             that.zimitStartPage = reEntry.namespace + '/' + reEntry.url;
