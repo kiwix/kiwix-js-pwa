@@ -1,0 +1,560 @@
+﻿/**
+ * CSS Classes Definitions
+ *
+ * .mw-kartographer-maplink:
+ *     Represents a <maplink> element as output by the Parser.
+ *     May or may not be an interactive link yet (meanwhile JS gets loaded).
+ *
+ * .mw-kartographer-map
+ *    Represents a <mapframe> element as output by the Parser.
+ *    May or may not be an interactive map yet (meanwhile JS gets loaded)
+ *
+ * .mw-kartographer-link
+ *     Represents an interactive map link.
+ *     The class is added when the element becomes an interactive link.
+ *     May or may not be a <maplink> or <mapframe> (if created via Developer API)
+ *
+ * .mw-kartographer-interactive
+ *    Represents an interactive map.
+ *    The class is added when the element becomes an interactive map.
+ *
+ * .mw-kartographer-mapDialog-map
+ *    Represents an interactive map within a full screen map dialog.
+ *
+ * .mw-kartographer-static
+ *    Represents an interactive map that was made static afterward because the
+ *    viewport is too small.
+ *
+ * In practice:
+ *
+ * - <maplink> will have .mw-kartographer-maplink first,
+ *                       .mw-kartographer-link then.
+ *
+ * - <mapframe> will have .mw-kartographer-map first,
+ *                        .mw-kartographer-link then, if displaying static snapshot.
+ *                        .mw-kartographer-interactive then, if directly interactive.
+ */
+.mw-kartographer-mapDialog-map {
+  position: absolute;
+  top: 0;
+  bottom: 4.11em;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+.mw-kartographer-error {
+  display: inline-block;
+  background: #ffc0cb;
+}
+.mw-kartographer-static .leaflet-control-container .leaflet-top .leaflet-control {
+  display: none;
+}
+.mw-kartographer-static .leaflet-control-container .leaflet-top .leaflet-control-static {
+  display: block;
+}
+.mw-kartographer-static .leaflet-clickable {
+  pointer-events: none;
+}
+.mw-kartographer-static.leaflet-container {
+  cursor: default;
+}
+.mw-kartographer-map {
+  position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: block;
+  font-size: 14px;
+}
+.mw-kartographer-map.mw-kartographer-link {
+  display: block;
+}
+.mw-kartographer-map.leaflet-container {
+  background-size: contain;
+}
+.mw-kartographer-fullScreen {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-right: 0;
+}
+.mw-kartographer-container:not(.mw-kartographer-full) {
+  max-width: 100%;
+  /* Fixes `align=center` use case */
+}
+.mw-kartographer-container:not(.mw-kartographer-full).center {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.mw-kartographer-container:not(.mw-kartographer-full).thumb .thumbinner {
+  max-width: 100%;
+}
+.mw-kartographer-container:not(.mw-kartographer-full).thumb .thumbinner > .mw-kartographer-map {
+  width: 100%;
+}
+.mw-kartographer-container.mw-kartographer-full {
+  width: 100%;
+}
+/* @noflip */
+a.floatright {
+  float: right;
+  clear: right;
+  margin: 0 0 1em 1em;
+}
+/* @noflip */
+a.floatleft {
+  float: left;
+  clear: left;
+  margin: 0.3em 0.5em 0.5em 0;
+}
+
+/* stylelint-disable selector-no-vendor-prefix, at-rule-no-unknown */
+/* stylelint-enable selector-no-vendor-prefix, at-rule-no-unknown */
+/* stylelint-disable no-descending-specificity */
+.mw-kartographer-link,
+.mw-kartographer-maplink {
+  cursor: pointer;
+}
+.mw-kartographer-maplink:not( .mw-kartographer-autostyled ):not( .mw-kartographer-map ):not( .no-icon ),
+a.mw-kartographer-link:not( .mw-kartographer-autostyled ):not( .mw-kartographer-map ):not( .no-icon ) {
+  /**
+		 * These two files were copied from OOjs UI repository after the build process
+		 * generated the progressive icons.
+		 *
+		 * See ./images/COPYING
+		 *
+		 * The master version of the icon is at:
+		 *   https://github.com/wikimedia/oojs-ui/blob/master/src/themes/mediawiki/images/icons/mapPin.svg
+		 */
+  background-image: url(/w/extensions/Kartographer/styles/images/mapPin-progressive.png?eaddd);
+  background-image: linear-gradient(transparent, transparent), url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%20fill%3D%22%2336c%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M19%2012c0-3.9-3.1-7-7-7s-7%203.1-7%207c0%201.4.4%202.6%201.1%203.7L12%2023l5.9-7.3c.7-1.1%201.1-2.3%201.1-3.7zm-7%203c-1.6%200-3-1.4-3-3s1.4-3%203-3%203%201.4%203%203-1.4%203-3%203z%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E%0A);
+  background-image: -o-linear-gradient(transparent, transparent), url(/w/extensions/Kartographer/styles/images/mapPin-progressive.png?eaddd);
+  background-position: left -3px;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  padding-left: 19px;
+  margin-left: 2px;
+}
+.mw-kartographer-maplink.no-icon,
+a.mw-kartographer-link.no-icon {
+  background: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.skin-minerva a.mw-kartographer-link:not( .mw-kartographer-autostyled ):not( .mw-kartographer-map ):not( .no-icon ),
+.skin-minerva .mw-kartographer-maplink:not( .mw-kartographer-autostyled ):not( .mw-kartographer-map ):not( .no-icon ) {
+  background-size: 20px 20px;
+  padding-left: 20px;
+}
+.skin-minerva a.mw-kartographer-link.no-icon,
+.skin-minerva .mw-kartographer-maplink.no-icon {
+  background: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.mw-kartographer-map .mw-kartographer-fullScreen .oo-ui-iconElement > .oo-ui-buttonElement-button {
+  font-size: 0.91428571em;
+  min-width: 2.5em;
+}
+.mw-kartographer-map .mw-kartographer-fullScreen .oo-ui-iconElement > .oo-ui-buttonElement-button > .oo-ui-iconElement-icon {
+  left: 0.25em;
+}
+.mw-kartographer-map:hover .mw-kartographer-fullScreen .oo-ui-buttonElement-button {
+  background-color: #fff;
+}
+/**
+ * Applied only when JS is enabled.
+ */
+.client-js {
+  /* stylelint-disable-next-line indentation */
+}
+.client-js .mw-kartographer-map {
+  cursor: pointer;
+}
+/*.client-js .mw-kartographer-maplink:not( .mw-kartographer-link ):not( .ve-ce-focusableNode ),
+.client-js .mw-kartographer-map:not( .mw-kartographer-link ):not( .mw-kartographer-interactive ) {
+  pointer-events: none;
+  cursor: default;
+}*/
+/**
+ * If `$wgKartographerUseMarkerStyle = true`.
+ */
+a.mw-kartographer-autostyled {
+  color: #fff;
+  display: inline-block;
+  position: relative;
+  top: -0.08em;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0.85em;
+  margin-left: 0;
+  border-radius: 1px;
+  padding: 0.24em 0.42em;
+  font-size: 0.85em;
+  font-weight: bold;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+}
+a.mw-kartographer-autostyled:visited {
+  color: #fff;
+}
+
+/**
+ * WikimediaUI base v0.7.1
+ * Wikimedia Foundation user interface base variables
+ */
+/* Colors */
+/* Positioning */
+/* Box Model properties */
+/* Max Widths */
+/* Typography incl. print properties */
+/* Other Properties */
+/* Animation & Transition */
+/*
+	Anyone who changes the width of the sidebar should
+	update Kartographer.Dialog.DialogClass `SIDEBAR_WIDTH` accordingly
+*/
+/* Dialog footer */
+.mw-kartographer-mapDialog-foot {
+  /*
+		Anyone who changes the height of the footer should
+		update Kartographer.Dialog.DialogClass `FOOTER_HEIGHT` accordingly
+	*/
+  padding: 1em;
+  height: 4.5em;
+  background-color: #ffffff;
+  border-top: 1px solid #a2a9b1;
+}
+.mw-kartographer-captionfoot {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 20px;
+  line-height: 31px;
+}
+.mw-kartographer-buttonfoot {
+  float: right;
+  margin-left: 1em;
+}
+/* Dialog Sidebar */
+.mw-kartographer-mapDialog-sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 4.5em;
+  z-index: 2;
+  border-left: 1px solid #a2a9b1;
+  /*
+		Anyone who changes the width of the sidebar should
+		update Kartographer.Dialog.DialogClass `SIDEBAR_WIDTH` accordingly
+	*/
+  width: 321px;
+  /* 320+1 so border is hidden on common 320px wide mobile devices */
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 3em 2em 1em;
+  overflow-y: scroll;
+  /* For MobileFrontend */
+}
+.mw-kartographer-mapDialog-sidebar .mw-kartographer-mapDialog-closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-right: 0;
+}
+.mw-kartographer-mapDialog-sidebar .mw-kartographer-mapDialog-closeButton .oo-ui-buttonElement-button {
+  border: 0;
+}
+.mw-kartographer-mapDialog-sidebar .mw-kartographer-mapDialog-collapseButton {
+  position: absolute;
+  top: 10px;
+  right: 44px;
+  margin-right: 0;
+}
+.mw-kartographer-mapDialog-sidebar .mw-kartographer-mapDialog-collapseButton .oo-ui-buttonElement-button {
+  border: 0;
+}
+.skin-minerva .mw-kartographer-mapDialog-sidebar h2 {
+  margin-bottom: 0.6em;
+}
+.mw-kartographer-mapdetails-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.mw-kartographer-mapdetails-table tr {
+  background-color: #eaecf0;
+  text-align: center;
+}
+.mw-kartographer-mapdetails-table th {
+  text-align: left;
+}
+.mw-kartographer-mapdetails-table th,
+.mw-kartographer-mapdetails-table td {
+  padding: 0.5em 1em;
+  font-size: 90%;
+}
+.mw-kartographer-mapdetails-table thead tr {
+  background-color: #c8ccd1;
+}
+.mw-kartographer-mapdetails-table thead tr th {
+  font-weight: bold;
+}
+.mw-kartographer-mapdetails-table tbody tr th:first-child {
+  width: 70%;
+  text-align: left;
+}
+.mw-kartographer-mapdetails-table tbody tr:nth-child( even ) {
+  background-color: #ffffff;
+}
+.mw-kartographer-externalservices .mw-kartographer-mapdetails-table tbody tr.featured {
+  background-color: #fef6e7;
+  border-bottom: 1px solid #ffcc33;
+}
+.mw-kartographer-externalservices .mw-kartographer-mapdetails-table tbody tr th {
+  font-weight: normal;
+}
+.mw-kartographer-description,
+.mw-kartographer-mapdetails {
+  margin-bottom: 1.5em;
+}
+.mw-kartographer-mapdetails .geo {
+  white-space: nowrap;
+}
+.mw-kartographer-filterservices {
+  margin-bottom: 1em;
+}
+.kartographer-mapDialog-loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 4.5em;
+  background-image: url(data:image/gif;base64,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);
+  background-image: url(/w/extensions/Kartographer/styles/images/ajax-loader.gif?b3af8)!ie;
+  background-position: center center;
+  background-size: 32px;
+  background-repeat: no-repeat;
+}
+.mw-kartographer-mapDialog-sidebar-opened .leaflet-right.leaflet-bottom {
+  right: 320px;
+}
+
+/* == Attribution control == */
+/**
+ * WikimediaUI base v0.7.1
+ * Wikimedia Foundation user interface base variables
+ */
+/* Colors */
+/* Positioning */
+/* Box Model properties */
+/* Max Widths */
+/* Typography incl. print properties */
+/* Other Properties */
+/* Animation & Transition */
+/* Static snapshot */
+.mw-kartographer-attribution {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0 5px;
+  box-shadow: none;
+}
+/* Static + Interactive */
+.mw-kartographer-attribution,
+.leaflet-right.leaflet-bottom {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #222222;
+}
+/* Interactive */
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-attribution {
+  /** Override initial properties */
+  background-color: transparent;
+  float: none;
+  clear: none;
+}
+/* Static + Interactive */
+.mw-kartographer-attribution,
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-attribution {
+  font-size: 10px;
+  font-family: sans-serif;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* Removes ellipsis on hover */
+}
+.mw-kartographer-attribution:hover,
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-attribution:hover {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: normal;
+}
+.mw-kartographer-attribution a,
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-attribution a {
+  color: #3366cc;
+}
+/* Static + Interactive */
+.mw-kartographer-map:hover .mw-kartographer-attribution,
+.mw-kartographer-interactive:hover .leaflet-right.leaflet-bottom {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* == Scale control == */
+/* Scale Line style */
+.leaflet-control-scale.leaflet-control .leaflet-control-scale-line {
+  background-color: transparent;
+  padding: 0 5px;
+  font-size: 10px;
+  font-family: sans-serif;
+}
+.leaflet-right.leaflet-bottom {
+  /** Override initial properties */
+}
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-scale {
+  float: left;
+  clear: none;
+  margin: 1px 5px;
+  line-height: initial;
+}
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-scale .leaflet-control-scale-line {
+  /* Scale Line style on hover */
+  /** Override initial properties */
+}
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-scale .leaflet-control-scale-line:hover {
+  border-color: #000;
+  cursor: pointer;
+}
+.leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-scale .leaflet-control-scale-line:not( :first-child ) {
+  border: 1px solid #999;
+  border-color: #000;
+  border-top: 0;
+  margin-top: 0;
+}
+
+/**
+ * WikimediaUI base v0.7.1
+ * Wikimedia Foundation user interface base variables
+ */
+/* Colors */
+/* Positioning */
+/* Box Model properties */
+/* Max Widths */
+/* Typography incl. print properties */
+/* Other Properties */
+/* Animation & Transition */
+/* stylelint-disable no-descending-specificity */
+.mw-kartographer-interactive {
+  z-index: 0;
+  /* Leaflet Popups */
+  /* Leaflet Controls */
+}
+.mw-kartographer-interactive.leaflet-container {
+  font: 14px 'Helvetica Neue', 'Helvetica', 'Nimbus Sans L', 'Arial', 'Liberation Sans', sans-serif;
+  color: #222222;
+}
+.mw-kartographer-interactive.leaflet-container .marker-description img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 0;
+  margin-top: 0.5em;
+}
+.mw-kartographer-interactive.leaflet-container a {
+  color: #3366cc;
+}
+.mw-kartographer-interactive.leaflet-container a:hover {
+  color: #447ff5;
+  text-decoration: underline;
+}
+.mw-kartographer-interactive.leaflet-container a:active {
+  color: #2a4b8d;
+}
+.mw-kartographer-interactive.leaflet-container a:focus {
+  color: #3366cc;
+}
+.mw-kartographer-interactive.leaflet-container a.new {
+  color: #ba0000;
+}
+.mw-kartographer-interactive.leaflet-container a.new:visited {
+  color: #a55858;
+}
+.mw-kartographer-interactive .leaflet-popup-content {
+  padding: 1em;
+}
+.mw-kartographer-interactive .leaflet-popup-content .marker-title {
+  text-align: center;
+}
+.mw-kartographer-interactive .leaflet-popup-content .marker-title > a {
+  font-weight: bold;
+}
+.mw-kartographer-interactive .leaflet-popup-content .marker-description {
+  text-align: center;
+}
+.mw-kartographer-interactive .leaflet-popup-content-wrapper,
+.mw-kartographer-interactive .map-legends,
+.mw-kartographer-interactive .map-tooltip {
+  border-radius: 2px;
+}
+.mw-kartographer-interactive .leaflet-control-layers,
+.mw-kartographer-interactive .leaflet-bar {
+  background-color: #f8f9fa;
+  border: 0;
+  box-shadow: none;
+}
+.mw-kartographer-interactive .leaflet-bar > a,
+.mw-kartographer-interactive .leaflet-bar > a:hover {
+  color: #000;
+  border: 1px solid #a2a9b1;
+  border-radius: 2px;
+  border-bottom: 0;
+  box-sizing: content-box;
+}
+.mw-kartographer-interactive .leaflet-bar > a:hover {
+  border-color: #a2a9b1;
+  background-color: #ffffff;
+}
+.mw-kartographer-interactive .leaflet-bar > a:active {
+  border-color: #72777d;
+  background-color: #c8ccd1;
+}
+.mw-kartographer-interactive .leaflet-bar > a:only-of-type {
+  border-bottom: 1px solid #a2a9b1;
+  border-radius: 2px;
+}
+.mw-kartographer-interactive .leaflet-bar > a:first-child:not( :only-of-type ) {
+  border-radius: 2px 2px 0 0;
+}
+.mw-kartographer-interactive .leaflet-bar > a:last-child {
+  border-bottom: 1px solid #a2a9b1;
+}
+.mw-kartographer-interactive .leaflet-bar > a:last-child:hover {
+  border-bottom: 1px solid #a2a9b1;
+  border-color: #a2a9b1;
+}
+.mw-kartographer-interactive .leaflet-bar > a:last-child:active {
+  border-bottom: 1px solid #a2a9b1;
+  border-color: #72777d;
+}
+.mw-kartographer-interactive .leaflet-bar > a:last-child:not( :only-of-type ) {
+  border-radius: 0 0 2px 2px;
+}
+.mw-kartographer-interactive .leaflet-bar > a:hover:only-of-type {
+  border-radius: 2px;
+}
+.mw-kartographer-interactive .leaflet-bar > .oo-ui-icon-close,
+.mw-kartographer-interactive .leaflet-bar > .oo-ui-icon-fullScreen {
+  background-position: center center;
+}
+.mw-kartographer-interactive .leaflet-control-attribution:after,
+.mw-kartographer-interactive .leaflet-control-zoom-in,
+.mw-kartographer-interactive .leaflet-control-zoom-out,
+.mw-kartographer-interactive .leaflet-popup-close-button,
+.mw-kartographer-interactive .leaflet-control-layers-toggle,
+.mw-kartographer-interactive .map-tooltip .close,
+.mw-kartographer-interactive .leaflet-container.dark .map-tooltip .close,
+.mw-kartographer-interactive .mapbox-icon {
+  opacity: 1;
+}
