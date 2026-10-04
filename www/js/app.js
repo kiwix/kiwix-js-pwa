@@ -2845,9 +2845,13 @@ function switchCSSTheme (container) {
     };
     // Choose the document, either the container's document or else the replay_iframe contentDocument
     var doc = getContainerDocument();
-    // Zimit articles opened in a window are not themed here, because Replay handles their display (and we have never done so)
-    if (!container.contentDocument && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
-    var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+    var inWindow = !container.contentDocument;
+    // In ServiceWorker mode, Zimit articles opened in a window are not themed here: they need DarkReader, which would have to be
+    // injected again on every navigation in that window, and the app does not see those navigations. In Restricted mode, the app
+    // writes the article into the window's own document, so a Zimit article there is themed like any other
+    if (inWindow && params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
+    // A window never has a separate Zimit iframe to theme or to unhide: the article is the window's own document
+    var zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
         : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? container : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
@@ -2998,7 +3002,7 @@ function switchCSSTheme (container) {
                 } else {
                     // Oops, we no longer have a handle on the article document, so get it again
                     doc = getContainerDocument();
-                    zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+                    zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
                         : appstate.selectedArchive.zimType === 'zimit2' ? container : null;
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
