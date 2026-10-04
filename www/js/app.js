@@ -2630,7 +2630,7 @@ function initializeUISettings () {
         uiSettings.oncolorvalueschanged = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
     // Support for other contexts (Firefox, Chromium, Electron, NWJS)
@@ -2639,7 +2639,7 @@ function initializeUISettings () {
         uiSettings.onchange = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
 }
@@ -2683,17 +2683,20 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     var determinedValue = params.cssTheme;
     if (params.cssTheme == 'auto') determinedValue = cssUIThemeGetOrSet('auto', true);
     if (determinedValue == 'light') document.getElementById('footer').classList.remove('darkfooter');
-    if (params.cssTheme == 'light') document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+    // NB We do not untick the (now hidden) inversion checkbox on light, so that the user's choice of dark theme is still
+    // there when dark is turned back on, e.g. with the theme button in the toolbar
     if (determinedValue == 'dark') document.getElementById('footer').classList.add('darkfooter');
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
+    // DarkReader is the default dark theme for Zimit archives, but it can only run in ServiceWorker mode
+    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? params.contentInjectionMode === 'serviceworker' &&
+        appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
     params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change', function () {
@@ -2708,7 +2711,7 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change', function () {
@@ -2725,7 +2728,7 @@ document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change'
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     settingsStore.setItem('customDarkTheme', params.customDarkTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
@@ -2741,7 +2744,7 @@ document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('cha
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     // If the darkReader theme has been turned off or on (and this is a change), then we need to reload the page
     if (params.cssTheme !== params.cssThemeOriginal && (params.cssTheme === 'darkReader' || params.cssThemeOriginal === 'darkReader')) {
         params.themeChanged = true;
@@ -2832,12 +2835,27 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * DEVELOPER NOTE: To force the legacy custom dark theme on new Wikipedia ZIMs for testing:
  * - Open DevTools console and type: params.customDarkTheme = true
  * - Then navigate to a new article to see the custom theme applied
+ *
+ * @param {HTMLIFrameElement|Window} [container] The container to theme, defaulting to the current articleContainer
  */
-function switchCSSTheme () {
-    // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
-    var doc = articleContainer ? articleContainer.contentDocument : '';
-    var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+function switchCSSTheme (container) {
+    container = container || articleContainer;
+    if (!container) return;
+    // The article may be in our iframe or in a window or tab that the user opened, so we take the document of either. Only
+    // the iframe can be hidden or shown, so any use of container.style below must be guarded [kiwix-js-pwa #797]
+    var getContainerDocument = function () {
+        return container.contentDocument || container.document;
+    };
+    // Choose the document, either the container's document or else the replay_iframe contentDocument
+    var doc = getContainerDocument();
+    var inWindow = !container.contentDocument;
+    // In ServiceWorker mode, Zimit articles opened in a window are not themed here: they need DarkReader, which would have to be
+    // injected again on every navigation in that window, and the app does not see those navigations. In Restricted mode, the app
+    // writes the article into the window's own document, so a Zimit article there is themed like any other
+    if (inWindow && params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
+    // A window never has a separate Zimit iframe to theme or to unhide: the article is the window's own document
+    var zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? container : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var resizeEvent;
@@ -2905,7 +2923,7 @@ function switchCSSTheme () {
             if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
                 // Display the article since we've handled the theme
                 if (document.getElementById('configuration').style.display === 'none') {
-                    articleContainer.style.display = '';
+                    if (container.style) container.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
                     // Force repaint - using createEvent for IE11 compatibility
                     resizeEvent = document.createEvent('Event');
@@ -2936,7 +2954,7 @@ function switchCSSTheme () {
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         link.onload = function () {
             if (document.getElementById('configuration').style.display === 'none') {
-                articleContainer.style.display = '';
+                if (container.style) container.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
                 // Force repaint - using createEvent for IE11 compatibility
                 resizeEvent = document.createEvent('Event');
@@ -2957,7 +2975,7 @@ function switchCSSTheme () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
                     if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
-                        articleContainer.style.display = '';
+                        container.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
                             // Force repaint - using createEvent for IE11 compatibility
@@ -2971,21 +2989,32 @@ function switchCSSTheme () {
                 darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
                 doc.head.appendChild(darkReader);
             };
-            // Use setInterval to keep attempting to load darkReader until doc.defaultView.DarkReader is available
+            // Use setInterval to keep attempting to load darkReader until doc.defaultView is available
             var interval = setInterval(function () {
                 if (doc && doc.defaultView) {
                     if (!doc.defaultView.DarkReader) {
                         clearInterval(interval);
-                            loadDarkReader();
+                        loadDarkReader();
+                    } else if (!zimitIframe) {
+                        // Outside Zimit, DarkReader is injected into the article's HTML in SW mode, so it is normally already
+                        // present, and there is nothing to wait for (we would otherwise poll forever) [kiwix-js-pwa #797]
+                        clearInterval(interval);
                     }
+                    // DEV: With Zimit, a document that already has DarkReader may be one that Replay is about to replace, so we
+                    // keep polling until we lose it and pick up its replacement; the timeout below ends the polling in any case
                 } else {
-                    // Oops, we no longer have a handle on the iframe document, so get it again
-                    doc = articleContainer ? articleContainer.contentDocument : '';
-                    zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-                        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                    // Oops, we no longer have a handle on the article document, so get it again
+                    doc = getContainerDocument();
+                    zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+                        : appstate.selectedArchive.zimType === 'zimit2' ? container : null;
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
+            // The polling only has to bridge a document that is replaced soon after loading: later replacements are picked
+            // up when articleLoader calls this function again, so we always stop after 3 seconds [kiwix-js-pwa #797]
+            setTimeout(function () {
+                clearInterval(interval);
+            }, 3000);
             // If the interval has not succeeded after 3 seconds, give up
             if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
                 setTimeout(function (zimitf, articleC) {
@@ -2996,11 +3025,11 @@ function switchCSSTheme () {
                     resizeEvent = document.createEvent('Event');
                     resizeEvent.initEvent('resize', true, true);
                     window.dispatchEvent(resizeEvent);
-                }, 3000, zimitIframe, articleContainer);
+                }, 3000, zimitIframe, container);
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
-            articleContainer.style.display = '';
+            if (container.style) container.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
             // Force repaint - using createEvent for IE11 compatibility
             resizeEvent = document.createEvent('Event');
@@ -3015,6 +3044,60 @@ function switchCSSTheme () {
     document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
+}
+
+// The article windows and tabs that the app has opened, each with the name of the archive it was opened from, so that a
+// change of theme can reach all of them [kiwix-js-pwa #797]
+var openedArticleWindows = [];
+
+/**
+ * Gets the name of the currently loaded archive, which is what ties a tracked article window to its archive
+ * @returns {String} The file name of the archive, or an empty string if no archive is loaded
+ */
+function getSelectedArchiveName () {
+    return appstate.selectedArchive && appstate.selectedArchive.file ? appstate.selectedArchive.file.name : '';
+}
+
+/**
+ * Remembers an article window or tab that the app has opened, so that later changes of theme are applied to it
+ * @param {Window} win The window or tab that was opened
+ */
+function trackArticleWindow (win) {
+    if (!win) return;
+    var archiveName = getSelectedArchiveName();
+    for (var i = 0; i < openedArticleWindows.length; i++) {
+        if (openedArticleWindows[i].win === win) {
+            // A window that is opened again by name may now show an article from a different archive
+            openedArticleWindows[i].archiveName = archiveName;
+            return;
+        }
+    }
+    openedArticleWindows.push({ win: win, archiveName: archiveName });
+}
+
+/**
+ * Applies the current theme to the article iframe, and to every article window or tab that the app has opened and that is
+ * still open. This is for changes of theme: when an article loads, switchCSSTheme is called for its own container only.
+ * DEV: A Window reference stays valid when the user navigates within that window, so the window keeps receiving changes
+ */
+function switchCSSThemeEverywhere () {
+    switchCSSTheme(iframe);
+    var archiveName = getSelectedArchiveName();
+    openedArticleWindows = openedArticleWindows.filter(function (tracked) {
+        var win = tracked.win;
+        if (win.closed) return false;
+        // switchCSSTheme works from the state of the currently loaded archive (its type, and whether it is a Wikimedia one), so
+        // it would theme a window opened from another archive in the wrong way, or not at all. We leave such a window as it is,
+        // but keep it in the list, because the user may load its archive again
+        if (tracked.archiveName !== archiveName) return true;
+        try {
+            switchCSSTheme(win);
+        } catch (err) {
+            // The window may now show something whose document we cannot reach or theme (e.g. in the UWP app)
+            console.warn('Unable to apply the theme to an article window', err);
+        }
+        return true;
+    });
 }
 
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
@@ -4977,6 +5060,10 @@ function archiveReadyCallback (archive) {
         }
     }
     if (params.contentInjectionMode === 'serviceworker') {
+        // Start every archive from the theme that the user chose, which is the stored one: the Zimit override below changes
+        // params.cssTheme only in memory, so it must not carry over to the next archive, whatever its type [kiwix-js-pwa #797]
+        params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
+        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme === 'darkReader';
         if (!appstate.wikimediaZimLoaded) {
             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
@@ -5002,10 +5089,6 @@ function archiveReadyCallback (archive) {
             // if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
             params.noWarning = false;
-            params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-            // if (params.cssTheme === 'auto') {
-                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-            // }
         }
     }
     // The archive is set : go back to home page to start searching
@@ -7806,6 +7889,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     appstate.target = 'window';
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
 
@@ -8227,6 +8311,7 @@ function addListenersToLink (a, href, baseUrl) {
                 if (articleContainer) {
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
         }
