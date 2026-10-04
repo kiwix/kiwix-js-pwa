@@ -9,6 +9,8 @@
 * FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
 * FIX: Articles opened in a new window or tab now follow the theme chosen in the app, instead of the system theme or always light
 * FIX: A newly opened window no longer flashes bright white in dark mode while the article loads
+* FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
+* FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
 
 ## Release 3.9.3
 

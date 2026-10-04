@@ -2683,13 +2683,16 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     var determinedValue = params.cssTheme;
     if (params.cssTheme == 'auto') determinedValue = cssUIThemeGetOrSet('auto', true);
     if (determinedValue == 'light') document.getElementById('footer').classList.remove('darkfooter');
-    if (params.cssTheme == 'light') document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+    // NB We do not untick the (now hidden) inversion checkbox on light, so that the user's choice of dark theme is still
+    // there when dark is turned back on, e.g. with the theme button in the toolbar
     if (determinedValue == 'dark') document.getElementById('footer').classList.add('darkfooter');
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
+    // DarkReader is the default dark theme for Zimit archives, but it can only run in ServiceWorker mode
+    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? params.contentInjectionMode === 'serviceworker' &&
+        appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
     params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
