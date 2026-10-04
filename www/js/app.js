@@ -3046,15 +3046,33 @@ function switchCSSTheme (container) {
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
 }
 
-// The article windows and tabs that the app has opened, so that a change of theme can reach all of them [kiwix-js-pwa #797]
+// The article windows and tabs that the app has opened, each with the name of the archive it was opened from, so that a
+// change of theme can reach all of them [kiwix-js-pwa #797]
 var openedArticleWindows = [];
+
+/**
+ * Gets the name of the currently loaded archive, which is what ties a tracked article window to its archive
+ * @returns {String} The file name of the archive, or an empty string if no archive is loaded
+ */
+function getSelectedArchiveName () {
+    return appstate.selectedArchive && appstate.selectedArchive.file ? appstate.selectedArchive.file.name : '';
+}
 
 /**
  * Remembers an article window or tab that the app has opened, so that later changes of theme are applied to it
  * @param {Window} win The window or tab that was opened
  */
 function trackArticleWindow (win) {
-    if (win && openedArticleWindows.indexOf(win) === -1) openedArticleWindows.push(win);
+    if (!win) return;
+    var archiveName = getSelectedArchiveName();
+    for (var i = 0; i < openedArticleWindows.length; i++) {
+        if (openedArticleWindows[i].win === win) {
+            // A window that is opened again by name may now show an article from a different archive
+            openedArticleWindows[i].archiveName = archiveName;
+            return;
+        }
+    }
+    openedArticleWindows.push({ win: win, archiveName: archiveName });
 }
 
 /**
@@ -3064,8 +3082,14 @@ function trackArticleWindow (win) {
  */
 function switchCSSThemeEverywhere () {
     switchCSSTheme(iframe);
-    openedArticleWindows = openedArticleWindows.filter(function (win) {
+    var archiveName = getSelectedArchiveName();
+    openedArticleWindows = openedArticleWindows.filter(function (tracked) {
+        var win = tracked.win;
         if (win.closed) return false;
+        // switchCSSTheme works from the state of the currently loaded archive (its type, and whether it is a Wikimedia one), so
+        // it would theme a window opened from another archive in the wrong way, or not at all. We leave such a window as it is,
+        // but keep it in the list, because the user may load its archive again
+        if (tracked.archiveName !== archiveName) return true;
         try {
             switchCSSTheme(win);
         } catch (err) {
@@ -7865,6 +7889,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     appstate.target = 'window';
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
 
