@@ -1864,6 +1864,22 @@ function entryRequiresNewContainer (dirEntry, mimeType) {
 }
 
 /**
+ * Works out whether a keydown event is a Back or Forward history shortcut (Alt/Ctrl/Cmd + Left/Right).
+ * Ctrl/Cmd + Left/Right are left alone in editable fields, so that they still move the caret by a word.
+ *
+ * @param {KeyboardEvent} e The keydown event
+ * @returns {Number} -1 for Back, 1 for Forward, or 0 if the event is not a history shortcut
+ */
+function getHistoryNavigationDirection (e) {
+    if (!(e.ctrlKey || e.altKey || e.metaKey)) return 0;
+    var direction = /^(Arrow)?Left$/.test(e.key) ? -1 : /^(Arrow)?Right$/.test(e.key) ? 1 : 0;
+    if (!direction) return 0;
+    var target = e.target;
+    if (!e.altKey && target && (/^(input|textarea|select)$/i.test(target.tagName) || target.isContentEditable)) return 0;
+    return direction;
+}
+
+/**
  * Opens the given URL in a new tab or a new window, according to the user's windowOpener setting.
  *
  * This is the single place that knows how a new container is opened, so that callers only have to decide
@@ -1922,6 +1938,7 @@ export default {
     warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
     entryRequiresNewContainer: entryRequiresNewContainer,
     openUrlInNewContainer: openUrlInNewContainer,
+    getHistoryNavigationDirection: getHistoryNavigationDirection,
     setupConfigurationToggles: setupConfigurationToggles,
     closestAnchorEnclosingElement: closestAnchorEnclosingElement,
     handleTitleClick: handleTitleClick,
