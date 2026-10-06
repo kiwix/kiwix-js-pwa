@@ -27,12 +27,12 @@
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * ENHANCEMENT: Auto-updates now enabled for the macOS Electron app
 * CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
-* SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders
-* SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need
-* SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch)
+* SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
+* SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
+* SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch) ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: Tightened the Content Security Policy for articles displayed in Restricted mode, and non-HTML entries are now always displayed as plain text
-* SECURITY: Settings supplied in the app's URL are no longer saved permanently (except those the app passes between its own windows), and source verification can only be changed in Configuration
-* SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level
+* SECURITY: Settings supplied in the app's URL are no longer saved permanently (except those the app passes between its own windows), and source verification can only be changed in Configuration ([GHSA-37j3-jm4x-gjmv](https://github.com/kiwix/kiwix-js/security/advisories/GHSA-37j3-jm4x-gjmv))
+* SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level ([GHSA-37j3-jm4x-gjmv](https://github.com/kiwix/kiwix-js/security/advisories/GHSA-37j3-jm4x-gjmv))
 * INFO: Document the Electron app's server feature in README
 * INFO: Document the Electron app's BitTorrent downloads in the About section and README
 * INFO: Add CONTRIBUTING.md, moving the contributor instructions out of README
