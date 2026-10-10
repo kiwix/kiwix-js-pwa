@@ -5437,18 +5437,14 @@ function listenForKeyboardEvents (controlWindow) {
 
     // Single keydown listener for all keydown events
     var keydownListener = function (e) {
-        // Navigation: Ctrl/Alt/Cmd-Left for back
-        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
+        // Navigation: Ctrl/Alt/Cmd-Left for back, Ctrl/Alt/Cmd-Right for forward. We use the in-app buttons,
+        // which traverse the top-level history: the sandboxed iframe cannot traverse entries pushed on the
+        // top-level window, as happens in Restricted mode [kiwix-js-pwa #1003]
+        var historyDirection = uiUtil.getHistoryNavigationDirection(e);
+        if (historyDirection) {
             e.preventDefault();
             e.stopPropagation();
-            articleWindow.history.back();
-            return;
-        }
-        // Navigation: Ctrl/Alt/Cmd-Right for forward
-        if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
-            e.preventDefault();
-            e.stopPropagation();
-            articleWindow.history.forward();
+            document.getElementById(historyDirection < 0 ? 'btnBack' : 'btnForward').click();
             return;
         }
         // Ctrl-P to patch printing support, so iframe gets printed
