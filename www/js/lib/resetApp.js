@@ -207,7 +207,11 @@ function reloadApp () {
         uriParams += '&referrerExtensionURL=' + encodeURIComponent(params.referrerExtensionURL);
     }
     // Function to perform the actual reload
+    var rebooted = false;
     var reboot = function () {
+        // The fallback timer below can fire while deregistration is still under way, so ensure we only reboot once
+        if (rebooted) return;
+        rebooted = true;
         // Disable beforeunload interceptor
         params.interceptBeforeUnload = false;
         // The page may have no Service Worker controlling it: there is none registered yet on a first launch or in
@@ -223,15 +227,23 @@ function reloadApp () {
     };
     if (navigator && navigator.serviceWorker) {
         console.debug('Deregistering Service Workers...');
+        // Fallback timer in case getRegistrations() or unregister() never settles: the app has already been reset by this
+        // point, so it must not be left sitting there without a reload [kiwix-js #1507]
+        setTimeout(function () {
+            if (rebooted) return;
+            console.warn('Service Worker deregistration timed out, forcing app reload...');
+            reboot();
+        }, 3000);
         return navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                if (!registrations.length) {
-                    return Promise.resolve();
-                }
-                return Promise.all(
-                    registrations.map(registration => registration.unregister())
-                );
+                // Each failure is caught individually, so that it cannot hold up the others and the count stays accurate
+                return Promise.all(registrations.map(function (registration) {
+                    return registration.unregister().catch(function (err) {
+                        console.error('Error deregistering Service Worker:', err);
+                    });
+                })).then(function (results) {
+                    console.debug('Deregistered ' + results.filter(Boolean).length + ' of ' + registrations.length + ' Service Worker registration(s)...');
+                });
             }).then(function () {
-                console.debug('Service Workers cleanup complete');
                 // Adding a small delay before reboot to ensure cleanup
                 return new Promise(resolve => setTimeout(resolve, 200));
             }).then(reboot).catch(function (err) {
