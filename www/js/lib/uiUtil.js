@@ -1865,7 +1865,8 @@ function entryRequiresNewContainer (dirEntry, mimeType) {
 
 /**
  * Works out whether a keydown event is a Back or Forward history shortcut (Alt/Ctrl/Cmd + Left/Right).
- * Ctrl/Cmd + Left/Right are left alone in editable fields, so that they still move the caret by a word.
+ * Ctrl/Cmd + Left/Right are left alone in editable fields, so that they still move the caret by a word. On Apple
+ * platforms, Option (Alt) + Left/Right also move the caret by a word, so they are left alone there too.
  *
  * @param {KeyboardEvent} e The keydown event
  * @returns {Number} -1 for Back, 1 for Forward, or 0 if the event is not a history shortcut
@@ -1875,7 +1876,10 @@ function getHistoryNavigationDirection (e) {
     var direction = /^(Arrow)?Left$/.test(e.key) ? -1 : /^(Arrow)?Right$/.test(e.key) ? 1 : 0;
     if (!direction) return 0;
     var target = e.target;
-    if (!e.altKey && target && (/^(input|textarea|select)$/i.test(target.tagName) || target.isContentEditable)) return 0;
+    if (target && (/^(input|textarea|select)$/i.test(target.tagName) || target.isContentEditable)) {
+        var isApple = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '');
+        if (!e.altKey || isApple) return 0;
+    }
     return direction;
 }
 

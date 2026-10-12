@@ -22,9 +22,10 @@ const uiUtilSource = loadModuleSource(UI_UTIL_JS);
 /**
  * Builds a sandbox holding the real uiUtil source.
  *
+ * @param {String} platform The value of navigator.platform in the sandbox
  * @returns {Object} The sandbox, exposing getHistoryNavigationDirection
  */
-function createMockEnvironment () {
+function createMockEnvironment (platform) {
     const mockDocument = createMockDocument();
 
     /* eslint-disable no-eval */
@@ -33,13 +34,15 @@ function createMockEnvironment () {
         var params = {};
         var appstate = {};
         var window = { innerHeight: 800 };
+        var navigator = { platform: platform, userAgent: '' };
         ${uiUtilSource}
         return { getHistoryNavigationDirection: getHistoryNavigationDirection };
     })()`);
     /* eslint-enable no-eval */
 }
 
-const sandbox = createMockEnvironment();
+const sandbox = createMockEnvironment('Win32');
+const macSandbox = createMockEnvironment('MacIntel');
 
 describe('Back/Forward keyboard shortcuts (#1003)', function () {
     it('treats Alt+Left as Back and Alt+Right as Forward', function () {
@@ -61,5 +64,13 @@ describe('Back/Forward keyboard shortcuts (#1003)', function () {
         const input = { tagName: 'INPUT' };
         assert.equal(sandbox.getHistoryNavigationDirection({ key: 'ArrowLeft', ctrlKey: true, target: input }), 0);
         assert.equal(sandbox.getHistoryNavigationDirection({ key: 'ArrowLeft', altKey: true, target: input }), -1);
+    });
+
+    it('leaves Option+Left/Right alone in a text field on Apple platforms, but not elsewhere', function () {
+        const input = { tagName: 'INPUT' };
+        assert.equal(macSandbox.getHistoryNavigationDirection({ key: 'ArrowLeft', altKey: true, target: input }), 0);
+        assert.equal(macSandbox.getHistoryNavigationDirection({ key: 'ArrowRight', altKey: true, target: input }), 0);
+        assert.equal(macSandbox.getHistoryNavigationDirection({ key: 'ArrowLeft', altKey: true, target: { tagName: 'DIV' } }), -1);
+        assert.equal(sandbox.getHistoryNavigationDirection({ key: 'ArrowRight', altKey: true, target: input }), 1);
     });
 });

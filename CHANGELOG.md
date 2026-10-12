@@ -12,6 +12,7 @@
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
 * FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
 * FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
+* FIX: The Back/Forward keyboard shortcuts (Alt/Ctrl/Cmd + Left/Right) now work in Restricted mode, and no longer stop word-by-word caret movement in text fields (including Option + Left/Right on macOS)
 
 ## Release 3.9.3
 
