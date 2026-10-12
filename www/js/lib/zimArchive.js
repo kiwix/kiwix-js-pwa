@@ -304,6 +304,7 @@ ZIMArchive.prototype.setZimType = function () {
 ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
     if (this.isReady()) {
         var mainPageUrlIndex = this.file.mainPage;
+        if (mainPageUrlIndex >= this.file.entryCount) return callback(null);
         var that = this;
         this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
             // Filter out Zimit files that we cannot handle without error

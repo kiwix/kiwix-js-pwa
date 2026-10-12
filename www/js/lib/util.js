@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿/**
+﻿/**
  * util.js : Utility functions
  *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
