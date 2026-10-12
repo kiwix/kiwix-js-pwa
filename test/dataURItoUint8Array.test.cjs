@@ -4,7 +4,7 @@
  *
  * Validates that dataURItoUint8Array:
  * - Safely returns an empty Uint8Array on empty, malformed, or non-string inputs.
- * - Accurately converts base64 data URIs to Uint8Array.
+ * - Accurately converts base64 data URIs to Uint8Array, including line-wrapped ones.
  * - Correctly decodes percent-encoded octets directly to byte values (such as %C3%A9, %C3%A9%FF, and %2C).
  * - Does not throw on malformed percent sequences.
  *
@@ -38,6 +38,14 @@ describe('dataURItoUint8Array (#1010)', function () {
         assert.ok(b64Arr instanceof Uint8Array);
         const b64Str = String.fromCharCode.apply(null, b64Arr);
         assert.equal(b64Str, 'Hello, world!');
+    });
+
+    it('decodes line-wrapped base64 data URIs (\n, and \r\n with indentation) to the same bytes', function () {
+        const expected = Array.from(util.dataURItoUint8Array('data:text/plain;base64,SGVsbG8sIHdvcmxkIQ=='));
+        const wrappedLF = 'data:text/plain;base64,SGVsbG8s\nIHdvcmxk\nIQ==';
+        const wrappedCRLF = 'data:text/plain;base64,SGVsbG8s\r\n    IHdvcmxk\r\n    IQ==';
+        assert.deepEqual(Array.from(util.dataURItoUint8Array(wrappedLF)), expected);
+        assert.deepEqual(Array.from(util.dataURItoUint8Array(wrappedCRLF)), expected);
     });
 
     it('decodes percent-encoded data URIs with reserved delimiters (%2C, %20)', function () {
