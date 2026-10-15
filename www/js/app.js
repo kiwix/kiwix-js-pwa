@@ -2317,11 +2317,19 @@ var refreshFullScreen = function (evt) {
 };
 // Add event listener to the app UI
 document.getElementById('search-article').addEventListener('mouseup', refreshFullScreen);
+// Set when the user presses Esc or F11 in full screen, so that we can suppress auto-reactivation if full screen is then exited
+var fullScreenKeyExitPending = false;
+var fullScreenKeyListener = function (e) {
+    if (params.lockDisplayOrientation && uiUtil.appIsFullScreen() && !e.defaultPrevented && /^(?:Esc|Escape|F11)$/i.test(e.key)) {
+        fullScreenKeyExitPending = true;
+    }
+};
 ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function (eventName) {
     document.addEventListener(eventName, function () {
-        if (uiUtil.appIsFullScreen()) {
-            uiUtil.setFullScreenSuppressed(false);
+        if (fullScreenKeyExitPending && !uiUtil.appIsFullScreen()) {
+            uiUtil.setFullScreenSuppressed(true);
         }
+        fullScreenKeyExitPending = false;
         setDynamicIcons();
     });
 });
@@ -5436,10 +5444,6 @@ function listenForKeyboardEvents (controlWindow) {
 
     // Single keydown listener for all keydown events
     var keydownListener = function (e) {
-        // Monitor keyboard methods of exiting full screen (Esc or F11) to suppress auto-reactivation
-        if (params.lockDisplayOrientation && uiUtil.appIsFullScreen() && !e.defaultPrevented && /^(?:Esc|Escape|F11)$/i.test(e.key)) {
-            uiUtil.setFullScreenSuppressed(true);
-        }
         // Navigation: Ctrl/Alt/Cmd-Left for back
         if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
             e.preventDefault();
@@ -5491,10 +5495,13 @@ function listenForKeyboardEvents (controlWindow) {
     // Remove any existing listeners before adding new ones to prevent duplicates
     controlWindow.removeEventListener('keyup', keyupListener);
     controlWindow.removeEventListener('keydown', keydownListener, true);
+    controlWindow.removeEventListener('keydown', fullScreenKeyListener);
 
     // Add the listeners
     controlWindow.addEventListener('keyup', keyupListener);
     controlWindow.addEventListener('keydown', keydownListener, true);
+    // Not in capture mode, so we can see if another handler cancelled the key
+    controlWindow.addEventListener('keydown', fullScreenKeyListener);
 }
 
 /**
