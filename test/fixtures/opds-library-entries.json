@@ -1,0 +1,74 @@
+[
+    {
+        "filename": "mdwiki_en_all_maxi_2025-11.zim",
+        "name": "mdwiki_en_all",
+        "category": "",
+        "title": "MDWiki Medical Encyclopedia",
+        "summary": "Healthcare articles curated by WikiProjectMed",
+        "tags": "medical;mdwiki;_pictures:yes;_videos:no;_details:yes;_ftindex:yes"
+    },
+    {
+        "filename": "wikipedia_en_medicine_nopic_2026-10.zim",
+        "name": "wikipedia_en_medicine",
+        "category": "wikipedia",
+        "title": "WikiMed Medical Encyclopedia",
+        "summary": "The largest medical encyclopedia, from Wikipedia",
+        "tags": "medical;wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:yes;_ftindex:yes"
+    },
+    {
+        "filename": "ted_mul_medicine_2026-09.zim",
+        "name": "ted_mul_medicine",
+        "category": "ted",
+        "title": "TED medicine",
+        "summary": "A collection of TED videos about medicine",
+        "tags": "medical;_category:ted;ted;_videos:yes;_ftindex:yes;_pictures:yes;_details:yes"
+    },
+    {
+        "filename": "nhs.uk_en_medicines_2026-09b.zim",
+        "name": "nhs.uk_en_medicines",
+        "category": "other",
+        "title": "NHS' Medicines A to Z",
+        "summary": "How medicines work, how and when to take them",
+        "tags": "_category:other;_ftindex:yes;medical;_pictures:yes;_videos:yes;_details:yes"
+    },
+    {
+        "filename": "librepathology_en_all_maxi_2026-09.zim",
+        "name": "librepathology_en_all",
+        "category": "",
+        "title": "Libre Pathology",
+        "summary": "A pathology knowledge base",
+        "tags": "medical;librepathology;_pictures:yes;_videos:no;_details:yes;_ftindex:yes"
+    },
+    {
+        "filename": "wikivoyage_en_all_maxi_2026-09.zim",
+        "name": "wikivoyage_en_all",
+        "category": "wikivoyage",
+        "title": "Wikivoyage",
+        "summary": "The collaborative travel guide",
+        "tags": "wikivoyage;_category:wikivoyage;_pictures:yes;_videos:no;_details:yes;_ftindex:yes"
+    },
+    {
+        "filename": "wikivoyage_de_all_nopic_2026-10.zim",
+        "name": "wikivoyage_de_all",
+        "category": "wikivoyage",
+        "title": "Wikivoyage",
+        "summary": "Freie Reiseinformationen rund um die Welt",
+        "tags": "wikivoyage;_category:wikivoyage;_pictures:no;_videos:no;_details:yes;_ftindex:yes"
+    },
+    {
+        "filename": "wikipedia_en_all_mini_2026-09.zim",
+        "name": "wikipedia_en_all",
+        "category": "wikipedia",
+        "title": "Wikipedia",
+        "summary": "The free encyclopedia",
+        "tags": "wikipedia;_category:wikipedia;_pictures:no;_videos:no;_details:no;_ftindex:yes"
+    },
+    {
+        "filename": "gutenberg_en_all_2025-11.zim",
+        "name": "gutenberg_en_all",
+        "category": "gutenberg",
+        "title": "Project Gutenberg Library",
+        "summary": "All books in English from the first producer of free Ebooks",
+        "tags": "_category:gutenberg;gutenberg;_ftindex:no;_pictures:yes;_videos:yes;_details:yes"
+    }
+]
