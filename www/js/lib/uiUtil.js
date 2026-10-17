@@ -1507,7 +1507,6 @@ function setFullScreenSuppressed (val) {
  */
 function lockDisplayOrientation (val) {
     if (val) {
-        fullScreenSuppressed = false;
         // Request setting the app to full-screen mode
         return requestOrCancelFullScreen(document.documentElement).then(function () {
             // If the app is now in full-screen mode, lock the display orientation);
