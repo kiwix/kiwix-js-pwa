@@ -40,7 +40,7 @@ describe('dataURItoUint8Array (#1010)', function () {
         assert.equal(b64Str, 'Hello, world!');
     });
 
-    it('decodes line-wrapped base64 data URIs (\n, and \r\n with indentation) to the same bytes', function () {
+    it('decodes line-wrapped base64 data URIs (\\n, and \\r\\n with indentation) to the same bytes', function () {
         const expected = Array.from(util.dataURItoUint8Array('data:text/plain;base64,SGVsbG8sIHdvcmxkIQ=='));
         const wrappedLF = 'data:text/plain;base64,SGVsbG8s\nIHdvcmxk\nIQ==';
         const wrappedCRLF = 'data:text/plain;base64,SGVsbG8s\r\n    IHdvcmxk\r\n    IQ==';
