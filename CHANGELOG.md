@@ -2,23 +2,19 @@
 
 ## Release 3.9.4 / 3.9.5-Wikivoyage
 
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2026-09`
-* FEATURE: ZIM archives can now be opened from the file manager on macOS and in the Linux deb/rpm packages (Electron)
-* FEATURE: Archives now also show the Kiwix icon in file managers on macOS and Linux Electron apps (like Windows)
 * FEATURE: New setting to show a title bar under the window controls overlay, restoring an option that recent versions of Edge removed
 * FEATURE: In-app library can now browse the whole ZIM catalogue, not just by category, so uncategorized archives can be found
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
 * FEATURE: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
-* FEATURE: Support native auto dark/light theming system in new Wikimedia ZIMs (SW mode only)
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * ENHANCEMENT: Auto-updates now enabled for the macOS Electron app
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
-* ENHANCEMENT: Added macOS builds: ARM64, x64 (macOS 12+), and x64 legacy (macOS 10.13-11)
 * CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
+* CHANGE: The Linux executable is now `kiwix-js-wikivoyage`, so that it no longer clashes with the Kiwix JS Electron app
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2026-09`
 * UPDATE: Migrate Library to use OPDS endpoint instead of download.kiwix.org
-* UPDATE: Custom mdwiki landing page
 * UPDATE: Build types in release templates
 * SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
@@ -52,7 +48,6 @@
 * REGRESSION: Fix broken display of masonry-style landing pages
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * REGRESSION: Properly set initial express port value
-* REGRESSION: Fix blank page on fragment or new tab navigation
 * REGRESSION: Fix poor dark styling of Spanish Wikipedia when transforming to mobile style
 * REGRESSION: Fix display of ISO language codes in library languages dropdown
 * FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
@@ -81,11 +76,6 @@
 * FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
 * FIX: Opening another archive now stops the previous archive's libzim worker (used for full-text search), which had lingered with its memory until the app was closed
 * FIX: Classic Zimit archives no longer loop endlessly (sometimes locking the app) when legacy Zimit support and the experimental libzim reader are both on; the two settings are now mutually exclusive
-* FIX: Double-clicking a ZIM in the OS no longer opens it twice, so the file permission and "trusted source" prompts appear only once
-* FIX: The Windows Setup and web installers now register the ZIM file type (including the first part of a split archive), so archives open by double-clicking in File Explorer
-* FIX: Launching the Windows Store app by double-clicking a ZIM now clears the stored location of the previous archive, as intended
-* FIX: Installed PWA no longer claims every unrecognized binary file on Linux, nor hides the Electron app from *Open With* for ZIM archives
-* FIX: Opening a ZIM from the OS while the Electron app is running no longer moves it to a new port on next launch, which lost its settings and caches
 * FIX: If the Electron app's usual port is taken by another program, the app now loads from the port it has switched to, not from that program
 * FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
 * FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
@@ -103,9 +93,6 @@
 * FIX: Reset app now deletes all Cache API caches, even when no Service Worker is controlling the page
 * FIX: Reset app no longer fails with an error when no Service Worker is controlling the page
 * FIX: Reload current article immediately when switching Content Injection Mode
-* FIX: Windows package uploads with new SSH kay
-* FIX: Typo causing large WikiMed packages to autoupdate to the plain app
-* FIX: MacOS script uploading packages to GitHub Releases and macOS-related template for Wikivoyage releases
 * FIX: Fail fast offline requests to network
 * FIX: Properly hide notice to download ZIM in packaged apps
 * FIX: Blank page on navigation with fragment or new tab (supports Single Page Applications)
@@ -138,22 +125,15 @@
 * DEV: Single workflow dispatch option now controls signing of both Windows and macOS packages; nightlies are always unsigned
 * DEV: Update Windows Code Signing for new certificate 2026-27
 * DEV: Update workflows with latest versions of Node, Checkout, and Upload Artefact
-* DEV: Allow dispatching just NWJS builds from Biuild-Electron workflow
-* DEV: Update Electron to 43.2.0 and Electron Builder to 26.15.7
+* DEV: Allow dispatching just NWJS builds from Build-Electron workflow
 * DEV: Update Rollup to 29.0.3 and fix syntax change for strict require
-* DEV: Several security updates to dependencies
 * DEV: For the NW.js app, `npm start` now runs the x64 version
 * DEV: Change "Bypass AppCache" option to "Developer Mode" (same functionality)
-* DEV: WikiMed builds now use S3 publishing
 * DEV: Add Docker Compose configuration for serving PWA locally
-* DEV: Buid only appx version of UWP for GitHub releases
+* DEV: Build only appx version of UWP for GitHub releases
 * DEV: Fix broken invocation of wingetcreate
 * DEV: Update location for Kiwix-hosted downloads of apps
 * DEV: Rename custom_apps to branded_apps
-* DEV: Bump Electron to 43.1.1 (for modern Electron builds)
-* DEV: Bump NWJS to 113.0 (for modern NWJS builds)
-* DEV: Bump Electron Builder to 26.15.3
-* DEV: Security updates to many dependencies
 
 # Release 3.8.1 / 3.8.2-Wikivoyage
 
