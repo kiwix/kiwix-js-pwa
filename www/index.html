@@ -5,7 +5,7 @@
     <title>Kiwix JS Wikivoyage</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://library.kiwix.org https://*.library.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
     <meta name="theme-color" content="black">
     <!--
     Kiwix (offline Wikipedia reader) - HTML5/Javascript version
@@ -17,22 +17,22 @@
     Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10, Electron, NWJS and PWA:
         Geoffrey Kantaris egk10@cam.ac.uk
 
-    Copyright 2013-2023 Jaifroid, Mossroy, Peter-x and contributors
-    License GPL v3:
+    Copyright 2013-2026 Jaifroid, Mossroy, Peter-x and contributors
+    Licence GPL v3:
 
     This file is part of Kiwix.
 
     Kiwix is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    it under the terms of the GNU General Public Licence as published by
+    the Free Software Foundation, either version 3 of the Licence, or
     (at your option) any later version.
 
     Kiwix is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU General Public Licence for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU General Public Licence
         along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <https://www.gnu.org/licenses/>
 
     -->
@@ -58,14 +58,6 @@
                 }
             }, false);
         }
-        // If we're running in NWJS context, rename NWJS require and add needed functions
-        var nwjsVersion = '';
-        if (typeof window.nw !== 'undefined') {
-            window.requireNode = window.require;
-            window.require = undefined;
-            window.fs = requireNode('fs');
-            nwjsVersion = nw.process.versions.nw;
-        } 
     </script>
 </head>
 <body role="application" class="dark">
@@ -99,42 +91,49 @@
                             <span><strong>IMPORTANT:</strong> To use this app, you <strong>must download an offline ZIM archive</strong> and store it on your device!</span>
                             You can do this from the <b>Configuration page&nbsp;<i class="fas fa-wrench"></i></b>, or else see the
                             <b>About page&nbsp;<i class="fas fa-info-circle"></i></b> for more information.
-                    </p>
-                    <p>
-                        On some pages you will see a map location marker <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />.
-                        Tap to open the <b>Maps app</b> at the location. This will work offline if you have downloaded the map for the
-                        relevant country in the Windows Settings for <b>Offline Maps</b>.
-                    </p>
-                    <p>
-                        Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review.
-                        Constructive feedback and help with improving the app are very welcome: see About section.
-                    </p>
-                    <div id="update" class="update">
-                        <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
-                        <ul style="padding-left: 15px;">
-                            <li>Packaged archive updated to wikivoyage_en_all_maxi_2025-12</li>
-                            <li>Support new Wikimedia ZIM-provided auto dark/light theming system (SW mode only)</li>
-                            <li>Added macOS builds: ARM64, x64 (macOS 11+), and x64 legacy (macOS 10.13-10.14)</li>
-                            <li>Added keyboard shortcuts /, Ctrl-K and Home for article search</li>
-                            <li>Migrated project to Bootstrap 4 and replaced Glyphicons with Font Awesome icons</li>
-                            <li>Provided new persistent FS permissions handler (allows upgrade to latest Electron)</li>
-                            <li>Removed dependency on JQuery completely</li>
-                            <li>Increased security of Electron app's Express server and provided controls for LAN access</li>
-                            <li>Added PWA installation guide for major browsers</li>
-                            <li>Added instructions for installing macOS packages and AppImage on recent Ubuntu missing fuse2</li>
-                            <li>Fixed broken printing support</li>
-                            <li>Fixed critical error in IE11 preventing rendering of webp images</li>
-                            <li>Fixed touch events for sliding away tool and navbars</li>
-                            <li>Unified all keyboard events under the same function</li>
-                            <li>Fixed display of gallery images in Wikimedia ZIMs when transformed to mobile style</li>
-                            <li>Better conversion of headings to details-summary style</li>
-                            <li>Fixed accidental processing of certain openZIM articles by the Zimit redirect algorithm</li>
-                            <li>General app and project information updates</li>
-                            <li>Security updates to dependencies</li>
-                        </ul>
-                        <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
-                    </div>
-                    <div id="features">
+                        </p>
+                        <p>
+                            On some pages you will see a map location marker <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />.
+                            Tap to open the <b>Maps app</b> at the location. This will work offline if you have downloaded the map for the
+                            relevant country in the Windows Settings for <b>Offline Maps</b>.
+                        </p>
+                        <p>
+                            Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review.
+                            Constructive feedback and help with improving the app are very welcome: see About section.
+                        </p>
+                        <div id="update" class="update">
+                            <h3 style="margin-top:0;">Changes in version <span class="version">3.x</span></h3>
+                            <ul style="padding-left: 15px;">
+                                <li>Packaged archive updated to wikivoyage_en_all_maxi_2026-09</li>
+                                <li>In-app library can now browse the whole ZIM catalogue (including uncategorized archives)</li>
+                                <li>New filter textbox for fast searching of archive list in in-app library</li>
+                                <li>The library's Language, Subject and Date filters now apply instantly, and are remembered when you return to the list</li>
+                                <li>New setting in Configuration &gt; Display settings to show a title bar when the browser's window controls are drawn over the app</li>
+                                <li>macOS app now installs from a disk image (.dmg), and updates itself automatically</li>
+                                <li>Hardened the handling of settings passed to the app in its address</li>
+                                <li>Tightened the security of Restricted mode and of the Electron and NW.js apps</li>
+                                <li>Archives are no longer loaded in the background before you have chosen whether to trust them</li>
+                                <li>PDFs and other documents open in a new window again, instead of leaving a dead page</li>
+                                <li>Each PDF or image opened in a new window now gets its own window, and the "Open in new window instead" option is back in Configuration</li>
+                                <li>Fixed the window buttons of recent Edge versions covering the app's own navigation buttons, and restored the draggable area for moving the app window</li>
+                                <li>Active content and limited display mode warnings are shown again</li>
+                                <li>Historical Wikipedia archives again switch automatically to the display mode they need</li>
+                                <li>Find in article no longer hangs when you type characters such as brackets or asterisks</li>
+                                <li>Fixed grid-style (masonry) landing pages staying blank in Firefox until the page was scrolled</li>
+                                <li>Images now finish loading on pages that also contain video or audio</li>
+                                <li>Fixed non-responsive links that are formatted as headings in Zimit archives</li>
+                                <li>Redirect pages now lead to the right article in Restricted mode</li>
+                                <li>Double-clicking a ZIM archive no longer opens it twice, so you are asked only once whether to trust it</li>
+                                <li>Dropping a ZIM archive onto the app now works where the browser blocks direct file access</li>
+                                <li>Choosing a BitTorrent download folder no longer changes which archive opens on next launch (Electron)</li>
+                                <li>Popover previews of Wikipedia links now work with the experimental libzim reader</li>
+                                <li>Clicking the fullscreen icon to exit fullscreen works again</li>
+                                <li>Reset app now reliably clears all stored data and caches</li>
+                                <li>Numerous security and stability improvements</li>
+                            </ul>
+                            <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
+                        </div>
+                        <div id="features">
                             <details class="collapsible-section">
                                 <summary class="features-summary">
                                     <h3>Features in Version 3.x</h3>
@@ -145,19 +144,19 @@
                                         <li>Huge range of supported browsers and frameworks</li>
                                         <li>Full-text searching of ZIM contents using <a href="https://github.com/openzim/javascript-libzim" target="_blank" rel="noopener">javascript-libzim</a></li>
                                         <li>Cutting-edge Origin Private File System support with best-available fallbacks</li>
-                                        <li>Built-in DarkReader support for nearly all ZIM types</li>
+                                        <li>Three dark themes, inclduing built-in DarkReader support and native Wikipedia dark mode</li>
+                                        <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
                                         <li>Display article previews in popovers for Wikimedia archives</li>
                                         <li>Use multiple ZIM archives simultaneously with File Handling API</li>
                                         <li>ZIM content is loaded in a secure sandbox for your protection</li>
                                         <li>Download ZIM archives in-app and display download progress</li>
-                                        <li>Open a new browsable tab or window</li>
+                                        <li>Support for fast in-app BitTorrent downloads and seeding in the Electron app</li>
+                                        <li>Read Zimit archives you create yourself with <a href="https://zimit.kiwix.org" target="_blank" rel="noopener">zimit.kiwix.org</a></li>
                                         <li>In-page searching and highlighting</li>
                                         <li>Title and URL search with wildcards .* or regexes</li>
                                         <li>Alphabetical index of all articles in archive (type space in search field)</li>
                                         <li>Find assets by URL in ZIM archive by prefixing namespace (or type space + / in search)</li>
                                         <li>Printing articles (with optional filtering for Wikipedia articles)</li>
-                                        <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
-                                        <li>Download and save content from ZIM</li>
                                         <li>Support full-screen and orientation lock in most browsers and frameworks</li>
                                     </ul>
                                 </div>
@@ -250,6 +249,8 @@
     <section id="search-article" role="region">
         <header id="top">
             <nav id="navbar" class="navbar navbar-light" role="navigation">
+                <!-- Emulated title bar, shown only when the browser draws the window controls overlay over the app and the user has asked for a title bar -->
+                <div id="wcoTitleBar"><span id="wcoTitleBarText"></span></div>
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch" role="search" aria-label="Search articles">
@@ -286,7 +287,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container">
                 <div id="about" style="display: none;" class="category-padding">
-                    <div class="returntoArticle""></div>
+                    <div class="returntoArticle"></div>
                     <h2>
                         <img id="kiwixIconAbout" src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
                         Wikivoyage by Kiwix
@@ -309,6 +310,7 @@
                         <li><a href="#windows">Window and tab management</a></li>
                         <li><a href="browsers">Browser support</a></li>
                         <li><a href="#expressServer">Express server (Electron app)</a></li>
+                        <li><a href="#webTorrent">BitTorrent downloads (Electron app)</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -347,7 +349,7 @@
                         Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
                         different archives, and works with almost all of them, depending on the capabilities of your browser or framework. There is now full support for
                         <a href="https://download.kiwix.org/zim/zimit/" target="_blank">Zimit archives</a>, including support for Zimit v2.
-                        For more information on Zimit and how to make your own ZIM archives, see <a href="https://youzim.it/" target="_blank">youzim.it</a>.
+                        For more information on Zimit and how to make your own ZIM archives, see <a href="https://zimit.kiwix.org/" target="_blank">zimit.kiwix.org</a>.
                     </p>
                     <p>
                         You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
@@ -721,6 +723,54 @@
                         <li>The server only allows connections from your local network (private IP ranges), not from the public internet</li>
                         <li>External access is disabled by default for security and only applies to the current session</li>
                     </ul>
+
+                    <h3 id="webTorrent">BitTorrent downloads (Electron app)</h3>
+
+                    <p>
+                        When running in the Electron framework, the app includes a built-in BitTorrent client for downloading large ZIM
+                        archives directly from the Download Library. BitTorrent downloads are recommended for large archives because interrupted downloads can be resumed, even after closing the application.
+                    </p>
+
+                    <p>
+                        <b>Downloading archives:</b>
+                    </p>
+
+                    <ol>
+                        <li>Open the Download Library and browse or search for the archive you want to download.</li>
+                        <li>If the archive supports BitTorrent, click <b>Download via BitTorrent</b>.</li>
+                        <li>Choose the default download folder or select another location if required, then start the download.</li>
+                        <li>Your Firewall may prompt you to allow network access the first time the BitTorrent client is used. Approve this
+                            to enable BitTorrent downloads.</li>
+                            <li>
+                                If your version of Kiwix JS does not support WebTorrent, you can still download large archives using an
+                                external BitTorrent client by clicking on the provided torrent or magnet links.
+                            </li>
+                    </ol>
+
+                    <p>
+                        <b>Managing downloads:</b>
+                    </p>
+
+                    <ul>
+                        <li>While a download is in progress, selecting Download via BitTorrent again lets you either continue or stop the download.</li>
+                        <li>If you stop a download, the partially downloaded data is kept. Selecting <b>Download via BitTorrent</b> for the
+                            same archive again resumes the download from where it left off.</li>
+                        <li>If the application is closed while a download is in progress, you will be prompted to <b>Resume</b> or
+                            <b>Discard</b> the download when the application is restarted.</li>
+                        <li>Choosing <b>Resume</b> continues the download using the previously downloaded data.</li>
+                        <li>Choosing <b>Discard</b> deletes the saved partial download.</li>
+                    </ul>
+
+                    <p>
+                        <b>Important notes:</b>
+                    </p>
+
+                    <ul>
+                        <li>Completed downloads continue seeding to other BitTorrent users while the application is running.</li>
+                        <li>You can disable seeding in <b>Configuration &gt; Download library</b> by clearing the <b>Keep seeding BitTorrent
+                                downloads</b> option.</li>
+                    </ul>
+
                     <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
@@ -811,19 +861,23 @@
                     <p>Main libraries and resources used:</p>
                     <ul>
                         <li><a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> 4.6.2, released under an <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache Licence 2.0</a></li>
-                        <li><a href="https://fontawesome.com/" target="_blank">Font Awesome</a> 5.15.4, released under the <a href="https://fontawesome.com/license/free" target="_blank">Font Awesome Free License</a></li>
-                        <li><a href="https://rollupjs.org/" target="_blank">rollup.js</a> 3 for bundling this app, released under an <a href="https://github.com/rollup/rollup/blob/master/LICENSE.md" target="_blank">MIT licence</a></li>
+                        <li><a href="https://fontawesome.com/" target="_blank">Font Awesome</a> 5.15.4, released under the <a href="https://fontawesome.com/license/free" target="_blank">Font Awesome Free Licence</a></li>
+                        <li><a href="https://rollupjs.org/" target="_blank">rollup.js</a> 3 for bundling this app, released under an <a href="https://github.com/rollup/rollup/blob/master/LICENSE.md" target="_blank">MIT Licence</a></li>
                         <li><a href="https://qunitjs.com/" target="_blank">QUnit</a> 2, released under an <a href="https://jquery.org/license" target="_blank">MIT Licence</a></li>
                         <li>Kiwix logo from <a href="https://www.kiwix.org/" target="_blank">kiwix.org</a>, released under a <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
                         <li>OpenZIM specifications from <a href="https://wiki.openzim.org/wiki/OpenZIM" target="_blank">www.openzim.org</a>, released under the <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
                         <li>Emscripten to generate XZ, ZSTD and libzim decompressors in JavaScript: <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT Licence</a></li>
                         <li><a href="https://tukaani.org/xz/embedded.html" target="_blank">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
                         <li>The <a href="https://github.com/facebook/zstd" target="_blank">Zstandard library</a>, released under a <a href="https://github.com/facebook/zstd/blob/dev/LICENSE" target="_blank">BSD Licence</a> and a <a href="https://github.com/facebook/zstd/blob/dev/COPYING" target="_blank">GPLv2 Copying Licence</a></li>
-                        <li><a href="https://katex.org/" target="_blank">KaTeX</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/KaTeX/KaTeX/blob/master/LICENSE" target="_blank">MIT licence</a></li>
+                        <li><a href="https://katex.org/" target="_blank">KaTeX</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/KaTeX/KaTeX/blob/master/LICENSE" target="_blank">MIT Licence</a></li>
                         <li><a href="https://www.the-art-of-web.com/javascript/search-highlight/" target="_blank">Hilitor</a> for finding and hilighting text inside an article, released under <a href="https://www.the-art-of-web.com/copyright.html" target="_blank">this licence</a></li>
                         <li><a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader</a> for converting Web pages to dark mode, released under an <a href="https://github.com/darkreader/darkreader/blob/main/LICENSE" target="_blank">MIT Licence</a></li>
+                        <li><a href="https://www.electronjs.org/" target="_blank">Electron</a> (with <a href="https://www.electron.build/" target="_blank">electron-builder</a>) for packaging the desktop apps, released under an <a href="https://github.com/electron/electron/blob/main/LICENSE" target="_blank">MIT Licence</a></li>
+                        <li><a href="https://nwjs.io/" target="_blank">NW.js</a> as an alternative framework for packaging the desktop apps, including for legacy versions of Windows, released under an <a href="https://github.com/nwjs/nw.js/blob/main/LICENSE" target="_blank">MIT Licence</a></li>
                         <li><a href="https://github.com/webrecorder/wabac.js" target="_blank">The Web Archive Browsing Advanced Client</a> and <a href="https://github.com/webrecorder/wombat" target="_blank">Wombat Client-Side Rewriting Library</a> from the WebRecorder ReplayWeb project, released under a
                             <a href="https://github.com/webrecorder/wabac.js/blob/main/LICENSE.md" target="_blank">GNU Affero General Public Licence</a></li>
+                        <li>The <a href="https://expressjs.com/" target="_blank">Express JS</a> server for Node.js, released under an <a href="https://github.com/expressjs/express/blob/master/LICENSE" target="_blank">MIT Licence</a></li>
+                        <li><a href="https://webtorrent.io/" target="_blank">WebTorrent</a> streaming torrent client, issued under an <a href="https://github.com/webtorrent/webtorrent/blob/master/LICENSE" target="_blank">MIT Licence</a></li>
                     </ul>
                     <h3>Other platforms/versions</h3>
                     <p>Other Kiwix clients exist on various platforms. See the official site : <a href="https://www.kiwix.org/" target="_blank">https://www.kiwix.org/</a>.</p>
@@ -878,7 +932,7 @@
                     </div>
                     <div id="hideFileSelectors">
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                            <div id="archivesFound" class="row">
+                            <div id="archivesFound" class="row" style="width: 100%;">
                                 <div class="col-12">
                                     <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 </div>
@@ -968,6 +1022,13 @@
                                             <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
                                         </label>
                                     </div>
+                                    <div id="torrentSettingsDiv" class="row" style="display: none; margin: 0.5em;">
+                                        <label class="checkbox" title="After an in-app BitTorrent download completes, the app can continue to upload (seed) the archive to other users until you close the app. This helps the Kiwix community distribute archives. Turn it off if you are on a metered or slow connection.">
+                                            <input type="checkbox" name="keepTorrentSeeding" id="keepTorrentSeedingCheck" checked>
+                                            <span class="checkmark"></span>
+                                            <b>Keep seeding BitTorrent downloads</b> (<i>until app closes; helps other users</i>)
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
                                 <pre id="serverResponse" class="card-footer" style="display:none;"></pre>
@@ -1049,6 +1110,12 @@
                                                     <input type="checkbox" name="triStateThemeRandomBtn" id="triStateThemeRandomBtnCheck">
                                                     <span class="checkmark"></span>
                                                     <b>Show toolbar buttons</b>: [ <b><span id="triStateThemeRandomBtnState"></span></b> ] (select to show random or theme buttons in toolbar)
+                                                </label>
+                                                <!-- Only shown while the browser is drawing the window buttons over the app: see setTitleBarState() in app.js -->
+                                                <label class="checkbox" id="showTitleBarLabel" style="display: none;">
+                                                    <input type="checkbox" name="showTitleBar" id="showTitleBarCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Show a title bar</b> (your browser is drawing the window buttons over this app instead of giving it a title bar, so the app can supply one of its own)
                                                 </label>
                                                 <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This resets the display on app launch or when the app is resized, to fix UI on excternal monitors. It increases load time, so turn off if you do not use a secondary display.">
                                                     <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">
@@ -1196,7 +1263,7 @@
                                             <span class="checkmark"></span>
                                             <strong>Open links in a new tab</strong> with right-click, ctrl-click, middle-click or long-press
                                         </label>
-                                        <div class="row" id="openInNewWindow" hidden>
+                                        <div class="row" id="openInNewWindow" style="display: none;">
                                             <div class="col-sm-6">
                                                 <label class="checkbox" title="Open article in new window">
                                                     <input type="checkbox" name="windowOpener" id="winOpenerCheck">
@@ -1401,10 +1468,10 @@
                                             <input type="text" name="expressPort" id="expressPortInput" value="3002" style="width:5em;color:steelblue;">
                                         </label>
                                     </div>
-                                    <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
+                                    <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting makes development of the app easier by clearing all existing Cache API caches, and it also turns off the ZIM assets cache above for as long as it is on. Also enables access to development ZIMs in the library. Primarily for testing new code with the PWA.">
                                         <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
                                         <span class="checkmark"></span>
-                                        <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
+                                        <b>Developer Mode</b> (<i>disables offline use of PWA!</i>)
                                     </label>
                                     <p>Reset the app to default settings and erase all caches:</p>
                                     <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. Archives stored in the OPFS will be preserved. The app will reload.">
@@ -1469,8 +1536,8 @@
                     <a class="btn btn-outline-secondary col-1" id="btnForward" title="Forward"><i class="fas fa-arrow-circle-right"></i></a>
                     <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><i class="fas fa-random"></i></a>
                     <a class="btn btn-outline-secondary col-1" style="display:none;" id="btnToggleThemeAlt" title="Switch between light and dark modes"><i class="fas fa-adjust"></i></a>
-                    <div class="dropup">
-                        <a href="#" class="btn btn-outline-secondary dropdown-toggle col-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="dropup col-4" id="dropupContainer">
+                        <a href="#" class="btn btn-outline-secondary dropdown-toggle" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>&nbsp;ToC&nbsp;</b>
                             <span class="caret"></span>
                         </a>

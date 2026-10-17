@@ -33,7 +33,7 @@
  * download and install a new copy; we have to hard code this here because it is needed before any other file
  * is cached in APP_CACHE
  */
-const appVersion = '3.8.2-Wikivoyage';
+const appVersion = '3.9.5-Wikivoyage';
 
 /**
  * The name of the Cache API cache in which assets defined in regexpCachedContentTypes will be stored
@@ -74,7 +74,7 @@ let imageDisplay = 'all';
 
 // Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpkiwixDownloadServers = /download\.kiwix\.org|api\.github\.com/i;
+const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|api\.github\.com/i;
 
 /**
  * A global Boolean that records whether the ReplayWorker is available
@@ -206,6 +206,7 @@ const precacheFiles = [
     'www/js/lib/popovers.js',
     'www/js/lib/resetApp.js',
     'www/js/lib/settingsStore.js',
+    'www/js/lib/torrentClient.js',
     'www/js/lib/transformStyles.js',
     'www/js/lib/transformZimit.js',
     'www/js/lib/uiUtil.js',
@@ -294,6 +295,13 @@ self.addEventListener('install', function (event) {
 self.addEventListener('activate', function (event) {
     console.debug('[SW] Activate Event processing');
     // Check all the cache keys, and delete any old caches
+    // DEV: This deliberately deletes ASSETS_CACHE too, unlike upstream (which keeps it), and every other cache on the
+    // origin, without a name filter, which could miss names changed in a later version [kiwix-js #1413]. We accept the
+    // cost: the assets cache holds only CSS and JS (see regexpCachedContentTypes), so clearing it means those are read
+    // from the ZIM once more after an update. That cost is highest on Android with a picked file on slow storage, but
+    // there the update reload loses the file anyway (the File System Access API reaches only the OPFS on Android, so
+    // no file handle survives). Against that, the cache holds Zimit assets already rewritten by the ReplayWorker, which
+    // an update could otherwise not correct, and clearing on update is its only eviction besides a manual reset
     event.waitUntil(
         Promise.all([
             // Clear old caches
@@ -351,6 +359,23 @@ if (isReplayWorkerAvailable) {
             console.debug('[SW] No ReplayWorker collections to reload');
         }
     });
+    // The ReplayWorker holds its connection to collDB open for the life of the Service Worker, and does not listen for
+    // versionchange, so a request to delete the database from the app (on reset) or from DevTools is blocked for as long
+    // as the Service Worker runs, which a page reload does not end. We therefore release the connection when asked. NB
+    // the collections list is unusable in this Service Worker from then on, but the reset unregisters it anyway, and a
+    // new one reopens (and if necessary recreates) the database on startup [kiwix-js-pwa #957]
+    if (self.sw.collections._init_db) {
+        self.sw.collections._init_db.then(function () {
+            var colldb = self.sw.collections.colldb;
+            if (!colldb) return;
+            colldb.addEventListener('versionchange', function () {
+                console.debug('[SW] Closing the ReplayWorker connection to collDB, so that it can be deleted or upgraded');
+                colldb.close();
+            });
+        }).catch(function (err) {
+            console.warn('[SW] Unable to listen for deletion of collDB', err);
+        });
+    }
 }
 
 // For PWA functionality, this should be true unless explicitly disabled, and in fact currently it is never disabled
@@ -427,7 +452,7 @@ self.addEventListener('fetch', function (event) {
                         });
                     }
                     const range = modRequestOrResponse.headers.get('range');
-                    return fetchUrlFromZIM(urlObject, range).then(function (response) {
+                    return fetchUrlFromZIM(urlObject, range, event).then(function (response) {
                         return cacheAndReturnResponseForAsset(event, response);
                     }).catch(function (msgPortData) {
                         console.error('Invalid message received from app.js for ' + strippedUrl, msgPortData);
@@ -435,7 +460,14 @@ self.addEventListener('fetch', function (event) {
                     });
                 } else {
                     // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
-                    return fetch(modRequestOrResponse).then(function (response) {
+                    // Use a timeout to fail fast when offline (Edge can hang for 30+ seconds otherwise)
+                    var fetchWithTimeout = Promise.race([
+                        fetch(modRequestOrResponse),
+                        new Promise(function (resolve, reject) {
+                            setTimeout(reject, 3000, new Error('Network timeout'));
+                        })
+                    ]);
+                    return fetchWithTimeout.then(function (response) {
                         // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
                         if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
                             event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
@@ -443,6 +475,8 @@ self.addEventListener('fetch', function (event) {
                         return response;
                     }).catch(function (error) {
                         console.debug('[SW] Network request failed and no cache.', error);
+                        // Return a minimal fallback response to prevent blocking
+                        return new Response('', { status: 408, statusText: 'Request Timeout' });
                     });
                 }
             });
@@ -554,7 +588,7 @@ function setReplayCollectionAsRoot (prefix, name) {
         main: self.sw.prefix,
         root: self.sw.prefix,
         static: self.sw.staticPrefix
-    }
+    };
     // If we want to be able to get the static data URL directly from the map, we need to replace the keyes, but as this is quite costly (moving a lot of static)
     // data around, we're using another way to get the static data URL from the map in zimitResolver()
     // let newMap = new Map();
@@ -587,7 +621,7 @@ function zimitResolver (event, rqUrl) {
         console.debug('[SW] Filtering content of load.js', rqUrl);
         // First we have to get the contents of load.js from the ZIM, because it is a common name, and there is no way to be sure
         // that the request will be for the Zimit load.js
-        return fetchUrlFromZIM(new URL(rqUrl)).then(function (response) {
+        return fetchUrlFromZIM(new URL(rqUrl), null, event).then(function (response) {
             // The response was found in the ZIM so we respond with it
             // Clone the response before reading its body
             var clonedResponse = response.clone();
@@ -614,7 +648,7 @@ function zimitResolver (event, rqUrl) {
                 if (/\/A\/static\//.test(rqUrl)) {
                     // If the request is for static data from the replayWorker, we should get them from the Worker's cache
                     // DEV: This extracts both wombat.js and wombatWorkers.js from the staticData Map
-                    var staticDataUrl = rqUrl.replace(/^(.*?\/)[^/]+?\.zim\w?\w?\/[AC/]{2,4}(.*)/, '$1$2')
+                    var staticDataUrl = rqUrl.replace(/^(.*?\/)[^/]+?\.zim\w?\w?\/[AC/]{2,4}(.*)/, '$1$2');
                     if (self.sw.staticData) {
                         var staticData = self.sw.staticData.get(staticDataUrl);
                         if (staticData) {
@@ -682,7 +716,7 @@ function cacheAndReturnResponseForAsset (event, response) {
  *     Zimit requests may be for a range of bytes, in fact video (at least) is stored as a blob, so the appropriate response will just be a normal 200.
  * @returns {Promise<Response>} A Promise for the Response, or rejects with the invalid message port data
  */
-function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders*/) {
+function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders */) {
     return new Promise(function (resolve, reject) {
         var pathname = typeof urlObjectOrString === 'string' ? urlObjectOrString : urlObjectOrString.pathname;
         // Note that titles may contain bare question marks or hashes, so we must use only the pathname without any URL parameters.
@@ -703,17 +737,28 @@ function fetchUrlFromZIM (urlObjectOrString, range, event/*, expectedHeaders*/) 
 
         // console.debug('[SW] Asking app.js for ' + titleWithNameSpace + ' from ' + zimName + '...');
 
-        // Get the requesting client's frameType if available
-        // This tells us whether the fetch request came from an iframe ('nested'), a top-level window ('top-level'),
-        // or another context. We pass this info to the app so it knows whether to hide the articleContainer
-        // to prevent theme flash (only needed for its own iframe, not for new windows/tabs users open).
-        var getRequestingFrameType = event && event.clientId
-            ? self.clients.get(event.clientId).then(function(client) {
+        // Establish whether the fetch request came from an iframe ('nested'), a top-level window or tab ('top-level'),
+        // or an indeterminate context ('unknown'). We pass this info to the app so that it knows whether the content is
+        // destined for its own iframe: it must not manipulate that iframe on behalf of a window the user opened separately.
+        // DEV: We cannot simply look the requesting client up by event.clientId, because for navigation requests (which is
+        // what an article load is) the clientId is empty -- the client does not exist yet. The request destination tells us
+        // what we need synchronously, so we use that first, and fall back to the client lookup, which does work for
+        // subresource requests. Engines that support neither will report 'unknown', which the app treats as it always has.
+        var destination = event && event.request ? event.request.destination : '';
+        var getRequestingFrameType;
+        if (/^i?frame$/.test(destination)) {
+            getRequestingFrameType = Promise.resolve('nested');
+        } else if (destination === 'document') {
+            getRequestingFrameType = Promise.resolve('top-level');
+        } else if (event && event.clientId) {
+            getRequestingFrameType = self.clients.get(event.clientId).then(function (client) {
                 return client ? client.frameType : 'unknown';
-            }).catch(function() {
+            }).catch(function () {
                 return 'unknown';
-            })
-            : Promise.resolve('unknown');
+            });
+        } else {
+            getRequestingFrameType = Promise.resolve('unknown');
+        }
 
         var messageListener = function (msgPortEvent) {
             if (msgPortEvent.data.action === 'giveContent') {

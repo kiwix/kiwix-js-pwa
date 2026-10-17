@@ -708,6 +708,13 @@ function transform (string, filter) {
  */
 function verifyPermission (fileHandle, withWrite) {
     if (params.useOPFS) return Promise.resolve(true); // No permission prompt required for OPFS
+    // Guard against an invalid stored object (e.g. a path string that was persisted where a
+    // handle was expected): without this, the synchronous TypeError below would bypass the
+    // caller's Promise error handling and abort app initialization
+    if (!fileHandle || typeof fileHandle.queryPermission !== 'function') {
+        console.warn('The stored object is not a valid file system handle:', fileHandle);
+        return Promise.resolve(false);
+    }
     var opts = withWrite ? { mode: 'readwrite' } : {};
     return fileHandle.queryPermission(opts).then(function (permission) {
         if (permission === 'granted') return true;
@@ -805,9 +812,9 @@ function importOPFSEntries (files) {
     return Promise.all(files.map(function (file) {
         return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
             return fileHandle.createWritable().then(function (writer) {
-                uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Importing ' + file.name + '...', true);
+                uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Importing ' + file.name + '...', true);
                 return writer.write(file).then(function () {
-                    uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Imported ' + file.name + '...', true);
+                    uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Imported ' + file.name + '...', true);
                     return writer.close();
                 });
             });
@@ -904,6 +911,9 @@ function iterateAsyncDirEntries (entries, archives, noFilter) {
                 if (window.fs && !params.pickedFolder.path) {
                     entry.getFile().then(function (file) {
                         params.pickedFolder.path = file.path;
+                    }).catch(function (err) {
+                        // We only wanted the path, so log and carry on rather than leaving an unhandled rejection
+                        console.warn('Unable to get the path of ' + entry.name, err);
                     });
                 }
             }
@@ -1003,8 +1013,22 @@ function wait (semaphor, value) {
     return p;
 }
 
+/**
+ * Determines whether the ZIM assets cache may be used, combining the user's stored preference with the state of
+ * Developer Mode. The assets cache is subordinate to params.appCache: Developer Mode exists to run the app with no
+ * caches at all, so it clamps this value rather than overwriting the stored preference, which therefore returns
+ * intact when Developer Mode is switched off. The same rule is restated at the head of init.js, which cannot use
+ * this helper because it is a classic script that runs before the modules load [kiwix-js-pwa #926]
+ *
+ * @returns {Boolean} True if ZIM assets may be cached
+ */
+function assetsCacheAllowed () {
+    return params.appCache && settingsStore.getItem('assetsCache') !== 'false';
+}
+
 export default {
     APPCACHE: APPCACHE,
+    assetsCacheAllowed: assetsCacheAllowed,
     CACHEAPI: CACHEAPI,
     test: test,
     count: count,

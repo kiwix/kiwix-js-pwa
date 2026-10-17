@@ -277,12 +277,11 @@ if (($flavour -match '_E') -or $plus_electron) {
       $electronbuild = 'local'
     }
   }
-  if (-Not ($release_tag_name -cmatch '-E$') -and ($electronbuild -eq 'cloud')) {
-    $original_release_tag_name = $release_tag_name
-    $release_tag_name = $release_tag_name -creplace '-?E$|-WikiMed|-Wikivoyage', ''
-    $release_tag_name = $release_tag_name + '-E' 
-    "Changing release tag name to $release_tag_name"
-  }
+  # The draft release used to be renamed to a -E tag here, purely so electron-builder's
+  # own publisher would upload to it, and then renamed back by hand afterwards. Publishing
+  # now goes through publish-github-release.cjs, which derives both the human (vX.Y.Z) and
+  # channel (vX.Y.Z-E) tags itself, so the draft keeps its plain tag throughout and
+  # $original_release_tag_name is never set.
 } else {
   $electronbuild = 'local'
 }
@@ -319,7 +318,7 @@ if ($updatewinget) {
   if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appx(?!bundle))') {
     $package_urls = @($matches[0])
   } 
-  if ($release_body -match 'https:(?![^)]+Web-Setup)[^)]+?\.(?:exe)') {
+  if ($release_body -match 'https:(?![^)]+(?:Win7|Web)-Setup)[^)]+?\.(?:exe)') {
     $package_urls += $matches[0]
   } else {
     "`nUnable to find the package URL!"
@@ -333,22 +332,21 @@ if ($updatewinget) {
     } else {
       $package_id = 'Kiwix.' +  'KiwixJS'
     }
-    if ($package_url -match '\.appx$') { 
+    if ($package_url -match '\.appx$') {
       $winget_version = $numeric_tag + '.0'
-      $UrlsWithOverride = '"' + "$package_url|X64" + '"'
+      $UrlsWithOverride = @("$package_url|X64")
     }
     if ($package_url -match '\.exe') {
       $package_id = $package_id + '.Electron'
       $winget_version = $numeric_tag + '-E'
-      $UrlsWithOverride = '"' + "$package_url|x86|machine" + '" "' + "$package_url|x86|user" + '"'
+      $UrlsWithOverride = @("$package_url|x86|machine", "$package_url|x86|user")
     }
     if (-Not $dryrun) {
       "`nSubmitting to winget-pkg repository..."
-      $arguments = 'update', $package_id, '--version', "$winget_version", '--urls', $UrlsWithOverride, '-s', '-t', $github_token
+      $arguments = @('update', $package_id, '--version', "$winget_version", '--urls') + $UrlsWithOverride + @('-s', '-t', $github_token)
       & wingetcreate.exe @arguments
-      # & wingetcreate.exe update $package_id --version "$winget_version" --urls $UrlsWithOverride -s -t $github_token
     } else {
-      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $UrlsWithOverride -s -t $github_token"
+      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $($UrlsWithOverride -join ' ') -s -t $github_token"
     }
   }
   "`nDone."
@@ -362,7 +360,7 @@ if (-Not ($dryrun -or $buildonly)) {
   "[DRYRUN] Release Body:`n$release_body"
 }
 
-if (-Not $nobundle) {
+if (-Not ($nobundle -or $draftonly)) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
     & npm run build-min 
@@ -558,10 +556,16 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
-        if ($buildstorerelease) { $buildmode = "StoreUpload" }
+        $bundleOption = ""
+        if ($buildstorerelease) {
+          $buildmode = "StoreUpload"
+        } else {
+          # Skip bundle creation for GitHub releases to avoid SignTool errors with 2GB+ files
+          $bundleOption = " /p:AppxBundle=Never"
+        }
         # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
         ren $PSScriptRoot/../node_modules node_modules_electron
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe dist/KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe dist/KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode$bundleOption"
         ren $PSScriptRoot/../node_modules_electron node_modules
         if ($rename_check) {
           "`nReverting changes to UWP manifests..."
@@ -620,7 +624,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "Signing app package for release on GitHub..."
       $certthumb = Get-Content -Raw $PSScriptRoot\master_key_thumbprint.txt
       if (-Not $dryrun) {
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /fd SHA256 /a /sha1 `"$certthumb`" /tr http://ts.ssl.com /td SHA256 `"$ReleaseBundle`" "
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /debug /fd SHA256 /a /sha1 `"$certthumb`" /tr http://ts.ssl.com /td SHA256 `"$ReleaseBundle`" "
       } else {
         'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /sha1 ' + $certthumb + ' /tr http://ts.ssl.com /td SHA256 ' + $ReleaseBundle + ' "'
       }
@@ -788,26 +792,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   "Cleaning up..."
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
   "`nDone.`n"
-  if ($original_release_tag_name) {
-    "*** WARNING: The Release Tag Name was changed to enable Electron cloud building! ***"
-    if ($wingetprompt -imatch 'N') {
-      "Be sure to change it back to $original_release_tag_name before publishing!`n"
-    } else {
-      $revert_release_tag_check = Read-Host "Would you like to revert the draft tag to ${original_release_tag_name}?`nWARNING WAIT TILL ALL BUILDS HAVE FINISHED BEFORE ANSWERING Yes! (Y/N)"
-      $revert_release_tag_check = $revert_release_tag_check -imatch 'y'
-      if ($revert_release_tag_check) {
-        "Changing tag from $release_tag_name to $original_release_tag_name..."
-        if (-not $dryrun) {
-          & $PSScriptRoot/Rewrite-DraftReleaseTag -from $release_tag_name -to $original_release_tag_name
-        } else {
-          & $PSScriptRoot/Rewrite-DraftReleaseTag -dryrun -from $release_tag_name -to $original_release_tag_name
-        }
-      } else {
-        "We did NOT change the release tag! Be sure to do it before publishing!"
-      }
-    }
-    $release_tag_name = $original_release_tag_name
-  }
+  # The prompt to revert the draft tag used to live here. It is gone with the rename that
+  # made it necessary: the draft now carries its plain tag from creation to publication.
   # Now update winget manifest if we are not building NWJS or Electron
   if ($flavour -eq '' -or $flavour -eq '_E') {
     if ($wingetprompt) {

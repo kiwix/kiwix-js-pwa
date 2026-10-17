@@ -11,9 +11,18 @@ const unsignedConfig = {
         // Unfortunately, this option doesn't do anything (August 2025)
         // signAndEditExecutable: false
     },
+    mac: {
+        ...baseConfig.mac,
+        // identity: null forces electron-builder to skip macOS code signing
+        identity: null,
+        notarize: false
+    },
     // Remove top-level configs related to signing
     cscLink: undefined,
-    cscKeyPassword: undefined
+    cscKeyPassword: undefined,
+    // Per-arch fix for the Windows nsis-web build's native node-datachannel binary (see
+    // afterPack.cjs). A no-op on non-Windows targets and where the module isn't packaged.
+    afterPack: require('./afterPack.cjs').default
 };
 
 // Remove properties if they exist

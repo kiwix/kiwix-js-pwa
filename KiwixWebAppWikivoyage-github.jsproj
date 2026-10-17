@@ -65,13 +65,13 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>e33d961d35fb3161f7db607342868bb51ae05de3</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>7426FA4A6B6D02F43A2E090B48B5F3B86847B1C3</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikivoyage_en_all_maxi_2025-12.zim" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2026-09.zim" />
     <Content Include="archives\README.md" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />
@@ -167,6 +167,7 @@
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\cache.js" />
+    <Content Include="www\js\lib\popovers.js" />
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />

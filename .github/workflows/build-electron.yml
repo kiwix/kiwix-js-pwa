@@ -21,61 +21,73 @@ on:
           - nightly
           - artefacts
         default: 'artefacts'
-      win11only:
-        description: Do you wish to build only for Windows 11 (primarily for testing)?
+      build_platform:
+        description: Which platform(s) to build for?
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
-      nsisweb:
-        description: For Windows 11 builds, do you want to build only the nsis-web installer?
+          - all
+          - linux
+          - macos
+          - windows
+          - win7
+          - win11
+          - nwjs
+        default: 'all'
+      win11packages:
+        description: For Windows 11 builds, select which packages to build
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
+          - all
+          - nsisweb
+          - appx
+        default: 'all'
       sign:
-        description: Do you wish to sign the Windows packages?
+        description: Do you wish to sign the Windows and macOS packages? (Nightly builds are always unsigned)
         type: choice
         required: false
         options:
           - true
           - false
-        default: 'false'
-      macosonly:
-        description: Do you wish to build only for macOS (primarily for testing)?
+        default: 'true'
+      publish_to:
+        description: Publish to GitHub releases or AWS S3?
         type: choice
         required: false
         options:
-          - true
-          - false
-        default: 'false'
+          - github
+          - aws
+        default: 'github'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
-  INPUT_SIGN: ${{ github.event.inputs.sign || 'false' }}
-  NSISWEB_ONLY: ${{ github.event.inputs.nsisweb }}
+  # Canonical signing flag for both Windows and macOS. Signing is on for manually
+  # dispatched builds unless explicitly turned off, and always off for nightlies,
+  # which are published unsigned (cron-launched, or dispatched with target:
+  # nightly). Resolves to the string 'true' or 'false'.
+  INPUT_SIGN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sign != 'false' && github.event.inputs.target != 'nightly' }}
+  BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'all' }}
+  WIN11_PACKAGES: ${{ github.event.inputs.win11packages }}
+  PUBLISH_TO: ${{ github.event.inputs.publish_to }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ESIGNER_USERNAME: ${{ secrets.ESIGNER_USER_USERNAME }}
   ESIGNER_PASSWORD: ${{ secrets.ESIGNER_USER_PASSWORD }}
   ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_USER_TOTP_SECRET }}
   MASTER_KEY_FILE: "C:\\Users\\runneradmin\\eSignerCKA\\master.key"
   INSTALL_DIR: C:\Users\runneradmin\eSignerCKA
-  SSH_KEY: ${{ secrets.KIWIX_FILE_UPLOAD_SSH_KEY }}
+  SSH_KEY: ${{ secrets.KIWIXJSPWA_FILE_UPLOAD_KEY }}
   REF_NAME: ${{ github.ref_name }}
 
 jobs:
 
   Release_Linux:
-    if: github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'linux' || github.event.inputs.build_platform == ''
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -120,36 +132,122 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.linux) pkg.build.linux.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+            console.log('S3 path configured as:', s3Config.path);
+          "
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build and publish 64bit
-      env: 
+      env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         # echo "Setting the module type to one supported by Electron in ./package.json"
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
+        echo "Copying package.json to dist"
+        cp ./package.json ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
-        echo "Building 64bit packages for ref_name=$REF_NAME..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 rpm:x64 --projectDir dist
-        else
-          npx electron-builder --linux AppImage:x64 AppImage:arm64 deb:x64 --projectDir dist
+        # For GitHub we build only: publish-github-release.cjs uploads afterwards, so that
+        # the channel ymls can be rewritten and each artefact routed to the human release,
+        # the -E auto-update release, or both. For AWS S3 nothing changes - electron-builder
+        # still publishes directly, and branded builds have auto-update disabled anyway.
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
         fi
-    - name: Build and pulblish 32bit
+        echo "Building 64bit packages for ref_name=$REF_NAME..."
+        # Build the x64 targets first, using the runner's native linux-x64 node-datachannel binary.
+        # electron-builder has npmRebuild:false, so it packages whatever single binary is on disk
+        # into every arch it builds — building arm64 in the same pass would ship the x64 binary in
+        # the arm64 AppImage (dlopen would fail on ARM). So after the x64 targets, swap in the
+        # linux-arm64 prebuild (a plain N-API download via prebuild-install, no compilation) and
+        # build the arm64 AppImage separately. The node -e form invokes prebuild-install from the
+        # package dir so it reads node-datachannel's own package.json, hoisting-agnostic.
+        if [[ $REF_NAME = "main" ]]; then
+          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --publish $PUBLISH_FLAG --projectDir dist
+        else
+          npx electron-builder --linux AppImage:x64 deb:x64 --publish $PUBLISH_FLAG --projectDir dist
+        fi
+        echo "Swapping node-datachannel to its linux-arm64 prebuild for the ARM AppImage..."
+        ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=arm64','--platform=linux'); require('prebuild-install/bin.js')" )
+        file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
+        echo "Building arm64 AppImage (with the linux-arm64 binary swapped in)..."
+        npx electron-builder --linux AppImage:arm64 --publish $PUBLISH_FLAG --projectDir dist
+    - name: Build and publish 32bit
       env:
         USE_HARD_LINKS: false
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
+        # Strip webtorrent: unusable on this target (Electron 18 = Node 16, below WebTorrent's Node
+        # 20 requirement, and node-datachannel has no ia32 prebuild), so it would only ship as dead
+        # weight. The in-app torrent feature is already gated off for this runtime (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        # For GitHub we build only: publish-github-release.cjs uploads afterwards, so that
+        # the channel ymls can be rewritten and each artefact routed to the human release,
+        # the -E auto-update release, or both. For AWS S3 nothing changes - electron-builder
+        # still publishes directly, and branded builds have auto-update disabled anyway.
+        PUBLISH_FLAG="never"
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          PUBLISH_FLAG="always"
+        fi
         echo "Building 32bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --publish $PUBLISH_FLAG --projectDir dist
         else
-          npx electron-builder --linux AppImage:ia32 --projectDir dist
+          npx electron-builder --linux AppImage:ia32 --publish $PUBLISH_FLAG --projectDir dist
         fi
+    - name: Publish packages to GitHub
+      if: github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # --skip-if-no-draft reproduces the electron-builder "onTagOrDraft" policy this
+        # replaces: a build with no draft release waiting is a no-op rather than a failure.
+        # --version is omitted when the workflow input is blank, so that the script falls
+        # back to the version in package.json - the field electron-builder named these
+        # artefacts after, so the tags cannot end up disagreeing with the filenames.
+        VERSION_ARG=()
+        if [[ -n "$INPUT_VERSION" ]]; then VERSION_ARG=(--version "$INPUT_VERSION"); fi
+        node ./scripts/publish-github-release.cjs "${VERSION_ARG[@]}" --upload --skip-if-no-draft
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -157,7 +255,7 @@ jobs:
         ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_linux
         path: |
@@ -166,11 +264,98 @@ jobs:
           dist/bld/Electron/*.rpm
 
   Release_macOS:
-    if: github.event.inputs.win11only != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'macos' || github.event.inputs.build_platform == ''
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
+    # Runs first so a credential problem is reported in seconds rather than after
+    # a full build plus a notarization round trip. Prints only the certificate's
+    # common name and expiry date, both of which are public information present
+    # in every signed binary; never the certificate itself or any password.
+    # This step is the single place that decides whether macOS signing is active:
+    # it exports MAC_SIGNING_ACTIVE for the build and verification steps below.
+    - name: Check macOS signing certificate
+      env:
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+      run: |
+        # Default to off, and turn on only once the credentials look usable. The
+        # flag is exported exactly once, on exit by whichever path we take, so
+        # nothing depends on how duplicate keys in $GITHUB_ENV are resolved.
+        ACTIVE=false
+        trap 'echo "MAC_SIGNING_ACTIVE=$ACTIVE" >> "$GITHUB_ENV"' EXIT
+        # Anything other than a pure artefacts test build ends up in front of users,
+        # so a silently unsigned package would contradict our own release notes.
+        # Such builds fail below rather than publish; artefacts builds carry on
+        # unsigned, so macOS packages can still be produced when signing is broken.
+        WOULD_PUBLISH=true
+        if [[ "$INPUT_TARGET" == "artefacts" && "$PUBLISH_TO" != "aws" ]]; then
+          WOULD_PUBLISH=false
+        fi
+        if [[ "$INPUT_SIGN" != "true" ]]; then
+          echo "Signing was not requested for this build (sign: false, or a nightly build)."
+          echo "macOS packages will be built UNSIGNED."
+          exit 0
+        fi
+        if [[ -z "$CSC_LINK" ]]; then
+          echo "❌ Signing was requested, but no signing certificate secret is available."
+          echo "   Check that this repository still has access to the org-level secret"
+          echo "   APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE (see kiwix/operations#501)."
+          if [[ "$WOULD_PUBLISH" == "true" ]]; then
+            echo "   This build would be published, so failing rather than publishing packages"
+            echo "   that are unsigned while the installation instructions say they are signed."
+            echo "   Re-run with sign: false if you deliberately want unsigned packages."
+            exit 1
+          fi
+          echo "   This is a test build that is not published, so continuing UNSIGNED."
+          exit 0
+        fi
+        CERT_FILE="$RUNNER_TEMP/signing_cert.p12"
+        # CSC_LINK holds the certificate base64-encoded; decode via openssl for
+        # portability (BSD and GNU base64 disagree on the decode flag)
+        printf '%s' "$CSC_LINK" | tr -d '\n' | openssl base64 -d -A > "$CERT_FILE"
+        # -legacy is needed for p12 files using older ciphers, but is rejected by
+        # LibreSSL, so try the plain invocation first
+        PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts 2>/dev/null) || true
+        if [[ -z "$PEM" ]]; then
+          PEM=$(openssl pkcs12 -in "$CERT_FILE" -passin env:CSC_KEY_PASSWORD -nokeys -clcerts -legacy 2>/dev/null) || true
+        fi
+        rm -f "$CERT_FILE"
+        if [[ -z "$PEM" ]]; then
+          echo "⚠️  Could not read the certificate (openssl could not parse it, or the password does not match)."
+          echo "    This may just be an openssl quirk, so signing is left enabled: the build"
+          echo "    and the verification step below will report the true outcome."
+          ACTIVE=true
+          exit 0
+        fi
+        SUBJECT=$(openssl x509 -noout -subject <<<"$PEM")
+        ENDDATE=$(openssl x509 -noout -enddate <<<"$PEM" | sed 's/^notAfter=//')
+        # Handles both subject formats: "CN = x, OU = y" (OpenSSL) and "/CN=x/OU=y" (LibreSSL)
+        CN=$(sed -E 's/.*CN ?= ?//; s/,.*//; s%/[A-Za-z]+=.*%%' <<<"$SUBJECT")
+        echo "Certificate:  $CN"
+        echo "Expires:      $ENDDATE"
+        if [[ "$CN" == "Developer ID Application"* ]]; then
+          echo "✅ Correct certificate type for notarized distribution outside the Mac App Store."
+          ACTIVE=true
+          exit 0
+        fi
+        echo "❌ Wrong certificate type for this use case."
+        echo "   Found:    $CN"
+        echo "   Required: Developer ID Application: ..."
+        echo ""
+        echo "   Apps distributed outside the Mac App Store must be signed with a"
+        echo "   'Developer ID Application' certificate. An 'Apple Distribution'"
+        echo "   certificate is only valid for App Store submission, and Gatekeeper"
+        echo "   will reject apps signed with it when downloaded from a website."
+        echo "   Ask for the Developer ID Application certificate to be added as a secret."
+        echo ""
+        if [[ "$WOULD_PUBLISH" == "true" ]]; then
+          echo "   This build would be published, so failing rather than publishing"
+          echo "   packages that are not signed. Re-run with sign: false to build unsigned."
+          exit 1
+        fi
+        echo "   This is a test build that is not published, so continuing UNSIGNED."
     - name: Install dependencies
       run: npm install
     - name: Rewrite app version number and file name
@@ -215,9 +400,59 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
+    - name: Configure publish target (GitHub or AWS S3)
+      run: |
+        if [[ "$PUBLISH_TO" == "aws" ]]; then
+          echo "Configuring electron-builder to publish to AWS S3..."
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION=$(echo "$INPUT_VERSION" | sed -E 's/^v?([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from INPUT_VERSION: $VERSION"
+          else
+            echo "No INPUT_VERSION provided, reading version from init.js..."
+            VERSION=$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/" | sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "Extracted version from init.js: $VERSION"
+          fi
+          if [[ -z "$VERSION" ]]; then
+            echo "ERROR: Could not determine version number"
+            exit 1
+          fi
+          echo "S3_VERSION=$VERSION" >> $GITHUB_ENV
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            const s3Config = {
+              provider: 's3',
+              bucket: 'org-kiwix-download.branded-apps',
+              endpoint: 'https://s3.eu-west-2.wasabisys.com',
+              path: 'WikiMed/v${VERSION}/',
+              acl: 'public-read'
+            };
+            if (pkg.build.mac) pkg.build.mac.publish = [s3Config];
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+          "
+          echo "S3 publish configuration injected into package.json"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v${VERSION}/"
+        else
+          echo "Using default GitHub publish configuration"
+        fi
     - name: Build macOS packages (High Sierra/Mojave compatible)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials. These are Kiwix secrets
+        # shared with kiwix-apple, hence the names: they are mapped here onto the
+        # variables electron-builder expects. The notarization ones are org-level
+        # and already available here; the certificate pair currently exists only as
+        # repository secrets on kiwix-apple and is pending being shared with this
+        # repo (see https://github.com/kiwix/operations/issues/501). Until then
+        # CSC_LINK is empty, and the certificate check at the start of this job
+        # turns signing off, so builds are simply unsigned.
+        # NB the certificate must be a Developer ID Application certificate, not
+        # the Apple Distribution one used for App Store submission.
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         # Save the original Electron version (just the version string, no quotes)
         ORIGINAL_ELECTRON_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/')
@@ -229,32 +464,59 @@ jobs:
         grep '"electron":' ./package.json
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this legacy target (Electron 26 = Node 18, below
+        # WebTorrent's Node 20 requirement), so it would only ship as dead weight (~9 MB of
+        # webtorrent + node-datachannel). The in-app torrent feature is already gated off for
+        # this runtime (see preload.cjs), so removing it changes nothing user-facing. Only the
+        # dist copy is stripped; the modern build step later restores the full package.json.
+        echo "Removing webtorrent from dist before install (unsupported on legacy macOS / Node 18)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Removing old Electron and installing exactly 26.6.10 in root and dist"
         npm uninstall electron && npm install electron@26.6.10 --save-exact --save-dev
         cd dist && npm install electron@26.6.10 --save-exact --save-dev && cd ..
         echo "Verifying installed Electron version..."
         npx electron --version
-        echo "Building macOS packages for High Sierra/Mojave..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
+        # MAC_SIGNING_ACTIVE is decided by the certificate check at the start of the
+        # job. When signing is off, drop the credentials so electron-builder cannot
+        # pick them up; when it is on, require signing to succeed, since by default
+        # electron-builder only warns and emits an unsigned package, which would
+        # otherwise be published as if it were signed.
+        SIGN_FLAGS=""
+        if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
         else
-          npx electron-builder --mac zip:x64 --publish never --projectDir dist
+          echo "Signing is not active for this build: building unsigned."
+          unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
         fi
-        echo "Renaming High Sierra package..."
-        cd dist/bld/Electron
-        for file in *.zip; do
-          if [[ -f "$file" ]] && [[ "$file" =~ -mac\.zip$ ]]; then
-            newname="${file/-mac.zip/-macOS-HighSierra.zip}"
-            mv "$file" "$newname"
-            echo "Renamed High Sierra build: $file -> $newname"
-            if [[ -f "${file}.blockmap" ]]; then
-              mv "${file}.blockmap" "${newname}.blockmap"
-            fi
-          fi
-        done
-        # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
-        # rm -f *.blockmap
-        cd ../../..
+        echo "Building macOS packages for High Sierra/Mojave..."
+        # The variant name is given to electron-builder rather than applied by renaming
+        # afterwards. electron-builder writes the artefact's own filename into latest-mac.yml,
+        # so a rename after the build left the channel file naming a zip that no longer
+        # existed - which is why macOS auto-update has never worked. The resulting names are
+        # byte-for-byte what the old rename loop produced, so the download.kiwix.org and S3
+        # sync scripts, which match on "highsierra"/"arm64", are unaffected.
+        #
+        # The .dmg is what a human downloads and the .zip is only the auto-update payload, so
+        # both come out of this one invocation and wrap the identical packaged (and, when
+        # signing is on, notarized and stapled) app. mac.artifactName covers the dmg too, since
+        # expandArtifactNamePattern falls back to the platform pattern and it ends in ${ext}.
+        # DMG options live at the top level rather than under mac, hence -c.dmg.*:
+        #  - writeUpdateInfo=false: the dmg target otherwise adds itself to latest-mac.yml and
+        #    writes a .dmg.blockmap. MacUpdater deliberately picks the zip out of files[]
+        #    (findFile(files, "zip", ["pkg", "dmg"])), so the entry would never be used, but it
+        #    would still be rewritten as a cross-release url pointing at the human release.
+        #  - title: the mounted volume's name in Finder. Left to default, the legacy and modern
+        #    x64 images both mount as "<productName> <version>" and Finder appends a number.
+        npx electron-builder --mac zip:x64 dmg:x64 $SIGN_FLAGS --publish never --projectDir dist -c.mac.artifactName='${productName}-${version}-macOS-HighSierra.${ext}' -c.dmg.writeUpdateInfo=false -c.dmg.title='${productName} Legacy'
+        # Every invocation writes latest-mac.yml into the same output directory and the next
+        # one overwrites it, so take this one aside under a variant name. This copy exists to
+        # be inspected, not published: publish-github-release.cjs merges the two modern
+        # variants into one latest-mac.yml and deliberately excludes this one, because
+        # offering an Electron 43 build (macOS 12+) to a 10.13/10.14 user would brick the app.
+        # A missing file is only a warning here so that an artefacts-only build still finishes;
+        # the publish step fails loudly on its own if no channel file was produced.
+        mv dist/bld/Electron/latest-mac.yml dist/bld/Electron/latest-mac-HighSierra.yml || echo "WARNING: no latest-mac.yml was written for the High Sierra build"
         echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
         sed -i '' -E "s/\"electron\"[[:space:]]*:[[:space:]]*\"[^\"]+\"/\"electron\": \"$ORIGINAL_ELECTRON_VERSION\"/" ./package.json
         echo "Verifying restoration:"
@@ -262,127 +524,233 @@ jobs:
     - name: Build macOS packages (modern)
       env:
         USE_HARD_LINKS: false
+        # macOS code signing and notarization credentials (see High Sierra step)
+        CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE }}
+        CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_SIGNING_P12_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_SIGNING_ALTOOL_USERNAME }}
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_SIGNING_ALTOOL_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_SIGNING_TEAM }}
       run: |
         echo "Reinstalling dependencies with modern Electron version in root and dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         npm install
-        cd dist && npm uninstall electron && npm install electron --save-dev && cd ..
+        # Install in dist exactly the Electron that root just installed from the lockfile, which is
+        # what the Windows and Linux jobs build with. A bare "npm install electron" takes the latest
+        # release whatever package.json asks for, and so shipped Electron 44 (macOS 13+) in a
+        # release pinned to 43 (#970) - dropping Monterey without anyone deciding to.
+        EXPECTED_VERSION=$(node -p "require('./node_modules/electron/package.json').version")
+        cd dist && npm uninstall electron && npm install "electron@$EXPECTED_VERSION" --save-exact --save-dev && cd ..
         echo "Verifying Electron versions before building..."
         echo "Checking package.json electron entry:"
         grep '"electron":' ./package.json
-        echo "Root Electron version:"
-        npx electron --version
-        echo "Dist Electron version:"
-        cd dist && npx electron --version && cd ..
-        EXPECTED_VERSION=$(grep -m1 '"electron":' ./package.json | sed -E 's/.*"electron"[^"]*"([^"]+)".*/\1/' | sed -E 's/^[\^~]//')
-        echo "DEBUG: Extracted EXPECTED_VERSION='$EXPECTED_VERSION'"
-        ACTUAL_VERSION=$(cd dist && npx electron --version | sed 's/^v//')
-        echo "Expected: $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
+        ACTUAL_VERSION=$(cd dist && node -p "require('./node_modules/electron/package.json').version")
+        echo "Expected (root, from lockfile): $EXPECTED_VERSION, Actual in dist: $ACTUAL_VERSION"
         if [[ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]]; then
           echo "ERROR: Electron version mismatch! Expected $EXPECTED_VERSION but got $ACTUAL_VERSION"
+          exit 1
+        fi
+        echo "✓ Electron versions verified successfully"
+        # Honour the signing decision made by the certificate check (see High Sierra step)
+        SIGN_FLAGS=""
+        if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+          SIGN_FLAGS="-c.mac.forceCodeSigning=true"
         else
-          echo "✓ Electron versions verified successfully"
+          echo "Signing is not active for this build: building unsigned."
+          unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
         fi
         echo "Building modern macOS packages for ref_name=$REF_NAME..."
-        if [[ $REF_NAME = "main" ]]; then
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
-        else
-          npx electron-builder --mac zip:x64 zip:arm64 --publish never --projectDir dist
-        fi
-        echo "Renaming modern macOS packages to avoid conflicts..."
-        cd dist/bld/Electron
-        for file in *.zip; do
-          if [[ -f "$file" ]]; then
-            newname=""
-            if [[ "$file" =~ -arm64-mac\.zip$ ]]; then
-              # Rename the ARM64 build
-              newname="${file/-arm64-mac.zip/-macOS-arm64.zip}"
-            elif [[ "$file" =~ -mac\.zip$ ]]; then
-              # This is the x64 modern build, rename it to indicate architecture
-              newname="${file/-mac.zip/-macOS-x64.zip}"
-            fi
-            
-            if [[ -n "$newname" ]]; then
-              mv "$file" "$newname"
-              echo "Renamed build: $file -> $newname"
-              if [[ -f "${file}.blockmap" ]]; then
-                mv "${file}.blockmap" "${newname}.blockmap"
-              fi
-            fi
-          fi
-        done
-        # echo "Removing blockmap files (autoupdate not supported for renamed packages)..."
-        # rm -f *.blockmap
-        cd ../../..
+        # The arm64 macos-latest runner's npm install placed a darwin-arm64 node-datachannel
+        # binary in dist. electron-builder has npmRebuild:false, so it packages whatever single
+        # binary is on disk into EVERY arch it builds — a combined "zip:x64 zip:arm64" would ship
+        # the arm64 binary inside the Intel package too (dlopen fails: "incompatible architecture,
+        # have 'arm64', need 'x86_64'"). So build arm64 from the native binary, then swap in the
+        # darwin-x64 prebuild (a plain N-API download via prebuild-install, no compilation) and
+        # build x64 separately. The node -e form invokes prebuild-install from the package dir so
+        # it reads node-datachannel's own package.json, and resolves regardless of npm hoisting.
+        # Both builds name their own artefact and set their own channel file aside, for the
+        # reasons given in the High Sierra step above. These two are the ones that get merged
+        # into the published latest-mac.yml.
+        echo "Building macOS arm64 (native node-datachannel binary already in place)..."
+        npx electron-builder --mac zip:arm64 dmg:arm64 $SIGN_FLAGS --publish never --projectDir dist -c.mac.artifactName='${productName}-${version}-macOS-arm64.${ext}' -c.dmg.writeUpdateInfo=false -c.dmg.title='${productName} arm64'
+        mv dist/bld/Electron/latest-mac.yml dist/bld/Electron/latest-mac-arm64.yml || echo "WARNING: no latest-mac.yml was written for the arm64 build"
+        echo "Swapping node-datachannel to its darwin-x64 prebuild for the Intel build..."
+        ( cd dist/node_modules/node-datachannel && node -e "process.argv.push('-r','napi','--arch=x64','--platform=darwin'); require('prebuild-install/bin.js')" )
+        file dist/node_modules/node-datachannel/build/Release/node_datachannel.node
+        echo "Building macOS x64 (with the darwin-x64 binary swapped in)..."
+        npx electron-builder --mac zip:x64 dmg:x64 $SIGN_FLAGS --publish never --projectDir dist -c.mac.artifactName='${productName}-${version}-macOS-x64.${ext}' -c.dmg.writeUpdateInfo=false -c.dmg.title='${productName} Intel'
+        mv dist/bld/Electron/latest-mac.yml dist/bld/Electron/latest-mac-x64.yml || echo "WARNING: no latest-mac.yml was written for the x64 build"
+        echo "macOS build output:"
+        ls -l dist/bld/Electron
+    # MAC_SIGNING_ACTIVE comes from the certificate check at the start of the job
+    # and gates the signature verification below. The certificate itself is
+    # deliberately not exposed to this step.
     - name: Smoke test Electron app
       run: |
-        echo "Extracting macOS app for testing..."
         cd dist/bld/Electron
-        # Find the first zip file (prefer x64 if available)
-        ZIP_FILE=$(ls -1 *.zip | head -1)
-        echo "Found zip file: $ZIP_FILE"
-        # Extract the zip file
-        unzip -q "$ZIP_FILE"
-        # Find the .app bundle
-        APP_BUNDLE=$(find . -name "*.app" -type d | head -1)
-        echo "Found app bundle: $APP_BUNDLE"
-        if [ -z "$APP_BUNDLE" ]; then
-          echo "Error: No .app bundle found!"
+        if ! ls *.zip >/dev/null 2>&1; then
+          echo "Error: No zip packages found to test!"
           exit 1
         fi
-        # Remove quarantine attribute (required for CI)
-        xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
-        # Test basic app launch (verify it can start without crashing)
-        echo "Testing app launch..."
-        # Determine the executable name based on the app bundle name
-        APP_NAME=$(basename "$APP_BUNDLE" .app)
-        EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
-        echo "Using executable: $EXECUTABLE_PATH"
-        # Verify executable exists
-        if [ ! -f "$EXECUTABLE_PATH" ]; then
-          echo "Error: Executable not found at $EXECUTABLE_PATH"
-          ls -la "$APP_BUNDLE/Contents/MacOS/"
-          exit 1
-        fi
-        "$EXECUTABLE_PATH" \
-          --disable-gpu-sandbox \
-          --no-sandbox \
-          --disable-web-security \
-          --disable-dev-shm-usage \
-          --no-first-run \
-          --disable-default-apps &
-        APP_PID=$!
-        echo "Started app with PID: $APP_PID"
-        # Wait for app to start and check if process is running
-        sleep 8
-        if kill -0 $APP_PID 2>/dev/null; then
-          echo "✅ App process is running successfully"
-          # Check if app is responsive by looking at process details
-          echo "Process details:"
-          ps -p $APP_PID -o pid,ppid,time,command || true
-          echo "App is running and responsive"
-          # Kill app gracefully
-          kill -TERM $APP_PID 2>/dev/null || true
-          sleep 3
-          # Force kill if still running
-          if kill -0 $APP_PID 2>/dev/null; then
-            echo "Force killing app..."
-            kill -KILL $APP_PID 2>/dev/null || true
+        # Test every package (High Sierra x64, modern x64, arm64): a signing
+        # regression in just one variant is exactly the failure mode to catch
+        for ZIP_FILE in *.zip; do
+          echo "=========================================="
+          echo "Testing package: $ZIP_FILE"
+          echo "=========================================="
+          EXTRACT_DIR="smoketest"
+          rm -rf "$EXTRACT_DIR"
+          unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"
+          # Find the .app bundle
+          APP_BUNDLE=$(find "$EXTRACT_DIR" -name "*.app" -type d | head -1)
+          echo "Found app bundle: $APP_BUNDLE"
+          if [ -z "$APP_BUNDLE" ]; then
+            echo "Error: No .app bundle found in $ZIP_FILE!"
+            exit 1
           fi
-          echo "✅ App launched and terminated successfully"
-        else
-          echo "❌ App process failed to start or crashed immediately"
+          if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+            echo "Verifying code signature, notarization ticket and Gatekeeper assessment..."
+            codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+            xcrun stapler validate "$APP_BUNDLE"
+            SPCTL_OUT=$(spctl -a -vv --type exec "$APP_BUNDLE" 2>&1) || { echo "$SPCTL_OUT"; echo "❌ Gatekeeper rejected the app"; exit 1; }
+            echo "$SPCTL_OUT"
+            if ! grep -q "Notarized Developer ID" <<<"$SPCTL_OUT"; then
+              echo "❌ App was accepted but is not notarized (expected source=Notarized Developer ID)"
+              exit 1
+            fi
+            echo "✅ Signature, staple and Gatekeeper checks passed"
+          else
+            echo "Signing not active for this build: skipping codesign/stapler/spctl verification"
+          fi
+          # Remove quarantine attribute (required for CI)
+          xattr -dr com.apple.quarantine "$APP_BUNDLE" || true
+          # Test basic app launch (verify it can start without crashing)
+          echo "Testing app launch..."
+          # Determine the executable name based on the app bundle name
+          APP_NAME=$(basename "$APP_BUNDLE" .app)
+          EXECUTABLE_PATH="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+          echo "Using executable: $EXECUTABLE_PATH"
+          # Verify executable exists
+          if [ ! -f "$EXECUTABLE_PATH" ]; then
+            echo "Error: Executable not found at $EXECUTABLE_PATH"
+            ls -la "$APP_BUNDLE/Contents/MacOS/"
+            exit 1
+          fi
+          "$EXECUTABLE_PATH" \
+            --disable-gpu-sandbox \
+            --no-sandbox \
+            --disable-web-security \
+            --disable-dev-shm-usage \
+            --no-first-run \
+            --disable-default-apps &
+          APP_PID=$!
+          echo "Started app with PID: $APP_PID"
+          # Wait for app to start and check if process is running
+          sleep 8
+          if kill -0 $APP_PID 2>/dev/null; then
+            echo "✅ App process is running successfully"
+            # Check if app is responsive by looking at process details
+            echo "Process details:"
+            ps -p $APP_PID -o pid,ppid,time,command || true
+            echo "App is running and responsive"
+            # Kill app gracefully
+            kill -TERM $APP_PID 2>/dev/null || true
+            sleep 3
+            # Force kill if still running
+            if kill -0 $APP_PID 2>/dev/null; then
+              echo "Force killing app..."
+              kill -KILL $APP_PID 2>/dev/null || true
+            fi
+            echo "✅ App launched and terminated successfully"
+          else
+            echo "❌ App process failed to start or crashed immediately"
+            exit 1
+          fi
+          # Clean up so the extracted app is not picked up by later steps
+          rm -rf "$EXTRACT_DIR"
+        done
+        echo "Smoke test completed successfully for all packages"
+        # The .dmg is now the only macOS download on the human release, and nothing else in
+        # this job opens one, so a disk image that built but cannot be mounted - or that
+        # somehow lost its notarization staple on the way in - would ship unnoticed. The app
+        # itself is not launched again: it is the same bundle the matching zip just ran.
+        if ! ls *.dmg >/dev/null 2>&1; then
+          echo "Error: No dmg packages found to test!"
           exit 1
         fi
-        echo "Smoke test completed successfully"
+        for DMG_FILE in *.dmg; do
+          echo "=========================================="
+          echo "Verifying disk image: $DMG_FILE"
+          echo "=========================================="
+          MOUNT_DIR="$PWD/dmgtest"
+          rm -rf "$MOUNT_DIR" && mkdir -p "$MOUNT_DIR"
+          # An explicit mountpoint keeps this independent of the volume name, and -nobrowse
+          # stops Finder from racing us for the volume when detaching
+          hdiutil attach -nobrowse -readonly -mountpoint "$MOUNT_DIR" "$DMG_FILE"
+          DMG_APP=$(find "$MOUNT_DIR" -maxdepth 1 -name "*.app" -type d | head -1)
+          if [ -z "$DMG_APP" ]; then
+            echo "Error: No .app bundle found in $DMG_FILE!"
+            ls -la "$MOUNT_DIR"
+            hdiutil detach "$MOUNT_DIR" || true
+            exit 1
+          fi
+          echo "Found app bundle: $DMG_APP"
+          # Confirm the drag-to-install affordance the whole format exists for
+          if [ ! -e "$MOUNT_DIR/Applications" ]; then
+            echo "Error: $DMG_FILE has no /Applications alias to drag the app onto!"
+            ls -la "$MOUNT_DIR"
+            hdiutil detach "$MOUNT_DIR" || true
+            exit 1
+          fi
+          if [[ "$MAC_SIGNING_ACTIVE" == "true" ]]; then
+            echo "Verifying the app inside the image is still signed, stapled and accepted..."
+            codesign --verify --deep --strict --verbose=2 "$DMG_APP"
+            xcrun stapler validate "$DMG_APP"
+            spctl -a -vv --type exec "$DMG_APP"
+          else
+            echo "Signing not active for this build: skipping verification of the app inside the image"
+          fi
+          hdiutil detach "$MOUNT_DIR"
+          rm -rf "$MOUNT_DIR"
+          echo "✅ $DMG_FILE mounts and contains an installable app"
+        done
+        echo "Disk image verification completed successfully for all packages"
 
-    - name: Publish packages to GitHub
-      if: github.event.inputs.target == 'release'
+    - name: Upload macOS builds to S3
+      if: env.PUBLISH_TO == 'aws'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
-        chmod +x ./scripts/publish_macos_packages_to_github.sh
-        ./scripts/publish_macos_packages_to_github.sh
+        which aws || pip3 install awscli --quiet
+        ENDPOINT="https://s3.eu-west-2.wasabisys.com"
+        S3_PATH="s3://org-kiwix-download.branded-apps/WikiMed/v${S3_VERSION}"
+        echo "Uploading macOS builds to $S3_PATH ..."
+        # Disk images only. The zips are the electron-updater payload and are published to the
+        # -E channel release on GitHub; branded flavours are never auto-updated (a silent ~2GB
+        # download per release), so there is nothing here for a zip to serve.
+        for file in dist/bld/Electron/*.dmg; do
+          if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            aws s3 cp "$file" "$S3_PATH/$filename" --endpoint-url "$ENDPOINT" --no-progress
+          fi
+        done
+        echo "macOS upload complete."
+    - name: Publish packages to GitHub
+      if: github.event.inputs.target == 'release' && github.event.inputs.publish_to != 'aws'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Same publisher as the Windows and Linux jobs, in place of the macOS-only shell
+        # script this replaces: one implementation of finding the draft release, and one of
+        # routing artefacts, so a fix to either cannot again land on some platforms only.
+        # It is also what merges the per-variant latest-mac-*.yml files written above.
+        VERSION_ARG=()
+        if [[ -n "$INPUT_VERSION" ]]; then VERSION_ARG=(--version "$INPUT_VERSION"); fi
+        node ./scripts/publish-github-release.cjs "${VERSION_ARG[@]}" --upload --skip-if-no-draft
     - name: Upload packages to Kiwix
-      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -390,20 +758,21 @@ jobs:
         ./scripts/publish_macos_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_macos
         path: |
+          dist/bld/Electron/*.dmg
           dist/bld/Electron/*.zip
 
   Release_Windows:
-    if: github.event.inputs.macosonly != 'true'
+    if: github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == 'windows' || github.event.inputs.build_platform == 'win7' || github.event.inputs.build_platform == 'win11' || github.event.inputs.build_platform == ''
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main
+    - uses: actions/setup-node@main
     - name: Find and set signtool.exe path
-      if: github.event.inputs.sign == 'true'
+      if: env.INPUT_SIGN == 'true'
       shell: powershell
       run: |
         # Find the latest available Windows SDK version with signtool
@@ -484,7 +853,7 @@ jobs:
         }
 
     - name: Install and configure eSigner CKA and Windows SDK
-      if: github.event.inputs.sign == 'true'
+      if: env.INPUT_SIGN == 'true'
       env:
         ESIGNER_URL: https://github.com/SSLcom/eSignerCKA/releases/download/v1.0.7/SSL.COM-eSigner-CKA_1.0.7.zip
       run: |
@@ -522,11 +891,54 @@ jobs:
 
           echo "ED_SIGNTOOL_THUMBPRINT=$Thumbprint" >> $env:GITHUB_ENV
           echo "ED_SIGNTOOL_SUBJECT_NAME=$SubjectName" >> $env:GITHUB_ENV
-    
-    - name: Run electron builder for Win 7/8/8.1
-      if: github.event.inputs.win11only != 'true'
+
+    - name: Configure publish target (GitHub or AWS S3)
       shell: powershell
-      run: | 
+      run: |
+        $PUBLISH_TO = $Env:PUBLISH_TO
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        if ($PUBLISH_TO -eq 'aws') {
+          echo "Configuring electron-builder to publish to AWS S3..."
+          $VERSION = $INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+          $packageJson = Get-Content -Raw ./package.json | ConvertFrom-Json
+          # Replace GitHub publish config with S3 config in win, mac, and linux sections
+          $s3Config = @{
+            provider = "s3"
+            bucket = "org-kiwix-download.branded-apps"
+            endpoint = "https://s3.eu-west-2.wasabisys.com"
+            path = "WikiMed/v$VERSION/"
+            acl = "public-read"
+          }
+          $packageJson.build.win.publish = @($s3Config)
+          if ($packageJson.build.PSObject.Properties.Name -contains 'mac') {
+            $packageJson.build.mac.publish = @($s3Config)
+          }
+          if ($packageJson.build.PSObject.Properties.Name -contains 'linux') {
+            $packageJson.build.linux.publish = @($s3Config)
+          }
+          # Configure nsis-web appPackageUrl to point to S3
+          $s3BaseUrl = "https://s3.eu-west-2.wasabisys.com/org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+          if ($packageJson.build.PSObject.Properties.Name -contains 'nsisWeb') {
+            $packageJson.build.PSObject.Properties.Remove('nsisWeb')
+          }
+          $packageJson.build | Add-Member -MemberType NoteProperty -Name 'nsisWeb' -Value ([PSCustomObject]@{
+            appPackageUrl = $s3BaseUrl
+          })
+          $packageJson | ConvertTo-Json -Depth 100 | Set-Content ./package.json
+          echo "S3 publish configuration injected into package.json"
+          echo "nsis-web appPackageUrl set to: $s3BaseUrl"
+          echo "Builds will upload to: s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/"
+        } else {
+          echo "Using default GitHub publish configuration"
+        }
+
+    - name: Run electron builder for Win 7/8/8.1
+      if: github.event.inputs.build_platform != 'win11'
+      shell: powershell
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+      run: |
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
@@ -537,41 +949,109 @@ jobs:
         } else {
           $INPUT_VERSION_E = $INPUT_VERSION -replace '^v', ''
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
         $ORIGINAL_ELECTRON_VERSION = (Get-Content ./package.json | sls '"electron":') -replace '.*"electron"\s*:\s*"(.*)".*', '$1'
         echo "ORIGINAL_ELECTRON_VERSION=$ORIGINAL_ELECTRON_VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "Setting the Electron version to the latest supporting Windows 7/8/8.1 (=22.3.25)"
-        (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', '$1"22.3.25"' | Set-Content ./package.json
+        # NB the range must be matched with "[^"]+" so that prefixes like ^ or ~ are handled: a
+        # pattern anchored on a digit silently no-ops and we then build Win7 against modern Electron
+        (Get-Content ./package.json) -replace '("electron"\s*:\s*)"[^"]+"', '$1"22.3.25"' | Set-Content ./package.json
+        # Fail loudly rather than shipping a Win7 package built against the wrong runtime
+        $PINNED_ELECTRON_VERSION = (Get-Content ./package.json | ConvertFrom-Json).devDependencies.electron
+        if ($PINNED_ELECTRON_VERSION -ne '22.3.25') {
+          throw "Failed to pin the Electron version for the Win 7/8/8.1 build: package.json still requests '$PINNED_ELECTRON_VERSION'"
+        }
         echo "Copying the package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
+        # Strip webtorrent: unusable on this target because Electron 22 is Node 16, below WebTorrent's
+        # Node 20 floor, so it would only ship as dead weight. (Not an arch limitation — 32-bit
+        # Windows does have a node-datachannel prebuild, which the modern ia32 builds now use; it is
+        # purely the Node version.) The feature is already gated off here (see preload.cjs).
+        echo "Removing webtorrent from dist before install (unsupported on Win7 32-bit / Node 16)"
+        node -e "var fs=require('fs'),p=JSON.parse(fs.readFileSync('./dist/package.json')); if (p.dependencies) delete p.dependencies.webtorrent; fs.writeFileSync('./dist/package.json', JSON.stringify(p, null, 2));"
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Building Windows 7+ 32bit NSIS package..."
-        if ($INPUT_SIGN) {
-          npm run dist-win-nsis
+        # Check if this is WikiMed (NSIS Setup too large to sign)
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $isWikiMed = $packageName -match 'wikimed'
+        if ($isWikiMed) {
+          # WikiMed: build unpacked dir + zip (NSIS Setup exe too large for signtool)
+          echo "Building Windows 7+ unpacked app (no NSIS installer - package too large for signing)..."
+          if ($INPUT_SIGN) {
+            npx electron-builder build --win dir:ia32 --publish never --projectDir dist
+          } else {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
+            npx electron-builder build --config ../scripts/electronBuilder.cjs --win dir:ia32 --publish never --projectDir dist
+          }
+          # Create portable zip with launcher scripts
+          $unpacked = "dist/bld/Electron/win-ia32-unpacked"
+          $foldername = "kiwix-js-pwa-win32-ia32"
+          $productName = (Get-Content ./package.json | ConvertFrom-Json).productName
+          $zipDir = "dist/bld/Electron/$foldername"
+          if (Test-Path $zipDir) { rm -r $zipDir }
+          mkdir $zipDir
+          cp -r "$unpacked\*" $zipDir
+          # Create launcher scripts
+          $executable = (ls "$unpacked/*.exe" | Select-Object -First 1).Name
+          $launcherStub = "dist/bld/Electron/Start $productName"
+          $batch = "@cd `"$foldername`"`r`n@start `"$productName`" `"$executable`"`r`n"
+          $batch > "$launcherStub.bat"
+          $WshShell = New-Object -ComObject WScript.Shell
+          $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
+          $Shortcut.TargetPath = '%windir%\explorer.exe'
+          $Shortcut.Arguments = "$foldername\$executable"
+          $Shortcut.IconLocation = '%windir%\explorer.exe,12'
+          $Shortcut.Save()
+          $safeName = $productName -replace '\s', '-'
+          $zipName = "$safeName-Win7-$INPUT_VERSION_E.zip"
+          $zipPath = "dist/bld/Electron/$zipName"
+          echo "Compressing to $zipPath..."
+          # Use 7z instead of Compress-Archive (which has a 2GB stream limit)
+          7z a -tzip $zipPath "$launcherStub.bat" "$launcherStub.lnk" $zipDir
+          # Upload to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Path = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION/$zipName"
+            echo "Uploading $zipName to S3..."
+            aws s3 cp $zipPath $s3Path --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+          }
+          ls ./dist/bld/Electron/
+          if ($Env:INPUT_TARGET -ne 'artefacts' -and $Env:PUBLISH_TO -ne 'aws') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly -portableonly
+          }
         } else {
-          echo "********************"
-          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
-          echo "********************"
-          npm run dist-win-nsis-skipsigning
+          # Non-WikiMed: build standard NSIS Setup installer
+          echo "Building Windows 7+ 32bit NSIS package..."
+          if ($INPUT_SIGN) {
+            npm run dist-win-nsis
+          } else {
+            echo "********************"
+            echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
+            echo "********************"
+            npm run dist-win-nsis-skipsigning
+          }
+          echo "Renaming Windows 7+ executable"
+          $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
+          foreach ($file in $files) {
+            mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
+            mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
+          }
+          mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
+          ls ./dist/bld/Electron/
+          if ($INPUT_TARGET -ne 'artefacts') {
+            & ./scripts/Publish-ElectronPackages.ps1 -githubonly
+          }
         }
-        echo "Renaming Windows 7+ executable"
-        $files = @("Kiwix JS Electron", "WikiMed by Kiwix", "Wikivoyage by Kiwix")
-        foreach ($file in $files) {
-          mv "dist/bld/Electron/$file Setup*.exe" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe"
-          mv "dist/bld/Electron/$file Setup*.exe.blockmap" "dist/bld/Electron/$file Win7 Setup $INPUT_VERSION_E.exe.blockmap"
-        }
-        mv "dist/bld/Electron/latest.yml" "dist/bld/Electron/latest-win7.yml"
-        ls ./dist/bld/Electron/
-        # DEV: We did not use electron-builder to publish because we needed to change the filenames, so we need to publish to GitHub here
-        if ($INPUT_TARGET -ne 'artefacts') {
-          & ./scripts/Publish-ElectronPackages.ps1 -githubonly
-        }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
 
     - name: Run electron builder for Win 10/11
+      if: github.event.inputs.build_platform != 'win7'
       shell: powershell
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
@@ -581,34 +1061,142 @@ jobs:
         $ORIGINAL_ELECTRON_VERSION = $Env:ORIGINAL_ELECTRON_VERSION
         if (![string]::IsNullOrEmpty($ORIGINAL_ELECTRON_VERSION)) {
           echo "Restoring original Electron version: $ORIGINAL_ELECTRON_VERSION"
-          (Get-Content ./package.json) -replace '("electron":\s+)"[\d.]+[\w\d-.]*?"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
+          (Get-Content ./package.json) -replace '("electron"\s*:\s*)"[^"]+"', ('$1"' + $ORIGINAL_ELECTRON_VERSION + '"') | Set-Content ./package.json
         } else {
           echo "Using Electron version defined in package.json"
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Copying the rewritten package.json to dist"
         cp ./package.json ./dist/package.json
+        cp ./package-lock.json ./dist/package-lock.json
         echo "Installing dependencies in root and dist"
         npm install; cd dist; npm install; cd ..
         echo "Installed Electron version:$(npx electron --version)"
-        echo "Building Windows packages..."
-        if ($INPUT_SIGN) {
-          if ($Env:NSISWEB_ONLY -eq 'true') {
-            npm run publish-nsis-web
-          } else {
-            npm run publish
-          }
-        } else {
-          echo "********************"
-          echo "*** DEV: Build will appear to sign, but packages are NOT actually signed, as requested! ***"
-          echo "********************"
-          npm run build-skipsigning
+
+        $PUBLISH_TO = $Env:PUBLISH_TO
+        $WIN11_PACKAGES = $Env:WIN11_PACKAGES
+        echo "Building Windows packages (sign=$INPUT_SIGN, publish_to=$PUBLISH_TO, packages=$WIN11_PACKAGES)..."
+
+        if (!$INPUT_SIGN) {
+            echo "********************"
+            echo "*** DEV: Packages are NOT signed, as requested! ***"
+            echo "********************"
         }
-        ./scripts/Rewrite-DraftReleaseTag.ps1
+
+        # A failing native command does not abort the script ($ErrorActionPreference only governs
+        # cmdlets), and the exit code GitHub tests is the one left by the LAST command in the step,
+        # so without this an electron-builder failure passes unnoticed with artefacts missing
+        function Assert-BuildOk($stage) {
+          if ($LASTEXITCODE -ne 0) { throw "electron-builder failed during $stage (exit code $LASTEXITCODE)" }
+        }
+
+        # Determine phase 1 build targets based on app type
+        # WikiMed: skip NSIS Setup (too large for signtool) and portable (too large to self-extract)
+        # Wikivoyage: skip portable (too large to self-extract) but keep NSIS Setup
+        # Kiwix JS Electron: build all targets
+        $packageName = (Get-Content ./package.json | ConvertFrom-Json).name
+        $phase1Targets = @()
+        if ($packageName -notmatch 'wikimed') { $phase1Targets += 'NSIS:ia32' }
+        if ($packageName -notmatch 'wikimed|wikivoyage') { $phase1Targets += 'portable:ia32' }
+        # appx is pinned to x64 because there is no ia32 appx build.
+        $phase1Targets += 'appx:x64'
+        # NB always pass the array, never a joined string: PowerShell gives a native command a string
+        # containing spaces as ONE argument, so electron-builder would take the whole list as a single
+        # target name ("Unknown target: nsis:ia32 portable:ia32 appx") and build nothing in phase 1
+        echo "Phase 1 build targets: $($phase1Targets -join ' ')"
+
+        # Build and publish to configured target (GitHub or S3)
+        # The publish target was configured in package.json by the previous step
+        # For AWS publishing, use --publish always to override the onTagOrDraft policy
+
+        if ($PUBLISH_TO -eq 'aws') {
+            # AWS S3 publishing - use --publish always
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
+                    Assert-BuildOk 'nsis-web'
+                }
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish always --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --publish always --projectDir dist
+                    }
+                    Assert-BuildOk 'appx'
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --publish always --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    } else {
+                        # electronBuilder-signed.cjs is the unmodified signing config plus the
+                        # afterPack hook, which the ia32 targets need to receive the 32-bit
+                        # node-datachannel binary (a JSON build field cannot carry a function)
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --publish always --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish always --projectDir dist
+                    }
+                    Assert-BuildOk 'phase 2 (nsis-web)'
+                }
+            }
+        } else {
+            # GitHub: build only. publish-github-release.cjs uploads afterwards so that each
+            # artefact can be routed to the human release, the -E auto-update release, or
+            # both, and the channel ymls rewritten to match.
+            #
+            # Both phase 1 (nsis) and phase 2 (nsis-web) emit a latest.yml, but to different
+            # places: phase 1 to the root of the output directory, phase 2 into nsis-web/
+            # beside its own fragments. Neither overwrites the other, so both survive to the
+            # publish step, which picks nsis-web's - the one carrying the `packages` block
+            # that makes updates differential (see collectFiles in publish-github-release.cjs).
+            # The publish step must therefore still run after phase 2. (This is what
+            # scripts/delete-latest-yml.js used to work around, back when each phase uploaded
+            # its own copy as it went.)
+            switch ($WIN11_PACKAGES) {
+                'nsisweb' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    } else {
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    }
+                    Assert-BuildOk 'nsis-web'
+                }
+                'appx' {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win appx --publish never --projectDir dist
+                    } else {
+                        npx electron-builder build --win appx --publish never --projectDir dist
+                    }
+                    Assert-BuildOk 'appx'
+                }
+                default {
+                    if (!$INPUT_SIGN) {
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win $phase1Targets --publish never --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
+                        npx electron-builder build --config ../scripts/electronBuilder.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    } else {
+                        # electronBuilder-signed.cjs is the unmodified signing config plus the
+                        # afterPack hook, which the ia32 targets need to receive the 32-bit
+                        # node-datachannel binary (a JSON build field cannot carry a function)
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win $phase1Targets --publish never --projectDir dist
+                        Assert-BuildOk "phase 1 ($($phase1Targets -join ' '))"
+                        npx electron-builder build --config ../scripts/electronBuilder-signed.cjs --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist
+                    }
+                    Assert-BuildOk 'phase 2 (nsis-web)'
+                }
+            }
+        }
     - name: Build portable Electron app
-      if: github.event.inputs.nsisweb != 'true'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.win11packages != 'nsisweb' && github.event.inputs.win11packages != 'appx'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
@@ -619,9 +1207,22 @@ jobs:
           # To ensure there is enough disk space, we can delete the archive that is no longer needed
           rm -r dist/archives
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N -nobranchcheck
+          # Upload portable zip to S3 if configured
+          if ($Env:PUBLISH_TO -eq 'aws') {
+            $VERSION = $Env:INPUT_VERSION -replace '^v([0-9.]+).*', '$1'
+            $s3Base = "s3://org-kiwix-download.branded-apps/WikiMed/v$VERSION"
+            $zipFiles = Get-ChildItem "dist/bld/Electron/*.zip"
+            foreach ($zip in $zipFiles) {
+              # Skip the Win7 zip (already uploaded in the Win7 step)
+              if ($zip.Name -notmatch 'Win7') {
+                echo "Uploading $($zip.Name) to S3..."
+                aws s3 cp $zip.FullName "$s3Base/$($zip.Name)" --endpoint-url "https://s3.eu-west-2.wasabisys.com" --no-progress
+              }
+            }
+          }
         }
     - name: Publish packages
-      if: github.event.inputs.target != 'artefacts'
+      if: github.event.inputs.build_platform != 'win7' && github.event.inputs.target != 'artefacts' && github.event.inputs.publish_to != 'aws'
       run: |
         $SSH_KEY = $Env:SSH_KEY
         $keyfile = ".\scripts\ssh_key"
@@ -631,15 +1232,19 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        # This step now publishes every Windows artefact, not just the portable zip:
+        # electron-builder no longer uploads the nsis/nsis-web/appx output itself, so this
+        # is the single point at which the Windows job reaches GitHub. It runs after both
+        # the electron-builder step and the portable build, so the whole set is on disk.
         if ($Env:REF_NAME -eq "main") {
-          ./scripts/Publish-ElectronPackages.ps1 -portableonly
+          ./scripts/Publish-ElectronPackages.ps1
         } else {
           echo "DEV: Note that only nightly builds launched from main will be published to the Kiwix server..."
-          ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+          ./scripts/Publish-ElectronPackages.ps1 -githubonly
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-electron_windows
         path: |
@@ -650,11 +1255,14 @@ jobs:
           dist/bld/Electron/nsis-web/*.nsis.7z
 
   Release_NWJS:
-    if: github.ref_name == 'main' && github.event.inputs.win11only != 'true' && github.event.inputs.macosonly != 'true'
+    # Picking 'nwjs' explicitly runs this job on its own, from any branch, so the NWJS
+    # packages can be tested without also rebuilding every Electron target. The implicit
+    # cases ('all', and the empty input from a cron-launched nightly) stay main-only.
+    if: github.event.inputs.build_platform == 'nwjs' || (github.ref_name == 'main' && (github.event.inputs.build_platform == 'all' || github.event.inputs.build_platform == ''))
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4      
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@main      
+    - uses: actions/setup-node@main
     - name: Install dependencies
       run: npm install
     - name: Build production code
@@ -723,7 +1331,7 @@ jobs:
         }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: kiwix-js-nwjs_windows
         path: dist/bld/nwjs/*.zip

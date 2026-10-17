@@ -1,18 +1,21 @@
 #!/bin/bash
 # Script to upload macOS packages to download.kiwix.org
-target="/data/download/release/kiwix-js-electron"
+target="/data/kiwix/release/kiwix-js-electron"
 if [[ ${INPUT_TARGET} = "nightly" ]]; then
     CRON_LAUNCHED="1"
 fi
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     echo "This script was launched by the GitHub Cron process"
     CURRENT_DATE=$(date +'%Y-%m-%d')
-    target="/data/download/nightly/$CURRENT_DATE"
+    target="/data/kiwix/nightly/$CURRENT_DATE"
 fi
 echo "Uploading macOS packages to https://download.kiwix.org$target/"
-echo "mkdir ${target}" | sftp -P 30022 -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@master.download.kiwix.org
+echo "mkdir ${target}" | sftp -P 30322 -o StrictHostKeyChecking=no -i ./scripts/ssh_key kiwix-js-pwa@master.download.kiwix.org
+# Disk images only. The zips built alongside them are the electron-updater payload and live
+# on the -E channel release on GitHub; the mirror is a human download, and a .dmg installs to
+# /Applications by drag, where a zip leaves the app running translocated out of ~/Downloads.
 for file in ./dist/bld/Electron/* ; do
-    if [[ "$file" =~ \.zip$ ]]; then
+    if [[ "$file" =~ \.dmg$ ]]; then
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
         filename=$(sed -E 's/[^/]+\///g' <<<"$file")
         # Convert spaces to underscores and standardize naming
@@ -37,11 +40,11 @@ for file in ./dist/bld/Electron/* ; do
                 # Modern x64 build (default but should be explicit)
                 arch="-x64"
             fi
-            # Create nightly filename format: kiwix-js-electron_macos-VARIANT_YYYY-MM-DD.zip
-            filename="kiwix-js-electron_macos${arch}_${CURRENT_DATE}.zip"
+            # Create nightly filename format: kiwix-js-electron_macos-VARIANT_YYYY-MM-DD.dmg
+            filename="kiwix-js-electron_macos${arch}_${CURRENT_DATE}.dmg"
         else
             # For release builds, follow convention with platform and version clearly identified
-            # Pattern: kiwix-js-electron_macos-VARIANT_VERSION.zip
+            # Pattern: kiwix-js-electron_macos-VARIANT_VERSION.dmg
             # Extract version number (e.g., "3.7.62")
             version=$(echo "$filename" | sed -E 's/.*-([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
             
@@ -56,8 +59,8 @@ for file in ./dist/bld/Electron/* ; do
                 arch_suffix="-x64"
             fi
             
-            # Construct final filename: kiwix-js-electron_macos-VARIANT_version.zip
-            filename="kiwix-js-electron_macos${arch_suffix}_${version}.zip"
+            # Construct final filename: kiwix-js-electron_macos-VARIANT_version.dmg
+            filename="kiwix-js-electron_macos${arch_suffix}_${version}.dmg"
         fi
         echo "Renaming $file to $filename"
         # Put it all together
@@ -66,6 +69,6 @@ for file in ./dist/bld/Electron/* ; do
             mv "$file" "$renamed_file"
         fi
         echo "Copying $renamed_file to $target"
-        scp -P 30022 -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" ci@master.download.kiwix.org:$target
+        scp -P 30322 -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" kiwix-js-pwa@master.download.kiwix.org:$target
     fi
 done

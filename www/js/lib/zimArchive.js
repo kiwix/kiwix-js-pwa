@@ -58,7 +58,7 @@ import utf8 from './utf8.js';
  */
 
 /**
- * @param {Worker} LZ A Web Worker to run the libzim Web Assembly binary
+ * @param {Worker|Object} LZ A Web Worker to run the libzim Web Assembly binary, or (in Electron) an interface to libzim in the main process
  */
 var LZ;
 
@@ -74,6 +74,11 @@ var LZ;
 function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
     that.file = null;
+    // Whether this archive is to be read with libzim. We read the user's choice here, including a choice the app has turned off
+    // temporarily for the previous archive (see handleUnsupportedReplayWorker in app.js), without changing params.useLibzim:
+    // that still routes requests for the previous archive until archiveReadyCallback restores it, so it must not be switched
+    // back on before this archive has loaded. Reading it once also keeps the two whenZimReady calls below consistent.
+    var useLibzim = params.useLibzim || appstate.libzimSuspended;
     var whenZimReady = function () {
         // Add time-critical metadata from the M/ namespace that you need early access to here
         // Note that adding metadata here delays the reporting of the ZIM archive as ready
@@ -114,7 +119,8 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
     var createZimfile = function (fileArray) {
         return zimfile.fromFileArray(fileArray).then(function (file) {
             that.file = file;
-            // Clear the previous libzimWoker
+            // Stop the previous libzim worker, which would otherwise live on (with its memory) until the app closes
+            if (LZ) LZ.terminate();
             LZ = null;
             // Set a global parameter to report the search provider type
             params.searchProvider = 'title';
@@ -145,20 +151,37 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 that.libzimReady = null;
                 // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                 var isSplitZim = /\.zima.$/i.test(that.file._files[0].name);
-                var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
-                if ((that.file.fullTextIndex || params.useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
+                // In Electron, an archive the app knows only by its path (not as a File) is read by libzim in the main process,
+                // which has Node's fs, and which runs only the release WASM build (see libzimNodeWorker.cjs)
+                var isPathOnlyArchive = that.file._files[0].readMode === 'electron' && !(that.file._files[0] instanceof Blob) &&
+                    !!(window.electronAPI && window.electronAPI.callLibzim);
+                var libzimReaderType = isPathOnlyArchive ? 'wasm' : params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
+                if ((that.file.fullTextIndex || useLibzim) && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
-                (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
-                // Note that NWJS currently throws due to problems with Web Worker context
-                !(window.nw && that.file._files[0].readMode === 'electron'))) {
+                (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm'))) {
                     that.libzimReady = 'loading';
-                    console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
-                    if (params.useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
-                    LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
+                    if (useLibzim) uiUtil.pollSpinner('Waiting for libzim...', true);
+                    if (isPathOnlyArchive) {
+                        if (params.debugLibzimASM && params.debugLibzimASM !== 'wasm') {
+                            console.warn('The ' + params.debugLibzimASM + ' build of libzim cannot read an archive opened by its path, so the release WASM build will be used');
+                        }
+                        console.log('Instantiating libzim ' + libzimReaderType + ' in the main process...');
+                        LZ = {
+                            call: function (parameters) {
+                                return window.electronAPI.callLibzim(parameters);
+                            },
+                            terminate: function () {
+                                window.electronAPI.terminateLibzim();
+                            }
+                        };
+                    } else {
+                        console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
+                        LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
+                    }
                     that.callLibzimWorker({ action: 'init', files: that.file._files }).then(function () {
                         that.libzimReady = 'ready';
                         // If user is using libzim for reading the file, we have delayed the callback till now
-                        if (params.useLibzim) whenZimReady();
+                        if (useLibzim) whenZimReady();
                         params.searchProvider = 'fulltext: ' + libzimReaderType;
                         // Update the API panel
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
@@ -188,7 +211,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 return that.addMetadataToZIMFile('Scraper').then(function () {
                     params.zimType = that.setZimType();
                     // If user is not using libzim for reading the file, we can call the ready callback now
-                    if (!params.useLibzim) whenZimReady();
+                    if (!useLibzim) whenZimReady();
                 });
             }).catch(function (err) {
                 console.warn('Error setting archive listings: ', err);
@@ -281,6 +304,7 @@ ZIMArchive.prototype.setZimType = function () {
 ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
     if (this.isReady()) {
         var mainPageUrlIndex = this.file.mainPage;
+        if (mainPageUrlIndex >= this.file.entryCount) return callback(null);
         var that = this;
         this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
             // Filter out Zimit files that we cannot handle without error
@@ -647,8 +671,10 @@ ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEnt
  * @returns {Promise}
  */
 ZIMArchive.prototype.callLibzimWorker = function (parameters) {
+    console.debug('Calling libzim WebWorker with parameters', parameters);
+    // libzim in Electron's main process (see above) replies over IPC
+    if (LZ.call) return LZ.call(parameters);
     return new Promise(function (resolve, reject) {
-        console.debug('Calling libzim WebWorker with parameters', parameters);
         var tmpMessageChannel = new MessageChannel();
         // var t0 = performance.now();
         tmpMessageChannel.port1.onmessage = function (event) {
@@ -784,7 +810,7 @@ ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
             if (dirEntry.zimitRedirect) {
                 return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
                     return appstate.selectedArchive.readBinaryFile(rd, callback);
-                })
+                });
             }
         } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
@@ -813,7 +839,7 @@ ZIMArchive.prototype.getUtf8FromData = function (data) {
         decData = utf8.parse(data);
     }
     return decData;
-}
+};
 
 /**
  * Searches the URL pointer list of Directory Entries by pathname
@@ -882,7 +908,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
                     lc: true, // Make the comparator (e.g. dirEntry.url) lowercase
                     size: 1,
                     found: 0
-                }
+                };
                 return fuzzySearch(path, search);
             } else if (!appstate.isReplayWorkerAvailable) {
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
@@ -1021,7 +1047,7 @@ ZIMArchive.prototype.setZimitMetadata = function () {
     }).catch(function (e) {
         console.warn('Zimit metadata not found in this archive!', e);
     });
-}
+};
 
 export default {
     ZIMArchive: ZIMArchive

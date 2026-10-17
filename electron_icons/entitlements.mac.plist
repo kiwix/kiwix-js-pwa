@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Required for Electron's V8 JIT under the Hardened Runtime -->
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <!-- Required by older Electron (e.g. 26.x used for the High Sierra build);
+       harmless for modern Electron -->
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+</dict>
+</plist>

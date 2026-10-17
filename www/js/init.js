@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* global Windows, launchArgumentsUWP, webpHero */
+/* global Windows, launchArgumentsUWP, webpHero, chrome */
 /* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
@@ -67,12 +67,23 @@ var params = {};
  */
 var appstate = {};
 
+// NW.js runs the app with Node switched off ("nodejs": false in package.json.nwjs), so it no longer provides window.nw:
+// we recognise it by the flag it adds to its app manifest instead, and its Windows XP build (NW.js 0.14.7) by its Chromium version
+params['isNWJS'] = (function () {
+    try {
+        return !!chrome.runtime.getManifest().__nwjs_app;
+    } catch (err) {
+        return false;
+    }
+})();
+params['isNWJSXP'] = params.isNWJS && /Chrome\/50\./.test(navigator.userAgent);
+
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '3.8.2-Wikivoyage'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '3.9.5-Wikivoyage'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
-params['packagedFile'] = getSetting('packagedFile') || 'wikivoyage_en_all_maxi_2025-12.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || 'wikivoyage_en_all_maxi_2026-09.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = getSetting('fileVersion') || 'wikivoyage_en_all_maxi_2025-12 (17 December 2025)'; // This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || 'wikivoyage_en_all_maxi_2026-09 (13 September 2026)'; // This will be displayed in the app - optionally include date of ZIM file
 
 // List of known start pages cached in the FS - ensure these strings are double-URI-encoded, and then store the file itself with single-
 // URI-enoding. This string will be decoded once in the app. E.g. the file name "C/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2"
@@ -82,14 +93,30 @@ params['fileVersion'] = getSetting('fileVersion') || 'wikivoyage_en_all_maxi_202
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikipedia_en_medicine_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
+    'mdwiki_en_all-app_maxi': 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     mdwiki_en_all_maxi: 'C/Wikipedia%253AWikiProject_Medicine/Open_Textbook_of_Medicine2',
     wikivoyage_en_all_maxi: 'C/Main_Page'
 };
-
+if (window.electronAPI) {
+    // Initial port for Express server in Electron: this will be different for base app (3000), WikiMed (3001) and Wikivoyage (3002)
+    // This will be overridden by the actual port defined or stored in main.cjs
+    params['expressPort'] = 3002;
+}
 params['win7ElectronVersion'] = '22.3'; // KEEP UP TO DATE!!! This is the last minor version to support Win 7/8/8.1. Auto-update is embargoed for values starting with this.
+params['macLegacyElectronVersion'] = '26.6'; // KEEP UP TO DATE!!! This is the last minor version whose macOS floor is 10.13, which is why the legacy build (serving 10.13 to 11) is pinned to it. Auto-update is embargoed for values starting with this.
+params['kiwixLibraryServer'] = 'https://opds.library.kiwix.org';
+params['kiwixLibraryBrowser'] = 'https://browse.library.kiwix.org';
+params['kiwixCatalogRoot'] = params.kiwixLibraryServer + '/catalog/v2';
+params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
+// The categories feed only lists categories declared in ZIM Category metadata, so archives with no
+// category (currently ~23% of the catalogue, including most of devdocs, maps, freecodecamp and
+// libretexts) are unreachable by category alone. This is the catalogue-wide feed advertised in root.xml.
+params['kiwixCatalogEntries'] = params.kiwixCatalogRoot + '/entries?count=-1';
+params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/wikivoyage/'; // Include final slash
-params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/wikivoyage/', 'https://mirrors.dotsrc.org/kiwix/zim/wikivoyage/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/wikivoyage/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/wikivoyage/', 'https://library.kiwix.org'];
-params['kiwixhiddenDownloadServer'] = 'https://master.download.kiwix.org/zim/wikivoyage/';
+params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/wikivoyage/', 'https://mirrors.dotsrc.org/kiwix/zim/wikivoyage/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/wikivoyage/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/wikivoyage/', 'https://lb.download.kiwix.org/zim/wikivoyage/'];
+params['kiwixMirrorServer'] = 'https://mirror.download.kiwix.org'; // CORS-enabled *.kiwix.org mirror; used as fallback for OPFS downloads if not found in meta4
+params['kiwixStagingServer'] = 'https://staging.download.kiwix.org';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 // params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-pwa/dist/'; // Test server
@@ -111,12 +138,19 @@ params['cssUITheme'] = getSetting('cssUITheme') || 'light'; // Set default to 'a
 params['displayThemeOrRandomButtons'] = getSetting('displayThemeOrRandomButtons') != null ? getSetting('displayThemeOrRandomButtons') : 'theme'; // theme | random | both
 params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') === true; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; // Set default to display images from Zim
-params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; // Makes dataURIs by default instead of BLOB URIs for images
+params['manipulateImages'] = getSetting('manipulateImages') === true; // Makes dataURIs by default instead of BLOB URIs for images
 params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') === true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
+params['useWindowControlsOverlay'] = true; // MASTER SWITCH: set to false to ignore the Window Controls Overlay entirely and keep the navbar full-width under the window buttons (see the html:not(.no-wco) rules in app.css, and uiUtil.windowControlsOverlayIsVisible)
+params['showTitleBar'] = getSetting('showTitleBar') === true; // Draws an emulated title bar in the strip occupied by the window controls overlay, for users who prefer the window buttons not to sit over the app's own controls (has no effect unless the overlay is being drawn)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['showPopoverPreviews'] = getSetting('showPopoverPreviews') !== false; // Allows popover previews of articles for Wikimedia ZIMs (defaults to true)
-params['assetsCache'] = getSetting('appCache') !== false; // Whether to use cache by default or not (as the setting is temporary, we set it according to the appCache to avoid issues for developers)
+// The assets cache is subordinate to appCache (Developer Mode): that mode exists to run the app with no caches at
+// all, so a stored 'cache assets' preference is clamped here rather than overwritten, and returns intact when
+// Developer Mode is switched off. DEV: before #926 this line read appCache alone, which also forced the assets
+// cache ON whenever Developer Mode was off, discarding a deliberate 'do not cache assets' choice at every launch.
+// That was a side effect of #503, where the line's job was only to give this param a default of true
+params['assetsCache'] = getSetting('appCache') !== false && getSetting('assetsCache') !== false;
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 // params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
@@ -127,7 +161,15 @@ params['libzimSearchType'] = getSetting('libzimSearchType') || 'searchWithSnippe
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') === true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
-params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+// DEV: only the Windows XP build of NW.js is excluded from the ServiceWorker default below, because its Chromium
+// cannot run the app in SW mode. The modern NW.js builds default to SW mode like the browser PWA, so
+// params.sourceVerification (set further down) is live in them - see also the notes on the trusted context in
+// overrideParams() below before altering this line.
+// NB the stored value is checked against the modes this app actually supports, and anything else falls back to
+// the default: an unrecognized mode matches neither branch of setContentInjectionMode() in app.js, which leaves
+// the app in a hybrid state with no radio button selected. This also heals a value stored before that was so
+params['contentInjectionMode'] = /^(?:jquery|serviceworker)$/.test(getSetting('contentInjectionMode'))
+    ? getSetting('contentInjectionMode') : ((navigator.serviceWorker && !params.isNWJSXP) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['disableDragAndDrop'] = getSetting('disableDragAndDrop') === true; // A parameter to disable drag-and-drop
@@ -136,9 +178,14 @@ params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
 params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; // A setting that determines whether to force the use of legacy Zimit support
-params['sourceVerification'] = params.contentInjectionMode === 'serviceworker' ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false; // Sets a boolean indicating weather a user trusts the source of zim files
+// Sets a boolean indicating whether a user trusts the source of zim files. NB this tests the start of the mode
+// string rather than matching it exactly, both because the gate in app.js does the same and because upstream
+// kiwix-js has a further 'serviceworkerlocal' mode: an exact match would silently leave the gate off in any
+// mode whose name merely begins with 'serviceworker'
+params['sourceVerification'] = /^serviceworker/.test(params.contentInjectionMode) ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false;
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
+params['keepTorrentSeeding'] = getSetting('keepTorrentSeeding') !== false; // A setting that determines whether completed in-app BitTorrent downloads keep seeding until app quit (default is true; Electron/NWJS only)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
@@ -169,18 +216,108 @@ params['lockDisplayOrientation'] = getSetting('lockDisplayOrientation'); // 'por
 params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== null ? getSetting('noHiddenElementsWarning') : false; // A one-time warning about Hidden elements display
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
+// Only the keys listed below are written to the Settings Store. Any other key is applied to the current page
+// load alone and is deliberately not stored, so that a crafted link cannot make a lasting change to the app's
+// configuration: DEV keeps the ability to drive any setting from the querystring while debugging, but the
+// setting reverts as soon as the app is reloaded without it.
 (function overrideParams () {
-    var rgx = /[?&]([^=]+)=([^&]+)/g;
+    // Parameters that may be set from the querystring and written to the Settings Store. These are the keys the
+    // app passes between its own contexts (the UWP <-> PWA handoffs in this file and in app.js, and the reload
+    // in resetApp.js), together with the cosmetic settings and the escape hatches DEV needs to break out of a
+    // boot loop. NB a handoff key only belongs here if it is read back from the Store at boot: params that are
+    // merely needed for the page load they arrive on (e.g. lastPageVisit) work correctly as session-only values.
+    var persistableParams = ['allowInternetAccess', 'contentInjectionMode', 'packagedFile', 'fileVersion',
+        'lastSelectedArchive', 'lastSelectedArchivePath', 'manipulateImages', 'allowHTMLExtraction',
+        'appCache', 'assetsCache', 'cssTheme', 'cssUITheme', 'hideActiveContentWarning', 'rememberLastPage'];
+
+    // Parameters that are never accepted from the querystring, in any context. The source verification prompt is
+    // the app's gate on opening an untrusted archive, and a stored "off" survives every subsequent visit, so a
+    // single crafted link must not be able to disarm it. It is deliberately not enough to gate this on a
+    // development origin: the app is documented as self-hostable via Docker (see README), where the user's own
+    // production instance is reached at http://localhost:<port> on a conventional port, and no origin test can
+    // tell that apart from a developer's dev server. DEV: set this once in Configuration, or from DevTools with
+    // localStorage.setItem('kiwixjs-sourceVerification', 'false') - both persist, so it is not a per-load cost.
+    var neverFromQuerystring = ['sourceVerification'];
+
+    // Parameters that weaken or bypass security-relevant behaviour, and are only ever needed when developing.
+    // They are honoured in a development context but ignored everywhere else, so that a crafted link to the
+    // production PWA cannot use them to disarm the app.
+    var devOnlyParams = ['noPrompts', 'PWAServer'];
+
+    // Parameters whose value must match a pattern before it will be accepted. Most are the URL-shaped params:
+    // the OPDS catalogue and download endpoints, and the PWA jump target. Restricting them to the Kiwix domains
+    // stops a crafted link repointing the library or a download at a host of the attacker's choosing. NB the
+    // trailing group also permits the bare origin, as several of these defaults carry no trailing slash.
+    // contentInjectionMode is here for a different reason: it is a mode name rather than a URL, and a value the
+    // app does not recognize leaves it in a state its own UI cannot represent (see params.contentInjectionMode
+    // above). The two names below are the values of the radio buttons in index.html.
+    var kiwixServerPattern = /^https:\/\/(?:(?:[a-z0-9-]+\.)*kiwix\.org|kiwix\.github\.io)(?:[/?#]|$)/;
+    var validatedParams = {
+        contentInjectionMode: /^(?:jquery|serviceworker)$/,
+        kiwixLibraryServer: kiwixServerPattern,
+        kiwixLibraryBrowser: kiwixServerPattern,
+        kiwixCatalogRoot: kiwixServerPattern,
+        kiwixCatalogCategories: kiwixServerPattern,
+        kiwixCatalogEntries: kiwixServerPattern,
+        kiwixStagingCatalogEntries: kiwixServerPattern,
+        kiwixDownloadServer: kiwixServerPattern,
+        kiwixMirrorServer: kiwixServerPattern,
+        kiwixStagingServer: kiwixServerPattern,
+        PWAServer: kiwixServerPattern
+    };
+
+    // Keys that must never be copied onto the params object, because assigning them could alter the object's
+    // prototype chain rather than setting a parameter
+    var forbiddenParams = ['__proto__', 'constructor', 'prototype'];
+
+    // Determines whether we are running from a developer's own machine, as opposed to a shipped app. Note this
+    // is deliberately not a secure-context test: the production PWA is served over https, and it is precisely
+    // the context we must not trust with the parameters in devOnlyParams.
+    // The packaged app types are excluded before the origin is examined, because their origins are
+    // indistinguishable from a developer's: the Electron app serves itself from http://localhost via its
+    // bundled Express server, and NW.js (whose appType is also Electron) runs from chrome-extension:. Trusting
+    // those origins would trust every desktop install rather than the developer. DEV: this is why defaulting
+    // NW.js to SW mode (see params.contentInjectionMode above) does not open a hole here - do not reduce this
+    // to an origin test.
+    // Both clauses below still fire for the cases they are meant for, i.e. a browser pointed at the dev server
+    // on localhost, or at www/index.html opened directly from disk.
+    var trustedContext = !/Electron|UWP/.test(params.appType) &&
+        (/^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) || /^file:$/.test(window.location.protocol));
+
+    // NB the value is [^&]* rather than [^&]+ so that an empty value is parsed rather than silently skipped:
+    // the UWP handoff clears a stale setting by sending it empty (e.g. '&lastSelectedArchivePath=' below),
+    // which never worked while the parser demanded at least one character. Senders that may legitimately have
+    // no value must therefore omit the parameter entirely rather than send it empty - see app.js. The pattern
+    // still cannot match an empty string overall (it needs at least '?x='), so the global exec loop terminates.
+    var rgx = /[?&]([^=]+)=([^&]*)/g;
     var matches = rgx.exec(window.location.search);
     while (matches) {
-        if (matches[1] && matches[2]) {
+        // NB test matches[2] against undefined, not truthiness: an empty value is meaningful here
+        if (matches[1] && matches[2] !== undefined) {
             var paramKey = decodeURIComponent(matches[1]);
             var paramVal = decodeURIComponent(matches[2]);
-            if (paramKey !== 'title') {
-                // Store new values
-                setSetting(paramKey, paramVal);
-                paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
-                params[paramKey] = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
+            // The title key is a ZIM article path, which is consumed by the router rather than being a setting
+            if (paramKey !== 'title' && !~forbiddenParams.indexOf(paramKey)) {
+                // NB we must use hasOwnProperty here, or a key such as 'toString' would pick up an inherited
+                // function, which is truthy, and calling .test() on it would throw
+                var paramPattern = Object.prototype.hasOwnProperty.call(validatedParams, paramKey) ? validatedParams[paramKey] : null;
+                if (~neverFromQuerystring.indexOf(paramKey)) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": it can only be set in Configuration');
+                } else if (~devOnlyParams.indexOf(paramKey) && !trustedContext) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": it is only honoured when running from a development location');
+                } else if (paramPattern && !paramPattern.test(paramVal)) {
+                    console.warn('Ignoring querystring parameter "' + paramKey + '": the value is not in the expected format');
+                } else {
+                    // Store new values
+                    // NB if we reach here with a devOnlyParams key, we are necessarily in a trusted context (see above)
+                    if (~persistableParams.indexOf(paramKey) || paramPattern || ~devOnlyParams.indexOf(paramKey)) {
+                        setSetting(paramKey, paramVal);
+                    } else {
+                        console.debug('Parameter "' + paramKey + '" applies to this page load only, and will not be stored');
+                    }
+                    paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
+                    params[paramKey] = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
+                }
             }
         }
         matches = rgx.exec(window.location.search);
@@ -214,7 +351,7 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
             var fal = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
             fal.addOrReplace(params.falFileToken, launchArgumentsUWP.files[0]);
             if (fal.containsItem(params.falFolderToken)) fal.remove(params.falFolderToken);
-            uriParams += '&lasSelectedArchivePath=&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
+            uriParams += '&lastSelectedArchivePath=&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
         }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
@@ -294,6 +431,7 @@ document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === t
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === 'top' ? 'top' : params.hideToolbars ? 'both' : 'never');
+document.getElementById('showTitleBarCheck').checked = params.showTitleBar;
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
 document.getElementById('showPopoverPreviewsCheck').checked = params.showPopoverPreviews;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
@@ -336,7 +474,7 @@ params.navbarHeight = parseInt(getComputedStyle(document.getElementById('navbar'
 function getAppType () {
     var type = 'HTML5';
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
-    if (window.fs || window.nw) type = 'Electron';
+    if (window.fs || params.isNWJS) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
     if (/Windows/i.test(navigator.userAgent)) type += '|Windows';
     else if (/Android/i.test(navigator.userAgent)) type += '|Android';
@@ -532,7 +670,7 @@ var webpMachine = false;
         var webpScript = document.createElement('script');
         webpScript.onload = function () {
             webpMachine = new webpHero.WebpMachine();
-        }
+        };
         webpScript.src = 'js/webpHeroBundle_0.0.2.js';
         document.head.appendChild(webpScript);
     }

@@ -2,6 +2,10 @@
 
 Demos:&emsp;[&nbsp;[Instal PWA on Desktop](screenshots/Install-PWA.md)&nbsp;]&emsp;[&nbsp;[Install and use: Android](screenshots/Demo-OPFS_Chrome_Android.md)&nbsp;]&emsp;[&nbsp;[Install and use: Firefox Android](screenshots/Install-PWA_Firefox_Android.md)&nbsp;]&emsp;[&nbsp;[Picking a folder of archives](screenshots/Folder-Picking.md)&nbsp;]&emsp;[&nbsp;[File handling (desktop)](screenshots/Demo-FileHandling.md)&nbsp;]&emsp;[&nbsp;[Demo all OPFS features](screenshots/Demo-OPFS_all_features.md)&nbsp;]&emsp;[&nbsp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&nbsp;]
 
+[![Build](https://github.com/kiwix/kiwix-js-pwa/workflows/Build%20Electron%20and%20NWJS%20packages/badge.svg?query=branch%3Amain)](https://github.com/kiwix/kiwix-js-pwa/actions?query=branch%3Amain)
+[![Container image](https://img.shields.io/badge/ghcr.io-kiwix%2Fkiwix--pwa-blue?logo=docker)](https://github.com/kiwix/kiwix-js-pwa/pkgs/container/kiwix-pwa)
+[![Licence: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
 **Kiwix is an offline browser for Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other sites and resources.
@@ -48,15 +52,14 @@ try it out first with one of the themed, much smaller, archives, like Astronomy,
 handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
 
 If you really want full English Wikipedia with images, then we strongly recommend you use an open-source torrenting app such as
-[qBittorrent](https://www.qbittorrent.org/) or [Transmission](https://transmissionbt.com/) to download it on a PC with plenty of
+[qBittorrent](https://www.qbittorrent.org/), [Transmission](https://transmissionbt.com/), or [Deluge](https://deluge-torrent.org/) to download it on a PC with plenty of
 disk space. First install your torrenting app. Then, when you select a large archive for download in the app, it will provide you with
-a torrent link. Click the link and allow your browser to download and open the torrent file. This small file will open in qBittorrent
-or Transmission, and you'll be asked where you want to save the archive you want to download. It's much easier than it sounds!
+a torrent link. Click the link and allow your browser to download and open the torrent file. This small file will open in your torrenting app, and you'll be asked where you want to save the archive you want to download. It's much easier than it sounds!
 
 ## What about Zimit (Web Archive) format?
 
 Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
-you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full
+you to use (see below). If you want to make your own, try it out at https://zimit.kiwix.org/. The Kiwix JS PWA and Electron apps have full
 support both for legacy Zimit 1 archives that use the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html),
 and for the current Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
 
@@ -87,7 +90,7 @@ try switching the app to Restricted mode (see Content injection mode in Configur
 * As an application implemented with the following frameworks:
 
   + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows, macOS): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
-    + Builds available for ia32, x86, x64, ARM64, M1/M2/M3
+    + Builds available for ia32, x86, x64, ARM64 (including Raspberry Pi OS 64-bit), M1/M2/M3
   + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://apps.microsoft.com/detail/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app/nwjs.html)
@@ -115,12 +118,61 @@ Feedback section on the About page in the app for other ways of getting technica
 (see About page of app) if you would just like to provide feedback, or leave a review if you obtained the app from a Store. If you like
 the app, please star this Repostiory (see top)!
 
+## Building from source
+
+If you would rather build the app yourself, instead of using one of the packaged versions or the container image below, you will find setup
+and build instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Self-hosting with Docker
+
+The PWA is also published as a container image to the GitHub Container Registry (GHCR) on every release,
+so you can self-host it on your own server or homelab. This gives you your own instance of
+[pwa.kiwix.org](https://pwa.kiwix.org/) that you can access in a browser from your PC or LAN, without any dependency on
+external servers.
+
+Clone this repo and use the provided [`docker-compose.yml`](docker-compose.yml) to get started immediately:
+
+    docker compose up -d
+
+Or to pull and run just the container image directly (replace `8080` with your preferred port):
+
+    docker run -d -p 8080:80 ghcr.io/kiwix/kiwix-pwa:latest
+
+Then open `http://localhost:8080` in your browser. With `docker compose`, you can omit `-d` to run in the
+foreground and see logs. You can also change the host port in [`docker-compose.yml`](docker-compose.yml).
+
+**Important notes:**
+- ZIM archives must still be picked manually via the app's file picker. Because this is a web app, it
+  uses browser JS APIs to open files: it cannot serve archives directly to the network, so the files
+  must be available on the machine where you are browsing, or via a network mount. For a solution that also serves ZIM archives on a local server, please use [kiwix/kiwix-serve](https://github.com/kiwix/kiwix-tools).
+- When accessed via `localhost`, the app runs in full ServiceWorker mode. If you serve it to your LAN
+  without a TLS certificate, browsers will treat the origin as insecure and the app will fall back to
+  Restricted mode — which is actually fine for reading legacy ZIM archives.
+  
+### Using the Electron app as Kiwix Serve Lite
+
+The Electron edition of Kiwix JS PWA includes a built-in Express server that allows you to access the application from a web browser on the same device or from other devices on your local network, without requiring Docker.
+
+When the app is running, the Home tab displays a localhost URL (by default `http://localhost:3000`) that you can open in any web browser. You can also enable **Allow external network access** to make the application available to other devices on your local network. The listening port is determined dynamically on startup if the default port is already in use, but it can be changed manually in **Configuration → Expert Settings**.
+
+**Important notes:**
+
+- The Express server serves the application only. ZIM archives must still be available on the host machine or via a mounted network share so they can be selected from the browser.
+- Access from other devices uses HTTP rather than HTTPS, so browsers will run the application in **Restricted mode** instead of **ServiceWorker Mode**. This is generally suitable for reading Wikipedia and other static ZIM archives, but some dynamic ZIMs may have limited functionality.
+- For your security, external network access is disabled by default, applies only to the current session, and accepts connections only from the local network.
+
+### BitTorrent downloads (Electron)
+
+The Electron edition of Kiwix JS PWA includes a built-in BitTorrent client for downloading large ZIM archives directly within the application. Downloads can be resumed if interrupted, including after restarting the application. Previously downloaded data are reused automatically.
+
+For more information about managing BitTorrent downloads, see the in-app About documentation.
+
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 and legacy High
-Sierra/Mojave) are available from [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable
+Installable and portable versions for Windows (XP/Vista/7/8/10/11), Linux (32bit and 64bit) and macOS (x64/M1/M2/M3 on 12+, and a
+legacy build for 10.13-11) are available from [releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable
 [nightly builds](https://download.kiwix.org/nightly/) of the Electron and NWJS apps are available together with a
 [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be buggy and change rapidly. Additionally, nightly
 Windows binaries are **unsigned**.
@@ -155,25 +207,12 @@ Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream
 [Kiwix JS repository](https://kiwix.github.io/kiwix-js/), as much of the code contributed there is subsequently ported to this repository.
-Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details. If you wish to contribute to a specific
+Please see upstream's [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details. If you wish to contribute to a specific
 Kiwix JS PWA feature, then please open an issue on this repository explaining the feature or other code you aim to contribute and how you propose
-this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
+this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript.
 
-We have now transitioned this app to ES6 code, which is transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code
-that is compatible with older browsers. Brief instructions:
-
-* Clone this repo and run `npm install` to get the Node dependencies;
-* To serve the app with [Vite.js](https://vitejs.dev/), which includes Hot Module Replacement, run `npm run serve`;
-* You MUST turn on the option to Bypass the app cache in Configuration under Troubleshooting and development. If the app loads in a disordered way,
-you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode).
-Refresh the app with Ctrl-R;
-* Vite will watch for changes and will refresh the app when you make any and save them;
-* To preview the bundled version of the app, run `npm run preview`, and Vite will build the app and open a browser window to view the bundled version;
-* To fully build the app, run `npm run build`. The built app will be saved to a directory called `dist` in your cloned repo; 
-* To run the app in the Electron framework, you can use `npm start`. This will run the unbundled app in the Electron version specified in `package.json`. See various
-scripts to build the bundled version of the app for Electron in `package.json` (you can only build it for the OS you are currently on, though the Linux app can be built
-on Windows with WSL).
+***If contributing here, please read this repository's [CONTRIBUTING.md](CONTRIBUTING.md) carefully and thoroughly before you start work, as it explains which contributions belong here and
+which belong upstream. It also contains the setup and build instructions for this app.***
 
 ## Other contributions / donations
 

@@ -24,11 +24,11 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@main
       # Set up secret files from encrypted secrets
       - name: Set up secret files
         env:
-          SSH_KEY: ${{ secrets.KIWIX_FILE_UPLOAD_SSH_KEY }}
+          SSH_KEY: ${{ secrets.KIWIXJSPWA_FILE_UPLOAD_KEY }}
         shell: pwsh
         run: |
           $SSH_KEY = $Env:SSH_KEY

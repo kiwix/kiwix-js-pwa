@@ -1,0 +1,6 @@
+services:
+  kiwix-pwa:
+    image: ghcr.io/kiwix/kiwix-pwa:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped

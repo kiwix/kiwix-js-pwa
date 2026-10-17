@@ -17,7 +17,7 @@
 		if (window.Set && arr instanceof Set) {
 			//we use forEach from Set object
 			arr.forEach(function (v) {
-				k.push(v)
+				k.push(v);
 			});
 			arr = k;
 		}

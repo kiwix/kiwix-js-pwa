@@ -302,4 +302,4 @@ function mallocOrDie(sizeOfData) {
 
 export default {
     Decompressor: Decompressor
-}
+};

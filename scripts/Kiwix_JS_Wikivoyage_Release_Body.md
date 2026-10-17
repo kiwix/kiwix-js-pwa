@@ -14,7 +14,7 @@ Please choose the correct version:
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage)
-    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, opnSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage) 
+    + AppImage ARM64 for Linux on ARM only (Ubuntu, Debian, Fedora, OpenSUSE, Raspberry Pi OS 64-bit on Pi 3 or later) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-arm64.AppImage) 
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb)
@@ -31,13 +31,13 @@ Please choose the correct version:
     + Windows 7/8/8.1 standalone 32bit installer: [Wikivoyage-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Win7-Setup-<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikivoyage.electron` in a Windows 10/11 Terminal
   - **Portable (Electron) - just unzip, no install needed**
-    + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
+    + Windows 10/11 32bit (also runs on 64bit): [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip) (for Win7/8/8.1, please use the Win7 installer above)
 
-* **macOS** (Experimental, unsigned - _follow instructions below to run for first time_):
-  - **Portable (Electron)** - *experimental*
-    + macOS 10.15+ Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-arm64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-arm64.zip) - *recommended for Apple Silicon Macs*
-    + macOS 10.15+ Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-x64.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-x64.zip)
-    + macOS 10.13 High Sierra / 10.14 Mojave Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-HighSierra.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-macOS-HighSierra.zip)
+* **macOS** (signed and notarized by Apple - _see installation instructions below_):
+  - **Disk images (Electron)**
+    + macOS 12+ (Monterey or later) Apple Silicon (M1/M2/M3): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-arm64.dmg) - *recommended for Apple Silicon Macs*
+    + macOS 12+ (Monterey or later) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-x64.dmg)
+    + macOS 10.13-11 (High Sierra, Mojave, Big Sur) Intel (x64): [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-macOS-HighSierra.dmg)
 
 ## Installation Instructions - Electron
 
@@ -50,32 +50,24 @@ Please choose the correct version:
 ### Linux
 * **For the Linux _portable_ builds,** download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open a terminal and run `chmod a+x Wikivoyage-by-Kiwix*.AppImage` and then `./Wikivoyage-by-Kiwix*.AppImage`.
   + On recent Linux (notably Ubuntu) you may need to install fuse2 by typing `sudo apt install libfuse2` (see [here](https://www.omgubuntu.co.uk/2023/04/appimages-libfuse2-ubuntu-23-04)).
-  + On older **_Debian_**, you man need to add the `--no-sandbox` switch to the command (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). This is not necessary on recent versions.
+  + On older **_Debian_**, you may need to add the `--no-sandbox` switch to the command (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). This is not necessary on recent versions.
   + On **_OpenSUSE_**, you may need to install Chrome in order to get the dependencies necessary to run the AppImage (because Electron apps run Chrome internally). With **_older_** versions of OpenSUSE, you may additionally need to use these commandline switches: `./Wikivoyage-by-Kiwix*.AppImage --use-gl=disabled --disable-gpu-compositing`,¹ but this is no longer necessary in recent versions.
 * **For the Linux _installable_ builds:**
   + **_Debian/Ubuntu_**: download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt-get update` followed by `chmod a+x ./kiwix-js-wikivoyage*.deb`, then `sudo apt install ./kiwix-js-wikivoyage*.deb`. To run the app from the command line, rather than from its installed icon, simply type `kiwix-js-wikivoyage` in terminal. On **Debian**, if you receive the error `libgbm.so.1: cannot open shared object file`, please run `sudo apt install libgbm-dev`. On older versions of Debian, you may have to add `--no-sandbox` to the command line when running the app, i.e. `kiwix-js-wikivoyage --no-sandbox`. When you want to update, just install the new version, and it will install over the old version.
   + For **OpenSUSE** and **Fedora**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikivoyage` and on older versions of OpenSUSE you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
 
 ### Apple Mac
-* **For macOS builds**: If you trust this Repository, download the correct ZIP file for your Mac architecture (Apple Silicon, Intel, or High Sierra/Mojave). _Safari will automatically extract the ZIP file upon download, while Chrome and Firefox will download the ZIP file without extracting it._ **These builds are unsigned and require additional steps to run**:
-    1. **Remove quarantine flag from ZIP** (Chrome/Firefox users only - Safari users skip to step 2):
-       - Open Terminal (Applications > Utilities > Terminal)
-       - Run the following command:
-       ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Wikivoyage*.zip
-       ```
-       - Then extract the ZIP file by double-clicking it
-    2. **Safari users only**: The app (`Wikivoyage by Kiwix.app`) will already be extracted in your Downloads folder, but you need to remove the quarantine flag (not necessary if you did Step 1):
-       ```bash
-       xattr -d com.apple.quarantine ~/Downloads/Wikivoyage\ by\ Kiwix.app
-       ```
-    3. **Launch** the app by double-clicking it - it should now open normally
+* **For macOS builds**: download the correct disk image (`.dmg`) for your Mac's architecture and macOS version (Apple Silicon, Intel, or the High Sierra build for macOS 10.13 to 11). Double-click it to open, then drag **Wikivoyage by Kiwix** onto the **Applications** shortcut in the window that appears. **No Terminal commands are needed.**
+  + **If you do not have administrator rights** on the Mac (a work, school or hosted machine), dropping the app on the Applications shortcut will ask for an administrator password. Instead, open a second Finder window on your home folder (press ⇧⌘H) or the Desktop, and drag the **Wikivoyage by Kiwix** app icon out of the disk image window into it. It runs exactly the same way from there, and no password is needed. Note that it is the app _inside_ the disk image that you need to drag: copying the `.dmg` file itself somewhere else does not install anything.
+  + **Please do drag it somewhere first**, rather than running it straight from the disk image. The OS runs a freshly downloaded app from a temporary, randomised location until you move it with the Finder, and an app running that way cannot update itself.
+  + **The first time you launch**, macOS will ask whether you are sure you want to open an app downloaded from the Internet, and will confirm that "Apple checked it for malicious software and none was detected". Click **Open**. You will only see this once: macOS will not ask again on subsequent launches.
+  + **Security note:** these builds are **signed with a Developer ID Application certificate and notarized by Apple**. If macOS instead tells you the app is damaged, or that the developer cannot be verified, then you do not have an official release build - please download again from the Assets on this page.
   + **Architecture Selection:**
-    + **Apple Silicon Macs** (M1/M2/M3): Use the ARM64 version for optimal performance
-    + **Intel Macs**: Use the x64 version
-    + If unsure of your Mac's architecture, click the Apple menu > About This Mac - look for "Apple M1/M2/M3" (Apple Silicon) or "Intel" in the processor information
-  + **Security Note:** These are experimental unsigned builds. macOS will initially block them for security reasons. The Terminal command above is required for first launch. Future launches will work normally after completing these steps once.
-* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. _If you do not wish to install an unsigned app, please visit https://pwa.kiwix.org in a Chromium browser, install the PWA from Configuration, and then download the Wikivoyage archive in-app._
+    + **Apple Silicon Macs** (M1/M2/M3/M4) on **macOS 12 Monterey or later**: Use the ARM64 image for optimal performance
+    + **Intel Macs** on **macOS 12 Monterey or later**: Use the x64 image
+    + **macOS 10.13 to 11 (High Sierra to Big Sur)**: Use the HighSierra image. This is built with an older version of Electron so that it still runs on these systems, and it also runs on Apple Silicon Macs via Rosetta. macOS will refuse to open the ARM64 or x64 versions on these systems
+    + If unsure, click the Apple menu > About This Mac - it shows both your macOS version and, in the processor information, "Apple M1/M2/M3/M4" (Apple Silicon) or "Intel"
+* **Troubleshooting:** If you encounter issues, ensure you're using the correct architecture version for your Mac. The ARM64 version provides significantly better performance on Apple Silicon Macs. Note that **nightly builds are deliberately not signed**, and need extra steps to run: see [Running unsigned macOS builds](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#running-unsigned-macos-builds-nightlies-and-test-builds).
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
@@ -98,6 +90,6 @@ Please choose the correct version:
 
 ## Instructions for sideloading (UWP)
 
-You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11). This will download and install the Electron-based appx. If you want to install the legacy UWP appxbundle based on EdgeHTML, then simply download the appxbundle (see below) and double click it. The app installer should launch and will let you install it.
+You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11). This will download and install the Electron-based appx. If you want to install the legacy UWP appx based on EdgeHTML, then simply download the appx (see below) and double click it. The app installer should launch and will let you install it.
 
-For Windows Mobile or for sideloading manually, please download [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and (for desktop systems) the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#readme.
+For Windows Mobile or for sideloading manually, please download [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appx) and (for desktop systems) the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#readme.

@@ -23,7 +23,10 @@ const config = {
             babelHelpers: 'bundled'
         }),
         // Needed to get rid of residual "requires" left in the code by Babel...
-        commonjs(),
+        // NB strictRequires defaulted to 'auto' before plugin-commonjs v27; the v27+ default of
+        // true wraps every CommonJS module (incl. all core-js polyfills) in lazy init functions,
+        // which changes polyfill initialisation order and adds ~100KB to the unminified bundle
+        commonjs({ strictRequires: 'auto' }),
         // Resolves references to node_modules packages
         resolve({
             browser: true
@@ -49,7 +52,7 @@ const config = {
             { src: ['node_modules/bootstrap/dist/css/bootstrap.min.css'], dest: 'dist/www/css' },
             { src: ['node_modules/@fortawesome/fontawesome-free/css/all.min.css'], dest: 'dist/www/css' },
             { src: ['node_modules/@fortawesome/fontawesome-free/webfonts/*'], dest: 'dist/www/webfonts' },
-            { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
+            { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
             ],
             flatten: true
         })
@@ -163,7 +166,7 @@ if (process.env.BUILD === 'production') {
             ],
             flatten: false
         })
-    )
+    );
 } else {
     // Normal (Uniminified) build
     config.plugins.push(
@@ -218,7 +221,7 @@ if (process.env.BUILD === 'production') {
             ],
             flatten: false
         })
-    )
+    );
 }
 
 export default config;

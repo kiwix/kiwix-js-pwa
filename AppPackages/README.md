@@ -52,6 +52,43 @@ Download the .appx or .appxbundle from [Releases](https://github.com/kiwix/kiwix
 
 Enable Developer mode on your device (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app (see below).
 
+## Running unsigned macOS builds (nightlies and test builds)
+
+**You do not need this procedure for release builds.** The macOS packages attached to a [Release](https://github.com/kiwix/kiwix-js-pwa/releases)
+are signed with a Developer ID Application certificate and notarized by Apple. Just open the disk image, drag **Kiwix JS Electron** onto the
+**Applications** shortcut, and click **Open** at the one-time prompt confirming that the app was downloaded from the Internet and checked by Apple.
+
+**Nightly builds are deliberately unsigned**, as are packages you build yourself, so that nightlies do not consume notarization capacity.
+Any app downloaded from the Internet is quarantined by macOS, which will refuse to launch an unsigned app, usually reporting that it
+"is damaged and can't be opened", or that the developer cannot be verified. If you trust the source of the build, you can clear the quarantine
+flag yourself:
+
+1. **Remove the quarantine flag from the disk image, before you open it.** macOS passes the flag on to anything you copy out of a quarantined
+   image, so clearing it here saves clearing it from the app afterwards:
+   - Open Terminal (Applications > Utilities > Terminal)
+   - Run the following command, substituting the name of the file you actually downloaded. Nightly packages are named
+     `kiwix-js-electron_macos-*`, while packages downloaded from a workflow run keep the spaces in their names, as `Kiwix JS Electron-*`:
+     ```bash
+     xattr -d com.apple.quarantine ~/Downloads/kiwix-js-electron_macos-*.dmg
+     ```
+2. **Open the disk image** by double-clicking it, then drag **Kiwix JS Electron** onto the **Applications** shortcut beside it. If you do not
+   have administrator rights on the machine, drag it to your home folder or the Desktop instead - it runs the same way from either.
+3. **Launch** the app by double-clicking it - it should now open normally. You will not need to repeat these steps for this copy of the app.
+
+If Terminal reports `No such xattr`, then the flag has already been cleared, and you can carry on from step 2. If you opened the image before
+clearing the flag, or macOS still refuses to launch the app, clear all extended attributes from the copy you dragged out, giving the folder you
+actually dragged it to. Note that whatever the disk image is called, the app inside is always named `Kiwix JS Electron.app`, with spaces, which
+the backslashes below escape:
+
+```bash
+xattr -cr /Applications/Kiwix\ JS\ Electron.app
+# ...or, if you dragged it somewhere else:
+xattr -cr ~/Desktop/Kiwix\ JS\ Electron.app
+```
+
+If you would prefer not to run an unsigned app, use a signed build from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases), or visit
+https://pwa.kiwix.org in a Chromium browser and install the PWA from Configuration.
+
 ## Download a ZIM archive (all platforms)
 
 You will need a ZIM file to work with this app. For testing, it comes packaged either with the Ray Charles ZIM or the Top 100 Wikipedia (English) articles ZIM. You can download other ZIM archives from the setup page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that let you pick the file or the file's folder.

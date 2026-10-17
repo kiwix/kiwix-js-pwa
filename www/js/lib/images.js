@@ -71,11 +71,17 @@ function extractImages (images, callback) {
     Array.prototype.slice.call(images).forEach(function (image) {
         if (image.tagName !== 'IMG') {
             insertMediaBlobsJQuery(image);
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
             return;
         }
         var imageUrl = image.getAttribute('data-kiwixurl');
         if (!imageUrl) {
-            remaining--; return;
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
+            return;
         // Create data-kiwixsrc needed for stylesheets
         } else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
@@ -101,7 +107,7 @@ function extractImages (images, callback) {
                 image.style.transition = 'opacity 0.3s ease-in';
                 image.style.opacity = '1';
                 removeEventListener('load', transition);
-            }
+            };
             image.addEventListener('load', transition);
             // Let's remove kiwix-display from the end of the url so that the SW will ask for the image
             image.src = imageUrl.replace(/\?kiwix-display/, '');
@@ -428,6 +434,7 @@ function insertMediaBlobsJQuery (medium) {
         }
         // Load media file
         appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
+            if (!dirEntry) return;
             return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                 var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                 var blob = new Blob([mediaArray], {
@@ -497,6 +504,8 @@ function insertMediaBlobsJQuery (medium) {
                     });
                 }
             });
+        }).catch(function (e) {
+            console.error('Could not find DirEntry for media: ' + source, e);
         });
     });
     // For TED ZIMs, the initial video div height is set incorectly, so we correct it
@@ -599,6 +608,26 @@ function lazyLoad (documentImages) {
         }, rate);
         scrollPos = container.pageYOffset;
     };
+    // Scrolling is not the only thing that can bring an image into view. Layout scripts such as Masonry (used by the
+    // all-image landing pages of flavoured Wikimedia ZIMs) reposition every card after we have taken the readings
+    // above, and they do so without any scroll, so the handler above never learns about it and the grid stays blank
+    // until the user scrolls by hand. Observing the document for resize supplies the missing trigger: Masonry sets an
+    // explicit height on its container as it lays out, and each image we extract resizes it again, so the observer
+    // drives the queue forward until there is nothing left to extract. NB we use the container's own constructor so
+    // that we observe an element from the same realm [kiwix-js-pwa #946]
+    if (typeof container.ResizeObserver === 'function' && container.document.body) {
+        console.debug('lazyLoad: watching article body for resize to re-poll ' + documentImages.length + ' images');
+        var relayoutTimeout;
+        new container.ResizeObserver(function () {
+            clearTimeout(relayoutTimeout);
+            relayoutTimeout = setTimeout(function () {
+                console.debug('lazyLoad: layout changed, re-polling image queue');
+                queueImages(documentImages, 'extract', 0, function () {
+                    queueImages(documentImages, 'extract', offset);
+                });
+            }, 250);
+        }).observe(container.document.body);
+    }
 }
 
 /**

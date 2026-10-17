@@ -1,25 +1,26 @@
 {
   "name": "kiwix-js-wikivoyage",
   "productName": "Wikivoyage by Kiwix",
-  "version": "3.8.2-E",
+  "version": "3.9.5-E",
   "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
   "build": {
     "appId": "kiwix.js.wikivoyage",
+    "npmRebuild": false,
     "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "../electron_icons"
     },
     "win": {
-        "signtoolOptions": {
-      "certificateSha1": "e33d961d35fb3161f7db607342868bb51ae05de3",
-      "signingHashAlgorithms": [
-        "sha256"
-      ],
-          "rfc3161TimeStampServer": "http://ts.ssl.com"
-        },
+      "signtoolOptions": {
+        "certificateSha1": "7426FA4A6B6D02F43A2E090B48B5F3B86847B1C3",
+        "signingHashAlgorithms": [
+          "sha256"
+        ],
+        "rfc3161TimeStampServer": "http://ts.ssl.com"
+      },
       "asar": "true",
       "extraResources": {
         "from": "archives",
@@ -55,6 +56,10 @@
       ]
     },
     "mac": {
+      "appId": "org.kiwix.wikivoyage",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "notarize": true,
       "asar": "true",
       "extraResources": {
         "from": "archives",
@@ -75,7 +80,7 @@
       "category": "public.app-category.education"
     },
     "linux": {
-      "executableName": "kiwix-js-electron",
+      "executableName": "kiwix-js-wikivoyage",
       "asar": "true",
       "extraResources": {
         "from": "archives",
@@ -130,10 +135,16 @@
       "www/**",
       "preload.cjs",
       "main.cjs",
+      "torrentDownloader.cjs",
+      "libzimNodeWorker.cjs",
       "!**/*.dev.{js,wasm}"
     ]
   },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
+    "test": "node --test --test-reporter=spec test/*.test.cjs",
     "serve": "vite",
     "preview": "del-cli dist && npm run build-src && vite preview",
     "prebuild": "del-cli dist",
@@ -151,9 +162,9 @@
     "dist-win-nisis-x64": "electron-builder build --win NSIS:x64 --publish never --projectDir dist",
     "dist-linux": "electron-builder build --linux --projectDir dist",
     "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
-    "publish": "npm run publish-setup && node scripts/delete-latest-yml.js && npm run publish-nsis-web",
-    "publish-setup": "electron-builder build --win NSIS:ia32 portable:ia32 appx --projectDir dist",
-    "publish-nsis-web": "electron-builder build --win nsis-web --ia32 --x64 --arm64 --projectDir dist",
+    "publish": "npm run publish-setup && npm run publish-nsis-web",
+    "publish-setup": "electron-builder build --win NSIS:ia32 portable:ia32 appx --publish never --projectDir dist",
+    "publish-nsis-web": "electron-builder build --win nsis-web --ia32 --x64 --arm64 --publish never --projectDir dist",
     "build-skipsigning": "electron-builder build  --config ../scripts/electronBuilder.cjs --publish never --projectDir dist",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-pwa-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-pwa-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
@@ -178,34 +189,39 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "@babel/cli": "^7.21.5",
-    "@babel/core": "^7.21.5",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.21.5",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "bootstrap": "^4.6.2",
     "del-cli": "^5.0.0",
-    "electron": "38.3.0",
-    "electron-builder": "^26.0.18",
+    "electron": "^43.7.5",
+    "electron-builder": "^26.16.1",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^16.0.0",
     "eslint-plugin-promise": "^6.1.1",
-    "rollup": "^4.5.0",
+    "js-yaml": "^4.3.2",
+    "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.4.0",
-    "vite": "^6.3.6"
+    "vite": "^8.0.16"
+  },
+  "overrides": {
+    "ip": "npm:neoip@2.1.0"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
     "core-js": "3.30.2",
     "electron-context-menu": "^3.1.1",
     "electron-store": "^8.1.0",
-    "electron-updater": "^6.6.8",
-    "express": "^4.22.1"
+    "electron-updater": "^6.8.9",
+    "express": "^5.2.1",
+    "webtorrent": "3.0.16"
   }
 }

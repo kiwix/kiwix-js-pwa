@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿/**
+﻿/**
  * util.js : Utility functions
  *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
@@ -110,6 +110,23 @@ function removeDuplicateStringsInSmallArray (array) {
  */
 function endsWith (str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/**
+ * Checks whether a file name belongs to the archive that the user picked. If the picked name is that of a split
+ * archive part (e.g. foo.zimaa), the candidate must have the same base name and a two-character split suffix
+ * (foo.zimaa, foo.zimab ...); otherwise the candidate must be the picked file itself. The names are compared
+ * literally, so characters that are special in a regular expression (. + ( ) [ ] etc.) are safe in file names
+ * @param {String} archiveName The name of the picked file
+ * @param {String} candidateName The name of a file in the same folder
+ * @returns {Boolean} True if the candidate is a part of the picked archive
+ */
+function isPartOfArchive (archiveName, candidateName) {
+    var split = /^(.*\.zim)\w\w$/i.exec(archiveName);
+    if (!split) return candidateName === archiveName;
+    var base = split[1];
+    return candidateName.length === base.length + 2 && candidateName.indexOf(base) === 0 &&
+        /^\w\w$/.test(candidateName.substring(base.length));
 }
 
 /**
@@ -415,6 +432,13 @@ function Hilitor (node, tag) {
         return retval;
     }
 
+    // Escapes the characters that have a special meaning in a regular expression, so that the text typed by the
+    // user is searched for literally. A "|" goes in a character class rather than behind a backslash, because
+    // setRegex() uses "|" to join words and trims a leading or trailing one, which would strip the tail of "\|"
+    function escapeRegExp (input) {
+        return input.replace(/[.*+?^${}()[\]\\]/g, '\\$&').replace(/\|/g, '[|]');
+    }
+
     this.setRegex = function (input) {
         input = input.replace(/\\([^u]|$)/g, '$1');
         // Replace any spaces with regex OR
@@ -446,7 +470,7 @@ function Hilitor (node, tag) {
         strippedText = strippedText.replace(/\s+/g, ' ');
         if (!strippedText.length) return 0;
         input = input.replace(/[\s.,;:?!¿¡-]+/g, ' ');
-        var inputMatcher = new RegExp(input, 'ig');
+        var inputMatcher = new RegExp(escapeRegExp(input), 'ig');
         var matches = strippedText.match(inputMatcher);
         if (matches) return matches.length;
         else return 0;
@@ -455,7 +479,7 @@ function Hilitor (node, tag) {
     this.countPartialMatches = function () {
         if (node === undefined || !node) return;
         var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
-        if (matches) return matches.length
+        if (matches) return matches.length;
         else return 0;
     };
 
@@ -469,7 +493,7 @@ function Hilitor (node, tag) {
         // Normalize spaces
         input = input.replace(/\s+/g, ' ');
         var inputWords = input.split(' ');
-        var testInput = addAccents(input);
+        var testInput = addAccents(escapeRegExp(input));
         testInput = new RegExp(testInput, 'i');
         var hilitedNodes = node.getElementsByClassName(className);
         var subNodes = [];
@@ -514,7 +538,7 @@ function Hilitor (node, tag) {
             end++;
         }
         return start + inputWords.length;
-    }
+    };
 
     // recursively apply word highlighting
     this.hiliteWords = function (node) {
@@ -569,6 +593,7 @@ function Hilitor (node, tag) {
     this.apply = function (input) {
         this.remove();
         if (input === undefined || !(input = input.replace(/(^\s+|\s+$)/g, ''))) return;
+        input = escapeRegExp(input);
         input = addAccents(input);
         input = convertCharStr2jEsc(input);
         if (this.setRegex(input)) {
@@ -743,6 +768,7 @@ export default {
     allCaseFirstLetters: allCaseFirstLetters,
     removeDuplicateStringsInSmallArray: removeDuplicateStringsInSmallArray,
     endsWith: endsWith,
+    isPartOfArchive: isPartOfArchive,
     readFloatFrom4Bytes: readFloatFrom4Bytes,
     readFileSlice: readFileSlice,
     binarySearch: binarySearch,

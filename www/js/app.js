@@ -38,6 +38,7 @@ import settingsStore from './lib/settingsStore.js';
 import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
+import torrentClient from './lib/torrentClient.js';
 import updater from './lib/updater.js';
 import resetApp from './lib/resetApp.js';
 
@@ -49,7 +50,7 @@ import resetApp from './lib/resetApp.js';
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, assetsCache, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
+/* global params, appstate, assetsCache, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window, the article DOM and some UI elements
 var articleContainer = document.getElementById('articleContent');
@@ -85,6 +86,15 @@ params['storeType'] = settingsStore.getBestAvailableStorageAPI();
 // A parameter to determine whether the webkitdirectory API is available
 params['webkitdirectory'] = util.webkitdirectorySupported();
 
+// Signals that the OS launched the app by double-clicking on a ZIM, and that the archive in question is
+// therefore already on its way. It tells the startup autoload and getNativeFSHandle() not to restore the
+// last-used archive as well, which would otherwise load an archive (and run the source verification
+// dialogue) a second time [kiwix-js-pwa #915]. In Electron the path is available synchronously from the
+// preload script (the IPC message that actually opens it only arrives once the page has loaded); in the
+// PWA it is set by the File Handling API's launchQueue consumer (see @LAUNCH QUEUE below), which runs
+// before the autoload because launchQueue.setConsumer() invokes it with any queued files straight away
+var launchedWithFile = !!(window.electronAPI && electronAPI.launchFilePath);
+
 // Retrieve UWP launch arguments when the app is started by double-clicking on a file
 if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
     Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
@@ -101,12 +111,8 @@ if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.
 }
 
 // At launch, we set the correct content injection mode
-if (params.contentInjectionMode === 'serviceworker' && window.nw) {
-    // Failsafe for Windows XP version: reset app to Restricted mode because it cannot run in SW mode in Windows XP
-    if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
-} else {
-    setContentInjectionMode(params.contentInjectionMode);
-}
+// Failsafe for the Windows XP version of NW.js: reset the app to Restricted mode, because it cannot run in SW mode
+setContentInjectionMode(params.isNWJSXP ? 'jquery' : params.contentInjectionMode);
 
 // Test caching capability
 cache.test(function () {});
@@ -146,21 +152,22 @@ function resizeIFrame (reload) {
     var ToCList = document.getElementById('ToCList');
     if (typeof ToCList !== 'undefined') {
         ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-        ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     }
     if (window.outerWidth <= 470) {
-        document.getElementById('dropup').classList.remove('col-xs-4');
-        document.getElementById('dropup').classList.add('col-xs-3');
+        document.getElementById('dropupContainer').classList.remove('col-4');
+        document.getElementById('dropupContainer').classList.add('col-3');
         if (window.outerWidth <= 360) {
-            document.getElementById('btnTop').classList.remove('col-xs-2');
-            document.getElementById('btnTop').classList.add('col-xs-1');
+            document.getElementById('btnTop').classList.remove('col-2');
+            document.getElementById('btnTop').classList.add('col-1');
         } else {
-            document.getElementById('btnTop').classList.remove('col-xs-1');
-            document.getElementById('btnTop').classList.add('col-xs-2');
+            document.getElementById('btnTop').classList.remove('col-1');
+            document.getElementById('btnTop').classList.add('col-2');
         }
     } else {
-        document.getElementById('dropup').classList.remove('col-xs-3');
-        document.getElementById('dropup').classList.add('col-xs-4');
+        document.getElementById('dropupContainer').classList.remove('col-3');
+        document.getElementById('dropupContainer').classList.add('col-4');
+        document.getElementById('btnTop').classList.remove('col-1');
+        document.getElementById('btnTop').classList.add('col-2');
     }
     if (settingsStore.getItem('reloadDispatched') === 'true') {
         setTimeout(function () {
@@ -560,6 +567,10 @@ function printIntercept () {
 var localSearch = {};
 var timeoutFIAKeyup = null;
 
+// The navbar keeps clear of the Window Controls Overlay by default (see the html:not(.no-wco) rules in
+// app.css), so we only have to mark the document when the master switch turns that adaptation off
+if (!params.useWindowControlsOverlay) document.documentElement.classList.add('no-wco');
+
 function clearFindInArticle () {
     if (document.getElementById('row2').style.display === 'none') return;
     if (typeof localSearch !== 'undefined' && localSearch.remove) {
@@ -791,7 +802,46 @@ document.getElementById('relativeUIFontSizeSlider').addEventListener('change', f
 // Helper function to calculate navbar height
 function setNavbarHeight (height, relativeUIFontSize) {
     const navbar = document.getElementById('navbar');
-    navbar.style.height = height * (relativeUIFontSize / 100) + 'px';
+    let scaledHeight = height * (relativeUIFontSize / 100);
+    const titleBarHeight = uiUtil.windowControlsOverlayIsVisible()
+        ? navigator.windowControlsOverlay.getTitlebarAreaRect().height : 0;
+    if (titleBarHeight) {
+        scaledHeight = params.showTitleBar
+            // Our emulated title bar sits above the search row, so the navbar has to accommodate both
+            ? scaledHeight + titleBarHeight
+            // Otherwise the navbar is doubling as the title bar, so it must be at least as tall as the
+            // window buttons drawn over it, or they visibly overhang the article below
+            : Math.max(scaledHeight, titleBarHeight);
+    }
+    navbar.style.height = scaledHeight + 'px';
+}
+
+uiUtil.setTitleBarState();
+
+document.getElementById('showTitleBarCheck').addEventListener('change', function (e) {
+    params.showTitleBar = e.target.checked;
+    settingsStore.setItem('showTitleBar', params.showTitleBar, Infinity);
+    uiUtil.setTitleBarState();
+    setNavbarHeight(params.navbarHeight, params.relativeUIFontSize);
+    resizeIFrame();
+});
+
+// The user can show or hide the title bar at any moment, and the overlay geometry also changes when the
+// window is resized, snapped, or moved to a monitor with a different scaling, so re-apply the height on
+// each change (the width is handled entirely in CSS). The event fires very frequently while dragging,
+// hence the debounce.
+if (params.useWindowControlsOverlay && navigator.windowControlsOverlay) {
+    let wcoTimeout;
+    navigator.windowControlsOverlay.addEventListener('geometrychange', function () {
+        clearTimeout(wcoTimeout);
+        wcoTimeout = setTimeout(function () {
+            uiUtil.setTitleBarState();
+            // The find-in-article row adds 35px to the base navbar height (see the findText handler)
+            const findRowShowing = document.getElementById('row2').style.display !== 'none';
+            setNavbarHeight(params.navbarHeight + (findRowShowing ? 35 : 0), params.relativeUIFontSize);
+            resizeIFrame();
+        }, 200);
+    });
 }
 
 function setRelativeUIFontSize (value) {
@@ -836,7 +886,7 @@ if (typeof Windows !== 'undefined' &&
     var onBackRequested = function (eventArgs) {
         window.history.back();
         eventArgs.handled = true;
-    }
+    };
     Windows.UI.Core.SystemNavigationManager.getForCurrentView()
         .appViewBackButtonVisibility =
         Windows.UI.Core.AppViewBackButtonVisibility.visible;
@@ -850,6 +900,8 @@ document.getElementById('btnTop').addEventListener('click', function () {
     // If the toolbar is hidden, show it instead of jumping to top
     if (!/\(0p?x?\)/.test(header.style.transform)) {
         header.style.transform = 'translateY(0)';
+        // Release the emulated title bar, which hideSlidingUIElements holds down against the header
+        document.getElementById('wcoTitleBar').style.transform = '';
     } else {
         if (!params.hideToolbars) iframe.style.transform = 'translateY(-1px)';
         iframe.contentWindow.scrollTo({
@@ -1071,7 +1123,7 @@ if (window.electronAPI) {
         }
     });
     electronAPI.on('get-store-value', function (key, value) {
-        if (key === 'expressPort') {
+        if (value && key === 'expressPort') {
             params.expressPort = value;
             uiUtil.setExpressServerUI(value);
         }
@@ -1124,7 +1176,17 @@ function checkUpdateServer () {
     // Electron updates
     if (window.electronAPI) {
         var electronVersion = navigator.userAgent.replace(/^.*Electron.([\d.]+).*/i, '$1');
-        var isUpdateableElectronVersion = !electronVersion.startsWith(params.win7ElectronVersion);
+        // Auto-update is embargoed for the deprecated-platform builds. Their Electron is pinned to an
+        // old major precisely so the app still runs on Windows 7/8/8.1 or macOS 10.13 to 11, but every
+        // package the updater could offer them is built against a modern Electron that needs a newer
+        // OS - installing one would leave the user unable to launch the app at all. They are still told
+        // about the new release by the GitHub check below, and can install it by hand if their system
+        // has moved on since. The published channel files carry the same embargo for clients already in
+        // the field (minimumSystemVersion; see scripts/publish-github-release.cjs); this guard is what
+        // stops future builds from even asking.
+        var isUpdateableElectronVersion = ![params.win7ElectronVersion, params.macLegacyElectronVersion].some(function (embargoed) {
+            return embargoed && electronVersion.startsWith(embargoed);
+        });
         var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
             : (params.packagedFile && /wikimed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
                 : 'electron';
@@ -1134,7 +1196,7 @@ function checkUpdateServer () {
         } else {
             console.log('Auto-update: ' + (params.isAppxOrMSIX ? 'APPX/MSIX packages cannot be'
               : isUpdateableElectronVersion ? 'Packaged apps with large ZIM archives are not currently'
-              : 'Versions for Windows 7+ 32bit cannot be') + ' auto-updated.');
+              : 'Versions for deprecated operating systems cannot be') + ' auto-updated.');
         }
     }
     // GitHub updates
@@ -1196,6 +1258,9 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         document.getElementById('downloadLinks').style.display = 'none';
         document.getElementById('serverResponse').style.display = 'none';
         document.getElementById('myModal').style.display = 'none';
+        // If a completed torrent is still seeding in the background, show its status so the user
+        // can monitor it here (the line above hid it; this restores it only while seeding)
+        kiwixServe.showSeedingStatus();
         refreshAPIStatus();
         // Re-enable top-level scrolling
         scrollbox.style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -1225,6 +1290,21 @@ function getNativeFSHandle (callback) {
     }
     console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
+        // A file handed to us by the OS supersedes any stored handle, so bail out before we verify permission
+        // (which can prompt the user) or load an archive that is already being loaded [kiwix-js-pwa #915].
+        // Callers that supply a callback are responding to a user gesture, so they are not affected
+        if (launchedWithFile && !callback) {
+            console.debug('Ignoring the stored file system handle because the app was launched with a file');
+            return;
+        }
+        // Self-heal: if something other than a file system handle was stored (e.g. a path
+        // string), remove it and proceed as if no handle had been stored, or else every app
+        // launch would fail to restore the picked file or folder
+        if (val && typeof val.queryPermission !== 'function') {
+            console.warn('Removing an invalid stored file system handle:', val);
+            cache.idxDB('delete', 'pickedFSHandle', function () {});
+            val = null;
+        }
         if (val) {
             var handle = val;
             return cache.verifyPermission(handle, false).then(function (accessible) {
@@ -1330,6 +1410,12 @@ function selectArchive (list) {
     // If nothing was selected, user will have to click again
     if (!list.target.value) return;
     selectFired = true;
+    // Watchdog: selectFired debounces the duplicate change/click events fired by the list, but
+    // if an archive load fails in a code path that never resets the flag, the list would become
+    // permanently unresponsive, so reset it after ample time for any load to have completed
+    setTimeout(function () {
+        selectFired = false;
+    }, 10000);
     var selected = list.target.value;
     // Void any previous picked file to prevent it launching
     params.storedFile = selected;
@@ -1399,60 +1485,87 @@ function selectArchive (list) {
             return setLocalArchiveFromFileList([params.pickedFile], true);
         }
     }
-    if (window.showOpenFilePicker || params.useOPFS) {
-        return getNativeFSHandle(function (handle) {
-            resetUI();
-            if (!handle) {
-                if (window.fs && params.storedFilePath) {
-                    // Fall back to using the Electron APIs
-                    params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
-                    return setLocalArchiveFromArchiveList(selected);
-                }
-                console.error('No handle was retrieved');
-                document.getElementById('openLocalFiles').style.display = 'block';
-                document.getElementById('rescanStorage').style.display = 'none';
-                return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
-                    'This is probably because the contents of the folder have changed. Please try picking it again.');
-            }
-            if (handle.kind === 'directory') {
-                params.pickedFolder = handle;
-                return setLocalArchiveFromArchiveList(params.storedFile);
-            } else if (handle.kind === 'file') {
-                return handle.getFile().then(function (file) {
-                    params.pickedFile = file;
-                    params.pickedFile.handle = handle;
-                    return setLocalArchiveFromArchiveList(selected);
-                }).catch(function (err) {
-                    console.error('Unable to read previously picked file!', err);
-                    uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+    var selectViaFSHandles = function () {
+        if (window.showOpenFilePicker || params.useOPFS) {
+            return getNativeFSHandle(function (handle) {
+                resetUI();
+                if (!handle) {
+                    if (window.fs && params.storedFilePath) {
+                        // Fall back to using the Electron APIs
+                        params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
+                        return setLocalArchiveFromArchiveList(selected);
+                    }
+                    console.error('No handle was retrieved');
                     document.getElementById('openLocalFiles').style.display = 'block';
                     document.getElementById('rescanStorage').style.display = 'none';
-                });
-            }
-        });
-    } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
-        // If we don't have any picked files or directories...
-        if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
-            appstate.waitForFileSelect = selected;
-            // No files are set, so we need to ask user to select the file or directory again
-            if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
-                archiveDirLegacy.click();
+                    return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
+                        'This is probably because the contents of the folder have changed. Please try picking it again.');
+                }
+                if (handle.kind === 'directory') {
+                    params.pickedFolder = handle;
+                    return setLocalArchiveFromArchiveList(params.storedFile);
+                } else if (handle.kind === 'file') {
+                    return handle.getFile().then(function (file) {
+                        params.pickedFile = file;
+                        params.pickedFile.handle = handle;
+                        return setLocalArchiveFromArchiveList(selected);
+                    }).catch(function (err) {
+                        console.error('Unable to read previously picked file!', err);
+                        uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
+                        document.getElementById('openLocalFiles').style.display = 'block';
+                        document.getElementById('rescanStorage').style.display = 'none';
+                    });
+                }
+            });
+        } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
+            // If we don't have any picked files or directories...
+            if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
+                appstate.waitForFileSelect = selected;
+                // No files are set, so we need to ask user to select the file or directory again
+                if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
+                    archiveDirLegacy.click();
+                } else {
+                    archiveFilesLegacy.click();
+                }
             } else {
-                archiveFilesLegacy.click();
+                console.debug('Files are set, attempting to select ' + selected);
+                params.pickedFile = selected;
+                if (archiveDirLegacy.files.length) {
+                    params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+                    params.pickedFile = '';
+                }
+                setLocalArchiveFromArchiveList(selected);
             }
         } else {
-            console.debug('Files are set, attempting to select ' + selected);
-            params.pickedFile = selected;
-            if (archiveDirLegacy.files.length) {
-                params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
-                params.pickedFile = '';
-            }
             setLocalArchiveFromArchiveList(selected);
         }
-    } else {
-        setLocalArchiveFromArchiveList(selected);
+        setTimeout(resetUI, 0);
+    };
+    // In Electron or NWJS, prefer to load the archive with Node fs methods whenever the current
+    // folder is known by a real path (e.g. it was picked with the native folder dialogue, which
+    // returns a path rather than a handle, or restored from a stored path at launch): loading
+    // through a File System Access handle is less reliable in these frameworks (Chromium File
+    // snapshots can be invalidated on Windows by concurrent access to the underlying file).
+    // DEV: do not substitute a stored path when params.pickedFolder is an FSA handle: the stored
+    // path may point to a different folder containing a same-named (e.g. partially downloaded)
+    // copy of the selected archive, which would then be loaded silently in place of the right one
+    if (window.fs && !params.useOPFS && params.pickedFolder && typeof params.pickedFolder === 'string') {
+        var folderPath = params.pickedFolder.replace(/[\\/]+$/, '');
+        // A bare drive letter ('W:') is drive-relative in Node, so ensure a root slash
+        if (/^[A-Za-z]:$/.test(folderPath)) folderPath += '/';
+        window.fs.stat(folderPath.replace(/\/$/, '') + '/' + selected, function (err, stats) {
+            if (!err && stats) {
+                console.debug('Loading ' + selected + ' with Node fs from verified folder path: ' + folderPath);
+                setLocalArchiveFromArchiveList(selected);
+                setTimeout(resetUI, 0);
+            } else {
+                // The selected archive is not at the known path: fall back to handles
+                selectViaFSHandles();
+            }
+        });
+        return;
     }
-    setTimeout(resetUI, 0);
+    selectViaFSHandles();
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
@@ -1479,7 +1592,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             if (!confirmed) return;
             // User has chosen a file or files to store in the Origin Private File System
             // This operation can take a long time, so show opsPanel
-            uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Importing files to OPFS...', true);
+            uiUtil.pollOpsPanel('<i class="fas fa-sync-alt fa-spin"></i>&emsp;<b>Please wait:</b> Importing files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
                 uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
                 .then(function () {
@@ -1597,6 +1710,7 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         pickFolderNativeFS();
     } else if (window.fs && window.dialog) {
         // Electron fallback
+        appstate.dirDialogPurpose = 'archives';
         dialog.openDirectory();
     } else if (params.webkitdirectory) {
         // Legacy webkitdirectory file picker
@@ -1678,15 +1792,15 @@ function setOPFSUI () {
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
-        archiveFileLabel.classList.remove('col-xs-6');
-        archiveFileLabel.classList.add('col-xs-12');
-        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
+        archiveFileLabel.classList.remove('col-6');
+        archiveFileLabel.classList.add('col-12');
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>';
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
-        archiveFileCol.classList.remove('col-xs-6');
-        archiveFileCol.classList.add('col-xs-5');
-        archiveFilesCol.classList.remove('col-xs-6');
-        archiveFilesCol.classList.add('col-xs-7');
+        archiveFileCol.classList.remove('col-6');
+        archiveFileCol.classList.add('col-5');
+        archiveFilesCol.classList.remove('col-6');
+        archiveFilesCol.classList.add('col-7');
         archiveList.style.background = determinedTheme === 'dark' ? 'darkslategray' : 'lightcyan';
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
@@ -1694,24 +1808,24 @@ function setOPFSUI () {
         cache.populateOPFSStorageQuota();
     } else {
         useOPFS.checked = false;
-        archiveFileCol.classList.remove('col-xs-5');
-        archiveFileCol.classList.add('col-xs-6');
-        archiveFilesCol.classList.remove('col-xs-7');
-        archiveFilesCol.classList.add('col-xs-6');
+        archiveFileCol.classList.remove('col-5');
+        archiveFileCol.classList.add('col-6');
+        archiveFilesCol.classList.remove('col-7');
+        archiveFilesCol.classList.add('col-6');
         archiveList.style.background = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-6');
-            archiveFileLabel.classList.add('col-xs-12');
+            archiveFileLabel.classList.remove('col-6');
+            archiveFileLabel.classList.add('col-12');
             archiveFile.title = 'Select one or more files you wish to access during this session from your device\'s storage. You may load as many files as you wish, and they will be added to the selection list above.';
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFiles.style.display = '';
             archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
-            archiveFileLabel.classList.remove('col-xs-12');
-            archiveFileLabel.classList.add('col-xs-6');
-            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
+            archiveFileLabel.classList.remove('col-12');
+            archiveFileLabel.classList.add('col-6');
+            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.';
             archiveFile.value = 'Select file';
         }
         OPFSQuota.style.display = 'none';
@@ -1785,11 +1899,14 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
                 btnArchiveFile.click();
             }
         } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
-    } else if (window.showOpenFilePicker || params.useOPFS) {
+    } else if ((window.showOpenFilePicker || params.useOPFS) && params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        // Note we check the type of pickedFolder above, not just the API availability, because in
+        // Electron pickedFolder may be a path string (e.g. from the folder dialogue) even though
+        // the File System Access API is available
         processNativeDirHandle(params.pickedFolder);
         if (params.useOPFS) cache.populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
-        scanUWPFolderforArchives(params.pickedFolder)
+        scanUWPFolderforArchives(params.pickedFolder);
     } else if (window.fs) {
         scanNodeFolderforArchives(params.pickedFolder);
     } else if (params.webkitdirectory) {
@@ -1797,22 +1914,21 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
-    kiwixServe.requestXhttpData(params.kiwixDownloadServer);
+    kiwixServe.requestXhttpData(params.kiwixCatalogCategories);
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {
-        if (this.value === 'jquery' && !params.appCache) {
-            uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to Restricted mode!');
-            this.checked = false;
-            document.getElementById('serviceworkerModeRadio').checked = true;
-            return;
-        }
         var returnDivs = document.getElementsByClassName('returntoArticle');
         for (var i = 0; i < returnDivs.length; i++) {
             returnDivs[i].innerHTML = '';
         }
         // Do the necessary to enable or disable the Service Worker
         setContentInjectionMode(this.value);
+
+        // Set below if the user has to be asked whether they trust the loaded archive. The article reload
+        // at the foot of this handler must wait for that answer, because declining switches the app back
+        // to Restricted mode, and reloading first would load the archive in Service Worker mode regardless
+        var verifyingArchive = null;
 
         /** DEV: PLEASE NOTE THAT "jQuery mode" HAS NOW CHANGED to "Restricted mode", but we still use "jquery" in code */
 
@@ -1833,7 +1949,7 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
             document.getElementById('enableSourceVerificationCheck').style.display = '';
             if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
-                verifyLoadedArchive(appstate.selectedArchive);
+                verifyingArchive = verifyLoadedArchive(appstate.selectedArchive);
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
                 if (!appstate.wikimediaZimLoaded) {
@@ -1846,7 +1962,27 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
                 }
             }
         }
-        params.themeChanged = true; // This will reload the page
+        // Reload the currently displayed article straight away, so that anchor click handling
+        // (which differs between Restricted and Service Worker mode) is applied to the page that
+        // is already open, instead of only taking effect on the next navigation. NB if the user is
+        // being asked whether they trust the archive, this must not run until they have answered:
+        // params.contentInjectionMode is only switched back to 'jquery' when they decline, so an
+        // immediate reload would load the archive in Service Worker mode whatever the answer
+        var reloadCurrentArticle = function () {
+            if (appstate.selectedArchive && appstate.selectedArchive.isReady()) {
+                if (params.lastPageVisit) {
+                    goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+                } else {
+                    goToMainArticle();
+                }
+            }
+            params.themeChanged = false;
+        };
+        if (verifyingArchive) {
+            verifyingArchive.then(reloadCurrentArticle);
+        } else {
+            reloadCurrentArticle();
+        }
     });
 });
 document.getElementById('allowInternetAccessCheck').addEventListener('change', function () {
@@ -1876,8 +2012,11 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
                     var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
                     // Commented line below causes crash when there are too many archives
                     // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-                    uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-                    uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                    // NB only send these when we have a value: an empty value now clears the setting on the
+                    // receiving side (see the parser in init.js), and we do not want to void a pointer there
+                    // merely because this instance has none
+                    uriParams += params.storedFile ? '&lastSelectedArchive=' + encodeURIComponent(params.storedFile) : '';
+                    uriParams += params.lastPageVisit ? '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit) : '';
                     // Void the PWA_launch signal so that user will be asked again next time
                     params.localUWPSettings.PWA_launch = '';
                     window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
@@ -1901,6 +2040,19 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
     settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
     library.style.borderColor = '';
     library.style.borderStyle = '';
+    // Turn on BitTorrent seeding if the value in Settings is set to true, and the user has allowed Internet access
+    if (torrentClient.isAvailable()) {
+        if (params.allowInternetAccess) {
+            // Restore the value, which we may have temporarily changed to false when the user disabled Internet access
+            params.keepTorrentSeeding = settingsStore.getItem('keepTorrentSeeding') === 'true';
+        } else {
+            // Temporarily disable seeding if the user has disabled Internet access
+            params.keepTorrentSeeding = false;
+        }
+        keepTorrentSeedingCheck.checked = params.keepTorrentSeeding; // Don't click the value, because that would change the stored value in Settings if temporarily disabled
+        kiwixServe.clearSeedingStatus();
+        torrentClient.setSeeding(params.keepTorrentSeeding);
+    }
 });
 document.getElementById('cssCacheModeCheck').addEventListener('change', function () {
     params.cssCache = this.checked;
@@ -1943,7 +2095,7 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
             uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
                 '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
                 '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
-        } else if (window.nw) {
+        } else if (params.isNWJS) {
             uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
         } else if (params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive &&
             !/wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive.file.name)) {
@@ -1963,14 +2115,22 @@ document.getElementById('btnRefreshApp').addEventListener('click', function () {
     window.location.reload();
 });
 document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
-    if (params.contentInjectionMode !== 'serviceworker') {
-        uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
-        this.checked = false;
-    } else {
-        params.appCache = !this.checked;
-        settingsStore.setItem('appCache', params.appCache, Infinity);
-        resetApp.reset('cacheAPI');
-    }
+    // DEV: This setting used to be refused outside Service Worker mode, but Restricted mode does not unregister the
+    // Service Worker here: it only stops it intercepting requests for ZIM assets, so the app's own code is still
+    // served from the app cache, which is exactly what this setting bypasses (see setContentInjectionMode below).
+    // The old guard therefore blocked a bypass that does work, and because it rejected the change in both
+    // directions, it also made Developer mode impossible to turn off without first returning to Service Worker
+    // mode. Worse, its this.checked = false was written for the turn-on case only, so on the turn-off path the box
+    // was already unticked and the line did nothing: the checkbox showed Developer mode off while params.appCache
+    // said it was still on, until the next launch put the tick back [kiwix-js-pwa #926, cf. kiwix-js #1465]
+    params.appCache = !this.checked;
+    settingsStore.setItem('appCache', params.appCache, Infinity);
+    // Apply the assets cache rule stated in init.js at the moment the mode changes, not merely at the next boot,
+    // or the app sits in the very state that rule exists to prevent (Developer Mode on, assets still cached) for
+    // the rest of the session. NB we clamp params only: the stored preference is left alone so that it comes back
+    // when Developer Mode is switched off [kiwix-js-pwa #926]
+    params.assetsCache = cache.assetsCacheAllowed();
+    resetApp.reset('cacheAPI');
     // This will also send any new values to Service Worker
     refreshCacheStatus();
 });
@@ -1981,7 +2141,7 @@ if (window.electronAPI) {
         // Ensure the port is a number and the value matches a permitted value
         var proposedPort = parseInt(e.target.value);
         if (proposedPort !== e.target.value && (proposedPort < 1024 || proposedPort > 65535)) {
-            e.target.value = params.expressPort || 3002;
+            e.target.value = params.expressPort;
             setTimeout(function () {
                 uiUtil.systemAlert('Please enter a valid port number between 1024 and 65535!');
             }, 250);
@@ -2070,8 +2230,11 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
         }
     });
 });
-// Source verification is only makes sense in SW mode as doing the same in jQuery mode is redundant.
-document.getElementById('enableSourceVerificationCheck').style.display = params.contentInjectionMode === ('serviceworker' || 'serviceworkerlocal') ? 'block' : 'none';
+// Source verification only makes sense in SW mode, as doing the same in jQuery mode is redundant.
+// NB test the start of the mode string, as init.js does when reading params.sourceVerification back: the
+// parenthesized ('serviceworker' || 'serviceworkerlocal') this replaces short-circuited to its first operand,
+// so it was only ever an exact match on 'serviceworker'
+document.getElementById('enableSourceVerificationCheck').style.display = /^serviceworker/.test(params.contentInjectionMode) ? 'block' : 'none';
 document.getElementById('enableSourceVerificationCheck').addEventListener('change', function () {
     params.sourceVerification = this.checked;
     settingsStore.setItem('sourceVerification', this.checked, Infinity);
@@ -2090,13 +2253,25 @@ document.getElementById('useLibzimReaderCheck').addEventListener('change', funct
         uiUtil.systemAlert('You cannot use the libzim reader if you have disabled it in the dropdown above!');
         this.checked = false;
         params.useLibzim = false;
+    } else if (this.checked && params.useLegacyZimitSupport) {
+        // The libzim reader serves Zimit content untransformed, so legacy Zimit pages navigate the app in a loop
+        uiUtil.systemAlert('You cannot use the libzim reader together with legacy Zimit support. Please turn off legacy Zimit support first.');
+        this.checked = false;
+        params.useLibzim = false;
     } else {
         params.useLibzim = e.target.checked;
     }
+    // The user has now made an explicit choice, so it overrides any temporary switch made in handleUnsupportedReplayWorker
+    appstate.libzimSuspended = false;
     settingsStore.setItem('useLibzim', params.useLibzim, Infinity);
     refreshAPIStatus();
 });
 document.getElementById('useLegacyZimitSupportCheck').addEventListener('change', function (e) {
+    // A libzim reader the app has turned off for the current archive is still the user's saved choice
+    if (e.target.checked && (params.useLibzim || appstate.libzimSuspended)) {
+        e.target.checked = false;
+        return uiUtil.systemAlert('You cannot use legacy Zimit support together with the experimental libzim reader. Please turn off the libzim reader first.');
+    }
     if (navigator.serviceWorker.controller) {
         params.useLegacyZimitSupport = e.target.checked;
         refreshAPIStatus();
@@ -2127,7 +2302,8 @@ var refreshFullScreen = function (evt) {
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
     if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
-    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /glyphicon-(resize-small|fullscreen)/.test(evt.target.className))) {
+    if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' ||
+        (evt.target.parentElement && evt.target.parentElement.id === 'btnAbout'))) {
         if (uiUtil.appIsFullScreen()) {
             // Cancel fullscreen mode
             uiUtil.lockDisplayOrientation().then(function () {
@@ -2168,7 +2344,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
                 if (rtn === 'click') {
                     uiUtil.systemAlert((!params.PWAInstalled && /iOS/.test(params.appType)
                         ? '<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home), which will give a better experience than full-screen mode.</p>' : '') +
-                         '<p>Please click the &nbsp;<span class="glyphicon glyphicon-fullscreen"></span>&nbsp; button top-right to enter full-screen mode.</p>'
+                         '<p>Please click the &nbsp;<i class="fas fa-expand"></i>&nbsp; button top-right to enter full-screen mode.</p>'
                     );
                 }
             }
@@ -2204,7 +2380,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
 });
 document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
     var that = this;
-    var message = '<p>App will reload to apply the new setting.</p>'
+    var message = '<p>App will reload to apply the new setting.</p>';
     if (event.target.value) {
         message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' +
         'e.g. the app will no longer check whether the OS supports full-text searching and searches may fail silently.</i></p>';
@@ -2229,6 +2405,32 @@ document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('cha
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
 });
+// In-app BitTorrent download settings (only shown where the capability exists, i.e. Electron/NWJS)
+var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
+if (torrentClient.isAvailable()) {
+    document.getElementById('torrentSettingsDiv').style.display = 'block';
+    if (!params.allowInternetAccess) { params.keepTorrentSeeding = false; }
+    keepTorrentSeedingCheck.checked = params.keepTorrentSeeding;
+    // Communicate the stored setting to the torrent backend
+    torrentClient.setSeeding(params.keepTorrentSeeding);
+    keepTorrentSeedingCheck.addEventListener('change', function () {
+        if (params.allowInternetAccess) {
+            params.keepTorrentSeeding = this.checked;
+            settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+            // Turning this off also stops any torrent that is currently seeding
+            torrentClient.setSeeding(params.keepTorrentSeeding);
+            // ... and clears the now-stale "Seeding ..." status line the stopped torrent left behind
+            if (!params.keepTorrentSeeding) kiwixServe.clearSeedingStatus();
+        } else {
+            uiUtil.systemAlert('You must allow Internet access to use the torrent seeding feature!');
+            this.checked = false;
+            params.keepTorrentSeeding = false;
+            // settingsStore.setItem('keepTorrentSeeding', params.keepTorrentSeeding, Infinity);
+            // Because the user has not allowed Internet access, they may not wish to disable torrent seeding for future sessions, so we don't save the setting.
+            // This allows the user to quickly enable Internet access with the seeding re-enabled according to the Settings Store value, without having to re-enable it manually.
+        }
+    });
+}
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
     params.windowOpener = this.checked ? 'tab' : false;
     if (!params.windowOpener && !params.noWarning) {
@@ -2428,7 +2630,7 @@ function initializeUISettings () {
         uiSettings.oncolorvalueschanged = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
     // Support for other contexts (Firefox, Chromium, Electron, NWJS)
@@ -2437,7 +2639,7 @@ function initializeUISettings () {
         uiSettings.onchange = function () {
             params.cssTheme = settingsStore.getItem('cssTheme');
             if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
-            if (params.cssTheme == 'auto') switchCSSTheme();
+            if (params.cssTheme == 'auto') switchCSSThemeEverywhere();
         };
     }
 }
@@ -2481,17 +2683,20 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     var determinedValue = params.cssTheme;
     if (params.cssTheme == 'auto') determinedValue = cssUIThemeGetOrSet('auto', true);
     if (determinedValue == 'light') document.getElementById('footer').classList.remove('darkfooter');
-    if (params.cssTheme == 'light') document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+    // NB We do not untick the (now hidden) inversion checkbox on light, so that the user's choice of dark theme is still
+    // there when dark is turned back on, e.g. with the theme button in the toolbar
     if (determinedValue == 'dark') document.getElementById('footer').classList.add('darkfooter');
     document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = determinedValue == 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
     params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
-    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
+    // DarkReader is the default dark theme for Zimit archives, but it can only run in ServiceWorker mode
+    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = determinedValue == 'dark' ? params.contentInjectionMode === 'serviceworker' &&
+        appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType) : false;
     params.cssTheme = document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked ? 'darkReader' : params.cssTheme;
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change', function () {
@@ -2506,7 +2711,7 @@ document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('change'
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change', function () {
@@ -2523,7 +2728,7 @@ document.getElementById('cssWikiDarkThemeLegacyCheck').addEventListener('change'
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     settingsStore.setItem('customDarkTheme', params.customDarkTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     params.cssThemeOriginal = null;
 });
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('change', function () {
@@ -2539,7 +2744,7 @@ document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('cha
     }
     settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
     document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-    switchCSSTheme();
+    switchCSSThemeEverywhere();
     // If the darkReader theme has been turned off or on (and this is a change), then we need to reload the page
     if (params.cssTheme !== params.cssThemeOriginal && (params.cssTheme === 'darkReader' || params.cssThemeOriginal === 'darkReader')) {
         params.themeChanged = true;
@@ -2614,6 +2819,8 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? 'img/icons/wikivoyage-black-32.png' : /medicine|mdwiki/i.test(params.storedFile) ? 'img/icons/wikimed-blue-32.png' : 'img/icons/kiwix-blue-32.png';
         if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = 'img/icons/wikivoyage-90.png';
     }
+    // Keep the window frame (and hence the Window Controls Overlay strip) in step with the navbar
+    uiUtil.setThemeColorFromNavbar();
     refreshCacheStatus();
     setOPFSUI();
     return value;
@@ -2628,12 +2835,27 @@ function cssUIThemeGetOrSet (value, getOnly) {
  * DEVELOPER NOTE: To force the legacy custom dark theme on new Wikipedia ZIMs for testing:
  * - Open DevTools console and type: params.customDarkTheme = true
  * - Then navigate to a new article to see the custom theme applied
+ *
+ * @param {HTMLIFrameElement|Window} [container] The container to theme, defaulting to the current articleContainer
  */
-function switchCSSTheme () {
-    // Choose the document, either the iframe contentDocument or else the replay_iframe contentDocument
-    var doc = articleContainer ? articleContainer.contentDocument : '';
-    var zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+function switchCSSTheme (container) {
+    container = container || articleContainer;
+    if (!container) return;
+    // The article may be in our iframe or in a window or tab that the user opened, so we take the document of either. Only
+    // the iframe can be hidden or shown, so any use of container.style below must be guarded [kiwix-js-pwa #797]
+    var getContainerDocument = function () {
+        return container.contentDocument || container.document;
+    };
+    // Choose the document, either the container's document or else the replay_iframe contentDocument
+    var doc = getContainerDocument();
+    var inWindow = !container.contentDocument;
+    // In ServiceWorker mode, Zimit articles opened in a window are not themed here: they need DarkReader, which would have to be
+    // injected again on every navigation in that window, and the app does not see those navigations. In Restricted mode, the app
+    // writes the article into the window's own document, so a Zimit article there is themed like any other
+    if (inWindow && params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive && /zimit/.test(appstate.selectedArchive.zimType)) return;
+    // A window never has a separate Zimit iframe to theme or to unhide: the article is the window's own document
+    var zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+        : appstate.selectedArchive && appstate.selectedArchive.zimType === 'zimit2' ? container : null;
     doc = zimitIframe ? zimitIframe.contentDocument : doc;
     if (!doc) return;
     var resizeEvent;
@@ -2675,6 +2897,7 @@ function switchCSSTheme () {
         // Remove all theme preference classes first
         html.classList.remove('skin-theme-clientpref-night', 'skin-theme-clientpref-os');
         // If custom dark theme override is enabled, or we are using the custom mobile style transform, set ZIM to light and fall through to old logic
+        // DEV: Note that the provided Wikipedia dark theme does not work with ZIMs that have been transformed to mobile style, so we need to use the custom dark theme in that case
         if (params.customDarkTheme || params.cssSource === 'mobile') {
             console.log('[Theme] Custom dark theme override enabled - setting ZIM to light mode');
             // Classes already removed, so ZIM will be in light mode
@@ -2700,7 +2923,7 @@ function switchCSSTheme () {
             if (params.cssTheme !== 'darkReader' && params.cssTheme !== 'invert') {
                 // Display the article since we've handled the theme
                 if (document.getElementById('configuration').style.display === 'none') {
-                    articleContainer.style.display = '';
+                    if (container.style) container.style.display = '';
                     if (zimitIframe) zimitIframe.style.display = '';
                     // Force repaint - using createEvent for IE11 compatibility
                     resizeEvent = document.createEvent('Event');
@@ -2731,14 +2954,14 @@ function switchCSSTheme () {
         link.setAttribute('href', locationPrefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
         link.onload = function () {
             if (document.getElementById('configuration').style.display === 'none') {
-                articleContainer.style.display = '';
+                if (container.style) container.style.display = '';
                 if (zimitIframe) zimitIframe.style.display = '';
                 // Force repaint - using createEvent for IE11 compatibility
                 resizeEvent = document.createEvent('Event');
                 resizeEvent.initEvent('resize', true, true);
                 window.dispatchEvent(resizeEvent);
             }
-        }
+        };
         doc.head.appendChild(link);
         if (doc.defaultView.DarkReader) {
             doc.defaultView.DarkReader.disable();
@@ -2752,7 +2975,7 @@ function switchCSSTheme () {
                     doc.defaultView.DarkReader.setFetchMethod(doc.defaultView.fetch);
                     doc.defaultView.DarkReader.enable();
                     if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
-                        articleContainer.style.display = '';
+                        container.style.display = '';
                         setTimeout(function () {
                             zimitIframe.style.display = '';
                             // Force repaint - using createEvent for IE11 compatibility
@@ -2761,26 +2984,37 @@ function switchCSSTheme () {
                             window.dispatchEvent(resizeEvent);
                         }, 350);
                     }
-                }
+                };
                 darkReader.type = 'text/javascript';
                 darkReader.src = locationPrefix + '/js/lib/darkreader.min.js';
                 doc.head.appendChild(darkReader);
             };
-            // Use setInterval to keep attempting to load darkReader until doc.defaultView.DarkReader is available
+            // Use setInterval to keep attempting to load darkReader until doc.defaultView is available
             var interval = setInterval(function () {
                 if (doc && doc.defaultView) {
                     if (!doc.defaultView.DarkReader) {
                         clearInterval(interval);
-                            loadDarkReader();
+                        loadDarkReader();
+                    } else if (!zimitIframe) {
+                        // Outside Zimit, DarkReader is injected into the article's HTML in SW mode, so it is normally already
+                        // present, and there is nothing to wait for (we would otherwise poll forever) [kiwix-js-pwa #797]
+                        clearInterval(interval);
                     }
+                    // DEV: With Zimit, a document that already has DarkReader may be one that Replay is about to replace, so we
+                    // keep polling until we lose it and pick up its replacement; the timeout below ends the polling in any case
                 } else {
-                    // Oops, we no longer have a handle on the iframe document, so get it again
-                    doc = articleContainer ? articleContainer.contentDocument : '';
-                    zimitIframe = doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
-                        : appstate.selectedArchive.zimType === 'zimit2' ? articleContainer : null;
+                    // Oops, we no longer have a handle on the article document, so get it again
+                    doc = getContainerDocument();
+                    zimitIframe = inWindow ? null : doc && appstate.isReplayWorkerAvailable ? doc.getElementById('replay_iframe')
+                        : appstate.selectedArchive.zimType === 'zimit2' ? container : null;
                     doc = zimitIframe ? zimitIframe.contentDocument : doc;
                 }
             }, 100);
+            // The polling only has to bridge a document that is replaced soon after loading: later replacements are picked
+            // up when articleLoader calls this function again, so we always stop after 3 seconds [kiwix-js-pwa #797]
+            setTimeout(function () {
+                clearInterval(interval);
+            }, 3000);
             // If the interval has not succeeded after 3 seconds, give up
             if (zimitIframe && document.getElementById('configuration').style.display === 'none') {
                 setTimeout(function (zimitf, articleC) {
@@ -2791,11 +3025,11 @@ function switchCSSTheme () {
                     resizeEvent = document.createEvent('Event');
                     resizeEvent.initEvent('resize', true, true);
                     window.dispatchEvent(resizeEvent);
-                }, 3000, zimitIframe, articleContainer);
+                }, 3000, zimitIframe, container);
             }
         } else if (document.getElementById('configuration').style.display === 'none') {
             // We're dealing with a light style, so we just display it
-            articleContainer.style.display = '';
+            if (container.style) container.style.display = '';
             if (zimitIframe) zimitIframe.style.display = '';
             // Force repaint - using createEvent for IE11 compatibility
             resizeEvent = document.createEvent('Event');
@@ -2810,6 +3044,60 @@ function switchCSSTheme () {
     document.getElementById('darkInvert').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkLegacy').style.display = params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block';
     document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? (params.cssTheme === 'auto' || determinedWikiTheme === 'light' ? 'none' : 'block') : 'none';
+}
+
+// The article windows and tabs that the app has opened, each with the name of the archive it was opened from, so that a
+// change of theme can reach all of them [kiwix-js-pwa #797]
+var openedArticleWindows = [];
+
+/**
+ * Gets the name of the currently loaded archive, which is what ties a tracked article window to its archive
+ * @returns {String} The file name of the archive, or an empty string if no archive is loaded
+ */
+function getSelectedArchiveName () {
+    return appstate.selectedArchive && appstate.selectedArchive.file ? appstate.selectedArchive.file.name : '';
+}
+
+/**
+ * Remembers an article window or tab that the app has opened, so that later changes of theme are applied to it
+ * @param {Window} win The window or tab that was opened
+ */
+function trackArticleWindow (win) {
+    if (!win) return;
+    var archiveName = getSelectedArchiveName();
+    for (var i = 0; i < openedArticleWindows.length; i++) {
+        if (openedArticleWindows[i].win === win) {
+            // A window that is opened again by name may now show an article from a different archive
+            openedArticleWindows[i].archiveName = archiveName;
+            return;
+        }
+    }
+    openedArticleWindows.push({ win: win, archiveName: archiveName });
+}
+
+/**
+ * Applies the current theme to the article iframe, and to every article window or tab that the app has opened and that is
+ * still open. This is for changes of theme: when an article loads, switchCSSTheme is called for its own container only.
+ * DEV: A Window reference stays valid when the user navigates within that window, so the window keeps receiving changes
+ */
+function switchCSSThemeEverywhere () {
+    switchCSSTheme(iframe);
+    var archiveName = getSelectedArchiveName();
+    openedArticleWindows = openedArticleWindows.filter(function (tracked) {
+        var win = tracked.win;
+        if (win.closed) return false;
+        // switchCSSTheme works from the state of the currently loaded archive (its type, and whether it is a Wikimedia one), so
+        // it would theme a window opened from another archive in the wrong way, or not at all. We leave such a window as it is,
+        // but keep it in the list, because the user may load its archive again
+        if (tracked.archiveName !== archiveName) return true;
+        try {
+            switchCSSTheme(win);
+        } catch (err) {
+            // The window may now show something whose document we cannot reach or theme (e.g. in the UWP app)
+            console.warn('Unable to apply the theme to an article window', err);
+        }
+        return true;
+    });
 }
 
 document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
@@ -2830,7 +3118,10 @@ document.getElementById('rememberLastPageCheck').addEventListener('change', func
 document.getElementById('cachedAssetsModeRadioTrue').addEventListener('change', function (e) {
     if (e.target.checked) {
         settingsStore.setItem('assetsCache', true, Infinity);
-        params.assetsCache = true;
+        // Store the preference, but it cannot take effect while Developer Mode is on: same rule as in init.js and
+        // in the bypassAppCacheCheck handler. The radios are disabled in that state (see refreshCacheStatus), so
+        // this is the backstop rather than the primary guard [kiwix-js-pwa #926]
+        params.assetsCache = params.appCache;
         refreshCacheStatus();
     }
 });
@@ -2855,7 +3146,7 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
             // We have to reload the article to respect user's choice
             params.themeChanged = true;
             setTab();
-        }
+        };
         if (!params.cssCache && params.cssSource !== 'auto') {
             uiUtil.systemAlert('Transforming the ZIM style requires the use of locally cached Wikimedia stylesheets, so we need to enable these.',
                 'Warning!', true).then(function (rtn) {
@@ -3085,10 +3376,15 @@ document.addEventListener('DOMContentLoaded', function () {
     appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
         /^https:/i.test(location.protocol) ? 'UWP (PWA) '
         : /UWP/.test(params.appType) ? 'UWP '
-        : window.nw ? 'NWJS '
+        : params.isNWJS ? 'NWJS '
         : /Electron/.test(params.appType) ? 'Electron '
         : /PWA/.test(params.appType) ? 'PWA ' : '';
-    // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
+    // Hide notice to download an archive if we are in a packaged ZIM app
+    var noPackagedZIM = document.getElementById('noPackagedZIM');
+    if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
+        noPackagedZIM.style.display = 'none';
+    }
+     // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
     if (settingsStore.getItem('appVersion') !== params.appVersion) {
         //  Update the installed version
         if (settingsStore.getItem('PWAInstalled')) {
@@ -3100,10 +3396,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result === false) console.log('Unable to delete old idxDB databases (this is normal in non-Chromium browsers');
             else console.log('Deleted ' + result + ' deprecated database(s).');
         });
-        var noPackagedZIM = document.getElementById('noPackagedZIM');
-        if (params.packagedFile && /medicine|wikivoyage|mdwiki/i.test(params.packagedFile)) {
-            noPackagedZIM.style.display = 'none';
-        }
         // We remove splashScreenDismissed from the settingsStore to ensure that the modal is displayed after an autorefresh if user didn't consciously dismiss it
         settingsStore.removeItem('splashScreenDismissed');
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
@@ -3155,7 +3447,7 @@ function refreshAPIStatus () {
     if (isMessageChannelAvailable()) {
         messageChannelStatus.textContent = 'MessageChannel API available';
         messageChannelStatus.classList.remove('apiAvailable');
-        messageChannelStatus.classList.remove('apiUnavailable')
+        messageChannelStatus.classList.remove('apiUnavailable');
         messageChannelStatus.classList.add('apiAvailable');
     } else {
         apiPanelClass = 'border-warning';
@@ -3215,9 +3507,6 @@ function refreshAPIStatus () {
     // Add a warning colour to the API Status Panel if any of the above tests failed
     apiStatusPanel.classList.add(apiPanelClass);
 
-    // Set visibility of UI elements according to mode
-    document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
-
     // Set colour of contentInjectionMode div
     var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
     contentInjectionDiv.classList.remove('border-warning');
@@ -3234,6 +3523,21 @@ function refreshAPIStatus () {
 function refreshCacheStatus () {
     // Update radio buttons and checkbox
     document.getElementById('cachedAssetsModeRadio' + (params.assetsCache ? 'True' : 'False')).checked = true;
+    // Developer Mode forces the assets cache off, so show these radios as unavailable rather than letting the user
+    // pick a value the app will immediately override. DEV: the native inputs are visually hidden by app.css (the
+    // visible control is the .radiobtn span), so the disabled attribute alone produces no visible change: the
+    // setting-disabled class on the label is what draws it [kiwix-js-pwa #926]
+    ['cachedAssetsModeRadioTrue', 'cachedAssetsModeRadioFalse'].forEach(function (id) {
+        var radio = document.getElementById(id);
+        var label = radio.parentElement;
+        radio.disabled = !params.appCache;
+        // Stash the explanatory title the label carries in index.html, so it can be restored verbatim
+        if (label.getAttribute('data-title-enabled') === null) label.setAttribute('data-title-enabled', label.title);
+        label.title = params.appCache ? label.getAttribute('data-title-enabled')
+            : 'Unavailable while Developer Mode is on (see Troubleshooting), because that mode runs the app with no caches at all.';
+        if (params.appCache) label.classList.remove('setting-disabled');
+        else label.classList.add('setting-disabled');
+    });
     // Get cache attributes, then update the UI with the obtained data
     cache.count(function (c) {
         document.getElementById('cacheUsed').innerHTML = c.description;
@@ -3396,7 +3700,7 @@ function setContentInjectionMode (value) {
             });
             return;
         }
-        if (window.nw && nw.process.versions.nw === '0.14.7') {
+        if (params.isNWJSXP) {
             uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to Restricted mode...')
             .then(function () {
                 setContentInjectionMode('jquery');
@@ -3404,7 +3708,7 @@ function setContentInjectionMode (value) {
             return;
         }
         // Reset params.assetsCache in case it was changed when loading a Zimit ZIM in Restricted mode
-        params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
+        params.assetsCache = cache.assetsCacheAllowed();
         if (!isServiceWorkerReady()) {
             var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
             serviceWorkerStatus.textContent = 'ServiceWorker API available : trying to register it...';
@@ -3558,7 +3862,9 @@ function launchUWPServiceWorker () {
         uriParams += '&manipulateImages=false&allowHTMLExtraction=false';
         // Commented line below causes crash if there are too many archives
         // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-        uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+        // NB only send this when we have a value: an empty value now clears the setting on the receiving side
+        // (see the parser in init.js), and we do not want to void the PWA's pointer if this instance has none
+        uriParams += params.storedFile ? '&lastSelectedArchive=' + encodeURIComponent(params.storedFile) : '';
         uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
         uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
         // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
@@ -3633,7 +3939,7 @@ function searchForArchivesInStorage () {
     }
 }
 
-// Check if there are files in the launch queue to be handled by the File Handling API
+// @LAUNCH QUEUE: check if there are files in the launch queue to be handled by the File Handling API
 if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
     console.log('File Handling API is available');
     launchQueue.setConsumer(function (launchParams) {
@@ -3643,12 +3949,24 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         } else {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
+            // Signal that the archive to load has been supplied by the OS, so that the autoload further down
+            // does not restore the last-used handle and load an archive as well [kiwix-js-pwa #915]
+            launchedWithFile = true;
             // Turn off OPFS if it is on, because we are using the File Handling API instead
             params.useOPFS = false;
             params.pickedFolder = '';
             params.storedFile = '';
             setOPFSUI();
-            processNativeFileHandle(launchParams.files[0]);
+            processNativeFileHandle(launchParams.files[0]).catch(function (err) {
+                // Since we told the autoload not to restore the last-used archive, we have to get the user
+                // out of the resulting empty app if the file we were handed cannot be read after all
+                console.error('Unable to open the file that the app was launched with', err);
+                launchedWithFile = false;
+                if (document.getElementById('configuration').style.display === 'none') {
+                    document.getElementById('btnConfigure').click();
+                }
+                uiUtil.systemAlert('We could not open the archive that you launched. Please try picking it with the file selectors below.');
+            });
         }
     });
 }
@@ -3680,7 +3998,12 @@ if (storages !== null && storages.length > 0 ||
             params.pickedFile = params.storedFile;
         }
     }
-    if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
+    if (launchedWithFile) {
+        // The OS has just handed us a ZIM via the File Handling API, and it is being processed asynchronously
+        // (params.pickedFile is not set until the file handle resolves). We must not restore the last-used
+        // handle as well, or the archive would be loaded, and verified, twice [kiwix-js-pwa #915]
+        console.debug('App was launched with a file, so we are not restoring the last selected archive');
+    } else if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
         var btnConfigure = document.getElementById('btnConfigure');
         // If we are using OPFS, we should can load the entries directly
         if (params.useOPFS) {
@@ -3756,7 +4079,7 @@ if (storages !== null && storages.length > 0 ||
                 document.getElementById('hideFileSelectors').style.display = 'inline';
                 document.getElementById('btnConfigure').click();
                 var message = params.packagedFile ? ('The packaged file cannot be found!\nPlease check that it is in the "' + params.archivePath +
-                    '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.'
+                    '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.';
                 setTimeout(function () {
                     uiUtil.systemAlert(message);
                 }, 10);
@@ -3843,7 +4166,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; })
+            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; });
             // console.debug('Archive list: ' + arrayOfOptionValues);
             if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
                 archiveList.value = lastSelectedArchive;
@@ -3930,10 +4253,8 @@ function setLocalArchiveFromArchiveList (archive) {
                             }
                             if (file) {
                                 if (/\.zim\w\w$/i.test(file.name)) {
-                                    var genericFileName = file.name.replace(/(\.zim)\w\w$/i, '$1');
-                                    var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                     for (i = 0; i < files.length; i++) {
-                                        if (testFileName.test(files[i].name)) {
+                                        if (util.isPartOfArchive(file.name, files[i].name)) {
                                             // This converts a UWP storage file object into a standard JavaScript web file object
                                             fileset.push(MSApp.createFileFromStorageFile(files[i]));
                                         }
@@ -3986,7 +4307,7 @@ function setLocalArchiveFromArchiveList (archive) {
                                 if (appstate.selectedArchive && appstate.selectedArchive.file._files[0].name === selectedFiles[0].name) {
                                     document.getElementById('btnHome').click();
                                 } else {
-                                    setLocalArchiveFromFileList(selectedFiles);
+                                    setLocalArchiveFromFileList(selectedFiles, true);
                                 }
                             }).catch(function (err) {
                                 console.error(err);
@@ -4083,10 +4404,8 @@ function processDirectoryOfFiles (fileHandles, archive) {
         if (fileHandle) {
             // Deal with split archives
             if (/\.zim\w\w$/i.test(fileHandle.name)) {
-                var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
-                var testFileName = new RegExp(genericFileName + '\\w\\w$');
                 for (i = 0; i < fileHandles.length; i++) {
-                    if (testFileName.test(fileHandles[i].name)) {
+                    if (util.isPartOfArchive(fileHandle.name, fileHandles[i].name)) {
                         if (fileHandles[i].getFile) {
                             // This gets a JS File object from a file handle
                             fileset.push(fileHandles[i].getFile().then(function (file) {
@@ -4234,41 +4553,72 @@ function handleFileDrop (packet) {
         params.pickedFolder = '';
         params.storedFile = '';
     }
+    // We have to grab the FileList synchronously, because the DataTransfer object is neutered
+    // once this event handler returns, and we may need it in an asynchronous fallback below
+    var files = packet.dataTransfer.files;
+    // For the same reason, note now whether a folder was dropped: the DataTransfer never contains a
+    // folder's contents, so there is no legacy fallback for a folder we are not allowed to read
+    var droppedFolder = false;
+    if (items && items.length === 1 && typeof items[0].webkitGetAsEntry === 'function') {
+        var droppedEntry = items[0].webkitGetAsEntry();
+        droppedFolder = !!(droppedEntry && droppedEntry.isDirectory);
+    }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
             if (handle.kind === 'file') {
-                processNativeFileHandle(handle);
+                return processNativeFileHandle(handle);
             } else if (handle.kind === 'directory') {
-                processNativeDirHandle(handle);
+                // Check we can actually read the directory before we delegate, because processNativeDirHandle
+                // reports its own errors to the user and so cannot signal to us that we should fall back
+                return handle.entries().next().then(function () {
+                    return processNativeDirHandle(handle);
+                });
             }
+        }).catch(function (err) {
+            // Some contexts (e.g. a file:// window in the VS Code Browser) hand us a file system handle but then refuse
+            // to read it, so fall back to the legacy file drop, which does not need the File System Access API
+            console.warn('Unable to process the dropped file system handle', err);
+            if (droppedFolder) {
+                // Falling back would void the folder the user already picked and then fail anyway
+                uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
+                    '<p>Please drop the ZIM file itself instead of the folder, or, if the archive is split, drop all of its parts together.</p>',
+                'Cannot read dropped folder');
+                return;
+            }
+            console.warn('Falling back to the legacy file drop');
+            handleLegacyFileDrop(files);
         });
     } else {
-        var files = packet.dataTransfer.files;
-        // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
-        try {
-            archiveFilesLegacy.files = files;
-        } catch (err) {
-            console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
-            if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
-                uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
-                files = [files[0]];
-            }
-        }
-        document.getElementById('openLocalFiles').style.display = 'none';
-        document.getElementById('rescanStorage').style.display = 'block';
-        document.getElementById('usage').style.display = 'none';
-        // We have to void the previous picked folder, because dragged files don't have a folder
-        // This also prevents a file-not-found alert to the user when picking a new directory
-        params.pickedFolder = null;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        params.pickedFile = null;
-        params.storedFile = null;
-        params.rescan = false;
-        setLocalArchiveFromFileList(files);
-        // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
-        cache.idxDB('delete', 'pickedFSHandle', function () {});
+        handleLegacyFileDrop(files);
     }
+}
+
+// Loads dropped files without using the File System Access API (also used as a fallback if that API is blocked)
+function handleLegacyFileDrop (files) {
+    // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
+    try {
+        archiveFilesLegacy.files = files;
+    } catch (err) {
+        console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
+        if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
+            uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
+            files = [files[0]];
+        }
+    }
+    document.getElementById('openLocalFiles').style.display = 'none';
+    document.getElementById('rescanStorage').style.display = 'block';
+    document.getElementById('usage').style.display = 'none';
+    // We have to void the previous picked folder, because dragged files don't have a folder
+    // This also prevents a file-not-found alert to the user when picking a new directory
+    params.pickedFolder = null;
+    settingsStore.setItem('pickedFolder', '', Infinity);
+    params.pickedFile = null;
+    params.storedFile = null;
+    params.rescan = false;
+    setLocalArchiveFromFileList(files);
+    // Delete any previous file system handle (as otherwise, it will get inadvertienly reloaded)
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
 }
 
 function pickFileUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
@@ -4299,11 +4649,31 @@ if (window.dialog) {
         createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
     });
     dialog.on('dir-dialog', function (fullPath) {
+        // A folder picked as the destination of a BitTorrent download is handled by kiwixServe.js,
+        // and must not replace the archive folder
+        if (appstate.dirDialogPurpose === 'torrent') return;
         console.log('Path: ' + fullPath);
-        fullPath = fullPath.replace(/\\/g, '/');
-        scanNodeFolderforArchives(fullPath);
+        openNodeFolder(fullPath);
     });
 }
+
+/**
+ * Makes a folder picked with a native (path-returning) picker the archive folder, and optionally opens an archive in it
+ * @param {String} folderPath The path of the folder
+ * @param {String} archiveName Optional name of an archive in the folder to open
+ */
+function openNodeFolder (folderPath, archiveName) {
+    folderPath = folderPath.replace(/\\/g, '/');
+    // The natively picked folder supersedes any previously picked FSA folder, so delete
+    // the stored directory handle: it would otherwise resurrect the previous folder when
+    // the archive list is refreshed or the app is relaunched
+    cache.idxDB('delete', 'pickedFSHandle', function () {});
+    scanNodeFolderforArchives(folderPath, archiveName ? function () {
+        setLocalArchiveFromArchiveList(archiveName);
+    } : undefined);
+}
+// Lets the in-app BitTorrent client offer to open an archive it has just downloaded
+kiwixServe.setDownloadedArchiveOpener(openNodeFolder);
 
 function processFakeFile (fakeFileList) {
     var fakeFile = fakeFileList[0];
@@ -4313,7 +4683,7 @@ function processFakeFile (fakeFileList) {
         params.storedFilePath = fakeFile.path;
         settingsStore.removeItem('pickedFolder');
         params.pickedFolder = '';
-        if (window.nw && window.showOpenFilePicker) {
+        if (params.isNWJS && window.showOpenFilePicker) {
             populateDropDownListOfArchives([fakeFile.name]);
         } else {
             populateDropDownListOfArchives([fakeFile.name]);
@@ -4344,10 +4714,13 @@ function pickFolderNativeFS () {
 function processNativeFileHandle (fileHandle) {
     // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
-    // Serialize fileHandle to indexedDB
-    cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize fileHandle to indexedDB (only if it is a genuine file system handle: a path
+    // string or other object stored here would break handle restoration on every app launch)
+    if (fileHandle && fileHandle.kind === 'file') {
+        cache.idxDB('pickedFSHandle', fileHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
     params.pickedFolder = null;
@@ -4398,10 +4771,14 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
 
 function processNativeDirHandle (dirHandle, callback) {
     // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
-    // Serialize dirHandle to indexedDB
-    cache.idxDB('pickedFSHandle', dirHandle, function (val) {
-        console.debug('IndexedDB responded with ' + val);
-    });
+    // Serialize dirHandle to indexedDB (only if it is a genuine directory handle: a path
+    // string stored here, e.g. from the Electron folder dialogue, would break handle
+    // restoration on every app launch)
+    if (dirHandle && dirHandle.kind === 'directory') {
+        cache.idxDB('pickedFSHandle', dirHandle, function (val) {
+            console.debug('IndexedDB responded with ' + val);
+        });
+    }
     params.pickedFolder = dirHandle;
     params.pickedFile = '';
     var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
@@ -4624,6 +5001,30 @@ function archiveReadyCallback (archive) {
     // When a new ZIM is loaded, we turn this flag to null, so that we don't get false positive attempts to use the Worker
     // It will be defined as false or true when the first article is loaded
     appstate.isReplayWorkerAvailable = null;
+    // Restore the libzim reader if the app turned it off for the previous archive (see handleUnsupportedReplayWorker).
+    // DEV: This must not happen before the new archive is ready, because params.useLibzim routes the requests of whichever
+    // archive is selected, and the previous one remains selected while this one is loading, or if it fails to load
+    if (appstate.libzimSuspended) {
+        params.useLibzim = true;
+        appstate.libzimSuspended = false;
+    }
+    // Restore the user's own content injection mode when opening a new archive, in case the app switched to
+    // Restricted mode for the previous one (it does that for a historical ZIM, and when the user declines the
+    // trust prompt, in both cases by changing params only, so the Store still holds their real choice).
+    // DEV: This has to run before anything below reads the mode, or the archive that follows such a switch would
+    // silently skip the Service Worker initialization and the mode-dependent defaults [kiwix-js-pwa #929]
+    if (params.contentInjectionMode === 'jquery') {
+        var storedContentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        // NB there was formerly a 'serviceworkerlocal' case here, copied from upstream kiwix-js, but this app has
+        // no such mode and no serviceworkerLocalModeRadio element, so that branch could only ever have thrown on a
+        // null element. An unrecognized or missing stored value is ignored rather than assigned, which would leave
+        // the mode in a state the app's own UI cannot represent (see params.contentInjectionMode in init.js)
+        if (/^(?:jquery|serviceworker)$/.test(storedContentInjectionMode)) {
+            params.contentInjectionMode = storedContentInjectionMode;
+            // Change the radio buttons accordingly
+            if (storedContentInjectionMode === 'serviceworker') document.getElementById('serviceworkerModeRadio').checked = true;
+        }
+    }
     // Initialize the Service Worker
     if (params.contentInjectionMode === 'serviceworker') {
         initServiceWorkerMessaging();
@@ -4634,8 +5035,9 @@ function archiveReadyCallback (archive) {
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.zimThemeType = 'desktop';
     appstate.pureMode = false;
+    appstate.legacyModeSwitched = false;
     // Reset params.assetsCache in case it was changed below
-    params.assetsCache = settingsStore.getItem('assetsCache') !== 'false';
+    params.assetsCache = cache.assetsCacheAllowed();
     params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
     if (/gutenberg|phet|(?:^|_)ted_/i.test(archive.file.name) ||
@@ -4652,10 +5054,16 @@ function archiveReadyCallback (archive) {
         // Turn off the assetsCache for now in Restricted mode
         // @TODO: Check why it works better with it off for Zimit archives in Restricted mode!
         if (/zimit/.test(archive.zimType)) {
-            params.assetsCache = params.contentInjectionMode !== 'jquery';
+            // NB params.appCache is included so that this override cannot re-enable the cache under Developer
+            // Mode, which would silently defeat it on opening a Zimit archive [kiwix-js-pwa #926]
+            params.assetsCache = params.appCache && params.contentInjectionMode !== 'jquery';
         }
     }
     if (params.contentInjectionMode === 'serviceworker') {
+        // Start every archive from the theme that the user chose, which is the stored one: the Zimit override below changes
+        // params.cssTheme only in memory, so it must not carry over to the next archive, whatever its type [kiwix-js-pwa #797]
+        params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
+        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme === 'darkReader';
         if (!appstate.wikimediaZimLoaded) {
             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
@@ -4678,13 +5086,9 @@ function archiveReadyCallback (archive) {
             }
         } else {
             params.noWarning = true;
-            if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+            // if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
             params.noWarning = false;
-            params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-            // if (params.cssTheme === 'auto') {
-                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-            // }
         }
     }
     // The archive is set : go back to home page to start searching
@@ -4698,18 +5102,24 @@ function archiveReadyCallback (archive) {
         params.lastPageHTML = '';
     }
     // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-    if (appstate.filesDropped && params.storedFilePath) {
-        params.pickedFolder = null;
-        params.pickedFile = params.storedFilePath;
-        settingsStore.setItem('pickedFolder', '', Infinity);
-        settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
-        populateDropDownListOfArchives([params.storedFile], true);
-        settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
-        // We have to remove the file handle to prevent it from launching next time
-        cache.idxDB('delete', 'pickedFSHandle', function () {
-            console.debug('File handle deleted');
-        });
+    if (appstate.filesDropped) {
+        // Always clear the flag on the load that follows the drop: a file dropped without a
+        // path (e.g. one loaded through a File System Access handle) would otherwise leave it
+        // set, and every subsequent archive loaded from the archive list with a path would then
+        // wrongly enter the block below, collapsing the list and voiding the picked folder
         appstate.filesDropped = false;
+        if (params.storedFilePath) {
+            params.pickedFolder = null;
+            params.pickedFile = params.storedFilePath;
+            settingsStore.setItem('pickedFolder', '', Infinity);
+            settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
+            populateDropDownListOfArchives([params.storedFile], true);
+            settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
+            // We have to remove the file handle to prevent it from launching next time
+            cache.idxDB('delete', 'pickedFSHandle', function () {
+                console.debug('File handle deleted');
+            });
+        }
     }
     var reloadLink = document.getElementById('reloadPackagedArchive');
     if (reloadLink) {
@@ -4748,22 +5158,7 @@ function archiveReadyCallback (archive) {
                 document.getElementById('btnHome').click();
             }
         }
-    }
-    // Set contentInjectionMode to serviceWorker when opening a new archive in case the user switched to Restricted mode/jQuery Mode when opening the previous archive
-    if (params.contentInjectionMode === 'jquery') {
-        params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        // Change the radio buttons accordingly
-        switch (settingsStore.getItem('contentInjectionMode')) {
-            case 'serviceworker':
-                document.getElementById('serviceworkerModeRadio').checked = true;
-                // In case we atuo-switched off assetsCache due to switch to Restricted mode, we need to reset
-                params.assetsCache = settingsStore.getItem('asetsCache') !== 'false';
-                break;
-            case 'serviceworkerlocal':
-                document.getElementById('serviceworkerLocalModeRadio').checked = true;
-                break;
-        }
-    }
+    };
     if (settingsStore.getItem('trustedZimFiles') === null) {
         settingsStore.setItem('trustedZimFiles', '', Infinity);
     }
@@ -4902,15 +5297,12 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
             } else if (fileNames) {
                 // Deal with split archives
                 if (/\.zim\w{0,2}$/i.test(fileHandle)) {
-                    var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
-                    var fileFilter = new RegExp(genericFileName + '\\w\\w$');
-                    if (/\.zim$/i.test(fileHandle)) { fileFilter = new RegExp(genericFileName); }
                     for (var i = 0; i < fileNames.length; i++) {
                         // Filter filenames so we only get zim or zimaa
                         if (/\.zim(aa)?$/i.test(fileNames[i])) {
                             selectedFileNamesSet.push(fileNames[i]);
                         }
-                        if (fileFilter.test(fileNames[i])) {
+                        if (util.isPartOfArchive(fileHandle, fileNames[i])) {
                             count++;
                             // This gets a pseudo File object from a file handle
                             createFakeFileObjectNode(fileNames[i], folder + '/' + fileNames[i], function (file) {
@@ -5202,7 +5594,7 @@ function showZIMIndex (start, search) {
                             var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
                             var panelBody = util.closest(alphaLabel, '.card-body');
                             if (panelBody && panelBody.style.display === 'none') {
-                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className) });
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /card-header/.test(el.className); });
                                 if (panelHeading) panelHeading.click();
                             }
                             alphaLabel.style.borderColor = 'red';
@@ -5463,6 +5855,34 @@ function isDirEntryExpectedToBeDisplayed (dirEntry) {
 }
 
 /**
+ * Opens the given ZIM entry in a new window or tab (according to the user's windowOpener setting), and
+ * redirects the app's output there. This is used for entries that cannot be displayed in the article
+ * iframe, because the iframe is sandboxed (both by its own sandbox attribute and by the Content-Security-Policy
+ * the Service Worker sets on every ZIM response), and Chromium will not instantiate its PDF viewer, or any
+ * comparable internal viewer, in a sandboxed nested frame. A top-level window is not subject to that
+ * restriction, so the browser can either display the document or offer it as a download [kiwix-js-pwa #980].
+ * @param {DirEntry} dirEntry The directory entry of the document to open
+ * @param {String} encodedUrl The URL-encoded ZIM url of the document (without the namespace)
+ * @returns {Window|null} The newly opened window, or null if the browser blocked it
+ */
+function openEntryInNewWindow (dirEntry, encodedUrl) {
+    // The window name must be unique per document, so we derive it from the url, never the title [#976]
+    var windowName = encodeURIComponent(dirEntry.url);
+    var newWindow = uiUtil.openUrlInNewContainer('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodedUrl, windowName);
+    if (newWindow) {
+        appstate.target = 'window';
+        articleContainer = newWindow;
+        articleWindow = newWindow;
+        // This throws in the UWP app, which has no access to the content of opened windows
+        if (!/UWP/.test(params.appType)) articleContainer.kiwixType = appstate.target;
+    } else {
+        console.warn('The browser blocked the new window for ' + dirEntry.namespace + '/' + dirEntry.url);
+    }
+    uiUtil.clearSpinner();
+    return newWindow;
+}
+
+/**
  * Read the article corresponding to the given dirEntry
  * @param {DirEntry} dirEntry The directory entry of the article to read
  */
@@ -5476,7 +5896,7 @@ function readArticle (dirEntry) {
     articleContainer = appstate.target === 'window' ? articleWindow : iframe;
     // We must remove focus from UI elements in order to deselect whichever one was clicked (in both Restricted and SW modes),
     if (!params.isLandingPage && articleContainer.contentWindow) articleContainer.contentWindow.focus();
-    uiUtil.pollSpinner()
+    uiUtil.pollSpinner();
     // Show the spinner with a loading message
     var message = dirEntry.url.match(/(?:^|\/)([^/]{1,13})[^/]*?$/);
     message = message ? message[1] + '...' : '...';
@@ -5491,6 +5911,14 @@ function readArticle (dirEntry) {
             return encodeURIComponent(matchedSubstring);
         });
 
+        // This branch would otherwise set the iframe's src whatever the mimetype, so non-HTML entries that the
+        // sandboxed iframe cannot host have to be diverted to a new window (see the helper for why) [#980].
+        // We pass encodedUrl, which preserves '/', because that is the exact url the iframe would have been given.
+        if (uiUtil.entryRequiresNewContainer(dirEntry, mimeType)) {
+            openEntryInNewWindow(dirEntry, encodedUrl);
+            return;
+        }
+
         // Set up article onload handler
         articleLoader(dirEntry, mimeType);
 
@@ -5499,7 +5927,7 @@ function readArticle (dirEntry) {
         }
 
         // Zimit archives contain content that is blocked in a local Chromium extension (on every page), so we must fall back to Restricted mode
-        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !window.nw) {
+        if (/zimit/.test(appstate.selectedArchive.zimType) && window.location.protocol === 'chrome-extension:' && !params.isNWJS) {
             return handleUnsupportedReplayWorker(dirEntry);
         }
         // If we are dealing with a classic Zimit ZIM, we need to instruct Replay to add the file as a new collection
@@ -5596,15 +6024,7 @@ function readArticle (dirEntry) {
                     uiUtil.clearSpinner();
                 });
             } else if (params.contentInjectionMode === 'serviceworker') {
-                articleContainer = window.open('../' + appstate.selectedArchive.file.name + '/' + dirEntry.namespace + '/' + encodeURIComponent(dirEntry.url),
-                    params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimeType),
-                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
-                if (articleContainer) {
-                    appstate.target = 'window';
-                    articleContainer.kiwixType = appstate.target;
-                    articleWindow = articleContainer;
-                }
-                uiUtil.clearSpinner();
+                openEntryInNewWindow(dirEntry, encodeURIComponent(dirEntry.url));
                 return;
             }
         }
@@ -5657,7 +6077,7 @@ function readArticle (dirEntry) {
                             goToArticle(fileDirEntry.zimitRedirect);
                         } else {
                             if (!data) {
-                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url)
+                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url);
                                 uiUtil.systemAlert(
                                     '<p>The requested page <b>' + requestedURL + '</b> does not appear to be an article!</p>' +
                                     '<p>Try searching for content in the search bar, or type a <b><i>space</i></b> for the ZIM ' +
@@ -5798,13 +6218,39 @@ function filterClickEvent (event) {
             event.stopPropagation();
             console.debug('filterClickEvent opening new window for PDF');
             clickedAnchor.newcontainer = true;
-            window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
-                params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+            // The href is unique per document, whereas the anchor's title is usually empty and is shared by every
+            // link that repeats a caption such as "Download PDF", which would land them all in one window [#976]
+            uiUtil.openUrlInNewContainer(clickedAnchor.href, encodeURIComponent(clickedAnchor.href));
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
-            if (!/^(?:#|javascript|null)/i.test(decHref)) {
+            // Establish whether this click is destined for a new window or tab, either because the anchor targets another
+            // browsing context, or because the user requested one with a modifier key or middle-click, or because the
+            // popover's break-out icon set the newcontainer property on the anchor
+            // DEV: _self, _parent and _top all stay within the current window, but any other target names a different
+            // browsing context, which the browser will open as a new window or tab unless a frame of that name exists
+            var anchorTarget = clickedAnchor.target;
+            var opensNewContainer = clickedAnchor.newcontainer || event.ctrlKey || event.metaKey || event.shiftKey ||
+                event.button === 1 || (anchorTarget && !/^_(self|parent|top)$/i.test(anchorTarget));
+            // With the libzim backend, addListenersToLink does not run, so nothing actions the break-out icon's request for a
+            // new container: we do it here. No further window management is needed, because the ServiceWorker asks this
+            // instance for the content of the new window in any case [kiwix-js-pwa #912]
+            if (params.useLibzim && clickedAnchor.newcontainer && params.windowOpener) {
+                event.preventDefault();
+                event.stopPropagation();
+                clickedAnchor.newcontainer = false;
+                console.debug('filterClickEvent opening new ' + params.windowOpener + ' for ' + decHref);
+                window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                return;
+            }
+            // We need to ensure that the link we wish to load is not already loaded in the article container, to handle links which are to the same document
+            // e.g., those containing fragments at the end of a relative URL, or those containing querystrings
+            var zimURL = uiUtil.deriveZimUrlFromRelativeUrl(href, appstate.expectedArticleURLToBeDisplayed);
+            // Note that if the article is opening in a new window or tab, the current document stays where it is, so we must
+            // neither tear it down nor show a spinner for a load that will not happen here [kiwix-js-pwa #572]
+            if (!opensNewContainer && zimURL !== appstate.expectedArticleURLToBeDisplayed && !/^(?:#|javascript|null)/i.test(decHref)) {
                 uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
                 // Tear down contents of previous document -- this is needed when a link in a ZIM link in an external window hasn't had
                 // an event listener attached. For example, links in popovers in external windows. UWP doesn't allow access to the contents
@@ -5843,7 +6289,7 @@ var unhideArticleContainer = function () {
             }, 100);
         }
     }
-}
+};
 
 /**
  * Applies fixes for Wikimedia ZIMs, including reference marker display fixes
@@ -5872,6 +6318,77 @@ function applyWikimediaZimFixes (doc) {
     }
 }
 
+/**
+ * Prods a Masonry-style grid page into laying itself out again once its thumbnails have dimensions
+ *
+ * These pages (the all-image landing pages of flavoured Wikimedia ZIMs) run Masonry exactly once, and they run it
+ * before any thumbnail has loaded. The ZIM gives the img tags no width or height attributes, so at that moment every
+ * card measures zero, Masonry stacks the lot in the first column and sets an explicit `height: 0` on its container.
+ * Nothing ever asks it to measure again, so the page stays blank however many images arrive afterwards. Masonry
+ * (through Outlayer) binds its own layout to the window resize event, and that is the only handle we have on it
+ * without a reference to the instance, so we dispatch one whenever the document changes size [kiwix-js-pwa #946]
+ *
+ * @param {Window} win The Window of the iframe or tab that contains the document
+ */
+function kickMasonryRelayout (win) {
+    var doc = win ? win.document : null;
+    if (!doc || !doc.body) return;
+    // The grid markup on its own (`#content .item figure`) is generic enough to turn up in an unrelated archive, so we
+    // also require one of the two things that identify these pages in the transform: the mwoffliner body class, or the
+    // Masonry script itself. Without that, a chance match would collect ten stray resize events for nothing
+    if (!(doc.querySelector('#content .item figure') &&
+        (/\barticle-list-home\b/.test(doc.body.className) || doc.querySelector('script[src*="masonry"]')))) return;
+    var kicks = 0;
+    var maxKicks = 10; // Masonry settles in a handful of passes; the cap stops the observer feeding itself forever
+    var fire = function (why) {
+        var content = doc.getElementById('content');
+        console.debug('Kicking Masonry relayout (' + why + ') #' + (kicks + 1) + ' of ' + maxKicks +
+            '; #content inline height is currently "' + (content && content.style.height || 'unset') + '"');
+        var ev = doc.createEvent('Event'); // DEV: createEvent rather than the Event constructor, to match house style
+        ev.initEvent('resize', true, true);
+        win.dispatchEvent(ev);
+        kicks++;
+    };
+    var cards = doc.querySelectorAll('#content .item');
+    console.debug('Masonry grid found in loaded document: arming relayout kicks for ' + cards.length + ' cards');
+    // We watch the cards rather than the body, because the body is not a reliable proxy for them: as soon as Masonry
+    // has laid out it pins an explicit height on #content and positions every card out of flow, so a thumbnail that
+    // gains dimensions afterwards changes nothing the body can see. The cards are where the size change actually
+    // happens, and a card resizing is exactly the moment Masonry needs to measure again
+    if (typeof win.ResizeObserver === 'function') {
+        var relayoutTimeout;
+        var observer = new win.ResizeObserver(function () {
+            clearTimeout(relayoutTimeout);
+            relayoutTimeout = setTimeout(function () {
+                if (kicks >= maxKicks) {
+                    console.debug('Relayout kick cap reached: disconnecting observer');
+                    observer.disconnect();
+                    return;
+                }
+                fire('card resized');
+            }, 250);
+        });
+        for (var c = cards.length; c--;) {
+            observer.observe(cards[c]);
+        }
+    } else {
+        console.debug('No ResizeObserver in this window: falling back to timed kicks only');
+    }
+    // Belt and braces for the case where no card ever changes size because every image is still pending. NB we are
+    // called from the container's own onload handler (see articleLoadedSW's callers), so the window load event has
+    // already fired by now and a listener for it would never run: check the readyState instead
+    if (doc.readyState === 'complete') {
+        fire('document already loaded');
+    } else {
+        win.addEventListener('load', function () {
+            if (kicks < maxKicks) fire('window load');
+        });
+    }
+    setTimeout(function () {
+        if (kicks < maxKicks) fire('1500ms settle');
+    }, 1500);
+}
+
 // The main article loader for Service Worker mode
 var articleLoadedSW = function (dirEntry, container) {
     // console.debug('Checking if article loaded... ' + loaded);
@@ -5886,7 +6403,8 @@ var articleLoadedSW = function (dirEntry, container) {
     uiUtil.showSlidingUIElements();
     var doc = articleWindow ? articleWindow.document : null;
     articleDocument = articleWindow.document.documentElement;
-    var mimeType = params.useLibzim ? dirEntry.mimeType : dirEntry.getMimetype();
+    // DEV: libzim dirEntries carry a mimetype string (note the lowercase 't', as returned by the libzim worker) rather than a function
+    var mimeType = params.useLibzim ? dirEntry.mimetype : dirEntry.getMimetype();
     // If we've successfully loaded an HTML document...
     if (doc && /\bx?html/i.test(mimeType)) {
         // console.debug('HTML appears to be available...');
@@ -5930,8 +6448,13 @@ var articleLoadedSW = function (dirEntry, container) {
         checkToolbar();
         // Set page width according to user preference
         removePageMaxWidth();
-        setupHeadings();
-        applyWikimediaZimFixes(doc);
+        if (appstate.wikimediaZimLoaded) {
+            setupHeadings();
+            applyWikimediaZimFixes(doc);
+        }
+        // NB this is deliberately outside every image-handling gate below, because those are skipped on landing pages
+        // and with the libzim backend, which is exactly where the grid pages live [kiwix-js-pwa #946]
+        kickMasonryRelayout(articleWindow);
 
         if (!appstate.isReplayWorkerAvailable) {
             // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
@@ -5941,7 +6464,7 @@ var articleLoadedSW = function (dirEntry, container) {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
             }
-            if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
+            if (((params.zimType === 'open' && !params.isLandingPage) || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode) && !params.useLibzim) {
                 images.prepareImagesServiceWorker(articleWindow);
             } else {
                 setTimeout(function () {
@@ -5986,6 +6509,9 @@ var articleLoadedSW = function (dirEntry, container) {
         if (appstate.wikimediaZimLoaded && params.showPopoverPreviews) {
             var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
             popovers.attachKiwixPopoverCss(doc, darkTheme);
+            // With the libzim backend we do not run parseAnchorsJQuery (see above), so no popover listeners are attached to
+            // individual anchors: instead we attach delegated listeners to the article window [kiwix-js #1336]
+            if (params.useLibzim) attachPopoverTriggerEvents(articleWindow);
         }
         params.isLandingPage = false;
     } else if (unhideArticleTries > 0) {
@@ -6006,6 +6532,117 @@ var articleLoadedSW = function (dirEntry, container) {
     };
 };
 
+/**
+ * Attaches delegated popover trigger events to the given window
+ * DEV: This is only used with the libzim backend, because with the custom backend the equivalent listeners are attached
+ * to each anchor individually in addListenersToLink (which additionally handles link interception and window opening)
+ * @param {Window} win The window to which to attach popover trigger events
+ */
+function attachPopoverTriggerEvents (win) {
+    // The popover feature requires as a minimum that the browser supports the css matches function
+    // (having this condition prevents very erratic popover placement in IE11, for example, so the feature is disabled for such browsers)
+    if (!win || !win.document || !appstate.wikimediaZimLoaded || !params.showPopoverPreviews || !('matches' in Element.prototype)) {
+        return;
+    }
+    // Add event listeners to the article window to check when anchors are hovered, focused or touched
+    // DEV: Duplicate registrations of the same function reference are ignored by the browser, so these are safe to re-attach
+    win.addEventListener('mouseover', evokePopoverEvents, true);
+    win.addEventListener('focus', evokePopoverEvents, true);
+    // Conditionally add event listeners to support touch events with fallback to pointer events
+    if (window.navigator.maxTouchPoints > 0) {
+        win.addEventListener('touchstart', evokePopoverEvents, true);
+    } else {
+        win.addEventListener('pointerdown', evokePopoverEvents, true);
+    }
+}
+
+// Throttle for the popover event handler to prevent multiple activations with mouse movement
+var popoverThrottle = false;
+
+/**
+ * Conditionally evokes popover events subject to a throttle
+ * @param {Event} event The event produced by the calling action
+ */
+function evokePopoverEvents (event) {
+    // Check if the hovered or focused element or its parent is a link
+    if (popoverThrottle) return;
+    popoverThrottle = true;
+    setTimeout(function () {
+        handlePopoverEvents(event);
+        popoverThrottle = false;
+    }, 10);
+};
+
+/**
+ * Event handler for attaching preview popovers
+ * @param {Event} ev The event produced by the mouseover, focus, touchstart or pointerdown action
+ */
+function handlePopoverEvents (ev) {
+    var anchor = ev.target;
+    var articleDoc = anchor.ownerDocument;
+    if (!articleDoc) return;
+    var win = articleDoc.defaultView;
+    while (anchor && anchor !== win && anchor.nodeName !== 'A') {
+        anchor = anchor.parentNode;
+    }
+    // If we're not hovering a link, then we can exit
+    if (!anchor || anchor.nodeName !== 'A') return;
+    var suppressContextMenuHandler = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    // Prevent context menu on this anchor element
+    anchor.addEventListener('contextmenu', suppressContextMenuHandler, true);
+    if (/touchstart|pointerdown/.test(ev.type)) {
+        anchor.touched = true; // Used to prevent dismissal of popover on mouseout if initiated by touch
+    }
+    if (anchor.style.userSelect === undefined) {
+        // This prevents selection of the text in a touched link in Safari for iOS and Edge Legacy / UWP
+        anchor.style.webkitUserSelect = 'none';
+        anchor.style.msUserSelect = 'none';
+    }
+    // Check if a popover div is currently being hovered
+    var divArray = Array.prototype.slice.call(articleDoc.getElementsByClassName('kiwixtooltip'));
+    var divIsHovered = divArray.some(function (div) {
+        return div.matches(':hover');
+    });
+    // Only add a popover to the link if a current popover is not being hovered (prevents popovers showing for links in a popover)
+    if (!divIsHovered) {
+        // Prevent text selection while popover is open in modern browsers
+        anchor.style.userSelect = 'none';
+        var darkTheme = (params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme) !== 'light';
+        // Get and populate the popover corresponding to the hovered or focused link
+        popovers.populateKiwixPopoverDiv(ev, anchor, appstate, darkTheme, appstate.selectedArchive);
+    }
+    var outHandler = function (e) {
+        setTimeout(function () {
+            anchor.popoverisloading = false;
+            if (/blur/.test(e.type) || !anchor.touched) {
+                popovers.removeKiwixPopoverDivs(articleDoc);
+                anchor.touched = false;
+            }
+            anchor.style.webkitUserSelect = 'auto';
+            anchor.style.msUserSelect = 'auto';
+            anchor.style.userSelect = 'auto';
+            anchor.removeEventListener(e.type, outHandler);
+            anchor.removeEventListener('contextmenu', suppressContextMenuHandler, true);
+        }, 250);
+    };
+    // Clean up when user stops hovering, lifts pointer, stops touching, or unfocuses (blurs) the link
+    if (/mouseover/.test(ev.type)) {
+        anchor.addEventListener('mouseleave', outHandler);
+    }
+    if (/pointerdown/.test(ev.type)) {
+        anchor.addEventListener('pointerup', outHandler);
+    }
+    if (/touchstart/.test(ev.type)) {
+        anchor.addEventListener('touchend', outHandler);
+    }
+    if (ev.type === 'focus') {
+        anchor.addEventListener('blur', outHandler);
+    }
+}
+
 // Handles a click on a Zimit link that has been processed by Wombat
 function handleClickOnReplayLink (ev, anchor) {
     var basePath = window.location.href.replace(/^(.*?\/)www\/.*$/, '$1');
@@ -6023,6 +6660,8 @@ function handleClickOnReplayLink (ev, anchor) {
     if (normalizedAnchorProtocol && normalizedAnchorProtocol !== normalizedDocumentProtocol) {
         // DEV: Monitor whether you need to handle /blob:|data:|file:/ as well (probably not, as they would be blocked by the sandbox if loaded into iframe)
         if (/about:|javascript:/i.test(anchor.protocol) || ev.ctrlKey || ev.metaKey || ev.button === 1) return;
+        // In some browsers, the chrome-extension: protocol is used for extensions, so if the link is relative, we can allow it through
+        if (/chrome-extension:/i.test(normalizedDocumentProtocol) && /http:/.test(normalizedAnchorProtocol)) return;
         // So it's probably a URI scheme or protocol like mailto: that would violate the CSP, so we need to open it explicitly in a new tab
         ev.preventDefault();
         ev.stopPropagation();
@@ -6057,7 +6696,7 @@ function handleClickOnReplayLink (ev, anchor) {
                 // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                 // Note that some Replay PDFs have html mimetypes, or can be redirects to PDFs, we need to check the URL as well
                 if (/pdf/i.test(mimetype) || /\.pdf(?:[#?]|$)/i.test(anchor.href) || /\.pdf(?:[#?]|$)/i.test(dirEntry.url)) {
-                    if (/Android/.test(params.appType) || window.nw) {
+                    if (/Android/.test(params.appType) || params.isNWJS) {
                         // User is on an Android device, where opening a PDF in a new tab is not sufficient to evade the sandbox
                         // so we need to download the PDF instead
                         var readAndDownloadBinaryContent = function (zimUrl) {
@@ -6076,9 +6715,8 @@ function handleClickOnReplayLink (ev, anchor) {
                         // If the document is in fact an html redirect, we need to follow it first till we get the underlying PDF document
                         if (/\bx?html\b/.test(mimetype)) {
                             appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
-                                var redirectURL = data.match(/<meta[^>]*http-equiv="refresh"[^>]*content="[^;]*;url='?([^"']+)/i);
+                                var redirectURL = getMetaRedirectUrl(data);
                                 if (redirectURL) {
-                                    redirectURL = redirectURL[1];
                                     var contentUrl = pseudoNamespace + redirectURL.replace(/^[^/]+\/\//, '');
                                     return readAndDownloadBinaryContent(contentUrl);
                                 } else {
@@ -6174,12 +6812,24 @@ function handleUnsupportedReplayWorker (unhandledDirEntry) {
     appstate.isReplayWorkerAvailable = false;
     // params.originalContentInjectionMode = params.contentInjectionMode;
     // params.contentInjectionMode = 'jquery';
+    // The libzim reader serves content untransformed, bypassing the legacy Zimit transformations, so the pages navigate the
+    // app in an endless loop that can lock the UI. We turn it off for this archive by changing params only, so the Settings
+    // Store keeps the user's choice, and the ZIMArchive constructor restores it when the next archive is opened
+    var libzimSuspended = params.useLibzim;
+    if (libzimSuspended) {
+        params.useLibzim = false;
+        appstate.libzimSuspended = true;
+    }
     readArticle(unhandledDirEntry);
-    if (!params.hideActiveContentWarning) {
-        uiUtil.displayActiveContentWarning();
+    if (!params.hideActiveContentWarning || libzimSuspended) {
+        // We only get here for a classic Zimit archive that has to fall back to the legacy reader, so name the type:
+        // called with no argument, the warning silently matched none of its branches and nothing was shown [kiwix-js-pwa #928]
+        if (!params.hideActiveContentWarning) uiUtil.displayActiveContentWarning('zimit');
         return uiUtil.systemAlert('<p>You are attempting to open a Zimit (classic) archive, ' +
             'which is not fully supported by your browser in ServiceWorker(Local) mode.</p><p>We are using a legacy ' +
-            'fallback method to read this archive, but some highly dynamic content may not work.</p>',
+            'fallback method to read this archive, but some highly dynamic content may not work.</p>' +
+            (libzimSuspended ? '<p>The experimental libzim reader cannot read archives with this method, so it has been turned ' +
+            'off for this archive.</p>' : ''),
             'Legacy support for Zimit archives'
         );
     }
@@ -6211,22 +6861,50 @@ function handleMessageChannelForLibzim (event) {
             // We have to prevent a null load event from firing, or else we get CORS errors blocking the app
             // loaded = true;
         } else {
-            dirEntry.url = title.replace(/^[-ABCHIJMUVWX]\//, '');
+            // DEV: The libzim worker returns the full path, but the rest of the app expects a dirEntry to carry the namespace
+            // and the url separately, and reconstructs the path as namespace + '/' + url (e.g. to store the last-visited page)
+            var pathParts = title.match(/^([-ABCHIJMUVWX])\/(.*)$/);
+            dirEntry.namespace = pathParts ? pathParts[1] : '';
+            dirEntry.url = pathParts ? pathParts[2] : title;
             // DEV: Unlike with custom backend, libzim dirEntries contain a mimetype string rather than a function
             var message = { action: 'giveContent', title: title, content: dirEntry.content, mimetype: dirEntry.mimetype, origin: 'libzim' };
-            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset) {
-                if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
-                articleContainer.onload = function () {
-                    // if (loaded) return;
-                    // articleContainer.style.display = '';
-                    // resizeIFrame();
-                    // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-                    // articleWindow.removeEventListener('click', filterClickEvent, true);
-                    // articleWindow.addEventListener('click', filterClickEvent, true);
-                    articleLoadedSW(dirEntry, articleContainer);
-                };
+            // The ServiceWorker broadcasts its request to every window controlled by this app, so the content we are serving
+            // may well be destined for a window or tab the user opened separately. In that case we must neither track it as
+            // our own state nor touch our iframe, or we blank the article the user is still reading [kiwix-js-pwa #572]
+            var contentIsForThisIframe = event.data.requestingFrameType !== 'top-level';
+            // DEV: Do not be tempted to exclude the legacy Zimit fallback here (by testing appstate.isReplayWorkerAvailable):
+            // reading a Zimit (classic) archive with the legacy method and the libzim backend loops whatever we do here, and
+            // routing it back to the inline handler below additionally locks the UI, so the Configuration panel cannot be
+            // opened to turn the legacy method off again
+            var isZimitClassic = appstate.selectedArchive.zimType === 'zimit';
+            if (/\bx?html\b/i.test(dirEntry.mimetype) && !dirEntry.isAsset && contentIsForThisIframe) {
+                // Update appstate for HTML content, so that link-based navigation is tracked correctly (this is done by
+                // addListenersToLink and readArticle with the custom backend, neither of which runs in libzim mode) [kiwix-js #1385]
+                appstate.baseUrl = encodeURI(title.replace(/[^/]+$/, ''));
+                appstate.expectedArticleURLToBeDisplayed = title;
+                // For Zimit (classic) the article is not displayed in this container at all, but in the replay_iframe nested
+                // inside it, so we leave the display and the load handling to articleLoader below
+                if (!isZimitClassic) {
+                    if (articleContainer.kiwixType === 'iframe') articleContainer.style.display = 'none';
+                    articleContainer.onload = function () {
+                        // if (loaded) return;
+                        // articleContainer.style.display = '';
+                        // resizeIFrame();
+                        // // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+                        // articleWindow.removeEventListener('click', filterClickEvent, true);
+                        // articleWindow.addEventListener('click', filterClickEvent, true);
+                        articleLoadedSW(dirEntry, articleContainer);
+                    };
+                }
             }
             messagePort.postMessage(message);
+            // With Zimit (classic) archives, it is articleLoader that attaches the load handling to the nested replay_iframe,
+            // and that unhides that iframe and the sliding UI elements once the replay document has settled. It has to be called
+            // for every entry, because comparing the replay document's location is how it detects that the document has navigated.
+            // The custom backend does this from handleMessageChannelMessage; nothing did so in libzim mode [kiwix-js #1380]
+            if (isZimitClassic && contentIsForThisIframe) {
+                articleLoader(dirEntry, dirEntry.mimetype);
+            }
         }
     }).catch(function () {
         messagePort.postMessage({ action: 'giveContent', title: title, content: new Uint8Array() });
@@ -6491,8 +7169,55 @@ var regexpDownloadLinks = /^.*?\.epub([?#]|$)|^.*?\.pdf([?#]|$)|^.*?\.odt([?#]|$
 // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" or "...icon" in raw HTML unless commented out
 var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["'](?:stylesheet|[^"']*icon))[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
 
+// A regex to find an HTML redirect stub, i.e. <meta http-equiv="refresh" content="0;url=...">, capturing the content
+// attribute's value in whichever group matches the way it is quoted. The lookahead allows the two attributes to appear
+// in either order
+var regexpMetaRedirect = /<meta\b(?=[^>]*\bhttp-equiv\s*=\s*["']?refresh\b)[^>]*\bcontent\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s">]+))/i;
+// A regex to match the HTML character references that may appear in an attribute value
+var regexpHtmlEntities = /&(?:#(\d+)|#[xX]([\da-fA-F]+)|(amp|apos|quot|lt|gt));/g;
+
+// This matches a loading="lazy" attribute on an img tag, capturing everything before it so that a replace can drop the
+// attribute alone. NB the value has to be matched in full: an unanchored "lazy" would eat the first four characters of
+// a value such as "lazyload" and leave the rest of it welded to the tag name
+var regexpLazyLoadingAttribute = /(<img\b[^>]*?)\sloading\s*=\s*(?:"lazy"|'lazy'|lazy(?=[\s>]))/gi;
+
 // A string to hold any anchor parameter in clicked ZIM URLs (as we must strip these to find the article in the ZIM)
 var anchorParameter;
+// Counts consecutive HTML redirects we have followed, so that a circular chain of redirect stubs cannot loop forever
+var htmlRedirectHops = 0;
+
+/**
+ * Decodes the HTML character references in the given string, as a browser would do before acting on an attribute value
+ * DEV: We deliberately decode with a regex rather than with innerHTML, because the string comes from ZIM content, which
+ * we cannot assume to be trustworthy, and assigning it to innerHTML could cause embedded markup to be parsed
+ *
+ * @param {String} str The string to decode
+ * @returns {String} The decoded string
+ */
+function decodeHtmlEntities (str) {
+    var namedEntities = { amp: '&', apos: "'", quot: '"', lt: '<', gt: '>' };
+    return str.replace(regexpHtmlEntities, function (match, decimal, hex, name) {
+        return name ? namedEntities[name] : String.fromCharCode(parseInt(decimal || hex, decimal ? 10 : 16));
+    });
+}
+
+/**
+ * Extracts the target URL from an HTML redirect stub, i.e. an article whose only content is a meta refresh directive
+ * pointing at the real article
+ *
+ * @param {String} html The HTML of the article to test for a redirect
+ * @returns {String|null} The URL the article redirects to, or null if it does not declare one
+ */
+function getMetaRedirectUrl (html) {
+    var meta = html.match(regexpMetaRedirect);
+    if (!meta) return null;
+    // Only one of the three alternatives can have matched, according to how the attribute value was quoted. We decode
+    // before extracting the URL, so that any escaped quote delimiters are stripped with the literal ones below
+    var content = decodeHtmlEntities(meta[1] || meta[2] || meta[3] || '');
+    var url = content.match(/;\s*url\s*=\s*(.+)$/i);
+    // A refresh directive with no URL simply reloads the document, so it is not a redirect
+    return url ? url[1].replace(/^["']+|["']+$/g, '').trim() : null;
+}
 
 params.containsMathTexRaw = false;
 params.containsMathTex = false;
@@ -6514,22 +7239,40 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     console.log('** HTML received for article ' + dirEntry.url + ' **');
 
     if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
-        // Construct an HTML document to wrap the content
-        htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
+        // Write an empty HTML document to wrap the content, then insert the content as text, so that it is displayed verbatim
+        // and never parsed as markup
         var articleDoc = articleWindow.document;
         articleDoc.open();
-        articleDoc.write(htmlArticle);
+        articleDoc.write('<html><body style="color:yellow;background:darkblue;"><pre></pre></body></html>');
         articleDoc.close();
+        articleDoc.querySelector('pre').textContent = htmlArticle;
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
     params.isLegacyZIM = false;
     if (params.zimType === 'open') {
         params.isLegacyZIM = /<link\b[^>]+href\s*=\s*["']\/[^."']+\.css["']/i.test(htmlArticle);
+    }
+    // A historical ZIM gives the paths to its assets as root-relative URLs, which are not parsed in Service Worker
+    // mode, so switch to Restricted mode (which parses them more leniently) and read the article again. The banner
+    // explaining the switch is raised by the gate below on that second pass, when the mode is no longer 'serviceworker'.
+    // DEV: The switch is deliberately to params only, exactly as when the user declines the trust prompt in
+    // verifyLoadedArchive(): the Settings Store keeps the user's real choice, so opening any non-legacy archive
+    // afterwards restores it (see the block at the head of archiveReadyCallback). It is also deliberately outside the
+    // gate below, whose Service Worker mode conditions are about the app's own image and HTML processing, and so left
+    // a historical ZIM entirely unhandled at default settings [kiwix-js-pwa #902]
+    if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
+        console.debug('Historical ZIM detected: switching to Restricted mode so that its stylesheets can be found');
+        params.contentInjectionMode = 'jquery';
+        document.getElementById('jQueryModeRadio').checked = true;
+        // The gate below only lets the landing page raise a warning, but an archive reopened at its last visited
+        // page never reaches it, so flag the switch to be announced on the second pass whatever page we are on
+        appstate.legacyModeSwitched = true;
+        return readArticle(dirEntry);
     }
     params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url
         ? true : params.isLandingPage;
@@ -6539,7 +7282,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
 
     // Display Bootstrap warning alert if the landing page contains active content
-    if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
+    if (!params.hideActiveContentWarning && (params.isLandingPage || appstate.legacyModeSwitched ||
+        appstate.selectedArchive.zimitStartPage === dirEntry.namespace + '/' + dirEntry.url) &&
         (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction || /zimit/.test(appstate.selectedArchive.zimType))) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
@@ -6548,13 +7292,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
                 }, 1500);
             }
-            if (params.isLegacyZIM && params.contentInjectionMode === 'serviceworker') {
-                // Pop up a dialogue box to warn the user about the legacy ZIM
-                uiUtil.systemAlert('<p>To view this legacy ZIM archive with its correct stylesheets, you will need to switch to Restricted mode.</p>' +
-                    "<p>Don't forget to switch back afterwards!</p>", 'Legacy ZIM file');
-            }
         }
     }
+    // The switch is explained once, on the pass that follows it: clear the flag whether or not the conditions
+    // above were met, so that it cannot raise a warning on some later article of the same archive
+    appstate.legacyModeSwitched = false;
 
     // App appears to have successfully launched
     params.appIsLaunching = false;
@@ -6566,6 +7308,29 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // .replace(/[^/]+/g, function(m) {
         //     return encodeURIComponent(m);
         // });
+
+    // Handle HTML redirect stubs, i.e. articles whose only content is a <meta http-equiv="refresh"> pointing at the real
+    // article. In Restricted mode the iframe document is article.html, so the URL in the meta is relative to the app, not
+    // to the ZIM: if we let the browser follow it, the iframe navigates out of the app and we get a 404. Instead we
+    // neutralize the refresh and resolve the target to a ZIM URL ourselves, exactly as we do for a clicked link. In
+    // Service Worker mode the iframe URL is the ZIM path, so the same relative URL resolves correctly and the refresh is
+    // left to work natively [kiwix-js #1405, kiwix-js-pwa #931]
+    if (params.contentInjectionMode === 'jquery') {
+        var metaRedirectUrl = getMetaRedirectUrl(htmlArticle);
+        // Neutralize the refresh unconditionally: if we cannot resolve the target below, the browser must not follow it either
+        htmlArticle = htmlArticle.replace(/(<meta\b[^>]*?)http-equiv(\s*=\s*["']?refresh)/ig, '$1data-kiwix-refresh$2');
+        // We exclude Zimit archives (of either generation), whose URLs need the dedicated transformations in
+        // parseAnchorsJQuery below: for those we simply display the stub, and the user can click the link it contains
+        if (metaRedirectUrl && params.zimType === 'open' && htmlRedirectHops < 5) {
+            htmlRedirectHops++;
+            anchorParameter = metaRedirectUrl.match(/#([^#;]+)$/);
+            anchorParameter = anchorParameter ? anchorParameter[1] : '';
+            // NB deriveZimUrlFromRelativeUrl strips any anchor and returns a decoded URL, which is what goToArticle expects
+            return goToArticle(uiUtil.deriveZimUrlFromRelativeUrl(metaRedirectUrl, params.baseURL));
+        }
+        // We are displaying a real article, so reset the redirect counter
+        htmlRedirectHops = 0;
+    }
 
     // Since page has been successfully loaded, store it in the browser history
     if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
@@ -6612,7 +7377,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (wikiLang && /^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                 newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                     '.org/wiki/File:' + assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
-                    '" target="_blank">' + newBlock + '</a>'
+                    '" target="_blank">' + newBlock + '</a>';
             }
             return newBlock;
         });
@@ -6637,7 +7402,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 if (/^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                     newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                         '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
-                        '" target="_blank">' + newBlock + '</a>'
+                        '" target="_blank">' + newBlock + '</a>';
                 }
             }
             return newBlock;
@@ -6649,6 +7414,41 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // so add some whitespace at the end of the document
         htmlArticle = htmlArticle.replace(/(<\/body>)/i, '\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1');
         htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, '$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n');
+        // Masonry-style grid pages (the all-image landing pages of flavoured Wikimedia ZIMs, and older main pages that
+        // pull in masonry.min.js) size their thumbnails with `.item img { width: 100%; height: auto }`, and the ZIM
+        // gives the img tags no width or height attributes. Until an image's bytes arrive it therefore has no intrinsic
+        // aspect ratio, so `height: auto` resolves to zero in Firefox. Masonry then measures every card at zero height,
+        // stacks them all in the first column and sets `#content { height: 0 }`, at which point the `overflow: hidden`
+        // on that container clips the cards out of existence. The images are `loading="lazy"`, so once clipped they can
+        // never intersect the viewport, never load, never gain dimensions, and Masonry is never asked to measure again:
+        // the page stays blank. Chrome escapes the deadlock only because it falls back to the 300x150 default object
+        // size, which happens to give the cards a plausible height on the first pass. Supplying a fallback ratio breaks
+        // the deadlock at the measuring step, in every engine. NB `aspect-ratio: auto <ratio>` means "use the image's
+        // own ratio once it has one, otherwise this", so it governs the pre-load box only.
+        // DEV: this is injected ahead of the stylesheets resolved further down, but no main page stylesheet sets
+        // aspect-ratio, so there is nothing for it to lose a specificity tie to [kiwix-js-pwa #946]
+        // NB the grid markup is required, not merely one of the identifying markers: an ordinary article can pull in
+        // masonry.min.js without being a grid at all (www/C/Wikipedia%3AWikiProject_Medicine/Open_Textbook_of_Medicine2
+        // is one such), and stripping the lazy loading from an article's images would make it load them all eagerly for
+        // no reason. This mirrors the runtime gate in kickMasonryRelayout, so the two cannot disagree
+        var isMasonryGridPage = /<a\b[^>]*\bclass\s*=\s*["'][^"']*\bitem\b/i.test(htmlArticle) &&
+            (/<body\b[^>]*\bclass\s*=\s*["'][^"']*\barticle-list-home\b/i.test(htmlArticle) ||
+            /<script\b[^>]*\bsrc\s*=\s*["'][^"']*masonry(?:\.min)?\.js/i.test(htmlArticle));
+        if (isMasonryGridPage) {
+            var lazyCount = (htmlArticle.match(regexpLazyLoadingAttribute) || []).length;
+            console.debug('Masonry grid page ' + dirEntry.namespace + '/' + dirEntry.url + ' | landingPage: ' +
+                params.isLandingPage + ' | manipulateImages: ' + params.manipulateImages + ' | useLibzim: ' +
+                !!params.useLibzim + ' | cssCache: ' + params.cssCache + ' | imageDisplayMode: ' + params.imageDisplayMode);
+            htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<style>.item img { aspect-ratio: auto 3 / 2; }</style>\r\n$1');
+            // Firefox evaluates loading="lazy" against the layout as it stood before Masonry repositioned every card,
+            // and does not re-evaluate when the layout later changes, so the thumbnails sit unloaded until the user
+            // scrolls by hand. These pages are a grid of thumbnails and nothing else, so there is nothing worth
+            // deferring. NB where the app extracts images itself, prepareImagesServiceWorker strips this attribute
+            // already, but it is never reached on a landing page unless params.manipulateImages is set
+            htmlArticle = htmlArticle.replace(regexpLazyLoadingAttribute, '$1');
+            console.debug('Injected fallback aspect-ratio into head and stripped loading="lazy" from ' +
+                lazyCount + ' of ' + (htmlArticle.match(/<img\b/gi) || []).length + ' images');
+        }
         var i;
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {
@@ -6662,8 +7462,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, '');
                 // Remove any initial div containing user:.*kiwix
                 htmlArticle = htmlArticle.replace(/<div\b(?:[^<]|<(?!div|\/div>))+?user:[^<]*kiwix(?:[^<]|<(?!\/div>))+?<\/div>/i, '');
-                // Remove landing page scripts that don't work in SW mode
-                htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
             }
             // Remove wm_mobile_override script that intercepts all clicks and causes CORS errors
             htmlArticle = htmlArticle.replace(/<script\b[^>]+wm_mobile_override_script\.js[^<]*<\/script>/i, '');
@@ -6671,11 +7469,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             // Remove the script.js that closes top-level sections if user requested this
             if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, '');
-            // Deal with incorrectly sized masonry pages
-            htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
-            // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1662
-            // Put site.js in the correct position
-            htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes, also post-June 2025
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|section-title|article-header|first-heading)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
@@ -6820,8 +7613,13 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     params.containsMathTex = params.useMathJax ? /<(script|span)\s+(type|class)\s*=\s*['"]\s*(math\/tex|latex)\s*['"]/i.test(htmlArticle) : false;
     params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
-    // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened
-    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
+    // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened.
+    // Restricted mode runs no inline script, so, as in article.html, it allows inline code only for styles (ZIM scripts run only in SW mode)
+    var cspSources = '\'self\' data: file: blob: bingmaps: about:';
+    var csp = params.contentInjectionMode === 'jquery'
+        ? 'default-src ' + cspSources + '; style-src ' + cspSources + ' \'unsafe-inline\'; script-src \'self\' file: chrome-extension: ms-appx-web: \'unsafe-eval\';'
+        : 'default-src ' + cspSources + ' \'unsafe-inline\' \'unsafe-eval\';';
+    htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="' + csp + '"></meta>\n    ');
 
     // Maker return links
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
@@ -6900,7 +7698,6 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Preload stylesheets [kiwix-js #149]
         console.log('Loading stylesheets...');
         // Set up blobArray of promises
-        var locationPrefix = window.location.pathname.replace(/\/[^/]*$/, '');
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
         var cssSource = params.cssSource;
@@ -7064,6 +7861,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
         // Code below will run after we have written the new article to the articleContainer
         var articleLoaded = function () {
+            // Clear the handler immediately: it is only ever intended to fire for the article we are injecting below, but
+            // any subsequent navigation of the iframe (e.g. by a meta refresh in an HTML redirect stub) would otherwise
+            // re-fire it and re-inject the same article, looping indefinitely [kiwix-js-pwa #931]
+            if (appstate.target === 'iframe') articleContainer.onload = function () {};
             if (params.contentInjectionMode === 'serviceworker') return;
             // Set a global error handler for articleWindow
             articleWindow.onerror = function (msg, url, line, col, error) {
@@ -7088,6 +7889,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                     appstate.target = 'window';
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
 
@@ -7121,59 +7923,61 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             // Set relative font size
             setArticleZoom(params.relativeFontSize);
-            // Set page width according to user preference
-            removePageMaxWidth();
-            setupHeadings();
-            // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
-            // Process endnote references (so they open the reference block if closed)
-            var refs = docBody.getElementsByClassName('mw-reflink-text');
-            if (refs) {
-                for (var l = 0; l < refs.length; l++) {
-                    var reference = refs[l].parentElement;
-                    if (reference) {
-                        reference.addEventListener('click', function (obj) {
-                            var refID = obj.target.hash || obj.target.parentNode.hash;
-                            if (!refID) return;
-                            var refLocation = docBody.querySelector(refID);
-                            if (!refLocation) return;
-                            // In some ZIMs the id is in the parent node or in the parent of the parent
-                            var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
-                            // Add backlink to refLocation if missing
-                            if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
-                                var returnLink = document.createElement('a');
-                                returnLink.href = '#' + returnID;
-                                returnLink.innerHTML = '↑';
-                                refLocation.insertBefore(returnLink, refLocation.firstChild);
-                            }
-                            var refNext = util.getClosestBack(refLocation, function (el) {
-                                return /^(H2|DETAILS)$/.test(el.tagName);
-                            });
-                            if (refNext) {
-                                if (/DETAILS/.test(refNext.tagName)) {
-                                    refNext.open = true;
-                                    return;
+            if (appstate.wikimediaZimLoaded) {
+                // Set page width according to user preference
+                removePageMaxWidth();
+                setupHeadings();
+                // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
+                // Process endnote references (so they open the reference block if closed)
+                var refs = docBody.getElementsByClassName('mw-reflink-text');
+                if (refs) {
+                    for (var l = 0; l < refs.length; l++) {
+                        var reference = refs[l].parentElement;
+                        if (reference) {
+                            reference.addEventListener('click', function (obj) {
+                                var refID = obj.target.hash || obj.target.parentNode.hash;
+                                if (!refID) return;
+                                var refLocation = docBody.querySelector(refID);
+                                if (!refLocation) return;
+                                // In some ZIMs the id is in the parent node or in the parent of the parent
+                                var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
+                                // Add backlink to refLocation if missing
+                                if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
+                                    var returnLink = document.createElement('a');
+                                    returnLink.href = '#' + returnID;
+                                    returnLink.innerHTML = '↑';
+                                    refLocation.insertBefore(returnLink, refLocation.firstChild);
                                 }
-                                refNext.classList.add('open-block');
-                                // refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                refNext = refNext.nextElementSibling;
-                                while (refNext && refNext.classList.contains('collapsible-block')) {
+                                var refNext = util.getClosestBack(refLocation, function (el) {
+                                    return /^(H2|DETAILS)$/.test(el.tagName);
+                                });
+                                if (refNext) {
+                                    if (/DETAILS/.test(refNext.tagName)) {
+                                        refNext.open = true;
+                                        return;
+                                    }
                                     refNext.classList.add('open-block');
+                                    // refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
                                     refNext = refNext.nextElementSibling;
+                                    while (refNext && refNext.classList.contains('collapsible-block')) {
+                                        refNext.classList.add('open-block');
+                                        refNext = refNext.nextElementSibling;
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
-            }
-            var doc = articleWindow.document;
-            // Only manipulate sections if we are not on a landing page
-            if (!params.isLandingPage) {
-                // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
-                if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
-                    openOrCloseAllSections();
+                var doc = articleWindow.document;
+                // Only manipulate sections if we are not on a landing page
+                if (!params.isLandingPage) {
+                    // And if an ActionParse ZIM is loaded and we're not on mobile style, we should not manipulate sections
+                    if (!(/skins.vector.styles.css/.test(doc.head.innerHTML) && params.cssSource !== 'mobile')) {
+                        openOrCloseAllSections();
+                    }
                 }
+                applyWikimediaZimFixes(doc);
             }
-            applyWikimediaZimFixes(doc);
 
             parseAnchorsJQuery(dirEntry);
             switchCSSTheme();
@@ -7507,6 +8311,7 @@ function addListenersToLink (a, href, baseUrl) {
                 if (articleContainer) {
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
+                    trackArticleWindow(articleContainer);
                 }
             }
         }
@@ -7539,13 +8344,6 @@ function addListenersToLink (a, href, baseUrl) {
             }
         } else {
             zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-        }
-        // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
-        // a.newcontainer = true; // Prevents double activation
-        // uiUtil.showSlidingUIElements();
-        // Tear down contents of articleWindow.document
-        if (!/UWP/.test(params.appType) && articleWindow && articleWindow.document && articleWindow.document.body) {
-            articleWindow.document.body.innerHTML = '';
         }
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
@@ -7773,7 +8571,6 @@ function setupTableOfContents () {
     });
     var ToCList = document.getElementById('ToCList');
     ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-    ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
     ToCList.innerHTML = dropupHtml;
     Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
         listElement.addEventListener('click', function () {
@@ -7881,7 +8678,11 @@ params.preloadAllImages = function () {
 };
 
 /**
- * Changes the URL of the browser page, so that the user might go back to it
+ * Pushes the current article title or search term to the window's history state
+ * so that the user can navigate back and forward.
+ * The browser URL is updated with the page pathname (clearing any launch querystring)
+ * while deliberately omitting the title or search query from the URL to protect user privacy
+ * and prevent parameter corruption.
  *
  * @param {String} title The title of the article to store (if storing an article)
  * @param {String} titleSearch The title of the search (if storing a search)
@@ -7890,7 +8691,6 @@ function pushBrowserHistoryState (title, titleSearch) {
     // DEV: Note that appstate.target will always be 'iframe' for title searches, so we do not need to account for that
     var targetWin = appstate.target === 'iframe' ? window : articleWindow;
     var stateObj = {};
-    var urlParameters;
     var stateLabel;
     if (title && !(title === '')) {
         // Prevents creating a double history for the same page (wrapped to prevent exception in IE and Edge Legacy for tabs)
@@ -7898,19 +8698,17 @@ function pushBrowserHistoryState (title, titleSearch) {
             if (targetWin.history.state && targetWin.history.state.title === title) return;
         } catch (err) { console.error('Unable to access History for this window', err); return; }
         stateObj.title = title;
-        urlParameters = '?title=' + title;
         stateLabel = 'Wikipedia Article : ' + title;
     } else if (titleSearch && !(titleSearch === '')) {
         stateObj.titleSearch = titleSearch;
-        urlParameters = '?titleSearch=' + titleSearch;
         stateLabel = 'Wikipedia search : ' + titleSearch;
     } else return;
     // Edge Legacy and IE cannot push history state to another window/tab and produce an exception;
     // independent navigation history is therefore disabled for these browsers
     try {
-        targetWin.history.pushState(stateObj, stateLabel, urlParameters);
+        targetWin.history.pushState(stateObj, stateLabel, targetWin.location.pathname);
     } catch (error) {
-        history.pushState(stateObj, stateLabel, urlParameters);
+        history.pushState(stateObj, stateLabel, window.location.pathname);
     }
 }
 
@@ -7939,6 +8737,8 @@ function goToArticle (path, download, contentType, pathEnc) {
     appstate.selectedArchive.getDirEntryByPath(path).then(function (dirEntry) {
         var mimetype = contentType || dirEntry ? dirEntry.getMimetype() : '';
         if (dirEntry === null || dirEntry === undefined) {
+            // We did not reach an article, so any chain of HTML redirects ends here [kiwix-js-pwa #931]
+            htmlRedirectHops = 0;
             uiUtil.clearSpinner();
             console.error('Article with title ' + path + ' not found in the archive');
             if (params.zimType === 'zimit') {
@@ -7950,13 +8750,15 @@ function goToArticle (path, download, contentType, pathEnc) {
                         href: path.replace(/^(C\/)?A\//, ''),
                         target: '_blank'
                     };
-                    uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor)
+                    uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor);
                     setTab();
                 }
             } else {
                 uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
             }
         } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
+            // We are opening or downloading a file rather than displaying an article, so any chain of HTML redirects ends here
+            htmlRedirectHops = 0;
             // PDFs can be treated as a special case, as they can be displayed directly in a browser window or tab in most browsers (but not UWP)
             if (!/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker' && (/\/pdf\b/.test(mimetype) || /\.pdf([?#]|$)/i.test(dirEntry.url))) {
                 window.open(document.location.pathname.replace(/[^/]+$/, '') + appstate.selectedArchive.file.name + '/' + pathForServiceWorker,
@@ -7979,6 +8781,7 @@ function goToArticle (path, download, contentType, pathEnc) {
             readArticle(dirEntry);
         }
     }).catch(function (e) {
+        htmlRedirectHops = 0;
         console.error('Error reading article with title ' + path, e);
         if (params.appIsLaunching) goToMainArticle();
         // Line below prevents bootloop
@@ -8035,7 +8838,7 @@ function goToMainArticle () {
                 params.isLandingPage = true;
                 appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                 readArticle(dirEntry);
-            }
+            };
             if (dirEntry.redirect) {
                 appstate.selectedArchive.resolveRedirect(dirEntry, setMainPage);
             } else if (/text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {

@@ -36,6 +36,10 @@ var itemsCount = false;
 // Placeholders for the articleContainer, header and footer
 const header = document.getElementById('top');
 const footer = document.getElementById('footer');
+// The emulated title bar, which is the topmost strip of the header, and has zero height except when the
+// browser is drawing the window controls overlay over the app and the user has asked for a title bar of
+// the app's own (see the html.show-titlebar rules in app.css)
+const titleBar = document.getElementById('wcoTitleBar');
 let articleContainer = document.getElementById('articleContent');
 
 /**
@@ -48,15 +52,26 @@ function hideSlidingUIElements () {
     const footerHeight = parseFloat(footerStyles.height) + parseFloat(footerStyles.marginTop) - 2;
     const headerStyles = getComputedStyle(header);
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom) - 2;
+    // The emulated title bar is the topmost strip of the header, so it is the first thing to leave the
+    // window when the header slides up. Pushing it back down by the same amount holds it against the top
+    // of the window while the search row disappears beneath it: a title bar is window chrome and should
+    // not scroll away, and it is the only part of the app the user can grab to move the window once the
+    // toolbars have gone. It cannot be pinned in CSS instead, because sticky positioning needs a
+    // scrollport (nothing here scrolls, the header is transformed) and a fixed child of a transformed
+    // ancestor is positioned against that ancestor, so it would travel with the header regardless
+    const titleBarHeight = titleBar ? titleBar.offsetHeight : 0;
+    if (titleBarHeight) titleBar.style.transform = 'translateY(' + headerHeight + 'px)';
     if (params.hideToolbars === true) { // Only hide footer if requested
         footer.style.transform = 'translateY(' + footerHeight + 'px)';
     }
-    articleContainer.style.height = window.innerHeight + 'px';
+    // With the title bar left behind, the article starts below it rather than at the top of the window,
+    // so it slides up that much less and has that much less room to fill
+    articleContainer.style.height = window.innerHeight - titleBarHeight + 'px';
     // articleContainer.style.height = document.documentElement.clientHeight + 'px';
     header.style.transform = 'translateY(-' + headerHeight + 'px)';
-    articleElement.style.transform = 'translateY(-' + headerHeight + 'px)';
+    articleElement.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
     // Needed by IE11 (only browser that has window.navigator.msSaveBlob)
-    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + headerHeight + 'px)';
+    if (window.navigator && window.navigator.msSaveBlob) articleContainer.style.transform = 'translateY(-' + (headerHeight - titleBarHeight) + 'px)';
 }
 
 /**
@@ -68,6 +83,8 @@ function showSlidingUIElements () {
     const headerStyles = getComputedStyle(document.getElementById('top'));
     const headerHeight = parseFloat(headerStyles.height) + parseFloat(headerStyles.marginBottom);
     header.style.transform = 'translateY(0)';
+    // The title bar travels back up with the header, so it no longer needs to be held down
+    if (titleBar) titleBar.style.transform = '';
     // Needed for Windows Mobile to prevent header disappearing beneath iframe
     articleElement.style.transform = 'translateY(-1px)';
     articleContainer.style.transform = 'translateY(-1px)';
@@ -575,28 +592,39 @@ function getClosestMatchForTagname (el, rgx) {
 
 /**
  * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
- * @param {String} type The ZIM archive type ('open', 'zimit', or 'legacy')
+ * @param {String} type The ZIM archive type ('open', 'zimit', 'zimit2', or 'legacy')
  */
 function displayActiveContentWarning (type) {
     // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
+    // DEV: The alerts below must carry BOTH `fade` and `show`: Bootstrap 4 pins `.fade:not(.show)` at zero opacity, so
+    // an alert built with Bootstrap 3's `fade in` is inserted and laid out but never painted [kiwix-js-pwa #928]
     var alertHTML = '';
     if (params.contentInjectionMode === 'jquery' && type === 'open') {
-        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
             '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
             'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
-        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+    } else if (type === 'legacy') {
+        // DEV: The app now switches to Restricted mode by itself when it meets a historical ZIM, so this no longer
+        // asks the user to do it; the wording holds whether the app switched or the user was already in that mode,
+        // and the link takes them to the setting in case they want to change it back [kiwix-js-pwa #902]
+        alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-        '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
-            'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy Restricted mode</a>. ' +
+        '<strong>Legacy ZIM type!</strong> This historical ZIM can only be displayed correctly in the legacy ' +
+            '<a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">Restricted mode</a>, which is now in use. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (type === 'zimit') {
+    } else if (/^zimit/.test(type)) {
+        // DEV: This warning tells the user that what they are seeing is an approximation of the ZIM's content, so it
+        // belongs to Restricted mode. In Service Worker mode a modern browser renders these archives properly and
+        // there is nothing to warn about; the only exception is a classic Zimit archive whose browser cannot run the
+        // Replay worker, which falls back to the legacy reader (see handleUnsupportedReplayWorker in app.js) and does
+        // warn below. Zimit2 has no such fallback, so it warns in Restricted mode only [kiwix-js-pwa #928]
+        if (type === 'zimit2' && params.contentInjectionMode !== 'jquery') return;
         alertHTML =
-        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' +
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
@@ -607,7 +635,7 @@ function displayActiveContentWarning (type) {
         '</div>';
     } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || (params.displayHiddenBlockElements === true) || params.allowHTMLExtraction)) {
         alertHTML =
-        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        '<div id="activeContent" class="alert alert-warning alert-dismissible fade show" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements
             ? '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> '
@@ -961,7 +989,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
             modal.setAttribute('role', 'dialog');
 
             // Get elements to which we will attach event listeners
-            var modalCloseBtn = document.getElementById(prfx + 'modalCloseBtn')
+            var modalCloseBtn = document.getElementById(prfx + 'modalCloseBtn');
             var declineConfirm = document.getElementById(prfx + 'declineConfirm');
             var closeMessage = document.getElementById(prfx + 'closeMessage');
             var approveConfirm = document.getElementById(prfx + 'approveConfirm');
@@ -1055,7 +1083,7 @@ function showUpgradeReady (ver, type, url) {
     if (type === 'progress') {
         persistentMessage.innerHTML = 'Download in progress: ' + ver + '%';
     } else {
-        const reloadLink = (/load|deploy/.test(type)
+        const reloadLink = (/^(?:load|deploy)$/.test(type)
             ? ', or <a href="#" id="reloadNowLink" style="color:white;text-decoration:underline;">reload now</a>'
             : '') + '.)';
         persistentMessage.innerHTML = 'Version ' + ver +
@@ -1064,7 +1092,7 @@ function showUpgradeReady (ver, type, url) {
         document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
             alertBoxPersistent.style.display = 'none';
         });
-        if (/load|deploy/.test(type)) {
+        if (/^(?:load|deploy)$/.test(type)) {
             if (!params.autoUpdatePWA || type === 'deploy') {
                 document.getElementById('reloadNowLink').addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1325,7 +1353,7 @@ function setupConfigurationToggles () {
         // Close each heading to begin with, except the first and specials
         var exceptionTest = function (testStr) {
             return /Display\ssize|API\sStatus/i.test(testStr) || /Troubleshooting/i.test(testStr) && !params.appCache;
-        }
+        };
         if (panelNext) panelNextHeading.innerHTML = (exceptionTest(panelNextHeading.innerHTML) ? '▽ ' : '▷ ') + panelNextHeading.innerHTML;
         var icon = exceptionTest(headingText) ? '▽ ' : '▷ ';
         panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▽▷]\s)?/, icon);
@@ -1365,6 +1393,64 @@ function appIsFullScreen () {
 }
 
 /**
+ * A function to test whether Chromium is currently drawing the Window Controls Overlay (the window
+ * buttons and app menu) over the app's own content, instead of reserving a title bar for them. This
+ * happens when the app is installed and the manifest asks for 'window-controls-overlay' in
+ * display_override, but the user can show or hide the title bar at any time, so the state must be
+ * queried rather than cached. Respects the params.useWindowControlsOverlay master switch
+ * @returns {Boolean} True if the Window Controls Overlay is currently overlapping the app's content
+ */
+function windowControlsOverlayIsVisible () {
+    return !!(params.useWindowControlsOverlay && navigator.windowControlsOverlay && navigator.windowControlsOverlay.visible);
+}
+
+/**
+ * Matches the document's theme-color to the current background colour of the navigation bar. Chromium
+ * paints the app window's frame with the theme-color, and that includes the strip of window buttons in
+ * the Window Controls Overlay, which is drawn over our content rather than behind it. If the two do not
+ * match, the buttons sit in a contrasting block that does not line up with the navbar (most obvious in
+ * light mode, where the navbar is pale but the declared theme-color is black). Reading the colour back
+ * from the navbar rather than hardcoding it means this keeps working if the UI theme colours change.
+ * The exception is when the user has asked for an emulated title bar, which is deliberately black in
+ * both themes, and which the buttons should therefore sit in rather than beside
+ */
+function setThemeColorFromNavbar () {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    var navbar = document.getElementById('navbar');
+    if (!meta || !navbar) return;
+    // When we are drawing our own title bar the frame should match that bar rather than the navbar, so
+    // that the window buttons sit in the same black strip (see the #wcoTitleBar rules in app.css)
+    var colour = params.showTitleBar && windowControlsOverlayIsVisible() ? 'rgb(0, 0, 0)'
+        : getComputedStyle(navbar).backgroundColor;
+    // A transparent navbar would make the window buttons unreadable, so leave the declared colour alone
+    if (!colour || /^rgba\(0, 0, 0, 0\)$|^transparent$/.test(colour)) return;
+    meta.setAttribute('content', colour);
+}
+
+/**
+ * Applies the user's emulated title bar preference, and shows or hides the setting that controls it. The
+ * setting is only meaningful while Chromium is drawing the Window Controls Overlay: without an overlay
+ * there is either a real title bar already (standalone mode, Electron, NWJS) or none to be had (a browser
+ * tab), and in both cases an emulated one would be dead space, so we hide the control rather than leave
+ * the user a switch that does nothing. Note that the CSS collapses the emulated bar to zero height
+ * whenever the overlay is absent, so the preference can safely stay set while it is inapplicable.
+ * Call this on startup, whenever the preference changes, and on the overlay's geometrychange event
+ */
+function setTitleBarState () {
+    // Gated on the overlay actually being drawn, and not merely on the setting, so that a user who once
+    // turned the title bar on cannot be left with its styling applied in a context that has a title bar
+    // of its own. The bar's own height collapses to zero by itself in that case, because it is set from
+    // env(titlebar-area-height), but rules that do not depend on those variables would otherwise persist
+    document.documentElement.classList.toggle('show-titlebar', params.showTitleBar && windowControlsOverlayIsVisible());
+    document.getElementById('showTitleBarLabel').style.display =
+        windowControlsOverlayIsVisible() ? 'block' : 'none';
+    document.getElementById('wcoTitleBarText').textContent = document.title;
+    // The frame colour depends on whether we are drawing a title bar, so it has to be re-evaluated here
+    // as well as on a change of theme
+    setThemeColorFromNavbar();
+}
+
+/**
  * Puts the requested element into full-screen mode, or cancels full-screen mode if no element is provided
  * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode
  * @returns {Promise<Boolean>} A Promise that resolves to true if the element entered full-screen mode, false if full-screen mode cancelled
@@ -1374,6 +1460,11 @@ function requestOrCancelFullScreen (el) {
     if (el && appIsFullScreen()) {
         console.debug('Display is already full screen');
         return Promise.resolve(true);
+    }
+    // Don't do anything if already not in full-screen mode, and user requested to exit full-screen mode
+    if (!el && !appIsFullScreen()) {
+        console.debug('Display is already not full screen');
+        return Promise.resolve(false);
     }
     // Choose the correct method to request or cancel full-screen mode
     var rq = function (sel) {
@@ -1394,7 +1485,7 @@ function requestOrCancelFullScreen (el) {
         console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled');
         return !!el;
     }).catch(function (err) {
-        console.log('Error enabling full-screen mode', err);
+        console.warn(el ? 'Error enabling full-screen mode' : 'Error disabling full-screen mode', err);
         throw err;
     });
 }
@@ -1486,7 +1577,7 @@ function getBrowserLanguage () {
     var language = {
         base: 'en',
         locale: 'GB'
-    }
+    };
     var fullLanguage = navigator.language || navigator.userLanguage;
     if (fullLanguage) {
         language.base = fullLanguage.replace(/-.+$/, '').toLowerCase();
@@ -1740,6 +1831,57 @@ function setExpressServerUI (port, ipaddress) {
 }
 
 /**
+ * Determines whether a ZIM entry about to be read must be opened in a new top-level window instead of
+ * being loaded into the article iframe.
+ *
+ * In pureMode the Service Worker acts as a transparent passthrough, so the entry would otherwise be given
+ * to the iframe whatever its mimetype. That iframe is sandboxed twice over, by its own sandbox attribute
+ * and by the Content-Security-Policy the Service Worker sets on every ZIM response, and Chromium will not
+ * instantiate its PDF viewer, or any comparable internal viewer, in a sandboxed nested frame: the frame is
+ * left on the browser's block page, which the user can neither retry nor dismiss without reloading the app
+ * [kiwix-js-pwa #980]. A top-level window is not subject to that restriction.
+ *
+ * @param {DirEntry} dirEntry The directory entry about to be read
+ * @param {String} mimeType The entry's mimetype, as returned by dirEntry.getMimetype()
+ * @returns {Boolean} True if the entry must be opened in a new container rather than in the iframe
+ */
+function entryRequiresNewContainer (dirEntry, mimeType) {
+    // Only pureMode passes content through untouched. Everything else either transforms the content or
+    // already routes non-HTML elsewhere, and Replay-backed Zimit archives (which never set pureMode) serve
+    // every entry through Replay's own top frame, which is always HTML
+    if (!appstate.pureMode) return false;
+    // A top-level window has no nested-frame restriction, so there is nothing to divert
+    if (appstate.target === 'window') return false;
+    // A redirect entry carries no usable mimetype at this point: it is left for the Service Worker to
+    // resolve, and an unknown mimetype is not evidence that the iframe cannot cope
+    if (!mimeType || dirEntry.isRedirect()) return false;
+    // HTML is exactly what the iframe is for
+    if (/\bx?html\b/i.test(mimeType)) return false;
+    // Mirrors the exclusion that the PDF branch of filterClickEvent has carried since it was written:
+    // legacy EdgeHTML UWP was found not to cope, and the app cannot touch an opened window's DOM there
+    if (/UWP/.test(params.appType)) return false;
+    return true;
+}
+
+/**
+ * Opens the given URL in a new tab or a new window, according to the user's windowOpener setting.
+ *
+ * This is the single place that knows how a new container is opened, so that callers only have to decide
+ * *whether* to open one. Note that `name` is the browsing context's name, which is what targets an existing
+ * window, so it must be unique per document: a ZIM entry's title is not (titles are empty in some ZIMs, and
+ * the literal string 'null' for every asset in ZIMs built with mwoffliner >= 1.15), so callers should derive
+ * it from the url instead [kiwix-js-pwa #976]. It is ignored when the user has chosen to open tabs.
+ *
+ * @param {String} url The URL to open
+ * @param {String} name A name unique to the document being opened, used to target the new window
+ * @returns {Window|null} The newly opened window, or null if the browser blocked it
+ */
+function openUrlInNewContainer (url, name) {
+    return window.open(url, params.windowOpener === 'tab' ? '_blank' : name,
+        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+}
+
+/**
  * Functions and classes exposed by this module
  */
 export default {
@@ -1771,10 +1913,15 @@ export default {
     checkServerIsAccessible: checkServerIsAccessible,
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
+    windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
+    setThemeColorFromNavbar: setThemeColorFromNavbar,
+    setTitleBarState: setTitleBarState,
     lockDisplayOrientation: lockDisplayOrientation,
     reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
     reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
     warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
+    entryRequiresNewContainer: entryRequiresNewContainer,
+    openUrlInNewContainer: openUrlInNewContainer,
     setupConfigurationToggles: setupConfigurationToggles,
     closestAnchorEnclosingElement: closestAnchorEnclosingElement,
     handleTitleClick: handleTitleClick,
