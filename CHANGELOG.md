@@ -3,7 +3,6 @@
 ## Release 3.9.4 / 3.9.5-Wikivoyage
 
 * FEATURE: New setting to show a title bar under the window controls overlay, restoring an option that recent versions of Edge removed
-* FEATURE: In-app library can now browse the whole ZIM catalogue, not just by category, so uncategorized archives can be found
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
 * FEATURE: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
@@ -14,7 +13,6 @@
 * CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
 * CHANGE: The Linux executable is now `kiwix-js-wikivoyage`, so that it no longer clashes with the Kiwix JS Electron app
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2026-09`
-* UPDATE: Migrate Library to use OPDS endpoint instead of download.kiwix.org
 * UPDATE: Build types in release templates
 * SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
@@ -31,6 +29,7 @@
 * INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js
+* REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
 * REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives open in a new window again
 * REGRESSION: The "Open in new window instead" option is visible again in Configuration (hidden since the Bootstrap 4 migration)
 * REGRESSION: App now auto-switches to appropriate display mode when opening historical Wikipedia archives
@@ -50,6 +49,7 @@
 * REGRESSION: Properly set initial express port value
 * REGRESSION: Fix poor dark styling of Spanish Wikipedia when transforming to mobile style
 * REGRESSION: Fix display of ISO language codes in library languages dropdown
+* FIX: The library's filter textbox now also searches archive titles and tags, so that e.g. "medic" finds mdwiki_en_all
 * FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
 * FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
 * FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
