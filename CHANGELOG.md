@@ -11,6 +11,7 @@
 * FIX: A newly opened window no longer flashes bright white in dark mode while the article loads
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
 * FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
+* FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
 
 ## Release 3.9.3
 

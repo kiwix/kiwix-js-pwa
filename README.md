@@ -59,7 +59,7 @@ a torrent link. Click the link and allow your browser to download and open the t
 ## What about Zimit (Web Archive) format?
 
 Zimit is a service that allows any Web site to be archived as a ZIM, although there are lots of exciting pre-crawled Zimit-based ZIMs for
-you to use (see below). If you want to make your own, try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have full
+you to use (see below). If you want to make your own, try it out at https://zimit.kiwix.org/. The Kiwix JS PWA and Electron apps have full
 support both for legacy Zimit 1 archives that use the open-source [Replay Web Archive reader](https://replayweb.page/docs/index.html),
 and for the current Zimit v2 format. Please note that most Zimit archives will require ServiceWorker mode, due to their highly dynamic content.
 
