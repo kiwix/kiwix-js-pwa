@@ -1914,7 +1914,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
-    kiwixServe.requestXhttpData(params.kiwixCatalogCategories);
+    kiwixServe.requestXhttpData(kiwixServe.getLibraryStartUrl());
 });
 document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
     element.addEventListener('change', function () {

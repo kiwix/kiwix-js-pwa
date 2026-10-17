@@ -605,9 +605,62 @@ var serverResponse = document.getElementById('serverResponse');
 // Used to decide the target for download links
 var target = /Electron/.test(params.appType) ? '' : ' target="_blank"';
 
-// DEV: If you support more packaged files, add to this list
+// DEV: If you support more packaged files, add to this list, and to getLibraryScope below (which does the same for the OPDS catalogue)
 var regexpFilter = /_medicine|mdwiki_/.test(params.packagedFile) ? /^(?!.+(_medicine_|mdwiki_))[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
 regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
+
+/**
+ * Gets the part of the OPDS catalogue that a packaged app is dedicated to, so that its in-app library lists only the
+ * archives relevant to the package. The scope is matched against each entry's search text (see getEntrySearchText).
+ * DEV: If you support more packaged files, add to this list
+ *
+ * @param {String} packagedFile The filename of the packaged archive, or '' if the app is not a packaged app
+ * @returns {Object|null} The scope, as { match: RegExp, label: String }, or null if the library is not scoped
+ */
+function getLibraryScope (packagedFile) {
+    if (/wikivoyage/.test(packagedFile)) return { match: /wikivoyage/i, label: 'Wikivoyage archives' };
+    // Matches medical archives of every kind (Wikipedia's medicine selections, mdwiki, TED, NHS, WikEM, etc.)
+    if (/_medicine|mdwiki_/.test(packagedFile)) return { match: /medic/i, label: 'medical archives' };
+    return null;
+}
+
+var libraryScope = getLibraryScope(params.packagedFile);
+
+/**
+ * Gets the URL at which to open the in-app library: a scoped library opens on the whole catalogue (filtered to its
+ * scope), because no single category holds all the archives in a scope (e.g. mdwiki_en_all has no category)
+ *
+ * @returns {String} The URL of the OPDS feed to open
+ */
+function getLibraryStartUrl () {
+    return libraryScope ? params.kiwixCatalogEntries : params.kiwixCatalogCategories;
+}
+
+/**
+ * Gets the lowercase text that the library scope and the filter textbox are matched against: the entry's filename,
+ * title, description and tags (without the internal tags such as _ftindex:yes). The title is needed as well as the
+ * description, because some archives only show what they are about in their title and tags (e.g. mdwiki_en_all)
+ *
+ * @param {Object} entry An entry parsed by parseOpdsEntries
+ * @returns {String} The text to search
+ */
+function getEntrySearchText (entry) {
+    var tags = (entry.tags || '').split(';').filter(function (tag) {
+        return tag && tag.charAt(0) !== '_';
+    });
+    return [entry.filename, entry.title, entry.summary].concat(tags).join(' ').toLowerCase();
+}
+
+/**
+ * Tests whether an entry belongs in the library of this app
+ *
+ * @param {Object} entry An entry parsed by parseOpdsEntries, with its search text
+ * @param {Object|null} scope The library scope (see getLibraryScope)
+ * @returns {Boolean} True if the entry is in scope, or if the library is not scoped
+ */
+function isEntryInScope (entry, scope) {
+    return !scope || scope.match.test(entry.search);
+}
 
 var currentBrowseUrl = '';
 var currentOpdsEntries = [];
@@ -853,7 +906,7 @@ function renderOpdsCategories (xml, requestUrl) {
     // catalogue-wide feed as well. Rows with a label render verbatim (no trailing directory slash).
     categoryRows.unshift({
         title: 'All entries',
-        label: 'All entries (whole catalogue)',
+        label: 'All entries (' + (libraryScope ? libraryScope.label : 'whole catalogue') + ')',
         href: params.kiwixCatalogEntries
     });
     var bodyDoc = '<div style="padding:0 8px;">' +
@@ -928,7 +981,9 @@ function parseOpdsEntries (xml, requestUrl) {
         var parsed = parsedEntries[parsedEntries.length - 1];
         parsed.filename = getOpdsFilename(parsed);
         // Precomputed lowercase haystack for the text filter, so keystrokes never re-derive it
-        parsed.search = (parsed.filename + ' ' + (parsed.summary || parsed.title || '')).toLowerCase();
+        parsed.search = getEntrySearchText(parsed);
+        // A packaged app lists only the archives in its scope, in every feed
+        if (!isEntryInScope(parsed, libraryScope)) parsedEntries.pop();
     }
     return parsedEntries;
 }
@@ -1115,7 +1170,10 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var dropdownDate = buildDropdown('dates', dateArray, 'date');
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim' +
-        (currentOpdsCategory ? '/' + escapeHtml(currentOpdsCategory) : ' (all entries)') + '</h3>';
+        (currentOpdsCategory ? '/' + escapeHtml(currentOpdsCategory) : ' (' + (libraryScope ? libraryScope.label : 'all entries') + ')') + '</h3>';
+    if (libraryScope && !currentOpdsEntries.length) {
+        bodyDoc += '<p style="margin-left:0.15em;">This list has no ' + libraryScope.label + '.</p>';
+    }
     if (dropdownLang || dropdownSubj || dropdownDate) {
         bodyDoc += '<div class="row" style="margin-left:0; margin-right:0;">';
         if (dropdownLang) bodyDoc += '<div class="col-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>';
@@ -2306,6 +2364,7 @@ export default {
     setDownloadedArchiveOpener: setDownloadedArchiveOpener,
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
+    getLibraryStartUrl: getLibraryStartUrl,
     reportDownloadProgress: reportDownloadProgress,
     clearSeedingStatus: clearSeedingStatus,
     showSeedingStatus: showSeedingStatus

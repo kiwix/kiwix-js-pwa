@@ -12,6 +12,8 @@
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
 * FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
 * FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
+* REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
+* FIX: The library's filter textbox now also searches archive titles and tags, so that e.g. "medic" finds mdwiki_en_all
 
 ## Release 3.9.3
 
