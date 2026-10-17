@@ -4116,12 +4116,12 @@ var historyPop = function (event) {
         const articleContent = document.getElementById('articleContent');
         const articleContentDoc = articleContent ? articleContent.contentDocument : null;
         while (articleContentDoc.firstChild) articleContentDoc.removeChild(articleContentDoc.firstChild);
-        // An emptied document cannot receive key events, so move the focus out of it, otherwise the next
-        // Back/Forward shortcut is lost when we return to a list of search results [kiwix-js-pwa #1003]
-        if (document.activeElement === articleContent) articleContent.blur();
         if (title && !(title === '')) {
             goToArticle(title);
         } else if (titleSearch && titleSearch !== '') {
+            // The article document stays empty here and cannot receive key events, so move the focus out of it,
+            // otherwise the next Back/Forward shortcut is lost [kiwix-js-pwa #1003]
+            if (document.activeElement === articleContent) articleContent.blur();
             prefix.value = titleSearch;
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
