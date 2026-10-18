@@ -14,6 +14,8 @@
 * FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
 * REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
 * FIX: The library's filter textbox now also searches archive titles and tags, so that e.g. "medic" finds mdwiki_en_all
+* FIX: The Electron app's main process now refuses auto-update checks in packaged apps (WikiMed, Wikivoyage), whose updates are multi-GB downloads, instead of relying on the page not to ask, and a failed check no longer leaves an unhandled promise rejection
+* DEV: Releases of packaged apps no longer publish auto-update files (latest*.yml and the macOS update zips), which the Kiwix JS app could take for its own update because both share the -E channel tags; their supplementary release is now titled after the app
 
 ## Release 3.9.3
 
