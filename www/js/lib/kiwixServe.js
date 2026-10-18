@@ -2040,6 +2040,30 @@ function setDownloadedArchiveOpener (opener) {
     downloadedArchiveOpener = opener;
 }
 
+/**
+ * Tests whether a folder is the one holding a packaged app's own archive (e.g. WikiMed's resources/archives). It lies
+ * inside the installed app, so it is read-only in most packages (MSIX, AppImage, deb/rpm, the signed macOS bundle), and
+ * elsewhere it is emptied when the app is upgraded. It must therefore not be the default BitTorrent download folder,
+ * though a user who deliberately picks it may still download into it.
+ * @param {String} folder The folder path to test
+ * @returns {Boolean} True if the folder is the packaged archive folder
+ */
+function isPackagedArchiveFolder (folder) {
+    if (!params.packagedFile || typeof folder !== 'string' || !folder) return false;
+    var normalize = function (folderPath) {
+        folderPath = folderPath.replace(/\\/g, '/').replace(/\/+$/, '');
+        // Windows paths are case-insensitive
+        return /^[A-Za-z]:/.test(folderPath) ? folderPath.toLowerCase() : folderPath;
+    };
+    var candidate = normalize(folder);
+    var archivePath = normalize(params.archivePath);
+    // app.js may store the packaged archive folder as the bare relative archivePath
+    if (candidate === archivePath) return true;
+    if (!(window.electronAPI && window.electronAPI.__dirname)) return false;
+    var appRoot = normalize(window.electronAPI.__dirname.replace(/[/\\]app\.asar$/, ''));
+    return candidate === appRoot + '/' + archivePath;
+}
+
 // If the user had to pick a folder before a torrent could start, the chosen path arrives here
 // (app.js ignores it, because appstate.dirDialogPurpose shows it was picked for a download)
 if (window.dialog && torrentClient.isAvailable()) {
@@ -2134,9 +2158,13 @@ function startTorrentDownload (torrentUrl, sizeMB) {
     // The torrent backend runs in the Node context and needs a real filesystem path: this is the
     // folder the user last chose for downloads, or else is derived from the picked archive folder
     // (including FSA directory handles) where possible; we resolve it before showing the dialogue
-    // so the destination (or the need to pick one) can be stated up front
+    // so the destination (or the need to pick one) can be stated up front. A packaged app's own
+    // archive folder is never derived as the default (see isPackagedArchiveFolder), so the user is
+    // asked to pick a folder instead
     var downloadFolder = settingsStore.getItem(TORRENT_FOLDER_KEY);
-    (downloadFolder ? Promise.resolve(downloadFolder) : torrentClient.resolveSavePath(params.pickedFolder)).then(function (savePath) {
+    (downloadFolder ? Promise.resolve(downloadFolder) : torrentClient.resolveSavePath(params.pickedFolder).then(function (derivedPath) {
+        return isPackagedArchiveFolder(derivedPath) ? null : derivedPath;
+    })).then(function (savePath) {
         var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
             (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
             (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
