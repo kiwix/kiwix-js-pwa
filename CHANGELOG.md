@@ -99,6 +99,7 @@
 * FIX: Invalid HTML attribute causing Vite parsing error
 * FIX: CSP blocking of ZIM download library
 * FIX: Dark mode display of upgrade alert box
+* FIX: The Electron app's main process now refuses auto-update checks in packaged apps (WikiMed, Wikivoyage), whose updates are multi-GB downloads, instead of relying on the page not to ask, and a failed check no longer leaves an unhandled promise rejection
 * DEV: Unit tests now run in CI on every push and pull request, using Node's built-in test runner (`node --test`) with shared scaffolding in `test/helpers.cjs`
 * DEV: The Electron and NW.js apps now identify themselves to Kiwix's servers with a User-Agent like `kiwix/<version> (js-electron-windows)`
 * DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image
@@ -134,6 +135,7 @@
 * DEV: Fix broken invocation of wingetcreate
 * DEV: Update location for Kiwix-hosted downloads of apps
 * DEV: Rename custom_apps to branded_apps
+* DEV: Releases of packaged apps no longer publish auto-update files (latest*.yml and the macOS update zips), which the Kiwix JS app could take for its own update because both share the -E channel tags; their supplementary release is now titled after the app
 
 # Release 3.8.1 / 3.8.2-Wikivoyage
 
