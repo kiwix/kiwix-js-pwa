@@ -8,15 +8,12 @@
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
-* ENHANCEMENT: Auto-updates now enabled for the macOS Electron app
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
-* CHANGE: The modern NW.js apps now start in ServiceWorker mode by default, like the Electron and browser apps (the Windows XP version stays in Restricted mode)
 * CHANGE: The Linux executable is now `kiwix-js-wikivoyage`, so that it no longer clashes with the Kiwix JS Electron app
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2026-09`
 * UPDATE: Build types in release templates
 * SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
-* SECURITY: The NW.js apps no longer use Node.js (the XP version must now have its archive re-picked on each launch) ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: Tightened the Content Security Policy for articles displayed in Restricted mode, and non-HTML entries are now always displayed as plain text
 * SECURITY: Settings supplied in the app's URL are no longer saved permanently (except those the app passes between its own windows), and source verification can only be changed in Configuration ([GHSA-37j3-jm4x-gjmv](https://github.com/kiwix/kiwix-js/security/advisories/GHSA-37j3-jm4x-gjmv))
 * SECURITY/REGRESSION: Archives no longer loaded in SW mode in the background before user has chosen the trust level ([GHSA-37j3-jm4x-gjmv](https://github.com/kiwix/kiwix-js/security/advisories/GHSA-37j3-jm4x-gjmv))
@@ -26,7 +23,6 @@
 * INFO: Mention support for Raspberry Pi OS (64-bit) in README and release notes
 * INFO: Update the macOS installation instructions for disk images
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
-* INFO: The legacy macOS build is deliberately excluded from auto-update, but update notifications still work
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js
 * REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
@@ -41,8 +37,6 @@
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * REGRESSION: Fixed Windows Setup and self-extracting portable packages failing to decompress during installation
 * REGRESSION: Fixed the Windows 7/8/8.1 package which was built against an incompatible Electron version
-* REGRESSION: Fix error clicking Zimit-style links in NWJS app
-* REGRESSION: Fix NWJS build script defaulting to ia32 instead of x64
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
 * REGRESSION: Fix broken display of masonry-style landing pages
 * REGRESSION: Prevent popovers on Wikivoyage custom landing page
