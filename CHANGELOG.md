@@ -23,12 +23,8 @@
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js
-* REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives open in a new window again
 * REGRESSION: The "Open in new window instead" option is visible again in Configuration (hidden since the Bootstrap 4 migration)
-* REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
-* REGRESSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
 * REGRESSION: Links in the active content warnings are now legible in dark mode
-* REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
 * REGRESSION: Fix broken display of masonry-style landing pages
 * REGRESSION: Properly set initial express port value
@@ -45,14 +41,11 @@
 * FIX: A "|" in an article's url or title no longer breaks its directory entry id or truncates the "Return to" link
 * FIX: Images on pages that also contain video or audio now finish loading, and printing such pages no longer hangs
 * FIX: Opening an article in a new window or tab no longer blanks or hides the article you were reading in the original window
-* FIX: PDF links that share a caption, such as "Download PDF", now each open in their own window instead of replacing one another
 * FIX: With "Open in new window" enabled, each image or other non-HTML entry opened from a ZIM now gets its own window
 * FIX: Popover previews of Wikimedia article links now work when reading the archive with the experimental libzim reader
 * FIX: The popover's open-in-new-window icon now opens a new window or tab with the experimental libzim reader, instead of loading the article in place
-* FIX: Zimit (classic) archives read with the experimental libzim reader no longer sometimes stay hidden after a page loads
 * FIX: The last-visited page is now remembered correctly when reading with the experimental libzim reader
 * FIX: Opening another archive now stops the previous archive's libzim worker (used for full-text search), which had lingered with its memory until the app was closed
-* FIX: Classic Zimit archives no longer loop endlessly (sometimes locking the app) when legacy Zimit support and the experimental libzim reader are both on; the two settings are now mutually exclusive
 * FIX: If the Electron app's usual port is taken by another program, the app now loads from the port it has switched to, not from that program
 * FIX: Clicking the fullscreen icon to exit fullscreen works again (broken by the FontAwesome icon migration)
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. with Esc) no longer logs an error, and the navbar icon now switches back from "Return to fullscreen"
@@ -72,6 +65,7 @@
 * FIX: Invalid HTML attribute causing Vite parsing error
 * FIX: Dark mode display of upgrade alert box
 * FIX: The Electron app's main process now refuses auto-update checks in packaged apps (WikiMed, Wikivoyage), whose updates are multi-GB downloads, instead of relying on the page not to ask, and a failed check no longer leaves an unhandled promise rejection
+* FIX: In packaged apps (WikiMed, Wikivoyage), the in-app BitTorrent download no longer offers the app's own archive folder as its destination: that folder is inside the installed app, so it is read-only in most packages and emptied on upgrade in the others; the user is now asked to choose a folder instead
 * DEV: Unit tests now run in CI on every push and pull request, using Node's built-in test runner (`node --test`) with shared scaffolding in `test/helpers.cjs`
 * DEV: The Electron and NW.js apps now identify themselves to Kiwix's servers with a User-Agent like `kiwix/<version> (js-electron-windows)`
 * DEV: Upgraded electron-builder to 26.16.1, fixing macOS signing on the current GitHub runner image
