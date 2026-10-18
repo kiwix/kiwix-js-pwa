@@ -2,15 +2,13 @@
 
 ## Release 3.9.4 / 3.9.5-Wikivoyage
 
-* FEATURE: New setting to show a title bar under the window controls overlay, restoring an option that recent versions of Edge removed
 * FEATURE: New filter textbox in the in-app library to narrow the list as you type
 * FEATURE: In-app BitTorrent download of ZIM archives in the Electron app (with WebTorrent), including resume of interrupted downloads and optional seeding until app close
-* ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
-* ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * ENHANCEMENT: macOS packages are now distributed as disk images (`.dmg`) for easier installation
 * ENHANCEMENT: macOS packages are now signed with a Developer ID certificate and notarized by Apple, so they launch without any Terminal workaround
 * CHANGE: The Linux executable is now `kiwix-js-wikivoyage`, so that it no longer clashes with the Kiwix JS Electron app
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2026-09`
+* UPDATE: The in-app library now uses the Kiwix OPDS catalogue, and lists Wikivoyage archives in every language
 * UPDATE: Build types in release templates
 * SECURITY: The Electron app can now only read ZIM archives in folders the user has picked (a previously picked archive may need to be picked again once), and Reset app now forgets those folders ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
 * SECURITY: The Electron app's links, BitTorrent downloads and local server now accept only what they need ([GHSA-mq42-4fhm-7hq5](https://github.com/kiwix/kiwix-js-pwa/security/advisories/GHSA-mq42-4fhm-7hq5))
@@ -25,41 +23,26 @@
 * INFO: Correct the advertised macOS requirement for the current builds (now need macOS 12 Monterey or later)
 * INFO: Update macOS installation instructions for signed packages, and move the instructions for unsigned builds to the AppPackages README
 * INFO: Added acknowledgements and licence info for Electron.js, NW.js, Express.js and WebTorrent.js
-* REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
 * REGRESSION: PDFs and other non-HTML entries in Gutenberg, PhET, TED, Kolibri and zimit2 archives open in a new window again
 * REGRESSION: The "Open in new window instead" option is visible again in Configuration (hidden since the Bootstrap 4 migration)
-* REGRESSION: App now auto-switches to appropriate display mode when opening historical Wikipedia archives
 * REGRESSION: Warning about limited Zimit support now shown for zimit2 archives in Restricted mode, where it was silently skipped
 * REGRESSION: Warning about legacy support for Zimit archives is now shown when the app falls back to the legacy reader
 * REGRESSION: Links in the active content warnings are now legible in dark mode
-* REGRESSION: Restored the top navigation bar's adaptation to the window controls overlay, lost in the Bootstrap 4 migration, so the window buttons no longer cover the app's controls
-* REGRESSION: Restored the draggable area of the top navigation bar when the window controls overlay is shown
 * REGRESSION: Fix non-responsive links formatted as headings in Zimit archives
-* REGRESSION: Fixed Windows Setup and self-extracting portable packages failing to decompress during installation
-* REGRESSION: Fixed the Windows 7/8/8.1 package which was built against an incompatible Electron version
 * REGRESSION: Fix serious bootloop when a new GitHub release is found
 * REGRESSION: Fix broken display of masonry-style landing pages
-* REGRESSION: Prevent popovers on Wikivoyage custom landing page
 * REGRESSION: Properly set initial express port value
-* REGRESSION: Fix poor dark styling of Spanish Wikipedia when transforming to mobile style
-* REGRESSION: Fix display of ISO language codes in library languages dropdown
-* FIX: The library's filter textbox now also searches archive titles and tags, so that e.g. "medic" finds mdwiki_en_all
-* FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
-* FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
-* FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
 * FIX: Articles opened in a new window or tab now follow the theme chosen in the app, instead of the system theme or always light (not yet for Zimit archives in ServiceWorker mode, or with the experimental libzim reader)
 * FIX: A newly opened window no longer flashes bright white in dark mode while the article loads
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
 * FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
 * FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
-* FIX: The Linux AppImage could not use ServiceWorker mode and fell back to Restricted mode (regression in 3.9.2)
 * FIX: In the Electron app, picking a protected folder (e.g. Documents itself) hung the file and folder pickers until restart; the app now explains and offers to choose another location
 * FIX: Bug that failed to handle regex characters typed in Find in article, causing stale match counters and hangs
 * FIX: Split ZIM archives whose names contain regex characters now load all their parts, and file parts are matched more strictly
 * FIX: Links to articles that are HTML redirect stubs now open the target article correctly in Restricted mode
 * FIX: A navigation inside the article frame can no longer re-run the article setup code and re-inject the same article
 * FIX: A "|" in an article's url or title no longer breaks its directory entry id or truncates the "Return to" link
-* FIX: Grid-style (masonry) landing pages now show their images on arrival in Firefox, instead of staying blank until scrolled
 * FIX: Images on pages that also contain video or audio now finish loading, and printing such pages no longer hangs
 * FIX: Opening an article in a new window or tab no longer blanks or hides the article you were reading in the original window
 * FIX: PDF links that share a caption, such as "Download PDF", now each open in their own window instead of replacing one another
@@ -71,14 +54,10 @@
 * FIX: Opening another archive now stops the previous archive's libzim worker (used for full-text search), which had lingered with its memory until the app was closed
 * FIX: Classic Zimit archives no longer loop endlessly (sometimes locking the app) when legacy Zimit support and the experimental libzim reader are both on; the two settings are now mutually exclusive
 * FIX: If the Electron app's usual port is taken by another program, the app now loads from the port it has switched to, not from that program
-* FIX: Dropped ZIM files now load in contexts where the browser blocks the File System Access API, by falling back to the legacy file drop
-* FIX: Dropping a folder that the browser will not let the app read no longer voids the folder already picked
-* FIX: Choosing a folder for an in-app BitTorrent download no longer replaces the archive folder (which could make the app open a different archive on next launch), and the app offers to open the archive once downloaded
 * FIX: Clicking the fullscreen icon to exit fullscreen works again (broken by the FontAwesome icon migration)
 * FIX: Setting the orientation lock back to Normal after leaving fullscreen (e.g. with Esc) no longer logs an error, and the navbar icon now switches back from "Return to fullscreen"
 * FIX: The spinner during OPFS imports and in-app downloads, and the fullscreen prompt icon, are shown again (leftover Bootstrap 3 glyphicons had stopped rendering)
 * FIX: The ToC and Top buttons now resize correctly on narrow screens, as does the archive picker in Configuration when OPFS is on
-* FIX: The window frame colour now follows the navigation bar, so the window buttons no longer sit in a contrasting block in light mode
 * FIX: The library's Language, Subject and Date filters now apply instantly, and no longer reset when returning to the list
 * FIX: Mode now restored to Service Worker on next ZIM load if app has temporarily switched itself to Restricted mode
 * FIX: An unrecognized content injection mode value can no longer leave the app in an invalid state
@@ -91,7 +70,6 @@
 * FIX: Properly hide notice to download ZIM in packaged apps
 * FIX: Blank page on navigation with fragment or new tab (supports Single Page Applications)
 * FIX: Invalid HTML attribute causing Vite parsing error
-* FIX: CSP blocking of ZIM download library
 * FIX: Dark mode display of upgrade alert box
 * FIX: The Electron app's main process now refuses auto-update checks in packaged apps (WikiMed, Wikivoyage), whose updates are multi-GB downloads, instead of relying on the page not to ask, and a failed check no longer leaves an unhandled promise rejection
 * DEV: Unit tests now run in CI on every push and pull request, using Node's built-in test runner (`node --test`) with shared scaffolding in `test/helpers.cjs`
