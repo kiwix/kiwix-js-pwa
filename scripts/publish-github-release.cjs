@@ -150,6 +150,28 @@ function versionFromPackageJson () {
 }
 
 /**
+ * The branded flavour being published ('WikiMed' or 'Wikivoyage'), or '' for the main app. It
+ * is read from the productName in package.json, as main.cjs reads it from app.getName().
+ *
+ * Packaged apps are never auto-updated: app.js does not ask, and main.cjs refuses if asked,
+ * because each update is a multi-GB download the user has not chosen. Their update files are
+ * therefore of no use to them, and are a hazard to the main app. Flavours share the vX.Y.Z-E
+ * tags (see resolveTags), and electron-updater follows the newest release in the "E" channel,
+ * so the main app would take a newer flavour's latest.yml as its own update. On Windows that
+ * goes as far as installing the flavour beside it. Those files used to be deleted by hand
+ * before publication; now they are never uploaded. The macOS zips go with them, because they
+ * are update payloads only (the human download is the .dmg), and each one carries the archive.
+ * The web installer's files still go to the channel release, whose tag is compiled into the
+ * stub (see the note above ROUTES).
+ */
+function brandedFlavour () {
+    const file = path.resolve('package.json');
+    if (!fs.existsSync(file)) return '';
+    const productName = JSON.parse(fs.readFileSync(file, 'utf8')).productName || '';
+    return /wikivoyage/i.test(productName) ? 'Wikivoyage' : /wikimed/i.test(productName) ? 'WikiMed' : '';
+}
+
+/**
  * Derives both release tags from whatever form of the version we were handed. Branded
  * flavours (-WikiMed, -Wikivoyage) collapse onto the same -E tag, matching the behaviour
  * of Rewrite-DraftReleaseTag.ps1 that this replaces.
@@ -443,7 +465,7 @@ function countReleases (tag, repo) {
     return JSON.parse(raw).filter(function (release) { return release.tagName === tag; }).length;
 }
 
-function ensureChannelRelease (tag, repo, target) {
+function ensureChannelRelease (tag, repo, target, flavour) {
     if (countReleases(tag, repo)) {
         console.log('Channel release ' + tag + ' already exists.');
         return;
@@ -459,7 +481,11 @@ function ensureChannelRelease (tag, repo, target) {
     // --prerelease is what it becomes on publication: it keeps the channel release out of
     // GitHub's "Latest" badge so humans browsing the repo land on the real release.
     // electron-updater finds it regardless, because the atom feed includes prereleases.
-    const args = ['release', 'create', tag, '--repo', repo, '--draft', '--prerelease', '--title', CHANNEL_TITLE, '--notes', CHANNEL_BODY];
+    // A packaged app's channel release holds only the web installer's files (see brandedFlavour)
+    const title = flavour ? 'Supplementary installation files for ' + flavour + ' Electron' : CHANNEL_TITLE;
+    const notes = flavour ? 'Web installer files ONLY. Please go to https://kiwix.github.io/kiwix-js-pwa/' +
+        flavour.toLowerCase() + ' for the main release.' : CHANNEL_BODY;
+    const args = ['release', 'create', tag, '--repo', repo, '--draft', '--prerelease', '--title', title, '--notes', notes];
     // Tag the commit that was actually built, not wherever the default branch has moved to
     if (target) args.push('--target', target);
     gh(args, { stdio: 'inherit' });
@@ -482,6 +508,7 @@ function upload (tag, repo, files) {
 function main () {
     const opts = parseArgs(process.argv.slice(2));
     const tags = resolveTags(opts.version);
+    const flavour = brandedFlavour();
     const dir = path.resolve(opts.dir);
     if (!fs.existsSync(dir)) throw new Error('Build directory not found: ' + dir);
 
@@ -507,11 +534,18 @@ function main () {
         buckets.both = [];
     }
 
-    const ymls = buckets.channel.filter(function (f) { return /\.yml$/i.test(f); });
+    let ymls = buckets.channel.filter(function (f) { return /\.yml$/i.test(f); });
     // A build that produced no channel files at all almost certainly failed, so say so
     // rather than publishing a release the updater will never find. Partial publishes
     // declare themselves with --no-channel and are exempt.
     if (!ymls.length && !opts.noChannel) throw new Error('No latest*.yml channel files found in ' + dir + ' - was the build run with electron-builder? Use --no-channel for a partial publish.');
+    // Checked after the test above, which is still the best sign that a packaged build worked
+    if (flavour) {
+        console.log('\n' + flavour + ' is a packaged app, which is never auto-updated: its update files are not published.');
+        buckets.skip = buckets.skip.concat(buckets.channel);
+        buckets.channel = [];
+        ymls = [];
+    }
 
     // Derived, not declared: a url stays bare exactly when that artefact is uploaded next
     // to the yml. Change the routing table above and the rewriting follows.
@@ -533,7 +567,7 @@ function main () {
 
     console.log('\nHuman release:   ' + tags.human);
     console.log('Channel release: ' + tags.channel);
-    console.log('\nChannel files rewritten:');
+    if (staged.length) console.log('\nChannel files rewritten:');
     staged.forEach(function (file) {
         console.log('  ' + path.basename(file));
         const doc = yaml.load(fs.readFileSync(file, 'utf8'));
@@ -551,7 +585,7 @@ function main () {
     });
 
     if (!opts.upload) {
-        console.log('\nDry run: nothing uploaded. Rewritten ymls are in ' + stagingDir);
+        console.log('\nDry run: nothing uploaded.' + (staged.length ? ' Rewritten ymls are in ' + stagingDir : ''));
         console.log('Re-run with --upload to publish to ' + opts.repo + '.');
         return;
     }
@@ -560,7 +594,7 @@ function main () {
     if (!draftTag) return;
     upload(draftTag, opts.repo, humanUploads);
     if (channelUploads.length) {
-        ensureChannelRelease(tags.channel, opts.repo, opts.target);
+        ensureChannelRelease(tags.channel, opts.repo, opts.target, flavour);
         upload(tags.channel, opts.repo, channelUploads);
     }
     console.log('\nDone.');

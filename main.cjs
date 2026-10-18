@@ -282,8 +282,17 @@ function registerListeners () {
     ipcMain.handle('libzim-call', (event, data) => libzimHost.call(data));
     ipcMain.on('libzim-terminate', () => libzimHost.terminate());
     ipcMain.on('check-updates', function (event) {
+        // Packaged apps (WikiMed, Wikivoyage) are never auto-updated, because each update is a multi-GB download the
+        // user has not chosen. The renderer does not ask for them (see checkUpdateServer in app.js); this refuses even if
+        // asked, so that the rule does not rest on page code alone
+        if (appFlavour) {
+            console.log('Auto-update check refused: packaged apps are not auto-updated\n');
+            return;
+        }
         console.log('Auto-update check request received...\n');
-        autoUpdater.checkForUpdates();
+        // electron-updater logs a failed check through its own 'error' listener, but also rejects the promise it returns,
+        // which would otherwise be left as an unhandled rejection in the main process
+        autoUpdater.checkForUpdates().catch(function () {});
     });
     // Set a value using the Electron Store API
     ipcMain.on('set-store-value', function (event, key, value) {
