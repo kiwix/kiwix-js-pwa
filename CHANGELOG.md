@@ -7,6 +7,7 @@
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
 * FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
 * FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
+* FIX: In packaged apps (WikiMed, Wikivoyage), the in-app BitTorrent download no longer offers the app's own archive folder as its destination: that folder is inside the installed app, so it is read-only in most packages and emptied on upgrade in the others; the user is now asked to choose a folder instead
 * FIX: Articles opened in a new window or tab now follow the theme chosen in the app, instead of the system theme or always light (not yet for Zimit archives in ServiceWorker mode, or with the experimental libzim reader)
 * FIX: A newly opened window no longer flashes bright white in dark mode while the article loads
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
