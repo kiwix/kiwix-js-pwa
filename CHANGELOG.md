@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## Interim release 3.9.5
 
-* FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
 * ENHANCEMENT: A BitTorrent download found complete on disk is no longer hash-checked twice
+* UPDATE: Wikivoyage and WikiMed by Kiwix release templates
+* FIX: Resuming a large in-app BitTorrent download could fail after a long wait with a false "not enough free space" error
 * FIX: Reloading the app during a BitTorrent download lost track of it, and the resume prompt then offered to resume (which failed) or discard a download that was still running
 * FIX: Completing or stopping an in-app BitTorrent download could show "A JavaScript error occurred in the main process" (a harmless WebTorrent logging error)
 * FIX: In packaged apps (WikiMed, Wikivoyage), the in-app BitTorrent download no longer offers the app's own archive folder as its destination: that folder is inside the installed app, so it is read-only in most packages and emptied on upgrade in the others; the user is now asked to choose a folder instead
@@ -13,10 +14,13 @@
 * FIX: The simple inversion dark theme is no longer forgotten when dark mode is turned off and on again
 * FIX: DarkReader is no longer selected for Zimit archives in Restricted mode, where it cannot run
 * FIX: The link to the Zimit service in About now points to zimit.kiwix.org, as the old youzim.it domain is being retired
-* REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
 * FIX: The library's filter textbox now also searches archive titles and tags, so that e.g. "medic" finds mdwiki_en_all
 * FIX: The Electron app's main process now refuses auto-update checks in packaged apps (WikiMed, Wikivoyage), whose updates are multi-GB downloads, instead of relying on the page not to ask, and a failed check no longer leaves an unhandled promise rejection
+* FIX: Unhandled TypeError and percent-decoding in dataURItoUint8Array
+* FIX: Guard against out of bounds mainPage in getMainPageDirEntry
+* REGRESSION: The in-app library of packaged apps (WikiMed, Wikivoyage) again lists only the archives for that app, which was lost in the migration to the OPDS catalogue; WikiMed now lists medical archives of every kind (including mdwiki, TED, NHS and WikEM)
 * DEV: Releases of packaged apps no longer publish auto-update files (latest*.yml and the macOS update zips), which the Kiwix JS app could take for its own update because both share the -E channel tags; their supplementary release is now titled after the app
+* DEV: Various dependency updates for security
 
 ## Release 3.9.3
 
