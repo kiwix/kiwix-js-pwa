@@ -4795,8 +4795,7 @@ function processNativeDirHandle (dirHandle, callback) {
             populateDropDownListOfArchives(archiveList, !hasArchives);
         }
     }).catch(function (err) {
-        uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
-        '<p>[System error message: ' + err.message + ']</p>', 'Error!');
+        uiUtil.systemAlert(uiUtil.fileAccessErrorMessage(err), 'Error!');
     });
 }
 
@@ -4949,6 +4948,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     // TODO: Turn this into a Promise
     zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
+        uiUtil.clearSpinner();
         uiUtil.systemAlert(message, label);
     });
 }

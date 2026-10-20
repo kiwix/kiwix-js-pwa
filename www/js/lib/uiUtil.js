@@ -1061,6 +1061,27 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
 }
 
 /**
+ * Returns an HTML message for systemAlert explaining why a picked archive file or folder could not be read. Chromium reports
+ * an operating-system denial of access as NoModificationAllowedError (while listing a folder) or NotReadableError (while
+ * reading a file), so for these we point the user to the OS or administrator permissions rather than suggesting the archive
+ * has gone missing
+ *
+ * @param {Error} err The error thrown when the file or folder was accessed
+ * @returns {String} The message, formatted as HTML
+ */
+function fileAccessErrorMessage (err) {
+    var systemMessage = '<p>[System error message: ' + (err && err.message || err) + ']</p>';
+    if (err && /^(NoModificationAllowedError|NotReadableError)$/.test(err.name)) {
+        return '<p>The browser was refused access to your archive by the operating system. This is usually a permission ' +
+            'setting, not a problem with the archive itself.</p><p>Please check that this browser is allowed to access files ' +
+            'and folders on this device. On a managed or shared computer, an administrator or browser policy may be blocking ' +
+            'access to local files.</p>' + systemMessage;
+    }
+    return '<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
+        systemMessage;
+}
+
+/**
  * Shows that an upgrade is ready to install
  * @param {String} ver The version of the upgrade
  * @param {String} type Either 'load', 'install', 'download', 'display' or 'progress' according to the type of upgrade
@@ -1889,6 +1910,7 @@ export default {
     showSlidingUIElements: showSlidingUIElements,
     scroller: scroller,
     systemAlert: systemAlert,
+    fileAccessErrorMessage: fileAccessErrorMessage,
     showUpgradeReady: showUpgradeReady,
     feedNodeWithBlob: feedNodeWithBlob,
     getDataUriFromUint8Array: getDataUriFromUint8Array,

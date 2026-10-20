@@ -223,7 +223,11 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
         // We need to convert the FileList into an Array
         var fileArray = [].slice.call(fileList);
         // The constructor has been called with an array of File/Blob parameter
-        createZimfile(fileArray);
+        createZimfile(fileArray).catch(function (err) {
+            // Usually the browser could not read the file (e.g. the OS denied it access), which would otherwise go unreported
+            console.error('Error reading archive file', err);
+            callbackError(uiUtil.fileAccessErrorMessage(err), 'Error reading archive file');
+        });
     } else {
         if (/.*zim..$/.test(path)) {
             // split archive
