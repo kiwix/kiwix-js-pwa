@@ -2304,36 +2304,42 @@ var refreshFullScreen = function (evt) {
     if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
     if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' ||
         (evt.target.parentElement && evt.target.parentElement.id === 'btnAbout'))) {
-        if (uiUtil.appIsFullScreen()) {
-            // Cancel fullscreen mode
-            uiUtil.lockDisplayOrientation().then(function () {
-                setDynamicIcons();
-            });
-            params.lockDisplayOrientation = '';
-            settingsStore.setItem('lockDisplayOrientation', '', Infinity);
-            document.getElementById('lockDisplayOrientationDrop').value = '';
-        } else {
-            // Enter fullscreen mode
-            uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).then(function () {
-                setDynamicIcons();
-                resizeIFrame();
-            }).catch(function () {
-                setDynamicIcons();
-                resizeIFrame();
-            });
-        }
+        uiUtil.toggleFullScreen(params.lockDisplayOrientation).then(function () {
+            setDynamicIcons();
+            resizeIFrame();
+        }).catch(function () {
+            setDynamicIcons();
+            resizeIFrame();
+        });
     } else {
-        if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).catch(function () {});
+        if (params.lockDisplayOrientation && !uiUtil.isFullScreenSuppressed()) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).catch(function () {});
     }
 };
 // Add event listener to the app UI
 document.getElementById('search-article').addEventListener('mouseup', refreshFullScreen);
+// Set when the user presses Esc or F11 in full screen, so that we can suppress auto-reactivation if full screen is then exited
+var fullScreenKeyExitPending = false;
+var fullScreenKeyListener = function (e) {
+    if (params.lockDisplayOrientation && uiUtil.appIsFullScreen() && !e.defaultPrevented && /^(?:Esc|Escape|F11)$/i.test(e.key)) {
+        fullScreenKeyExitPending = true;
+    }
+};
+['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function (eventName) {
+    document.addEventListener(eventName, function () {
+        if (fullScreenKeyExitPending && !uiUtil.appIsFullScreen()) {
+            uiUtil.setFullScreenSuppressed(true);
+        }
+        fullScreenKeyExitPending = false;
+        setDynamicIcons();
+    });
+});
 // Set the UI for the current fullscreen/orientation lock state
 document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
 
 document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
     var that = this;
     if (event.target.value) {
+        uiUtil.setFullScreenSuppressed(false);
         return uiUtil.lockDisplayOrientation(event.target.value).then(function (rtn) {
             if (rtn === 'unsupported') {
                 uiUtil.systemAlert('The Screen Orientation Lock API is not supported on this device!');
@@ -2369,6 +2375,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
             setDynamicIcons();
         });
     } else {
+        uiUtil.setFullScreenSuppressed(false);
         params.lockDisplayOrientation = '';
         settingsStore.setItem('lockDisplayOrientation', '', Infinity);
         uiUtil.lockDisplayOrientation().then(function () {
@@ -5488,10 +5495,13 @@ function listenForKeyboardEvents (controlWindow) {
     // Remove any existing listeners before adding new ones to prevent duplicates
     controlWindow.removeEventListener('keyup', keyupListener);
     controlWindow.removeEventListener('keydown', keydownListener, true);
+    controlWindow.removeEventListener('keydown', fullScreenKeyListener);
 
     // Add the listeners
     controlWindow.addEventListener('keyup', keyupListener);
     controlWindow.addEventListener('keydown', keydownListener, true);
+    // Not in capture mode, so we can see if another handler cancelled the key
+    controlWindow.addEventListener('keydown', fullScreenKeyListener);
 }
 
 /**

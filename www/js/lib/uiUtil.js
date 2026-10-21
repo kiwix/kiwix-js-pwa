@@ -1524,6 +1524,16 @@ function requestOrCancelFullScreen (el) {
     });
 }
 
+var fullScreenSuppressed = false;
+
+function isFullScreenSuppressed () {
+    return fullScreenSuppressed;
+}
+
+function setFullScreenSuppressed (val) {
+    fullScreenSuppressed = !!val;
+}
+
 /**
  * Attempts to put the app into full-screen mode and (if requested) lock the display orientation using the Screen Orientation Lock API
  * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape'
@@ -1568,6 +1578,28 @@ function lockDisplayOrientation (val) {
             screen.orientation.unlock(); // NB This doesn't return a Promise
         }
         return requestOrCancelFullScreen();
+    }
+}
+
+/**
+ * Toggles full-screen mode (and orientation lock if set).
+ * When cancelling full-screen mode via toggle, auto-restore is suppressed.
+ * When entering full-screen mode via toggle, suppression is cleared.
+ *
+ * @param {string} [val] The display orientation to lock, e.g. 'fullscreen', 'portrait', etc.
+ * @returns {Promise<Boolean>} Resolves to true if full-screen mode was entered, false if cancelled
+ */
+function toggleFullScreen (val) {
+    if (appIsFullScreen()) {
+        fullScreenSuppressed = true;
+        return lockDisplayOrientation().then(function () {
+            return false;
+        });
+    } else {
+        fullScreenSuppressed = false;
+        return lockDisplayOrientation(val || 'fullscreen').then(function () {
+            return true;
+        });
     }
 }
 
@@ -1949,6 +1981,9 @@ export default {
     checkServerIsAccessible: checkServerIsAccessible,
     initTouchZoom: initTouchZoom,
     appIsFullScreen: appIsFullScreen,
+    isFullScreenSuppressed: isFullScreenSuppressed,
+    setFullScreenSuppressed: setFullScreenSuppressed,
+    toggleFullScreen: toggleFullScreen,
     windowControlsOverlayIsVisible: windowControlsOverlayIsVisible,
     setThemeColorFromNavbar: setThemeColorFromNavbar,
     setTitleBarState: setTitleBarState,
