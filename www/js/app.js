@@ -1605,8 +1605,8 @@ archiveFilesLegacy.addEventListener('change', function (files) {
                 cache.populateOPFSStorageQuota();
             }).catch(function (err) {
                 console.error('Unable to import files to OPFS!', err);
-                var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
-                if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + err.message + '</p>';
+                var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + util.escapeHtml(err.message) + '</p>';
+                if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + util.escapeHtml(err.message) + '</p>';
                 uiUtil.pollOpsPanel();
                 uiUtil.systemAlert(message, 'OPFS import error').then(function () {
                     // Delete each of the files that failed to import
@@ -1764,7 +1764,7 @@ function loadOPFSDirectory () {
             setOPFSUI();
         }).catch(function (err) {
             console.error('Unable to get Origin Private File System!', err);
-            uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + err + '</p>');
+            uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + util.escapeHtml(err) + '</p>');
             params.useOPFS = false;
             setOPFSUI();
         });
@@ -4795,8 +4795,7 @@ function processNativeDirHandle (dirHandle, callback) {
             populateDropDownListOfArchives(archiveList, !hasArchives);
         }
     }).catch(function (err) {
-        uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
-        '<p>[System error message: ' + err.message + ']</p>', 'Error!');
+        uiUtil.systemAlert(uiUtil.fileAccessErrorMessage(err), 'Error!');
     });
 }
 
@@ -4949,6 +4948,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     // TODO: Turn this into a Promise
     zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
+        uiUtil.clearSpinner();
         uiUtil.systemAlert(message, label);
     });
 }
@@ -5264,7 +5264,7 @@ function createFakeFileObjectNode (filename, filepath, callback) {
         if (err) {
             file.size = null;
             console.error('File cannot be found!', err);
-            uiUtil.systemAlert('The archive you are attempting to load (' + file.path + ') cannot be found. Perhaps it has moved?');
+            uiUtil.systemAlert('The archive you are attempting to load (' + util.escapeHtml(file.path) + ') cannot be found. Perhaps it has moved?');
             document.getElementById('btnConfigure').click();
         } else {
             file.size = stats.size;
@@ -8754,7 +8754,7 @@ function goToArticle (path, download, contentType, pathEnc) {
                     setTab();
                 }
             } else {
-                uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
+                uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + util.escapeHtml(path) + '</i></p><p>in this archive!</p>');
             }
         } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
             // We are opening or downloading a file rather than displaying an article, so any chain of HTML redirects ends here
@@ -8783,7 +8783,15 @@ function goToArticle (path, download, contentType, pathEnc) {
     }).catch(function (e) {
         htmlRedirectHops = 0;
         console.error('Error reading article with title ' + path, e);
-        if (params.appIsLaunching) goToMainArticle();
+        uiUtil.clearSpinner();
+        if (params.appIsLaunching) {
+            goToMainArticle();
+        } else {
+            // Tell the user, e.g. if the archive's folder has been renamed since it was loaded
+            uiUtil.systemAlert(uiUtil.isFileAccessError(e) ? uiUtil.fileAccessErrorMessage(e)
+                : '<p>Sorry, but we could not read the article:</p><p><i>' + util.escapeHtml(path) + '</i></p>' +
+                '<p>[System error message: ' + util.escapeHtml(e && e.message || e) + ']</p>', 'Error reading article');
+        }
         // Line below prevents bootloop
         params.appIsLaunching = false;
     });

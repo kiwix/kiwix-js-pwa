@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* FIX: When the operating system denies the browser access to a picked archive file or folder, the app now says so, instead of claiming the archive could not be found (folder) or failing silently with the spinner left showing (single file)
+* FIX: Opening an article from an archive that can no longer be read (e.g. because its folder was renamed) now shows an error, instead of leaving the spinner showing
+
 ## Interim release 3.9.5
 
 * ENHANCEMENT: When resuming a BitTorrent download, the app now shows its progress while checking the data already on disk, and a genuine lack of space is reported straight away
