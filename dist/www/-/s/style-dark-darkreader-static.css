@@ -1,0 +1,68 @@
+﻿/* Common theme */
+html,
+body,
+:not([style*="background-color:"]):not(iframe) {
+    background-color: rgb(19, 21, 22) !important;
+}
+html,
+body,
+:not([style*="color:"]),
+.sr-reader *:not([class*='sr-pivot']) {
+    color: rgb(181, 168, 142) !important;
+}
+h1:not([style*="color:"]),
+h2:not([style*="color:"]),
+h3:not([style*="color:"]),
+h4:not([style*="color:"]),
+h5:not([style*="color:"]),
+h6:not([style*="color:"]) {
+    color: rgb(241, 160, 118) !important;
+}
+cite:not([style*="color:"]) {
+    color: rgb(160, 206, 153) !important;
+}
+input:not([style*="background-color:"]),
+textarea:not([style*="background-color:"]),
+button:not([style*="background-color:"]),
+[role="button"] {
+    background-color: rgb(41, 50, 58) !important;
+}
+input:not([style*="background-color:"]):hover,
+textarea:not([style*="background-color:"]):hover,
+button:not([style*="background-color:"]):hover,
+[role="button"]:hover {
+    background-color: rgb(38, 56, 73) !important;
+}
+input:not([style*="background-color:"]):active, input:not([style*="background-color:"]):focus,
+textarea:not([style*="background-color:"]):active, textarea:not([style*="background-color:"]):focus,
+button:not([style*="background-color:"]):active, button:not([style*="background-color:"]):focus,
+[role="button"]:active, [role="button"]:focus {
+    background-color: rgb(37, 58, 78) !important;
+}
+a:not([style*="color:"]) {
+    color: rgb(158, 189, 190) !important;
+}
+a:not([style*="color:"]):hover {
+    color: rgb(164, 198, 206) !important;
+}
+a:not([style*="color:"]):active, a:not([style*="color:"]):focus {
+    color: rgb(170, 207, 223) !important;
+}
+:not([style*="border-color:"]),
+::before,
+::after {
+    border-color: rgb(100, 120, 124) !important;
+}
+div:empty,
+.sr-reader *,
+.sr-backdrop {
+    background-color: rgba(19, 21, 22, 0.5) !important;
+}
+input::placeholder,
+textarea::placeholder {
+    color: rgba(181, 168, 142, 0.5) !important;
+}
+input:not([style*="background-image:"]),
+textarea:not([style*="background-image:"]) {
+    background-image: none !important;
+}
