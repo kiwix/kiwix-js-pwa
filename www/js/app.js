@@ -8783,7 +8783,15 @@ function goToArticle (path, download, contentType, pathEnc) {
     }).catch(function (e) {
         htmlRedirectHops = 0;
         console.error('Error reading article with title ' + path, e);
-        if (params.appIsLaunching) goToMainArticle();
+        uiUtil.clearSpinner();
+        if (params.appIsLaunching) {
+            goToMainArticle();
+        } else {
+            // Tell the user, e.g. if the archive's folder has been renamed since it was loaded
+            uiUtil.systemAlert(uiUtil.isFileAccessError(e) ? uiUtil.fileAccessErrorMessage(e)
+                : '<p>Sorry, but we could not read the article:</p><p><i>' + util.escapeHtml(path) + '</i></p>' +
+                '<p>[System error message: ' + util.escapeHtml(e && e.message || e) + ']</p>', 'Error reading article');
+        }
         // Line below prevents bootloop
         params.appIsLaunching = false;
     });

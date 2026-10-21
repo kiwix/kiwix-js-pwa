@@ -1061,6 +1061,18 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
 }
 
 /**
+ * Tests whether an error was raised because the archive file itself could not be accessed (e.g. it has been moved, renamed
+ * or deleted, or the OS has denied access to it), as opposed to an error in reading or decoding its contents
+ *
+ * @param {Error} err The error to test
+ * @returns {Boolean} True if the error is a file access error
+ */
+function isFileAccessError (err) {
+    return !!err && (/^(NotFoundError|NotReadableError|NoModificationAllowedError)$/.test(err.name) ||
+        /^(ENOENT|EACCES|EPERM)$/.test(err.code));
+}
+
+/**
  * Returns an HTML message for systemAlert explaining why a picked archive file or folder could not be read. Chromium reports
  * an operating-system denial of access as NoModificationAllowedError (while listing a folder) or NotReadableError (while
  * reading a file), so for these we point the user to the OS or administrator permissions rather than suggesting the archive
@@ -1911,6 +1923,7 @@ export default {
     showSlidingUIElements: showSlidingUIElements,
     scroller: scroller,
     systemAlert: systemAlert,
+    isFileAccessError: isFileAccessError,
     fileAccessErrorMessage: fileAccessErrorMessage,
     showUpgradeReady: showUpgradeReady,
     feedNodeWithBlob: feedNodeWithBlob,
