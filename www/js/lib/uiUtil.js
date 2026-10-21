@@ -1070,7 +1070,8 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
  * @returns {String} The message, formatted as HTML
  */
 function fileAccessErrorMessage (err) {
-    var systemMessage = '<p>[System error message: ' + (err && err.message || err) + ']</p>';
+    // The error text can include a file path (e.g. from Node's fs in Electron), so it must be escaped before it is inserted as HTML
+    var systemMessage = '<p>[System error message: ' + util.escapeHtml(err && err.message || err) + ']</p>';
     if (err && /^(NoModificationAllowedError|NotReadableError)$/.test(err.name)) {
         return '<p>The browser was refused access to your archive by the operating system. This is usually a permission ' +
             'setting, not a problem with the archive itself.</p><p>Please check that this browser is allowed to access files ' +
