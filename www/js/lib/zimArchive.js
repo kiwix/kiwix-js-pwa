@@ -234,13 +234,13 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
             that._searchArchiveParts(storage, path.slice(0, -2)).then(function (fileArray) {
                 createZimfile(fileArray);
             }).catch(function (error) {
-                callbackError('Error reading files in split archive ' + path + ': ' + error, 'Error reading archive files');
+                callbackError('Error reading files in split archive ' + util.escapeHtml(path) + ': ' + util.escapeHtml(error), 'Error reading archive files');
             });
         } else {
             storage.get(path).then(function (file) {
                 createZimfile([file]);
             }).catch(function (error) {
-                callbackError('Error reading ZIM file ' + path + ' : ' + error, 'Error reading archive file');
+                callbackError('Error reading ZIM file ' + util.escapeHtml(path) + ' : ' + util.escapeHtml(error), 'Error reading archive file');
             });
         }
     }
