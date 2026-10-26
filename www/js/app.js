@@ -4809,13 +4809,23 @@ function processNativeDirHandle (dirHandle, callback) {
 
 /**
  * Processes the files of a folder that was picked with the legacy folder picker, or dropped on the app in a browser
- * that supports that picker but not the File System Access API (e.g. Firefox). Stores the files for the archive list
- * to read, notes the folder if the browser gave us a path for it, populates the list of archives (which shows only
- * the first part of any split archive), and loads the archive the app is waiting for, if there is one
+ * that supports that picker but not the File System Access API (e.g. Firefox). Discards any file below the top level
+ * of the folder, stores the rest for the archive list to read, notes the folder if the browser gave us a path for it,
+ * populates the list of archives (which shows only the first part of any split archive), and loads the archive the
+ * app is waiting for, if there is one
  *
  * @param {Array<File>} filesArray The files in the picked or dropped folder
  */
 function scanLegacyFolderforArchives (filesArray) {
+    // The folder picker returns every file below the picked folder, but the app matches archives by name alone (see
+    // processDirectoryOfFiles), so two archives of the same name in different subfolders would be indistinguishable,
+    // and the parts of a split archive could be gathered from more than one of them. The File System Access API lists
+    // only the picked folder's own entries, so we discard anything deeper here too [kiwix-js-pwa #1029]
+    filesArray = filesArray.filter(function (file) {
+        // Chromium below 72 does not return the full relative path, and the files of a dropped folder have none at
+        // all (they are already limited to the folder's top level), so with no path to test we must keep the file
+        return (file.webkitRelativePath || '').split('/').length < 3;
+    });
     legacyFolderFiles = filesArray;
     // Supports reading in NWJS/Electron frameworks that have a path property on the File object. Note that the files
     // of a dropped folder have neither a path nor a webkitRelativePath, so there is no folder for us to store

@@ -3,6 +3,7 @@
 ## Unreleased
 
 * ENHANCEMENT: A folder of archives can now be dragged and dropped into the app in browsers that do not support the File System Access API outside the Origin Private File System (e.g. Firefox), which previously only accepted the archive files themselves
+* FIX: Picking a folder of archives in a browser without the File System Access API (e.g. Firefox) no longer lists the archives in that folder's subfolders, which could open a different archive of the same name, or combine the parts of two copies of a split archive; as with the File System Access API, pick the folder the archives are actually in
 * FIX: When the operating system denies the browser access to a picked archive file or folder, the app now says so, instead of claiming the archive could not be found (folder) or failing silently with the spinner left showing (single file)
 * FIX: Opening an article from an archive that can no longer be read (e.g. because its folder was renamed) now shows an error, instead of leaving the spinner showing
 
