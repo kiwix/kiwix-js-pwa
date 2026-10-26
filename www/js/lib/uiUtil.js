@@ -1095,6 +1095,48 @@ function fileAccessErrorMessage (err) {
 }
 
 /**
+ * Reads the files in the top level of a folder dropped onto the app, using the drag-and-drop FileSystem API (the entry
+ * returned by DataTransferItem.webkitGetAsEntry). This is the only way to read a dropped folder in browsers that do not
+ * support the File System Access API outside the OPFS (e.g. Firefox), because the DataTransfer never contains a folder's
+ * contents. Subdirectories are ignored, which matches the archives the webkitdirectory picker offers the user. NB this is
+ * a different API from the webkitdirectory attribute used by that picker, despite the shared vendor prefix
+ *
+ * @param {FileSystemDirectoryEntry} dirEntry The directory entry, which must have been obtained synchronously in the drop handler
+ * @returns {Promise<Array<File>>} A Promise for the File objects in the top level of the folder, or a rejection with the browser's
+ *     error if the folder or one of its files cannot be read (e.g. if the context does not permit reading it)
+ */
+function readDroppedDirectory (dirEntry) {
+    var reader = dirEntry.createReader();
+    var files = [];
+    var fileFromEntry = function (entry) {
+        return new Promise(function (resolve, reject) {
+            entry.file(resolve, reject);
+        });
+    };
+    return new Promise(function (resolve, reject) {
+        // readEntries() returns the folder's entries in batches (Chromium returns at most 100 per call), so we
+        // have to keep calling it until it returns an empty array
+        var readBatch = function () {
+            reader.readEntries(function (entries) {
+                if (!entries.length) {
+                    resolve(files);
+                    return;
+                }
+                var filePromises = [];
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].isFile) filePromises.push(fileFromEntry(entries[i]));
+                }
+                Promise.all(filePromises).then(function (batch) {
+                    files = files.concat(batch);
+                    readBatch();
+                }).catch(reject);
+            }, reject);
+        };
+        readBatch();
+    });
+}
+
+/**
  * Shows that an upgrade is ready to install
  * @param {String} ver The version of the upgrade
  * @param {String} type Either 'load', 'install', 'download', 'display' or 'progress' according to the type of upgrade
@@ -1925,6 +1967,7 @@ export default {
     systemAlert: systemAlert,
     isFileAccessError: isFileAccessError,
     fileAccessErrorMessage: fileAccessErrorMessage,
+    readDroppedDirectory: readDroppedDirectory,
     showUpgradeReady: showUpgradeReady,
     feedNodeWithBlob: feedNodeWithBlob,
     getDataUriFromUint8Array: getDataUriFromUint8Array,

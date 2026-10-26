@@ -200,6 +200,10 @@ params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.stored
 params.originalPackagedFile = params.packagedFile;
 params['localStorage'] = '';
 params['pickedFolder'] = '';
+// Set when the archive list was built from a folder picked or dropped in a browser that has no File System Access
+// API: a dropped folder has no path, so params.pickedFolder cannot by itself show that the archives came from a
+// folder, and the app would reopen the wrong picker after a reload [kiwix-js-pwa #1030]
+params['archiveListFromFolder'] = getSetting('archiveListFromFolder') === true;
 params['themeChanged'] = params['themeChanged'] || false;
 params['printIntercept'] = false;
 params['printInterception'] = false;

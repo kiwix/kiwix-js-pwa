@@ -934,6 +934,10 @@ var currentArchiveLink = document.getElementById('currentArchiveLink');
 var openCurrentArchive = document.getElementById('openCurrentArchive');
 var archiveFilesLegacy = document.getElementById('archiveFilesLegacy');
 var archiveDirLegacy = document.getElementById('archiveDirLegacy');
+// The files in the folder most recently picked with the legacy folder picker or dropped on the app. We cannot rely on
+// archiveDirLegacy.files for this, because a dropped folder's files can only be put back into that picker with a
+// DataTransfer object, which browsers that support the legacy picker do not all have
+var legacyFolderFiles = [];
 if (!params.webkitdirectory) {
     archiveDirLegacy.style.display = 'none';
 }
@@ -1486,7 +1490,10 @@ function selectArchive (list) {
         }
     }
     var selectViaFSHandles = function () {
-        if (window.showOpenFilePicker || params.useOPFS) {
+        // A folder read with the legacy reader because the File System Access API refused it has no stored handle
+        // (we delete it on the drop), so its files have to take precedence here, or we would tell the user that no
+        // handle could be retrieved while holding everything needed to open the archive
+        if ((window.showOpenFilePicker || params.useOPFS) && !legacyFolderFiles.length) {
             return getNativeFSHandle(function (handle) {
                 resetUI();
                 if (!handle) {
@@ -1519,10 +1526,10 @@ function selectArchive (list) {
             });
         } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
             // If we don't have any picked files or directories...
-            if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
+            if (!legacyFolderFiles.length && !archiveFilesLegacy.files.length) {
                 appstate.waitForFileSelect = selected;
                 // No files are set, so we need to ask user to select the file or directory again
-                if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
+                if (params.pickedFolder || params.archiveListFromFolder || document.getElementById('archiveList').options.length > 1) {
                     archiveDirLegacy.click();
                 } else {
                     archiveFilesLegacy.click();
@@ -1530,8 +1537,9 @@ function selectArchive (list) {
             } else {
                 console.debug('Files are set, attempting to select ' + selected);
                 params.pickedFile = selected;
-                if (archiveDirLegacy.files.length) {
-                    params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+                if (legacyFolderFiles.length) {
+                    // A file read from a dropped folder has no webkitRelativePath, so there is no folder to record
+                    params.pickedFolder = (legacyFolderFiles[0].webkitRelativePath || '').replace(/\/[^/]*$/, '');
                     params.pickedFile = '';
                 }
                 setLocalArchiveFromArchiveList(selected);
@@ -1619,6 +1627,12 @@ archiveFilesLegacy.addEventListener('change', function (files) {
     }
     uiUtil.pollSpinner('Loading archive...', 9000);
     params.pickedFolder = null;
+    // A picked file supersedes any folder picked or dropped before it, so forget that folder's files and the fact
+    // that the archive list came from it: otherwise setLocalArchiveFromArchiveList() would look for this file among
+    // the folder's files, and a reload would reopen the folder picker in place of this one
+    legacyFolderFiles = [];
+    params.archiveListFromFolder = false;
+    settingsStore.setItem('archiveListFromFolder', false, Infinity);
     params.pickedFile = null;
     if (params.storedFile === params.packagedFile) {
         params.storedFile = null;
@@ -1671,31 +1685,7 @@ document.getElementById('archiveFile').addEventListener('click', function () {
 // Legacy webkitdirectory file picker is used as a fallback when File System Access API is unavailable
 archiveDirLegacy.addEventListener('change', function (files) {
     if (files.target.files.length) {
-        var filesArray = Array.from(files.target.files);
-        // Supports reading in NWJS/Electron frameworks that have a path property on the File object
-        var path = filesArray[0] ? filesArray[0].path ? filesArray[0].path : filesArray[0].webkitRelativePath : '';
-        params.pickedFile = null;
-        var oldDir = params.pickedFolder;
-        params.pickedFolder = path.replace(/[^\\/]*$/, '');
-        // If we're picking a different directroy, don't look for the previously picked file in it
-        if (params.pickedFolder !== oldDir) {
-            params.storedFile = null;
-            params.storedFilePath = null;
-        }
-        settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
-        if (document.getElementById('archiveList').options.length === 0) {
-            params.storedFile = null;
-        }
-        processFilesArray(filesArray);
-        var selected = '';
-        if (appstate.waitForFileSelect) {
-            selected = appstate.waitForFileSelect;
-            appstate.waitForFileSelect = null;
-            // Select the selected file in the dropdown list of archives
-            document.getElementById('archiveList').value = selected;
-            console.debug('Files are set, attempting to select ' + selected);
-        }
-        if (selected) setLocalArchiveFromArchiveList(selected);
+        scanLegacyFolderforArchives(Array.from(files.target.files));
     } else {
         appstate.waitForFileSelect = null;
         console.log('User cancelled directory picker, or chose a directory with no files');
@@ -4326,8 +4316,8 @@ function setLocalArchiveFromArchiveList (archive) {
                         }
                     }
                     return;
-                } else if (params.pickedFolder && params.webkitdirectory || archiveDirLegacy.files.length) {
-                    processDirectoryOfFiles(archiveDirLegacy.files, archive);
+                } else if (params.pickedFolder && params.webkitdirectory || legacyFolderFiles.length) {
+                    processDirectoryOfFiles(legacyFolderFiles, archive);
                     return;
                 } else { // Check if user previously picked a specific file rather than a folder
                     if (params.pickedFile && typeof MSApp !== 'undefined') {
@@ -4556,13 +4546,13 @@ function handleFileDrop (packet) {
     // We have to grab the FileList synchronously, because the DataTransfer object is neutered
     // once this event handler returns, and we may need it in an asynchronous fallback below
     var files = packet.dataTransfer.files;
-    // For the same reason, note now whether a folder was dropped: the DataTransfer never contains a
-    // folder's contents, so there is no legacy fallback for a folder we are not allowed to read
-    var droppedFolder = false;
+    // For the same reason, we must grab the dropped entry now: the DataTransfer never contains a folder's
+    // contents, so this entry is the only way to read a dropped folder without the File System Access API
+    var droppedEntry = null;
     if (items && items.length === 1 && typeof items[0].webkitGetAsEntry === 'function') {
-        var droppedEntry = items[0].webkitGetAsEntry();
-        droppedFolder = !!(droppedEntry && droppedEntry.isDirectory);
+        droppedEntry = items[0].webkitGetAsEntry();
     }
+    var droppedFolder = !!(droppedEntry && droppedEntry.isDirectory);
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
@@ -4580,18 +4570,42 @@ function handleFileDrop (packet) {
             // to read it, so fall back to the legacy file drop, which does not need the File System Access API
             console.warn('Unable to process the dropped file system handle', err);
             if (droppedFolder) {
-                // Falling back would void the folder the user already picked and then fail anyway
-                uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
-                    '<p>Please drop the ZIM file itself instead of the folder, or, if the archive is split, drop all of its parts together.</p>',
-                'Cannot read dropped folder');
+                // The drag-and-drop FileSystem API may still be permitted where the File System Access API is not,
+                // so try to read the folder with that before we give up on it
+                console.warn('Falling back to reading the dropped folder with the drag-and-drop FileSystem API');
+                handleLegacyFolderDrop(droppedEntry);
                 return;
             }
             console.warn('Falling back to the legacy file drop');
             handleLegacyFileDrop(files);
         });
+    } else if (droppedFolder) {
+        // Browsers with no File System Access API outside the OPFS (e.g. Firefox) can still read a dropped folder
+        // with the drag-and-drop FileSystem API [kiwix-js-pwa #1027]
+        handleLegacyFolderDrop(droppedEntry);
     } else {
         handleLegacyFileDrop(files);
     }
+}
+
+// Loads a dropped folder without using the File System Access API. The DataTransfer never contains a folder's contents,
+// so we read the folder with the drag-and-drop FileSystem API, and then load its files the same way as a folder picked
+// with the legacy folder picker, which is how this app already opens a folder in browsers without the File System
+// Access API, e.g. Firefox [kiwix-js-pwa #1027, cf. kiwix/kiwix-js#1542]
+function handleLegacyFolderDrop (dirEntry) {
+    var cannotReadFolder = function (err) {
+        console.error('Unable to read the dropped folder', err);
+        uiUtil.systemAlert('<p>This browser will not allow the app to read a dropped folder in the current context.</p>' +
+            '<p>Please drop the ZIM file itself instead of the folder, or, if the archive is split, drop all of its parts together.</p>',
+        'Cannot read dropped folder');
+    };
+    if (!dirEntry || typeof dirEntry.createReader !== 'function') return cannotReadFolder();
+    return uiUtil.readDroppedDirectory(dirEntry).then(function (folderFiles) {
+        // Delete any previous file system handle (as otherwise, it will get inadvertiently reloaded)
+        cache.idxDB('delete', 'pickedFSHandle', function () {});
+        // From here on, a dropped folder is treated exactly like a folder picked with the legacy folder picker
+        scanLegacyFolderforArchives(folderFiles);
+    }).catch(cannotReadFolder);
 }
 
 // Loads dropped files without using the File System Access API (also used as a fallback if that API is blocked)
@@ -4612,6 +4626,12 @@ function handleLegacyFileDrop (files) {
     // We have to void the previous picked folder, because dragged files don't have a folder
     // This also prevents a file-not-found alert to the user when picking a new directory
     params.pickedFolder = null;
+    // For the same reason, forget the files of any folder picked or dropped before, so that we don't later look
+    // for an archive selected in the list among them, and so that a reload reopens the file picker rather than the
+    // folder picker
+    legacyFolderFiles = [];
+    params.archiveListFromFolder = false;
+    settingsStore.setItem('archiveListFromFolder', false, Infinity);
     settingsStore.setItem('pickedFolder', '', Infinity);
     params.pickedFile = null;
     params.storedFile = null;
@@ -4797,6 +4817,67 @@ function processNativeDirHandle (dirHandle, callback) {
     }).catch(function (err) {
         uiUtil.systemAlert(uiUtil.fileAccessErrorMessage(err), 'Error!');
     });
+}
+
+/**
+ * Processes the files of a folder that was picked with the legacy folder picker, or dropped on the app in a browser
+ * that supports that picker but not the File System Access API (e.g. Firefox). Discards any file below the top level
+ * of the folder, stores the rest for the archive list to read, notes the folder if the browser gave us a path for it,
+ * populates the list of archives (which shows only the first part of any split archive), and loads the archive the
+ * app is waiting for, if there is one
+ *
+ * @param {Array<File>} filesArray The files in the picked or dropped folder
+ */
+function scanLegacyFolderforArchives (filesArray) {
+    // A folder supersedes any file picked or dropped before it. selectArchive() searches archiveFilesLegacy.files by
+    // name before it consults the folder, so a stale file of the same name would be loaded in place of the folder's
+    // own copy of that archive, or a stale part in place of a whole split archive (the picker is read only in some
+    // browsers, hence the try ... catch)
+    try {
+        archiveFilesLegacy.value = '';
+    } catch (err) {
+        console.warn('Unable to clear the legacy file picker', err);
+    }
+    // Remember that the archive list came from a folder, so that a reload reopens the folder picker rather than the
+    // single-file picker: a dropped folder has no path to record in params.pickedFolder [kiwix-js-pwa #1030]
+    params.archiveListFromFolder = true;
+    settingsStore.setItem('archiveListFromFolder', true, Infinity);
+    // The folder picker returns every file below the picked folder, but the app matches archives by name alone (see
+    // processDirectoryOfFiles), so two archives of the same name in different subfolders would be indistinguishable,
+    // and the parts of a split archive could be gathered from more than one of them. The File System Access API lists
+    // only the picked folder's own entries, so we discard anything deeper here too [kiwix-js-pwa #1029]
+    filesArray = filesArray.filter(function (file) {
+        // Chromium below 72 does not return the full relative path, and the files of a dropped folder have none at
+        // all (they are already limited to the folder's top level), so with no path to test we must keep the file
+        return (file.webkitRelativePath || '').split('/').length < 3;
+    });
+    legacyFolderFiles = filesArray;
+    // Supports reading in NWJS/Electron frameworks that have a path property on the File object. Note that the files
+    // of a dropped folder have neither a path nor a webkitRelativePath, so there is no folder for us to store
+    var firstFile = filesArray[0] || {};
+    var path = firstFile.path ? firstFile.path : firstFile.webkitRelativePath || '';
+    params.pickedFile = null;
+    var oldDir = params.pickedFolder;
+    params.pickedFolder = path.replace(/[^\\/]*$/, '');
+    // If we're picking a different directroy, don't look for the previously picked file in it
+    if (params.pickedFolder !== oldDir) {
+        params.storedFile = null;
+        params.storedFilePath = null;
+    }
+    settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
+    if (document.getElementById('archiveList').options.length === 0) {
+        params.storedFile = null;
+    }
+    processFilesArray(filesArray);
+    var selected = '';
+    if (appstate.waitForFileSelect) {
+        selected = appstate.waitForFileSelect;
+        appstate.waitForFileSelect = null;
+        // Select the selected file in the dropdown list of archives
+        document.getElementById('archiveList').value = selected;
+        console.debug('Files are set, attempting to select ' + selected);
+    }
+    if (selected) setLocalArchiveFromArchiveList(selected);
 }
 
 function scanNodeFolderforArchives (folder, callback) {
@@ -5232,7 +5313,7 @@ function setLocalArchiveFromFileSelect () {
  * Sets the localArchive from the directory selected by user
  */
 function setLocalArchiveFromDirSelect () {
-    setLocalArchiveFromFileList(archiveDirLegacy.files);
+    setLocalArchiveFromFileList(legacyFolderFiles);
     params.rescan = false;
 }
 
