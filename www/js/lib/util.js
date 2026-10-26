@@ -321,6 +321,14 @@ function dataURItoUint8Array (dataURI) {
 
 /**
  * Detect whether the browser supports the webkitdirectory attribute on input elements
+ * DEV: the exclusion of iOS and Android is deliberate, and cannot be replaced by a feature test. The attribute is
+ * present on HTMLInputElement in those browsers, but their file choosers cannot return a directory, so testing for
+ * it alone gives a false positive: the folder picker it gates (see app.js) would open an ordinary file chooser and
+ * hand back files with no webkitRelativePath. This was tested on Android, and on iOS through BrowserStack, when
+ * this function was written (2023). If you want to know whether that has changed, open a page carrying an
+ * <input type="file" webkitdirectory> on the device: a querystring override will not do it, because app.js assigns
+ * params.webkitdirectory from this function unconditionally. Neither platform needs the picker: both are offered
+ * the OPFS instead, which persists an archive with no picker at all
  * @returns {Boolean} True if the webkitdirectory attribute is supported, false otherwise
  */
 function webkitdirectorySupported () {
