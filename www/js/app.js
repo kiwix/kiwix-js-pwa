@@ -1490,7 +1490,10 @@ function selectArchive (list) {
         }
     }
     var selectViaFSHandles = function () {
-        if (window.showOpenFilePicker || params.useOPFS) {
+        // A folder read with the legacy reader because the File System Access API refused it has no stored handle
+        // (we delete it on the drop), so its files have to take precedence here, or we would tell the user that no
+        // handle could be retrieved while holding everything needed to open the archive
+        if ((window.showOpenFilePicker || params.useOPFS) && !legacyFolderFiles.length) {
             return getNativeFSHandle(function (handle) {
                 resetUI();
                 if (!handle) {
@@ -1526,7 +1529,7 @@ function selectArchive (list) {
             if (!legacyFolderFiles.length && !archiveFilesLegacy.files.length) {
                 appstate.waitForFileSelect = selected;
                 // No files are set, so we need to ask user to select the file or directory again
-                if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
+                if (params.pickedFolder || params.archiveListFromFolder || document.getElementById('archiveList').options.length > 1) {
                     archiveDirLegacy.click();
                 } else {
                     archiveFilesLegacy.click();
@@ -1624,6 +1627,12 @@ archiveFilesLegacy.addEventListener('change', function (files) {
     }
     uiUtil.pollSpinner('Loading archive...', 9000);
     params.pickedFolder = null;
+    // A picked file supersedes any folder picked or dropped before it, so forget that folder's files and the fact
+    // that the archive list came from it: otherwise setLocalArchiveFromArchiveList() would look for this file among
+    // the folder's files, and a reload would reopen the folder picker in place of this one
+    legacyFolderFiles = [];
+    params.archiveListFromFolder = false;
+    settingsStore.setItem('archiveListFromFolder', false, Infinity);
     params.pickedFile = null;
     if (params.storedFile === params.packagedFile) {
         params.storedFile = null;
@@ -4618,8 +4627,11 @@ function handleLegacyFileDrop (files) {
     // This also prevents a file-not-found alert to the user when picking a new directory
     params.pickedFolder = null;
     // For the same reason, forget the files of any folder picked or dropped before, so that we don't later look
-    // for an archive selected in the list among them
+    // for an archive selected in the list among them, and so that a reload reopens the file picker rather than the
+    // folder picker
     legacyFolderFiles = [];
+    params.archiveListFromFolder = false;
+    settingsStore.setItem('archiveListFromFolder', false, Infinity);
     settingsStore.setItem('pickedFolder', '', Infinity);
     params.pickedFile = null;
     params.storedFile = null;
@@ -4817,6 +4829,19 @@ function processNativeDirHandle (dirHandle, callback) {
  * @param {Array<File>} filesArray The files in the picked or dropped folder
  */
 function scanLegacyFolderforArchives (filesArray) {
+    // A folder supersedes any file picked or dropped before it. selectArchive() searches archiveFilesLegacy.files by
+    // name before it consults the folder, so a stale file of the same name would be loaded in place of the folder's
+    // own copy of that archive, or a stale part in place of a whole split archive (the picker is read only in some
+    // browsers, hence the try ... catch)
+    try {
+        archiveFilesLegacy.value = '';
+    } catch (err) {
+        console.warn('Unable to clear the legacy file picker', err);
+    }
+    // Remember that the archive list came from a folder, so that a reload reopens the folder picker rather than the
+    // single-file picker: a dropped folder has no path to record in params.pickedFolder [kiwix-js-pwa #1030]
+    params.archiveListFromFolder = true;
+    settingsStore.setItem('archiveListFromFolder', true, Infinity);
     // The folder picker returns every file below the picked folder, but the app matches archives by name alone (see
     // processDirectoryOfFiles), so two archives of the same name in different subfolders would be indistinguishable,
     // and the parts of a split archive could be gathered from more than one of them. The File System Access API lists
