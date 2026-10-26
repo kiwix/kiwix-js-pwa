@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Checks full-screen mode entry and cancellation behavior in www/js/lib/uiUtil.js (#961).
+ * Checks full-screen mode entry, cancellation, and toggle behavior in www/js/lib/uiUtil.js (#956, #961).
  *
  * Usage: npm test
  */
@@ -99,6 +99,9 @@ function createMockEnvironment (options) {
             appIsFullScreen: appIsFullScreen,
             requestOrCancelFullScreen: requestOrCancelFullScreen,
             lockDisplayOrientation: lockDisplayOrientation,
+            toggleFullScreen: toggleFullScreen,
+            isFullScreenSuppressed: isFullScreenSuppressed,
+            setFullScreenSuppressed: setFullScreenSuppressed,
             getDocumentElement: function () { return mockDocumentElement; },
             getExitFullscreenCalled: function () { return exitFullscreenCalled; },
             getRequestFullscreenCalled: function () { return requestFullscreenCalled; },
@@ -183,5 +186,59 @@ describe('Error handling when exitFullscreen fails in active fullscreen', functi
         assert.equal(warnings.length, 1);
         assert.equal(warnings[0][0], 'Error disabling full-screen mode');
         assert.ok(warnings[0][1] instanceof Error);
+    });
+});
+
+describe('Toggling full-screen mode on and off (#956)', function () {
+    it('enters full-screen mode, suppresses auto-reactivation on exit, and unsuppresses on re-entry', async function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
+
+        assert.equal(sandbox.isFullScreenSuppressed(), false);
+
+        // Toggle on from windowed mode
+        const entered = await sandbox.toggleFullScreen('fullscreen');
+        assert.equal(entered, true);
+        assert.equal(sandbox.appIsFullScreen(), true);
+        assert.equal(sandbox.getRequestFullscreenCalled(), 1);
+        assert.equal(sandbox.isFullScreenSuppressed(), false);
+
+        // Toggle off from full-screen mode: exits fullscreen and suppresses auto-restore
+        const exited = await sandbox.toggleFullScreen('fullscreen');
+        assert.equal(exited, false);
+        assert.equal(sandbox.appIsFullScreen(), false);
+        assert.equal(sandbox.getExitFullscreenCalled(), 1);
+        assert.equal(sandbox.isFullScreenSuppressed(), true);
+
+        // Toggle back on: restores fullscreen and unsuppresses auto-restore
+        const reentered = await sandbox.toggleFullScreen('fullscreen');
+        assert.equal(reentered, true);
+        assert.equal(sandbox.appIsFullScreen(), true);
+        assert.equal(sandbox.getRequestFullscreenCalled(), 2);
+        assert.equal(sandbox.isFullScreenSuppressed(), false);
+    });
+
+    it('locks and unlocks display orientation when toggling with orientation mode', async function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
+
+        // Toggle on with orientation lock
+        await sandbox.toggleFullScreen('portrait');
+        assert.equal(sandbox.appIsFullScreen(), true);
+        assert.equal(sandbox.getOrientationLockCalled(), 1);
+
+        // Toggle off unlocks orientation and sets suppression
+        await sandbox.toggleFullScreen('portrait');
+        assert.equal(sandbox.appIsFullScreen(), false);
+        assert.equal(sandbox.getOrientationUnlockCalled(), 1);
+        assert.equal(sandbox.isFullScreenSuppressed(), true);
+    });
+
+    it('allows manual suppression state control', function () {
+        const sandbox = createMockEnvironment({ isFullscreen: false });
+
+        assert.equal(sandbox.isFullScreenSuppressed(), false);
+        sandbox.setFullScreenSuppressed(true);
+        assert.equal(sandbox.isFullScreenSuppressed(), true);
+        sandbox.setFullScreenSuppressed(false);
+        assert.equal(sandbox.isFullScreenSuppressed(), false);
     });
 });
