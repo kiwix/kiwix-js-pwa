@@ -408,7 +408,7 @@ function matchInner (str, left, right, flags) {
 function Hilitor (node, tag) {
     var targetNode = node || document.body;
     var hiliteTag = tag || 'EM';
-    var skipTags = new RegExp('^(?:' + hiliteTag + '|SCRIPT|FORM)$');
+    var skipTags = new RegExp('^(?:' + hiliteTag + '|SCRIPT|FORM|STYLE|TITLE)$');
     var colors = ['#ff6', '#a0ffff', '#9f9', '#f99', '#f6f'];
     var className = 'hilitor';
     var wordColor = [];
@@ -496,8 +496,8 @@ function Hilitor (node, tag) {
 
     this.countFullMatches = function (input) {
         if (node === undefined || !node) return;
-        var strippedText = node.innerHTML.replace(/<title[^>]*>[\s\S]*<\/title>/i, '');
-        strippedText = node.innerHTML.replace(/<[^>]*>\s*/g, ' ');
+        var strippedText = node.innerHTML.replace(/<(title|style|script)[^>]*>[\s\S]*?<\/\1>/gi, '');
+        strippedText = strippedText.replace(/<[^>]*>\s*/g, ' ');
         if (!strippedText) return 0;
         strippedText = strippedText.replace(/(?:&nbsp;|\r?\n|[.,;:?!¿¡-])+/g, ' ');
         strippedText = strippedText.replace(/\s+/g, ' ');
