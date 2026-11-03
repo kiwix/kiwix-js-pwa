@@ -301,7 +301,7 @@ jobs:
         if [[ -z "$CSC_LINK" ]]; then
           echo "❌ Signing was requested, but no signing certificate secret is available."
           echo "   Check that this repository still has access to the org-level secret"
-          echo "   APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE (see kiwix/operations#501)."
+          echo "   APPLE_DEVELOPER_ID_SIGNING_CERTIFICATE (see kiwix/operations#311)."
           if [[ "$WOULD_PUBLISH" == "true" ]]; then
             echo "   This build would be published, so failing rather than publishing packages"
             echo "   that are unsigned while the installation instructions say they are signed."
