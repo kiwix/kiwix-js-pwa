@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Interim release 3.9.6
 
 * ENHANCEMENT: A folder of archives can now be dragged and dropped into the app in browsers that do not support the File System Access API outside the Origin Private File System (e.g. Firefox), which previously only accepted the archive files themselves
 * CHANGED BEHAVIOUR: Picking a folder of archives in a browser without the File System Access API (e.g. Firefox) no longer lists the archives in that folder's subfolders, which could open a different archive of the same name, or combine the parts of two copies of a split archive; as with the File System Access API, pick the folder the archives are actually in
@@ -10,7 +10,7 @@
 * FIX: Paths, URLs and error messages shown in alert dialogs are now always displayed as plain text
 * FIX: After opening an archive file in a browser without the File System Access API (e.g. Firefox), selecting a folder that contains a different archive of the same name no longer opens the first file instead of the one in the folder (for a split archive, it could also open a single stale part in place of the whole set)
 * FIX: In the same browsers, picking a single archive file after selecting a folder now opens that file, instead of reporting that it could not be found because the app was still looking in the previously selected folder
-
+* DEV: Various dependency updates for security
 
 ## Interim release 3.9.5
 
