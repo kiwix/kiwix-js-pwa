@@ -35,6 +35,7 @@
 'use strict';
 
 import cache from './cache.js';
+import util from './util.js';
 import uiUtil from './uiUtil.js';
 import settingsStore from './settingsStore.js';
 import torrentClient from './torrentClient.js';
@@ -673,15 +674,6 @@ function escapeRegExp (str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function escapeHtml (str) {
-    if (str == null) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
-
 function trim (str) {
     return str == null ? '' : String(str).replace(/^\s+|\s+$/g, '');
 }
@@ -916,11 +908,11 @@ function renderOpdsCategories (xml, requestUrl) {
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">Name</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">';
     for (var i = 0; i < categoryRows.length; i++) {
-        var rowLabel = escapeHtml(categoryRows[i].label || categoryRows[i].title + '/');
+        var rowLabel = util.escapeHtml(categoryRows[i].label || categoryRows[i].title + '/');
         if (categoryRows[i].external) {
-            bodyDoc += '<div><a href="' + escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + rowLabel + '</a></div>';
+            bodyDoc += '<div><a href="' + util.escapeHtml(categoryRows[i].href) + '" target="_blank" rel="noopener noreferrer">' + rowLabel + '</a></div>';
         } else {
-            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + escapeHtml(categoryRows[i].href) + '">' + rowLabel + '</a></div>';
+            bodyDoc += '<div><a href="#" class="kiwix-opds-link" data-kiwix-kind="category" data-kiwix-dl="' + util.escapeHtml(categoryRows[i].href) + '">' + rowLabel + '</a></div>';
         }
     }
     bodyDoc += '</div></div>';
@@ -1065,7 +1057,7 @@ function buildDropdown (id, values, valueType) {
         if (valueType === 'lang' && label !== 'All') {
             label = getLanguageDisplayLabel(label);
         }
-        dropdown += '<option value="' + escapeHtml(values[i]) + '">' + escapeHtml(label) + '</option>\r\n';
+        dropdown += '<option value="' + util.escapeHtml(values[i]) + '">' + util.escapeHtml(label) + '</option>\r\n';
     }
     dropdown += '</select>\r\n';
     return dropdown;
@@ -1170,7 +1162,7 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var dropdownDate = buildDropdown('dates', dateArray, 'date');
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim' +
-        (currentOpdsCategory ? '/' + escapeHtml(currentOpdsCategory) : ' (' + (libraryScope ? libraryScope.label : 'all entries') + ')') + '</h3>';
+        (currentOpdsCategory ? '/' + util.escapeHtml(currentOpdsCategory) : ' (' + (libraryScope ? libraryScope.label : 'all entries') + ')') + '</h3>';
     if (libraryScope && !currentOpdsEntries.length) {
         bodyDoc += '<p style="margin-left:0.15em;">This list has no ' + libraryScope.label + '.</p>';
     }
@@ -1186,7 +1178,7 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     bodyDoc += '<div class="row" style="margin-left:0; margin-right:0; padding-bottom:10px;">' +
         '<div class="col-12" style="padding-top:4px;">Filter:&nbsp;&nbsp;' +
         '<input type="search" id="kiwixFilter" class="kiwix-filter" autocomplete="off" spellcheck="false" ' +
-        'placeholder="Filter by name or description" value="' + escapeHtml(currentOpdsFilter) + '" />' +
+        'placeholder="Filter by name or description" value="' + util.escapeHtml(currentOpdsFilter) + '" />' +
         '&nbsp;&nbsp;<span id="kiwixFilterCount" style="opacity:0.75;"></span></div></div>';
     bodyDoc += '</div>';
     var opdsRowStyle = 'display:flex;min-width:740px;white-space:nowrap;';
@@ -1200,7 +1192,7 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><b>Name</b></div><div style="' + opdsSizeColStyle + '"><b>Size</b></div><div style="' + opdsDateColStyle + '"><b>Last modified</b></div><div style="' + opdsDescColStyle + '"><b>Description</b></div></div>' +
         '</div>' +
         '<div id="dl-panel-body" class="card-body" style="max-height:360px;word-wrap:normal;white-space:nowrap;margin-bottom:10px;overflow:auto;">';
-    bodyDoc += '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" data-kiwix-kind="category-root" data-kiwix-dl="' + escapeHtml(params.kiwixCatalogCategories) + '">Back to category list</a></div><div style="' + opdsSizeColStyle + '"></div><div style="' + opdsDateColStyle + '"></div><div style="' + opdsDescColStyle + '"></div></div>';
+    bodyDoc += '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" data-kiwix-kind="category-root" data-kiwix-dl="' + util.escapeHtml(params.kiwixCatalogCategories) + '">Back to category list</a></div><div style="' + opdsSizeColStyle + '"></div><div style="' + opdsDateColStyle + '"></div><div style="' + opdsDescColStyle + '"></div></div>';
     var filterTokens = getFilterTokens(currentOpdsFilter);
     var shown = 0;
     for (var i = 0; i < currentOpdsEntries.length; i++) {
@@ -1208,12 +1200,12 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
         var matches = entryMatchesFilters(entry, lang, subj, kiwixDate, filterTokens);
         if (matches) shown++;
         var displayStyle = matches ? '' : ' style="display:none;"';
-        bodyDoc += '<div class="wikiLang" data-kiwixlanguages="' + escapeHtml(entry.languages.join(',')) + '" data-kiwixsubject="' + escapeHtml(entry.subject) + '" data-kiwixdate="' + escapeHtml(entry.date) + '"' + displayStyle + '>' +
+        bodyDoc += '<div class="wikiLang" data-kiwixlanguages="' + util.escapeHtml(entry.languages.join(',')) + '" data-kiwixsubject="' + util.escapeHtml(entry.subject) + '" data-kiwixdate="' + util.escapeHtml(entry.date) + '"' + displayStyle + '>' +
             '<div style="' + opdsRowStyle + '">' +
-            '<div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" style="' + opdsNameLinkStyle + '" title="' + escapeHtml(entry.filename) + '" data-kiwix-kind="archive" data-kiwix-dl="' + escapeHtml(entry.acquisitionHref) + '">' + escapeHtml(entry.filename) + '</a></div>' +
-            '<div style="' + opdsSizeColStyle + '">' + escapeHtml(entry.sizeDisplay) + '</div>' +
-            '<div style="' + opdsDateColStyle + '">' + escapeHtml(entry.dateDisplay) + '</div>' +
-            '<div style="' + opdsDescColStyle + '" title="' + escapeHtml(entry.summary || entry.title) + '">' + escapeHtml(entry.summary || entry.title) + '</div>' +
+            '<div style="' + opdsNameColStyle + '"><a href="#" class="kiwix-opds-link" style="' + opdsNameLinkStyle + '" title="' + util.escapeHtml(entry.filename) + '" data-kiwix-kind="archive" data-kiwix-dl="' + util.escapeHtml(entry.acquisitionHref) + '">' + util.escapeHtml(entry.filename) + '</a></div>' +
+            '<div style="' + opdsSizeColStyle + '">' + util.escapeHtml(entry.sizeDisplay) + '</div>' +
+            '<div style="' + opdsDateColStyle + '">' + util.escapeHtml(entry.dateDisplay) + '</div>' +
+            '<div style="' + opdsDescColStyle + '" title="' + util.escapeHtml(entry.summary || entry.title) + '">' + util.escapeHtml(entry.summary || entry.title) + '</div>' +
             '</div>' +
             '</div>';
     }
@@ -1375,7 +1367,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
-            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
+            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + util.escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
             bodyDoc += '<p><b><i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
             bodyDoc += '<p><b>Browser-managed download of ZIM archive:</b></p>' +
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
@@ -1440,7 +1432,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         }
         var headerDoc = 'We found the following links to your file:';
         var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
-        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
+        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + util.escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
         bodyDoc += /\/(ted|videos)\//i.test(URL) && /UWP/.test(params.appType) ? '<h4 style="color:red">IMPORTANT: <b>VIDEOS</b> (e.g. TED Talks, Khan Academy, etc.) can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for the videos using standard ZIM search or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += '<h5';
@@ -1457,7 +1449,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var torrentDownloadAvailable = megabytes > 200 && torrentClient.isAvailable() && /\.zim\.meta4$/i.test(URL);
         if (torrentDownloadAvailable) {
             bodyDoc += '<p><b>In-app BitTorrent download, for larger archives (downloads to your selected ZIM folder):</b></p><ul>\r\n<li>' +
-                '<a href="#" id="torrentDownloadLink" data-kiwix-torrent="' + escapeHtml(URL.replace(/\.meta4$/, '.torrent')) +
+                '<a href="#" id="torrentDownloadLink" data-kiwix-torrent="' + util.escapeHtml(URL.replace(/\.meta4$/, '.torrent')) +
                 '" style="background-color: green; color: yellow !important; padding: 2px 5px; border-radius: 3px; text-decoration: none;">Download via BitTorrent</a> (<i><b>recommended</b>: resumes automatically, even if interrupted by closing the app)</i></li></ul>\r\n';
         }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
@@ -1552,8 +1544,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                             console.error(err);
                             downloadSize = 0;
                             percentageComplete = 0;
-                            var message = 'Unable to download the archive ' + escapeHtml(archiveName) + ' to your device: ' + escapeHtml(err);
-                            if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support downloading files directly into the OPFS. Please select a different download method.</p><p>Error message: ' + escapeHtml(err.message) + '</p>';
+                            var message = 'Unable to download the archive ' + util.escapeHtml(archiveName) + ' to your device: ' + util.escapeHtml(err);
+                            if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support downloading files directly into the OPFS. Please select a different download method.</p><p>Error message: ' + util.escapeHtml(err.message) + '</p>';
                             return uiUtil.systemAlert(message, 'Download failed').then(function () {
                                 return cache.deleteOPFSEntry(archiveName);
                             });
@@ -2114,7 +2106,7 @@ if (torrentClient.isAvailable()) {
             });
         }, 1500);
         function offerResume () {
-            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + escapeHtml(pendingResume.name || 'an archive') +
+            uiUtil.systemAlert('<p>A BitTorrent download of <i>' + util.escapeHtml(pendingResume.name || 'an archive') +
                 '</i> did not finish because the app was closed.</p>' +
                 '<p>Do you want to resume it now? (<i>The data already downloaded has been kept.</i>)</p>',
             'Resume BitTorrent download?', true, 'Discard', 'Resume').then(function (resume) {
@@ -2140,7 +2132,7 @@ if (torrentClient.isAvailable()) {
  */
 function startTorrentDownload (torrentUrl, sizeMB) {
     if (activeTorrent) {
-        uiUtil.systemAlert('<p>A BitTorrent download is already in progress:</p><ul><li><i>' + escapeHtml(activeTorrent.name) + '</i></li></ul>' +
+        uiUtil.systemAlert('<p>A BitTorrent download is already in progress:</p><ul><li><i>' + util.escapeHtml(activeTorrent.name) + '</i></li></ul>' +
             '<p>Do you wish to stop it? (<i>Partially downloaded data will be kept, so the download can be resumed later.</i>)</p>',
         'Stop BitTorrent download?', true, 'Continue downloading', 'Stop download').then(function (result) {
             if (result && activeTorrent) {
@@ -2167,7 +2159,7 @@ function startTorrentDownload (torrentUrl, sizeMB) {
     })).then(function (savePath) {
         var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
             (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
-            (savePath ? '<p>The archive will be downloaded to <b>' + escapeHtml(savePath) + '</b>.</p>' +
+            (savePath ? '<p>The archive will be downloaded to <b>' + util.escapeHtml(savePath) + '</b>.</p>' +
                 '<p><label><input type="checkbox" id="torrentPickNewFolder">&nbsp;Download to a different folder&hellip;</label></p>'
                 : '<p>You will be asked to choose the folder into which the archive should be downloaded (usually your ZIM folder).</p>') +
             '<p>The download can be resumed if it is interrupted — even by closing the app: you will be offered to continue it the next time you open the app. ' +
@@ -2250,7 +2242,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
             } else if (s.seeding && serverResponse.style.display !== 'none') {
                 // The download has completed, but we are still seeding the archive
                 serverResponse.style.setProperty('color', 'green', 'important');
-                serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+                serverResponse.innerHTML = 'Seeding ' + util.escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
                     ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
             }
         },
@@ -2264,7 +2256,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
                 torrentClient.detach(s.infoHash);
             }
             reportDownloadProgress('completed');
-            uiUtil.systemAlert('<p>The archive <i>' + escapeHtml(s.name) + '</i> has been downloaded to <b>' + escapeHtml(savePath) + '</b>' +
+            uiUtil.systemAlert('<p>The archive <i>' + util.escapeHtml(s.name) + '</i> has been downloaded to <b>' + util.escapeHtml(savePath) + '</b>' +
                 (s.verified ? ' and its data has been verified' : '') + '.</p>' +
                 (s.seeding ? '<p><i>The app will go on sharing (seeding) this archive with other users until you close the app.</i></p>' : '') +
                 (downloadedArchiveOpener ? '<p>Do you want to open it now?</p>' : ''),
@@ -2286,7 +2278,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
             percentageComplete = 0;
             clearActiveTorrent();
             uiUtil.pollOpsPanel();
-            uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + escapeHtml(message) +
+            uiUtil.systemAlert('<p>The BitTorrent download failed:</p><p>' + util.escapeHtml(message) +
                 '</p><p>Any partially downloaded data will be reused if you try again.</p>', 'Download failed');
         }
     }).then(function (status) {
@@ -2302,7 +2294,7 @@ function beginTorrentDownload (torrentUrl, savePath) {
         percentageComplete = 0;
         clearActiveTorrent();
         uiUtil.pollOpsPanel();
-        uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + escapeHtml(err.message || err) + '</p>', 'Download failed');
+        uiUtil.systemAlert('<p>Unable to start the BitTorrent download:</p><p>' + util.escapeHtml(err.message || err) + '</p>', 'Download failed');
     });
 }
 
@@ -2363,7 +2355,7 @@ function showSeedingStatus () {
         if (!s || !s.seeding || !seedingTorrent) return;
         serverResponse.style.display = 'inline';
         serverResponse.style.setProperty('color', 'green', 'important');
-        serverResponse.innerHTML = 'Seeding ' + escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
+        serverResponse.innerHTML = 'Seeding ' + util.escapeHtml(s.name) + ': uploaded ' + (s.uploaded / 1048576).toFixed(1) +
             ' MB (' + s.numPeers + ' peer' + (s.numPeers === 1 ? '' : 's') + ')';
     }).catch(function (err) {
         console.warn('[kiwixServe] Could not refresh seeding status', err);
