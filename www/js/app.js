@@ -6789,7 +6789,7 @@ function handleClickOnReplayLink (ev, anchor) {
                                         uiUtil.clearSpinner();
                                     });
                                 } else {
-                                    return uiUtil.systemAlert('We could not find a PDF document at ' + zimUrl, 'PDF not found');
+                                    return uiUtil.systemAlert('We could not find a PDF document at ' + util.escapeHtml(zimUrl), 'PDF not found');
                                 }
                             });
                         };
@@ -6884,7 +6884,7 @@ function handleClickOnReplayLink (ev, anchor) {
             }
         }).catch(function (err) {
             console.error('Error getting dirEntry for ' + zimUrl, err);
-            uiUtil.systemAlert('There was an error looking up ' + zimUrl, 'Error reading direcotry entry!');
+            uiUtil.systemAlert('There was an error looking up ' + util.escapeHtml(zimUrl), 'Error reading directory entry');
         });
     }
 }
