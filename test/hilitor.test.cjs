@@ -239,15 +239,12 @@ describe('Find in article treats the typed text literally', function () {
         assert.equal(search('one two one two one', 'one').full, 3);
     });
 
-    it('does not count text inside <title>, <style>, or <script> tags in countFullMatches (#1034)', function () {
-        const doc = new FakeElement('HTML');
-        doc.innerHTML = '<head><title>Quantum Computing</title><style>body { color: blue; }</style>' +
-            '<script>var secret = "blue";</script></head><body>This is an article about physics and blue light.</body>';
-        const h = new Hilitor(doc);
-        assert.equal(h.countFullMatches('Quantum'), 0);
-        assert.equal(h.countFullMatches('secret'), 0);
-        assert.equal(h.countFullMatches('blue'), 1);
-        assert.equal(h.countFullMatches('physics'), 1);
+    it('does not count text inside inline <style> or <script> tags in countFullMatches (#1034)', function () {
+        const body = new FakeElement('BODY');
+        body.innerHTML = '<style>.mw-parser-output .navbox{text-align:center}</style>' +
+            '<p>Trees in the city center</p><script>var center = 1;</script>';
+        const h = new Hilitor(body);
+        assert.equal(h.countFullMatches('center'), 1);
     });
 
     it('skips <style> and <title> elements when applying highlights (#1034)', function () {

@@ -408,7 +408,7 @@ function matchInner (str, left, right, flags) {
 function Hilitor (node, tag) {
     var targetNode = node || document.body;
     var hiliteTag = tag || 'EM';
-    var skipTags = new RegExp('^(?:' + hiliteTag + '|SCRIPT|FORM|STYLE|TITLE)$');
+    var skipTags = new RegExp('^(?:' + hiliteTag + '|SCRIPT|FORM|STYLE|TITLE)$', 'i');
     var colors = ['#ff6', '#a0ffff', '#9f9', '#f99', '#f6f'];
     var className = 'hilitor';
     var wordColor = [];
