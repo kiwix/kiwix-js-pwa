@@ -10,6 +10,7 @@
 * FIX: Paths, URLs and error messages shown in alert dialogs are now always displayed as plain text
 * FIX: After opening an archive file in a browser without the File System Access API (e.g. Firefox), selecting a folder that contains a different archive of the same name no longer opens the first file instead of the one in the folder (for a split archive, it could also open a single stale part in place of the whole set)
 * FIX: In the same browsers, picking a single archive file after selecting a folder now opens that file, instead of reporting that it could not be found because the app was still looking in the previously selected folder
+* FIX: In Wikimedia ZIMs, link preview popovers on desktop now wait 1.2s before appearing (preventing accidental triggers while reading), and overlapping or orphaned popover balloons are prevented
 * DEV: Various dependency updates for security
 
 ## Interim release 3.9.5
