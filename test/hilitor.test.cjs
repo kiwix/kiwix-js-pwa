@@ -238,4 +238,45 @@ describe('Find in article treats the typed text literally', function () {
     it('counts full matches of ordinary text as before', function () {
         assert.equal(search('one two one two one', 'one').full, 3);
     });
+
+    it('does not count text inside inline <style> or <script> tags in countFullMatches (#1034)', function () {
+        const body = new FakeElement('BODY');
+        body.innerHTML = '<style>.mw-parser-output .navbox{text-align:center}</style>' +
+            '<p>Trees in the city center</p><script>var center = 1;</script>';
+        const h = new Hilitor(body);
+        assert.equal(h.countFullMatches('center'), 1);
+    });
+
+    it('skips <style> and <title> elements when applying highlights (#1034)', function () {
+        const body = new FakeElement('BODY');
+        const style = new FakeElement('STYLE');
+        const styleText = new FakeText('body { color: blue; }', style);
+        style.appendChild(styleText);
+        body.appendChild(style);
+        const title = new FakeElement('TITLE');
+        const titleText = new FakeText('blue title', title);
+        title.appendChild(titleText);
+        body.appendChild(title);
+        const bodyText = new FakeText('A blue sky', body);
+        body.appendChild(bodyText);
+
+        const h = new Hilitor(body);
+        h.setMatchType('open');
+        h.apply('blue');
+
+        // The text node inside <style> and <title> must not be highlighted
+        assert.equal(style.childNodes.length, 1);
+        assert.equal(style.childNodes[0].nodeType, 3);
+        assert.equal(style.childNodes[0].nodeValue, 'body { color: blue; }');
+
+        assert.equal(title.childNodes.length, 1);
+        assert.equal(title.childNodes[0].nodeType, 3);
+        assert.equal(title.childNodes[0].nodeValue, 'blue title');
+
+        // The text in <body> should be highlighted
+        const highlighted = body.childNodes
+            .filter(function (child) { return child.className === 'hilitor'; })
+            .map(function (child) { return child.childNodes[0].nodeValue; });
+        assert.deepEqual(highlighted, ['blue']);
+    });
 });
