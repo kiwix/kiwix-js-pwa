@@ -384,14 +384,8 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
         clearTimeout(pendingPopoverTimer);
         pendingPopoverTimer = null;
     }
-    if (pendingPopoverAnchor && pendingPopoverAnchor !== link) {
-        pendingPopoverAnchor.popoverisloading = false;
-    }
     const articleWindow = currentDocument.defaultView;
-    // Remove any existing popover(s) that the user may not have closed before creating a new one
-    removeKiwixPopoverDivs(currentDocument, true);
     pendingPopoverAnchor = link;
-    link.popoverisloading = true;
     // Timeout below ensures that popovers are not loaded if a user is simply moving their mouse around on a page without hovering
     const isTouch = Boolean(
         link.touched ||
@@ -402,13 +396,14 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
     const delay = isTouch ? 600 : 1200;
     pendingPopoverTimer = setTimeout(function () {
         pendingPopoverTimer = null;
+        pendingPopoverAnchor = null;
         // Check if the user has moved away from the link or has clicked it, and abort display of popover if so
         if (link.articleisloading || !link.matches(':hover') && !link.touched && currentDocument.activeElement !== link) {
             // Aborting popover display because user has moved away from link or clicked it
-            link.popoverisloading = false;
-            pendingPopoverAnchor = null;
             return;
         }
+        // Remove existing popovers only after confirming the user has rested on this link for the full delay
+        removeKiwixPopoverDivs(currentDocument, true);
         // Create a new Kiwix popover container
         const divWithArrow = createNewKiwixPopoverCointainer(articleWindow, link, ev);
         const div = divWithArrow.div;
@@ -416,10 +411,6 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
         // Get the article's 'lede' (first main paragraph or two) and the first main image (if any)
         getArticleLede(linkHref, state.baseUrl, currentDocument, archive).then(function (html) {
             if (!div.parentElement) {
-                link.popoverisloading = false;
-                if (pendingPopoverAnchor === link) {
-                    pendingPopoverAnchor = null;
-                }
                 return;
             }
             div.style.justifyContent = '';
@@ -452,10 +443,6 @@ function populateKiwixPopoverDiv (ev, link, state, dark, archive) {
                 div.parentElement.removeChild(div);
             }
             link.dataset.touchevoked = false;
-            link.popoverisloading = false;
-            if (pendingPopoverAnchor === link) {
-                pendingPopoverAnchor = null;
-            }
         });
     }, delay);
 }
@@ -623,21 +610,10 @@ function addEventListenersToPopoverIcons (anchor, popover, doc) {
  * @param {Boolean} [immediate] If true, remove popovers immediately without delay or hover check
  */
 function removeKiwixPopoverDivs (doc, immediate) {
-    if (immediate && pendingPopoverTimer) {
-        clearTimeout(pendingPopoverTimer);
-        pendingPopoverTimer = null;
-        if (pendingPopoverAnchor) {
-            pendingPopoverAnchor.popoverisloading = false;
-            pendingPopoverAnchor = null;
-        }
-    }
     if (!doc) return;
     const divs = doc.getElementsByClassName('kiwixtooltip');
     if (immediate) {
         Array.prototype.slice.call(divs).forEach(function (div) {
-            if (div && div.anchor === pendingPopoverAnchor) {
-                pendingPopoverAnchor = null;
-            }
             if (div && div.parentElement) {
                 div.parentElement.removeChild(div);
             }
@@ -677,9 +653,6 @@ function closePopover (div) {
     div.style.opacity = '0';
     // Timeout allows the animation to complete before removing the div
     setTimeout(function () {
-        if (div && div.anchor === pendingPopoverAnchor) {
-            pendingPopoverAnchor = null;
-        }
         if (div && div.parentElement) {
             div.parentElement.removeChild(div);
         }
