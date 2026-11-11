@@ -576,6 +576,19 @@ function insertLinkElement (doc, cssContent, id) {
 }
 
 /**
+ * Replaces each noscript element in the document with its own content, so that the browser renders it in Restricted mode.
+ * The article iframe allows scripts, so the parser treats the content of noscript tags as raw text even though the ZIM's
+ * own scripts have been stripped [kiwix-js #433, kiwix-js-pwa #1053]
+ * @param {Document|Element} doc The document or element containing the noscript tags
+ */
+function unwrapNoscriptTags (doc) {
+    var noscriptTags = doc.querySelectorAll('noscript');
+    Array.prototype.forEach.call(noscriptTags, function (noscriptTag) {
+        noscriptTag.outerHTML = noscriptTag.innerHTML;
+    });
+}
+
+/**
  * Walk up the DOM tree to find the closest element where the tagname matches the supplied regular expression
  *
  * @param {Element} el The starting DOM element
@@ -1974,6 +1987,7 @@ export default {
     getDataUriFromUint8Array: getDataUriFromUint8Array,
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
     insertLinkElement: insertLinkElement,
+    unwrapNoscriptTags: unwrapNoscriptTags,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,
     ToC: TableOfContents,
