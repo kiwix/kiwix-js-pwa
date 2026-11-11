@@ -38,7 +38,9 @@ function createMockEnvironment (packagedFile) {
         appType: 'PWA',
         packagedFile: packagedFile,
         kiwixCatalogCategories: CATEGORIES_URL,
-        kiwixCatalogEntries: ENTRIES_URL
+        kiwixCatalogEntries: ENTRIES_URL,
+        kiwixLibraryBrowser: 'https://browse.library.kiwix.org',
+        kiwixStagingServer: 'https://staging.download.kiwix.org'
     };
     const mockDocument = createMockDocument();
 
@@ -59,6 +61,7 @@ function createMockEnvironment (packagedFile) {
             getEntrySearchText: getEntrySearchText,
             isEntryInScope: isEntryInScope,
             entryMatchesFilters: entryMatchesFilters,
+            getMissingMetalinkLinks: getMissingMetalinkLinks,
             libraryScope: libraryScope
         };
     })()`);
@@ -176,5 +179,30 @@ describe('the filter textbox', function () {
         const env = createMockEnvironment('');
         const mdwiki = parsedEntries(env)[0];
         assert.equal(env.entryMatchesFilters(mdwiki, '', '', '', ['medic']), true);
+    });
+});
+
+// Staging archives (listed in developer mode from the openZIM CMS feed) have no metalink, torrent or mirrors
+describe('getMissingMetalinkLinks', function () {
+    const env = createMockEnvironment('');
+
+    it('offers only the ZIM itself, and a staging preview, for a staging archive', function () {
+        assert.deepEqual(env.getMissingMetalinkLinks('https://staging.download.kiwix.org/zim/dev/wikipedia_en_all_mini_2026-11.zim.meta4'), {
+            staging: true,
+            zim: 'https://staging.download.kiwix.org/zim/dev/wikipedia_en_all_mini_2026-11.zim',
+            mirror: '',
+            torrent: '',
+            preview: 'https://staging.library.kiwix.org/content/wikipedia_en_all_mini_2026-11'
+        });
+    });
+
+    it('still offers the mirror and the torrent for a production archive', function () {
+        assert.deepEqual(env.getMissingMetalinkLinks('https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_mini_2026-11.zim.meta4'), {
+            staging: false,
+            zim: 'https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_mini_2026-11.zim',
+            mirror: 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/wikipedia/wikipedia_en_all_mini_2026-11.zim',
+            torrent: 'https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_mini_2026-11.zim.torrent',
+            preview: 'https://browse.library.kiwix.org/content/wikipedia_en_all_mini_2026-11'
+        });
     });
 });
