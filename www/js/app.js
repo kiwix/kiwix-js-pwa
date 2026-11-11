@@ -7369,6 +7369,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
             // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
+                // DEV: This delay must stay longer than the 1200ms timeout for displayHiddenBlockElements(), whose scroll
+                // nudge (to trigger lazy loading) would otherwise dismiss the warning as soon as it appears [kiwix-js-pwa #1053]
                 setTimeout(function () {
                     uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
                 }, 1500);
@@ -7982,6 +7984,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
             // ** Write article html to the new article container **
             articleDocument.innerHTML = htmlArticle;
+            // Scripts are disabled in this mode, so make the browser display the contents of any noscript tags
+            uiUtil.unwrapNoscriptTags(articleDocument);
 
             var docBody = articleDocument.querySelector('body');
 
@@ -8117,6 +8121,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         }
 
         // Display any hidden block elements, with a timeout, so as not to interfere with image loading
+        // DEV: If you change this timeout, keep it shorter than the delay for displayActiveContentWarning() in
+        // displayArticleContentInContainer(), as the scroll nudge in displayHiddenBlockElements() dismisses the warning
         if (params.displayHiddenBlockElements && settingsStore.getItem('appVersion') === params.appVersion &&
           !(/UWP/.test(params.appType) && appstate.target !== 'iframe')) {
             setTimeout(function () {
