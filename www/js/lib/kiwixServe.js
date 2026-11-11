@@ -970,19 +970,21 @@ function renderOpdsCategories (xml, requestUrl) {
     var categoryRows = injectDeveloperCategoryRows(buildOpdsCategoryRows(entries, requestUrl));
     // Browsing by category alone cannot reach archives whose ZIM declares no Category, so offer the
     // catalogue-wide feed as well. Rows with a label render verbatim (no trailing directory slash).
-    categoryRows.unshift({
-        title: 'All entries',
-        label: 'All entries (' + (libraryScope ? libraryScope.label : 'whole catalogue') + ')',
-        href: params.kiwixCatalogEntries
-    });
-    // Listed last, and only if the user has turned it on: it is a separate catalogue, not a category of this one
+    // Listed only if the user has turned it on, which means they have accepted the warning about it, so it goes near
+    // the top where it is easy to find. It is a separate catalogue, not a category of this one, which is why the
+    // row above it says that it lists the official catalogue: "All entries" must not seem to include these
     if (isCommunityLibraryShown()) {
-        categoryRows.push({
+        categoryRows.unshift({
             title: 'Community library',
             label: 'Community library (third-party uploads, not checked by Kiwix)',
             href: params.kiwixCommunityCatalogEntries
         });
     }
+    categoryRows.unshift({
+        title: 'All entries',
+        label: 'All entries (' + (libraryScope ? libraryScope.label : 'whole official catalogue') + ')',
+        href: params.kiwixCatalogEntries
+    });
     var bodyDoc = '<div style="padding:0 8px;">' +
         '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim</h3>' +
         '</div>' +
