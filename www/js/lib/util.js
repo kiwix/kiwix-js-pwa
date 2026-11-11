@@ -222,7 +222,7 @@ function escapeHtml (str) {
  */
 function binarySearch (begin, end, query, lowerBound) {
     if (end <= begin) {
-        return lowerBound ? begin : null;
+        return Promise.resolve(lowerBound ? begin : null);
     }
     var mid = Math.floor((begin + end) / 2);
     return query(mid).then(function (decision) {
