@@ -1937,7 +1937,8 @@ document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').fo
         }
         if (this.value === 'serviceworker' && window.location.protocol !== 'ms-appx-web:') {
             document.getElementById('enableSourceVerificationCheck').style.display = '';
-            if (params.sourceVerification && appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
+            if (appstate.selectedArchive && appstate.selectedArchive.isReady() && appstate.selectedArchive.file._files[0].name !== params.packagedFile &&
+              (params.sourceVerification || kiwixServe.isCommunityArchive(appstate.selectedArchive.file.name)) &&
               !settingsStore.getItem('trustedZimFiles').includes(appstate.selectedArchive.file.name)) {
                 verifyingArchive = verifyLoadedArchive(appstate.selectedArchive);
             }
@@ -2395,6 +2396,37 @@ document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('cha
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
 });
+// The community library is off by default, and is listed only once the user has accepted a warning about it. It is
+// not offered at all in a packaged app, whose library is scoped to its own kind of archive
+var showCommunityLibraryCheck = document.getElementById('showCommunityLibraryCheck');
+if (kiwixServe.isLibraryScoped()) {
+    document.getElementById('communityLibraryDiv').style.display = 'none';
+} else {
+    showCommunityLibraryCheck.checked = params.showCommunityLibrary;
+    showCommunityLibraryCheck.addEventListener('change', function () {
+        var that = this;
+        var applySetting = function (value) {
+            that.checked = value;
+            params.showCommunityLibrary = value;
+            // DEV: The setting is deliberately not stored for now, so it lasts only until the app is reloaded. Uncomment
+            // the line below (and see params.showCommunityLibrary in init.js) once we are satisfied that uploads to
+            // the community library get strong checks, including anti-virus scanning (see openzim/cms#636)
+            // settingsStore.setItem('showCommunityLibrary', value, Infinity);
+            // Redraw the library if it is open, so that the community library appears in or disappears from the list
+            if (params.allowInternetAccess && document.getElementById('downloadLinks').style.display !== 'none') {
+                kiwixServe.requestXhttpData(kiwixServe.getLibraryStartUrl());
+            }
+        };
+        if (!this.checked) return applySetting(false);
+        uiUtil.systemAlert('<p>' + kiwixServe.communityWarning + '</p>' +
+            '<p>The app will warn you before you download or open one of these archives, and will recommend that you open it in ' +
+            'Restricted mode, which cannot run active content from the archive. Only trust an archive if you know and trust whoever uploaded it.</p>' +
+            '<p>Do you wish to list the community library in the download library?</p>',
+        'Show the community library?', true, 'Cancel', 'Show community library').then(function (confirmed) {
+            applySetting(!!confirmed);
+        });
+    });
+}
 // In-app BitTorrent download settings (only shown where the capability exists, i.e. Electron/NWJS)
 var keepTorrentSeedingCheck = document.getElementById('keepTorrentSeedingCheck');
 if (torrentClient.isAvailable()) {
@@ -5042,14 +5074,19 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
  *
  */
 function verifyLoadedArchive (archive) {
-    return uiUtil.systemAlert('<p><b>Is this ZIM archive from a trusted source?</b> If in doubt, we strongly recommend you open it in Restricted mode.</p><p style="border: 1px solid;padding:5px;">' +
+    // An archive the user downloaded from the community library gets a stronger warning, because it was uploaded by
+    // a third party. The app only knows this from its own record of the download: the metadata cannot show it
+    var isCommunity = kiwixServe.isCommunityArchive(archive.file.name);
+    return uiUtil.systemAlert((isCommunity ? '<p style="border: 1px solid orange;padding:5px;"><b>This archive was downloaded from the community library.</b> ' +
+      kiwixServe.communityWarning + ' Only trust it if you know and trust whoever uploaded it.</p>' : '') +
+      '<p><b>Is this ZIM archive from a trusted source?</b> If in doubt, we strongly recommend you open it in Restricted mode.</p><p style="border: 1px solid;padding:5px;">' +
       'Name:&nbsp;<b>' + archive.file.name + '</b><br />' +
       'Creator:&nbsp;<b>' + archive.creator + '</b><br />' +
       'Publisher:&nbsp;<b>' + archive.publisher + '</b><br />' +
       'Scraper:&nbsp;<b>' + archive.scraper + '</b><br />' +
       '</p><p><b><i>Warning: above data can easily be spoofed!</i></b></p>' +
       '</p><p><i>If you mark the file as trusted, this alert will not show again.</i> (Security checks can be disabled in Expert Settings.)</p>',
-    'Security alert!', true, 'Open in Restricted mode', 'Trust source').then(response => {
+    isCommunity ? 'Security alert: community archive!' : 'Security alert!', true, 'Open in Restricted mode', 'Trust source').then(response => {
         if (response) {
             params.contentInjectionMode = 'serviceworker';
             var trustedZimFiles = settingsStore.getItem('trustedZimFiles');
@@ -5243,7 +5280,9 @@ function archiveReadyCallback (archive) {
     if (settingsStore.getItem('trustedZimFiles') === null) {
         settingsStore.setItem('trustedZimFiles', '', Infinity);
     }
-    if (params.sourceVerification && window.location.protocol !== 'ms-appx-web:' && /^serviceworker/.test(params.contentInjectionMode)) {
+    // NB an archive downloaded from the community library is verified even if the user has turned source verification
+    // off: that setting says they trust the sources of their own ZIMs, which does not extend to third-party uploads
+    if ((params.sourceVerification || kiwixServe.isCommunityArchive(archive.file.name)) && window.location.protocol !== 'ms-appx-web:' && /^serviceworker/.test(params.contentInjectionMode)) {
         // Check if source of the zim file can be trusted and that it is not a packaged archive
         if (!settingsStore.getItem('trustedZimFiles').includes(archive.file.name) && archive.file._files[0].name !== params.packagedFile &&
           // And it's not an Electron-accessed file inside the app's package

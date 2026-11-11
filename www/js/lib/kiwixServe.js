@@ -663,6 +663,80 @@ function isEntryInScope (entry, scope) {
     return !scope || scope.match.test(entry.search);
 }
 
+// The Settings Store key under which the app remembers the archives the user downloaded from the community library
+var COMMUNITY_ZIMS_KEY = 'communityZimFiles';
+
+// Shown wherever the app lists, downloads or opens an archive from the community library. DEV: keep this factual:
+// it must not imply any checks that the library does not make (see openzim/cms#636)
+var communityWarning = 'Archives in the community library are <b>uploaded by third parties</b>. They are not built ' +
+    'or checked by Kiwix, and could contain harmful content.';
+
+/**
+ * Tests whether the community library is offered in this app. It is never offered in a packaged app, whose library
+ * is scoped to its own kind of archive, and otherwise only if the user has turned it on in Configuration
+ *
+ * @returns {Boolean} True if the community library should be listed
+ */
+function isCommunityLibraryShown () {
+    return !!params.showCommunityLibrary && !libraryScope;
+}
+
+/**
+ * Tests whether a URL belongs to the community library: either its OPDS catalogue or browse host, or a download
+ * of one of its archives, which every mirror serves from a /zim/community/ directory
+ *
+ * @param {String} url The URL to test
+ * @returns {Boolean} True if the URL belongs to the community library
+ */
+function isCommunityUrl (url) {
+    if (!url) return false;
+    return /^https?:\/\/(?:[a-z0-9-]+\.)*community\.library\.kiwix\.org(?:[/?#]|$)/i.test(url) ||
+        /^https?:\/\/[^/?#]+\/(?:[^?#]*\/)?zim\/community\//i.test(url);
+}
+
+/**
+ * Gets the names of the archives that the user downloaded from the community library
+ *
+ * @returns {Array<String>} The filenames
+ */
+function getCommunityArchives () {
+    var stored = settingsStore.getItem(COMMUNITY_ZIMS_KEY);
+    return stored ? String(stored).split('|').filter(function (name) { return name; }) : [];
+}
+
+/**
+ * Remembers that an archive came from the community library, so that the app can go on treating it as untrusted
+ * when it is opened: nothing in a ZIM's own metadata distinguishes a community upload from a Kiwix archive
+ *
+ * @param {String} url The URL of the archive, or of its .meta4, .torrent or .magnet descriptor
+ */
+function recordCommunityArchive (url) {
+    var filename = String(url || '').replace(/[?#].*$/, '').replace(/^.*\//, '').replace(/\.(?:meta4|torrent|magnet)$/i, '');
+    if (!filename || isCommunityArchive(filename)) return;
+    settingsStore.setItem(COMMUNITY_ZIMS_KEY, getCommunityArchives().concat(filename).join('|'), Infinity);
+}
+
+/**
+ * Tests whether an archive was downloaded from the community library. The name must match exactly
+ *
+ * @param {String} filename The filename of the archive
+ * @returns {Boolean} True if the archive is recorded as a community download
+ */
+function isCommunityArchive (filename) {
+    return !!filename && getCommunityArchives().indexOf(filename) !== -1;
+}
+
+/**
+ * Gets the URL at which an archive can be previewed in the browser, on the browse host of the library it is from
+ *
+ * @param {String} url The URL of the archive's .meta4 descriptor
+ * @returns {String} The URL of the preview
+ */
+function getPreviewUrl (url) {
+    var browser = isCommunityUrl(url) ? params.kiwixCommunityLibraryBrowser : params.kiwixLibraryBrowser;
+    return url.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, browser + '/content/$1');
+}
+
 var currentBrowseUrl = '';
 var currentOpdsEntries = [];
 var currentOpdsCategory = '';
@@ -830,7 +904,7 @@ function getOpdsFilename (entry) {
 function getMissingMetalinkLinks (meta4Url) {
     var zimUrl = meta4Url.replace(/\.meta4$/i, '');
     var staging = zimUrl.indexOf(params.kiwixStagingServer + '/') === 0;
-    var previewServer = staging ? params.kiwixStagingServer.replace('//staging.download.', '//staging.library.') : params.kiwixLibraryBrowser;
+    var stagingBrowser = params.kiwixStagingServer.replace('//staging.download.', '//staging.library.');
     return {
         staging: staging,
         zim: zimUrl,
@@ -838,7 +912,7 @@ function getMissingMetalinkLinks (meta4Url) {
         mirror: /wikipedia|wikisource|wikivoyage|wiktionary/i.test(meta4Url) && /^https?:\/\/download\.kiwix\.org\//i.test(zimUrl)
             ? zimUrl.replace(/^https?:\/\/download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '',
         torrent: staging ? '' : zimUrl + '.torrent',
-        preview: meta4Url.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, previewServer + '/content/$1')
+        preview: staging ? meta4Url.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, stagingBrowser + '/content/$1') : getPreviewUrl(meta4Url)
     };
 }
 
@@ -916,9 +990,19 @@ function renderOpdsCategories (xml, requestUrl) {
     var categoryRows = injectDeveloperCategoryRows(buildOpdsCategoryRows(entries, requestUrl));
     // Browsing by category alone cannot reach archives whose ZIM declares no Category, so offer the
     // catalogue-wide feed as well. Rows with a label render verbatim (no trailing directory slash).
+    // Listed only if the user has turned it on, which means they have accepted the warning about it, so it goes near
+    // the top where it is easy to find. It is a separate catalogue, not a category of this one, which is why the
+    // row above it says that it lists the official catalogue: "All entries" must not seem to include these
+    if (isCommunityLibraryShown()) {
+        categoryRows.unshift({
+            title: 'Community library',
+            label: 'Community library (third-party uploads, not checked by Kiwix)',
+            href: params.kiwixCommunityCatalogEntries
+        });
+    }
     categoryRows.unshift({
         title: 'All entries',
-        label: 'All entries (' + (libraryScope ? libraryScope.label : 'whole catalogue') + ')',
+        label: 'All entries (' + (libraryScope ? libraryScope.label : 'whole official catalogue') + ')',
         href: params.kiwixCatalogEntries
     });
     var bodyDoc = '<div style="padding:0 8px;">' +
@@ -1180,9 +1264,14 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var dropdownLang = buildDropdown('langs', langArray, 'lang');
     var dropdownSubj = buildDropdown('subjects', subjectArray, 'subject');
     var dropdownDate = buildDropdown('dates', dateArray, 'date');
+    var isCommunity = isCommunityUrl(entriesUrl);
     var bodyDoc = '<div style="padding:0 8px;">' +
-        '<h3 id="indexHeader" style="margin-left:0.15em;">Index of /zim' +
-        (currentOpdsCategory ? '/' + util.escapeHtml(currentOpdsCategory) : ' (' + (libraryScope ? libraryScope.label : 'all entries') + ')') + '</h3>';
+        '<h3 id="indexHeader" style="margin-left:0.15em;">' + (isCommunity ? 'Community library' : 'Index of /zim' +
+        (currentOpdsCategory ? '/' + util.escapeHtml(currentOpdsCategory) : ' (' + (libraryScope ? libraryScope.label : 'all entries') + ')')) + '</h3>';
+    if (isCommunity) {
+        bodyDoc += '<p id="communityWarning" style="margin-left:0.15em;border:1px solid orange;padding:5px;">' + communityWarning +
+            ' If in doubt, open them in Restricted mode.</p>';
+    }
     if (libraryScope && !currentOpdsEntries.length) {
         bodyDoc += '<p style="margin-left:0.15em;">This list has no ' + libraryScope.label + '.</p>';
     }
@@ -1207,7 +1296,7 @@ function renderOpdsEntries (entriesUrl, lang, subj, kiwixDate) {
     var opdsDateColStyle = 'flex:0 0 120px;padding-right:8px;';
     var opdsDescColStyle = 'flex:0 0 auto;min-width:220px;padding-right:8px;';
     var opdsNameLinkStyle = 'display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top;';
-    bodyDoc += '<div class="card border-success">' +
+    bodyDoc += '<div class="card ' + (isCommunity ? 'border-warning' : 'border-success') + '">' +
         '<div id="dl-panel-heading" class="card-header" style="overflow-x:auto;word-wrap:normal;">' +
         '<div style="' + opdsRowStyle + '"><div style="' + opdsNameColStyle + '"><b>Name</b></div><div style="' + opdsSizeColStyle + '"><b>Size</b></div><div style="' + opdsDateColStyle + '"><b>Last modified</b></div><div style="' + opdsDescColStyle + '"><b>Description</b></div></div>' +
         '</div>' +
@@ -1305,6 +1394,22 @@ function setPanelContent (panelId, html) {
 }
 
 /**
+ * Fills the body of the panel with the download links for an archive. The list of archives that the panel held
+ * before is laid out in columns that must not wrap, but this is prose and long URLs, which must: otherwise the
+ * text runs off the side of the panel. NB these are inline styles, so they survive the rewrites of
+ * downloadLinks.innerHTML that follow, and the next list to be rendered replaces the panel and its styles.
+ *
+ * @param {Element} body The body of the panel (dl-panel-body)
+ * @param {String} html The HTML to put in it
+ */
+function setDownloadPanelBody (body, html) {
+    if (!body) return;
+    body.style.whiteSpace = 'normal';
+    body.style.wordWrap = 'break-word';
+    body.innerHTML = html;
+}
+
+/**
  * Makes a request to the Kiwix Download server and processes the output for ease of user selection
  *
  * @param {String} URL The URL of the download server
@@ -1394,11 +1499,12 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
             (torrentURL ? '<p><b>Download with bittorrent:</b></p>' +
             '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>' : '');
-            if (body) body.innerHTML = bodyDoc;
+            setDownloadPanelBody(body, bodyDoc);
             preserveFilterControls();
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
             if (!links.staging) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
             document.getElementById('preview').href = links.preview;
+            recordCommunityDownloads(URL);
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');
@@ -1421,6 +1527,21 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             downloadLinks.innerHTML += '</ul></div><br />';
         }
         downloadLinks.style.display = 'block';
+    }
+
+    // Records the archive as a community download as soon as the user follows any of the links in its download
+    // panel. That includes the browser-managed and BitTorrent links, where the app never sees the file arrive, so
+    // the record errs on the side of marking an archive the user did not finish downloading. NB this must be called
+    // after the last rewrite of downloadLinks.innerHTML, which discards the listeners on everything inside it.
+    function recordCommunityDownloads (descriptorUrl) {
+        var body = document.getElementById('dl-panel-body');
+        if (!body || !isCommunityUrl(descriptorUrl)) return;
+        body.addEventListener('click', function (e) {
+            var link = e.target;
+            while (link && link !== body && link.nodeName !== 'A') link = link.parentNode;
+            if (!link || link === body || link.id === 'returnLink' || link.id === 'preview') return;
+            recordCommunityArchive(descriptorUrl);
+        });
     }
 
     function processMetaLink (doc) {
@@ -1452,6 +1573,11 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var headerDoc = 'We found the following links to your file:';
         var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
         var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + util.escapeHtml(returnUrl) + '">&lt;&lt; Back to list of files</a></p>\r\n';
+        var isCommunity = isCommunityUrl(URL);
+        if (isCommunity) {
+            bodyDoc += '<p style="border:1px solid orange;padding:5px;"><b>Warning:</b> this archive is from the community library. ' + communityWarning +
+                ' The app will ask you how to open it, and will recommend Restricted mode.</p>\r\n';
+        }
         bodyDoc += /\/(ted|videos)\//i.test(URL) && /UWP/.test(params.appType) ? '<h4 style="color:red">IMPORTANT: <b>VIDEOS</b> (e.g. TED Talks, Khan Academy, etc.) can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for the videos using standard ZIM search or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in Restricted mode.' : '';
         bodyDoc += '<h5';
@@ -1501,7 +1627,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, '.magnet'));
         setPanelContent('dl-panel-heading', headerDoc);
         var body = document.getElementById('dl-panel-body');
-        if (body) body.innerHTML = bodyDoc;
+        setDownloadPanelBody(body, bodyDoc);
         preserveFilterControls();
         downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
         if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-danger');
@@ -1527,7 +1653,8 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             });
         }
         // Set up preview link
-        document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
+        document.getElementById('preview').href = getPreviewUrl(URL);
+        recordCommunityDownloads(URL);
         // If File System Access API is available, add event listeners on download links to save to local storage
         if (params.useOPFS || window.showSaveFilePicker) {
             var downloadUrls = document.getElementsByClassName('download');
@@ -1570,12 +1697,15 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                             });
                         });
                     };
-                    if (megabytes > 1000) {
-                        var message = '<p>Do you wish to download the following <b>large</b> archive ' + (params.useOPFS ? 'directly into the Origin Private File System' : 'to the current ZIM folder') +
-                            '?</p><ul><li><i>' + archiveName + '</i> (<b>' + megabytes$ + ' MB</b>)</li></ul><p><b><i>If you proceed, do not close the app during the download.</i></b><p>' +
+                    // A community archive is always confirmed, whatever its size, so that the warning is seen
+                    var isLarge = megabytes > 1000;
+                    if (isLarge || isCommunity) {
+                        var message = (isCommunity ? '<p>' + communityWarning + '</p>' : '') +
+                            '<p>Do you wish to download the following ' + (isLarge ? '<b>large</b> ' : '') + 'archive ' + (params.useOPFS ? 'directly into the Origin Private File System' : 'to the current ZIM folder') +
+                            '?</p><ul><li><i>' + archiveName + '</i> (<b>' + megabytes$ + ' MB</b>)</li></ul>' + (isLarge ? '<p><b><i>If you proceed, do not close the app during the download.</i></b><p>' +
                             '<p>If you prefer to download in the background, use a browser-managed download link instead, and ' + (params.useOPFS
-                            ? 'afterwards import the file into the OPFS using the "Add file(s)" button' : 'then move the file manually into your ZIM folder') + '.</p>';
-                        var messageTitle = 'Download large archive to ' + (params.useOPFS ? 'OPFS?' : 'folder?');
+                            ? 'afterwards import the file into the OPFS using the "Add file(s)" button' : 'then move the file manually into your ZIM folder') + '.</p>' : '');
+                        var messageTitle = 'Download ' + (isLarge ? 'large ' : '') + (isCommunity ? 'community ' : '') + 'archive to ' + (params.useOPFS ? 'OPFS?' : 'folder?');
                         uiUtil.systemAlert(message, messageTitle, true, 'Cancel', 'Download').then(function (result) {
                             if (result) downloadArchiveWithFSA();
                         });
@@ -2176,7 +2306,8 @@ function startTorrentDownload (torrentUrl, sizeMB) {
     (downloadFolder ? Promise.resolve(downloadFolder) : torrentClient.resolveSavePath(params.pickedFolder).then(function (derivedPath) {
         return isPackagedArchiveFolder(derivedPath) ? null : derivedPath;
     })).then(function (savePath) {
-        var message = '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
+        var message = (isCommunityUrl(torrentUrl) ? '<p>' + communityWarning + '</p>' : '') +
+            '<p>Do you wish to download this archive with the app\'s built-in BitTorrent client?</p>' +
             (sizeMB ? '<ul><li><b>' + sizeMB + ' MB</b></li></ul>' : '') +
             (savePath ? '<p>The archive will be downloaded to <b>' + util.escapeHtml(savePath) + '</b>.</p>' +
                 '<p><label><input type="checkbox" id="torrentPickNewFolder">&nbsp;Download to a different folder&hellip;</label></p>'
@@ -2404,6 +2535,9 @@ export default {
     // langCodes: langCodes,
     requestXhttpData: requestXhttpData,
     getLibraryStartUrl: getLibraryStartUrl,
+    isLibraryScoped: function () { return !!libraryScope; },
+    communityWarning: communityWarning,
+    isCommunityArchive: isCommunityArchive,
     reportDownloadProgress: reportDownloadProgress,
     clearSeedingStatus: clearSeedingStatus,
     showSeedingStatus: showSeedingStatus

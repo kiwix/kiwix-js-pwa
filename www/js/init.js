@@ -115,6 +115,11 @@ params['kiwixCatalogEntries'] = params.kiwixCatalogRoot + '/entries?count=-1';
 // The staging library and download server can no longer be browsed (they serve direct links only), so the
 // staging catalogue is read from the public feed of the openZIM CMS instead
 params['kiwixStagingCatalogEntries'] = 'https://api.cms.openzim.org/v1/staging/opds.xml';
+// The community library holds archives uploaded by third parties rather than built by Kiwix. Its categories feed is
+// too sparse to browse by (many entries declare no category), so the app opens it on the catalogue-wide feed. The
+// OPDS host does not serve content, so previews of its archives must come from the community browse host.
+params['kiwixCommunityCatalogEntries'] = 'https://opds.community.library.kiwix.org/catalog/v2/entries?count=-1';
+params['kiwixCommunityLibraryBrowser'] = 'https://browse.community.library.kiwix.org';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
 params['kiwixMirrorServer'] = 'https://mirror.download.kiwix.org'; // CORS-enabled *.kiwix.org mirror; used as fallback for OPFS downloads if not found in meta4
@@ -187,6 +192,13 @@ params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; 
 params['sourceVerification'] = /^serviceworker/.test(params.contentInjectionMode) ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false;
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
+// A setting that determines whether the community library (third-party uploads) is listed in the in-app library
+// (default is false). DEV: this is deliberately a per-session setting for now, so the user has to accept the warning
+// each time they turn it on. Once we are satisfied that uploads to the community library get strong checks (including
+// anti-virus scanning, see openzim/cms#636), swap the two lines below, and uncomment the line that stores the setting
+// in the showCommunityLibraryCheck handler in app.js.
+// params['showCommunityLibrary'] = getSetting('showCommunityLibrary') === true;
+params['showCommunityLibrary'] = false;
 params['keepTorrentSeeding'] = getSetting('keepTorrentSeeding') !== false; // A setting that determines whether completed in-app BitTorrent downloads keep seeding until app quit (default is true; Electron/NWJS only)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
@@ -243,7 +255,9 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // production instance is reached at http://localhost:<port> on a conventional port, and no origin test can
     // tell that apart from a developer's dev server. DEV: set this once in Configuration, or from DevTools with
     // localStorage.setItem('kiwixjs-sourceVerification', 'false') - both persist, so it is not a per-load cost.
-    var neverFromQuerystring = ['sourceVerification'];
+    // The community library is listed only after the user has read and accepted a warning about third-party
+    // uploads, so a link must not be able to list it for them either.
+    var neverFromQuerystring = ['sourceVerification', 'showCommunityLibrary'];
 
     // Parameters that weaken or bypass security-relevant behaviour, and are only ever needed when developing.
     // They are honoured in a development context but ignored everywhere else, so that a crafted link to the
@@ -269,6 +283,8 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
         kiwixCatalogCategories: kiwixServerPattern,
         kiwixCatalogEntries: kiwixServerPattern,
         kiwixStagingCatalogEntries: stagingCatalogPattern,
+        kiwixCommunityCatalogEntries: kiwixServerPattern,
+        kiwixCommunityLibraryBrowser: kiwixServerPattern,
         kiwixDownloadServer: kiwixServerPattern,
         kiwixMirrorServer: kiwixServerPattern,
         kiwixStagingServer: kiwixServerPattern,
