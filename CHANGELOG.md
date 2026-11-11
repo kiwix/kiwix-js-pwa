@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* FIX: The contents of noscript tags are now displayed in Restricted mode, e.g. the link to the No-JavaScript version of the new Gutenberg archives
+* DEV: In developer mode (bypass AppCache), the library's `dev (OPDS)` row now lists staging archives from the openZIM CMS feed, and the rows for the staging server's folders, which can no longer be browsed, have been removed
+
 ## Interim release 3.9.6
 
 * ENHANCEMENT: A folder of archives can now be dragged and dropped into the app in browsers that do not support the File System Access API outside the Origin Private File System (e.g. Firefox), which previously only accepted the archive files themselves

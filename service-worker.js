@@ -72,9 +72,10 @@ var useAppCache = true;
  */
 let imageDisplay = 'all';
 
-// Kiwix ZIM Archive Download Server and release update server in regex form
+// Kiwix ZIM Archive Download Server, library catalogues and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|api\.github\.com/i;
+// DEV: Any server the app itself fetches from must be listed here, or the request is rewritten to a path on our own origin (and 404s)
+const regexpkiwixDownloadServers = /download\.kiwix\.org|library\.kiwix\.org|api\.cms\.openzim\.org|api\.github\.com/i;
 
 /**
  * A global Boolean that records whether the ReplayWorker is available
