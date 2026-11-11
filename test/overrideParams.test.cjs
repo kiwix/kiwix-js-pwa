@@ -189,6 +189,19 @@ describe('Endpoint parameters restricted to Kiwix hosts', function () {
             assert.ok(!stored(r, 'kiwixDownloadServer') && r.params.kiwixDownloadServer === undefined);
         });
     });
+
+    it('kiwixStagingCatalogEntries also accepts the openZIM CMS, and no other openzim.org host', function () {
+        const cms = 'https://api.cms.openzim.org/v1/staging/opds.xml';
+        assert.equal(run('?kiwixStagingCatalogEntries=' + encodeURIComponent(cms), PRODUCTION).store.kiwixStagingCatalogEntries, cms);
+        ['https://cms.openzim.org/', 'https://evil.api.cms.openzim.org/', 'https://api.cms.openzim.org.example.com/'].forEach(function (url) {
+            assert.ok(!stored(run('?kiwixStagingCatalogEntries=' + encodeURIComponent(url), PRODUCTION), 'kiwixStagingCatalogEntries'), url);
+        });
+    });
+
+    it('the openZIM CMS is refused for every other endpoint', function () {
+        const r = run('?kiwixCatalogEntries=' + encodeURIComponent('https://api.cms.openzim.org/v1/staging/opds.xml'), PRODUCTION);
+        assert.ok(!stored(r, 'kiwixCatalogEntries'));
+    });
 });
 
 describe('The content injection mode is restricted to the modes the app implements', function () {

@@ -819,6 +819,29 @@ function getOpdsFilename (entry) {
     return entry.name + dateSuffix + '.zim';
 }
 
+/**
+ * Gets the links to offer for an archive when its metalink (.meta4) cannot be fetched. Archives on the staging
+ * server have no metalink, torrent or mirrors, and the server sends no CORS headers, so the only way to get one
+ * is a browser-managed download of the ZIM itself.
+ *
+ * @param {String} meta4Url The URL of the metalink that could not be fetched
+ * @returns {{staging: Boolean, zim: String, mirror: String, torrent: String, preview: String}} The links (empty if not available)
+ */
+function getMissingMetalinkLinks (meta4Url) {
+    var zimUrl = meta4Url.replace(/\.meta4$/i, '');
+    var staging = zimUrl.indexOf(params.kiwixStagingServer + '/') === 0;
+    var previewServer = staging ? params.kiwixStagingServer.replace('//staging.download.', '//staging.library.') : params.kiwixLibraryBrowser;
+    return {
+        staging: staging,
+        zim: zimUrl,
+        // Only show mirror link for the exact production download server
+        mirror: /wikipedia|wikisource|wikivoyage|wiktionary/i.test(meta4Url) && /^https?:\/\/download\.kiwix\.org\//i.test(zimUrl)
+            ? zimUrl.replace(/^https?:\/\/download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '',
+        torrent: staging ? '' : zimUrl + '.torrent',
+        preview: meta4Url.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, previewServer + '/content/$1')
+    };
+}
+
 function parseOpdsFeed (docText) {
     var parser;
     try {
@@ -865,15 +888,12 @@ function injectDeveloperCategoryRows (categoryRows) {
     }
     if (!hasWikipedia) return categoryRows;
 
-    var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
     // archive is commented out pending confirmation of its new location:
     // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
     // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
-    if (!params.appCache) devRows.push({ title: 'branded_apps', href: stagingBase + 'branded_apps/', external: true });
-    if (!params.appCache) devRows.push({ title: 'dev', href: stagingBase + 'dev/', external: true });
+    // The staging server's folders (branded_apps, dev, endless) can no longer be browsed, so only the feed is listed
     if (!params.appCache) devRows.push({ title: 'dev (OPDS)', href: params.kiwixStagingCatalogEntries });
-    if (!params.appCache) devRows.push({ title: 'endless', href: stagingBase + 'endless/', external: true });
 
     for (var j = 0; j < devRows.length; j++) {
         var exists = false;
@@ -1355,15 +1375,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
     xhttp.send(null);
 
     function serverError (URL) {
-        var requestedURL, altURL, torrentURL;
         if (/\.meta4$/i.test(URL)) {
-            requestedURL = URL.replace(/\.meta4$/i, '');
-            // Only show mirror link for the exact production download server (not subdomains like staging.)
-            altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL) && /^https?:\/\/download\.kiwix\.org\//i.test(requestedURL)
-                ? requestedURL.replace(/^https?:\/\/download\.kiwix\.org/i, 'https://www.mirrorservice.org/sites/download.kiwix.org') : '';
-            // Keep the torrent on the same domain as the original URL (staging files have staging torrents)
-            torrentURL = URL.replace(/\.meta4$/i, '.torrent');
-            var headerDoc = 'There is a server issue, but please try the following links to your file:';
+            var links = getMissingMetalinkLinks(URL);
+            var requestedURL = links.zim;
+            var altURL = links.mirror;
+            var torrentURL = links.torrent;
+            var headerDoc = links.staging ? 'Staging archives can only be downloaded by your browser:'
+                : 'There is a server issue, but please try the following links to your file:';
+            if (links.staging) serverResponse.innerHTML = 'Staging archive: no metalink, torrent or mirrors';
             setPanelContent('dl-panel-heading', headerDoc);
             var body = document.getElementById('dl-panel-body');
             var returnUrl = currentBrowseUrl || URL.replace(/\/[^/]*\.meta4$/i, '/');
@@ -1373,13 +1392,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
-            '<p><b>Download with bittorrent:</b></p>' +
-            '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>';
+            (torrentURL ? '<p><b>Download with bittorrent:</b></p>' +
+            '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>' : '');
             if (body) body.innerHTML = bodyDoc;
             preserveFilterControls();
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
-            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
-            document.getElementById('preview').href = URL.replace(/^[^/]+\/\/[^/]+\/.+\/([^/]+)\.zim.+$/i, params.kiwixLibraryBrowser + '/content/$1');
+            if (!links.staging) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/border-success/i, 'border-warning');
+            document.getElementById('preview').href = links.preview;
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');

@@ -112,7 +112,9 @@ params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
 // category (currently ~23% of the catalogue, including most of devdocs, maps, freecodecamp and
 // libretexts) are unreachable by category alone. This is the catalogue-wide feed advertised in root.xml.
 params['kiwixCatalogEntries'] = params.kiwixCatalogRoot + '/entries?count=-1';
-params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
+// The staging library and download server can no longer be browsed (they serve direct links only), so the
+// staging catalogue is read from the public feed of the openZIM CMS instead
+params['kiwixStagingCatalogEntries'] = 'https://api.cms.openzim.org/v1/staging/opds.xml';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
 params['kiwixMirrorServer'] = 'https://mirror.download.kiwix.org'; // CORS-enabled *.kiwix.org mirror; used as fallback for OPFS downloads if not found in meta4
@@ -256,6 +258,9 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // app does not recognize leaves it in a state its own UI cannot represent (see params.contentInjectionMode
     // above). The two names below are the values of the radio buttons in index.html.
     var kiwixServerPattern = /^https:\/\/(?:(?:[a-z0-9-]+\.)*kiwix\.org|kiwix\.github\.io)(?:[/?#]|$)/;
+    // The staging catalogue is served by the openZIM CMS, so that one param also accepts exactly that host.
+    // DEV: do not widen kiwixServerPattern to openzim.org instead, as it guards every other endpoint here.
+    var stagingCatalogPattern = /^https:\/\/(?:(?:[a-z0-9-]+\.)*kiwix\.org|kiwix\.github\.io|api\.cms\.openzim\.org)(?:[/?#]|$)/;
     var validatedParams = {
         contentInjectionMode: /^(?:jquery|serviceworker)$/,
         kiwixLibraryServer: kiwixServerPattern,
@@ -263,7 +268,7 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
         kiwixCatalogRoot: kiwixServerPattern,
         kiwixCatalogCategories: kiwixServerPattern,
         kiwixCatalogEntries: kiwixServerPattern,
-        kiwixStagingCatalogEntries: kiwixServerPattern,
+        kiwixStagingCatalogEntries: stagingCatalogPattern,
         kiwixDownloadServer: kiwixServerPattern,
         kiwixMirrorServer: kiwixServerPattern,
         kiwixStagingServer: kiwixServerPattern,
