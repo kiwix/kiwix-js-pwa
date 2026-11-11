@@ -888,15 +888,12 @@ function injectDeveloperCategoryRows (categoryRows) {
     }
     if (!hasWikipedia) return categoryRows;
 
-    var stagingBase = params.kiwixStagingServer + '/zim/';
     var devRows = [];
     // archive is commented out pending confirmation of its new location:
     // var archiveUrl = params.kiwixDownloadServer.replace(/\/zim\/?$/i, '/archive/zim/');
     // if (!params.appCache) devRows.push({ title: 'archive', href: archiveUrl });
-    if (!params.appCache) devRows.push({ title: 'branded_apps', href: stagingBase + 'branded_apps/', external: true });
-    if (!params.appCache) devRows.push({ title: 'dev', href: stagingBase + 'dev/', external: true });
+    // The staging server's folders (branded_apps, dev, endless) can no longer be browsed, so only the feed is listed
     if (!params.appCache) devRows.push({ title: 'dev (OPDS)', href: params.kiwixStagingCatalogEntries });
-    if (!params.appCache) devRows.push({ title: 'endless', href: stagingBase + 'endless/', external: true });
 
     for (var j = 0; j < devRows.length; j++) {
         var exists = false;
