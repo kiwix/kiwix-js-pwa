@@ -7371,7 +7371,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
                 setTimeout(function () {
                     uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
-                }, 1500);
+                }, 1000);
             }
         }
     }
@@ -7982,6 +7982,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
             // ** Write article html to the new article container **
             articleDocument.innerHTML = htmlArticle;
+            // Scripts are disabled in this mode, so make the browser display the contents of any noscript tags
+            uiUtil.unwrapNoscriptTags(articleDocument);
 
             var docBody = articleDocument.querySelector('body');
 
