@@ -1019,6 +1019,13 @@
                                             <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
                                         </label>
                                     </div>
+                                    <div id="communityLibraryDiv" class="row" style="margin: 0.5em;">
+                                        <label class="checkbox" title="The community library holds archives uploaded by third parties. They are not built or checked by Kiwix, and could contain harmful content. The app will warn you before you download or open one.">
+                                            <input type="checkbox" name="showCommunityLibrary" id="showCommunityLibraryCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Show the community library</b> (<i>archives uploaded by third parties, not checked by Kiwix</i>)
+                                        </label>
+                                    </div>
                                     <div id="torrentSettingsDiv" class="row" style="display: none; margin: 0.5em;">
                                         <label class="checkbox" title="After an in-app BitTorrent download completes, the app can continue to upload (seed) the archive to other users until you close the app. This helps the Kiwix community distribute archives. Turn it off if you are on a metered or slow connection.">
                                             <input type="checkbox" name="keepTorrentSeeding" id="keepTorrentSeedingCheck" checked>

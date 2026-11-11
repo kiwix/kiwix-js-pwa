@@ -113,6 +113,11 @@ params['kiwixCatalogCategories'] = params.kiwixCatalogRoot + '/categories';
 // libretexts) are unreachable by category alone. This is the catalogue-wide feed advertised in root.xml.
 params['kiwixCatalogEntries'] = params.kiwixCatalogRoot + '/entries?count=-1';
 params['kiwixStagingCatalogEntries'] = 'https://staging.library.kiwix.org/catalog/v2/entries?count=-1';
+// The community library holds archives uploaded by third parties rather than built by Kiwix. Its categories feed is
+// too sparse to browse by (many entries declare no category), so the app opens it on the catalogue-wide feed. The
+// OPDS host does not serve content, so previews of its archives must come from the community browse host.
+params['kiwixCommunityCatalogEntries'] = 'https://opds.community.library.kiwix.org/catalog/v2/entries?count=-1';
+params['kiwixCommunityLibraryBrowser'] = 'https://browse.community.library.kiwix.org';
 params['kiwixDownloadServer'] = 'https://download.kiwix.org/zim/'; // Include final slash
 params['kiwixDownloadMirrors'] = ['https://ftp.fau.de/kiwix/zim/', 'https://mirrors.dotsrc.org/kiwix/zim/', 'https://www.mirrorservice.org/sites/download.kiwix.org/zim/', 'https://md.mirrors.hacktegic.com/kiwix-md/zim/', 'https://lb.download.kiwix.org/zim/'];
 params['kiwixMirrorServer'] = 'https://mirror.download.kiwix.org'; // CORS-enabled *.kiwix.org mirror; used as fallback for OPFS downloads if not found in meta4
@@ -185,6 +190,7 @@ params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; 
 params['sourceVerification'] = /^serviceworker/.test(params.contentInjectionMode) ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false;
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
+params['showCommunityLibrary'] = getSetting('showCommunityLibrary') === true; // A setting that determines whether the community library (third-party uploads) is listed in the in-app library (default is false)
 params['keepTorrentSeeding'] = getSetting('keepTorrentSeeding') !== false; // A setting that determines whether completed in-app BitTorrent downloads keep seeding until app quit (default is true; Electron/NWJS only)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
@@ -241,7 +247,9 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
     // production instance is reached at http://localhost:<port> on a conventional port, and no origin test can
     // tell that apart from a developer's dev server. DEV: set this once in Configuration, or from DevTools with
     // localStorage.setItem('kiwixjs-sourceVerification', 'false') - both persist, so it is not a per-load cost.
-    var neverFromQuerystring = ['sourceVerification'];
+    // The community library is listed only after the user has read and accepted a warning about third-party
+    // uploads, so a link must not be able to list it for them either.
+    var neverFromQuerystring = ['sourceVerification', 'showCommunityLibrary'];
 
     // Parameters that weaken or bypass security-relevant behaviour, and are only ever needed when developing.
     // They are honoured in a development context but ignored everywhere else, so that a crafted link to the
@@ -264,6 +272,8 @@ params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== nu
         kiwixCatalogCategories: kiwixServerPattern,
         kiwixCatalogEntries: kiwixServerPattern,
         kiwixStagingCatalogEntries: kiwixServerPattern,
+        kiwixCommunityCatalogEntries: kiwixServerPattern,
+        kiwixCommunityLibraryBrowser: kiwixServerPattern,
         kiwixDownloadServer: kiwixServerPattern,
         kiwixMirrorServer: kiwixServerPattern,
         kiwixStagingServer: kiwixServerPattern,
