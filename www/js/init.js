@@ -190,7 +190,13 @@ params['useLegacyZimitSupport'] = getSetting('useLegacyZimitSupport') === true; 
 params['sourceVerification'] = /^serviceworker/.test(params.contentInjectionMode) ? (getSetting('sourceVerification') === null ? true : getSetting('sourceVerification')) : false;
 params['interceptBeforeUnload'] = getSetting('interceptBeforeUnload') !== null ? getSetting('interceptBeforeUnload') : true; // A setting that determines whether to warn user before leaving the app (default is true)
 params['autoUpdatePWA'] = getSetting('autoUpdatePWA') !== false; // A setting that determines whether to auto-update the PWA without asking the user (default is true)
-params['showCommunityLibrary'] = getSetting('showCommunityLibrary') === true; // A setting that determines whether the community library (third-party uploads) is listed in the in-app library (default is false)
+// A setting that determines whether the community library (third-party uploads) is listed in the in-app library
+// (default is false). DEV: this is deliberately a per-session setting for now, so the user has to accept the warning
+// each time they turn it on. Once we are satisfied that uploads to the community library get strong checks (including
+// anti-virus scanning, see openzim/cms#636), swap the two lines below, and uncomment the line that stores the setting
+// in the showCommunityLibraryCheck handler in app.js.
+// params['showCommunityLibrary'] = getSetting('showCommunityLibrary') === true;
+params['showCommunityLibrary'] = false;
 params['keepTorrentSeeding'] = getSetting('keepTorrentSeeding') !== false; // A setting that determines whether completed in-app BitTorrent downloads keep seeding until app quit (default is true; Electron/NWJS only)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically

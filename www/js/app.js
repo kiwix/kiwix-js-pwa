@@ -2408,7 +2408,10 @@ if (kiwixServe.isLibraryScoped()) {
         var applySetting = function (value) {
             that.checked = value;
             params.showCommunityLibrary = value;
-            settingsStore.setItem('showCommunityLibrary', value, Infinity);
+            // DEV: The setting is deliberately not stored for now, so it lasts only until the app is reloaded. Uncomment
+            // the line below (and see params.showCommunityLibrary in init.js) once we are satisfied that uploads to
+            // the community library get strong checks, including anti-virus scanning (see openzim/cms#636)
+            // settingsStore.setItem('showCommunityLibrary', value, Infinity);
             // Redraw the library if it is open, so that the community library appears in or disappears from the list
             if (params.allowInternetAccess && document.getElementById('downloadLinks').style.display !== 'none') {
                 kiwixServe.requestXhttpData(kiwixServe.getLibraryStartUrl());
