@@ -6674,7 +6674,7 @@ function handlePopoverEvents (ev) {
     };
     // Prevent context menu on this anchor element
     anchor.addEventListener('contextmenu', suppressContextMenuHandler, true);
-    if (/touchstart|pointerdown/.test(ev.type)) {
+    if (/touchstart/.test(ev.type) || (ev.type === 'pointerdown' && ev.pointerType !== 'mouse')) {
         anchor.touched = true; // Used to prevent dismissal of popover on mouseout if initiated by touch
     }
     if (anchor.style.userSelect === undefined) {
@@ -6697,7 +6697,6 @@ function handlePopoverEvents (ev) {
     }
     var outHandler = function (e) {
         setTimeout(function () {
-            anchor.popoverisloading = false;
             if (/blur/.test(e.type) || !anchor.touched) {
                 popovers.removeKiwixPopoverDivs(articleDoc);
                 anchor.touched = false;
@@ -8366,7 +8365,6 @@ function addListenersToLink (a, href, baseUrl) {
         loadingContainer = false;
         a.articleisloading = false;
         a.dataset.touchevoked = false;
-        a.popoverisloading = false;
     };
     var onDetectedClick = function (e) {
         // Restore original values for this window/tab
