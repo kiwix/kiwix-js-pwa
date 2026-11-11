@@ -1,9 +1,12 @@
 # Changelog
 
-## Unreleased
+## Interim release 3.9.61
 
 * FIX: The contents of noscript tags are now displayed in Restricted mode, e.g. the link to the No-JavaScript version of the new Gutenberg archives
+* FIX: Find in article now correctly counts matches and skips incorrect detection of tags when there are HTML delimiters in style and other declarations
+* FIX: Error that prevented display of pages in some community archives when all images had been queued
 * DEV: In developer mode (bypass AppCache), the library's `dev (OPDS)` row now lists staging archives from the openZIM CMS feed, and the rows for the staging server's folders, which can no longer be browsed, have been removed
+* DEV: Bump Electron Builder to 26.17.0
 
 ## Interim release 3.9.6
 
