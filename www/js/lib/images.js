@@ -310,7 +310,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
         documentImages[i].removeAttribute('loading');
         // We exempt images that are from the file system
         var src = documentImages[i].getAttribute('src');
-        if (!~src.indexOf(window.location.protocol) && !/data:image/i.test(src)) {
+        if (src && !~src.indexOf(window.location.protocol) && !/data:image/i.test(src)) {
             documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
             if (params.imageDisplayMode === 'progressive') {
                 documentImages[i].style.opacity = '0';
