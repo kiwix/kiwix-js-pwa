@@ -1628,6 +1628,27 @@ function lockDisplayOrientation (val) {
 }
 
 /**
+ * Decides whether a keydown event is one of the app's history shortcuts: Alt, Ctrl or Cmd with Left or Right.
+ * In an editable field, these keys move the caret by a word (Ctrl on Windows and Linux, Option or Cmd on Apple
+ * platforms), so they are left to the field there. Alt+Left/Right still navigate in a field on Windows and Linux,
+ * where they have no editing meaning.
+ *
+ * @param {KeyboardEvent} e The keydown event
+ * @param {Boolean} isApplePlatform True on macOS and iOS, where Option+Left/Right move the caret by a word
+ * @returns {String|null} 'back', 'forward', or null if the event is not a history shortcut
+ */
+function getHistoryShortcut (e, isApplePlatform) {
+    if (!(e.ctrlKey || e.altKey || e.metaKey)) return null;
+    var direction = /^(Arrow)?Left$/.test(e.key) ? 'back' : /^(Arrow)?Right$/.test(e.key) ? 'forward' : null;
+    if (!direction) return null;
+    var target = e.target;
+    var isEditable = !!target && (/^(input|textarea|select)$/i.test(target.tagName || '') || target.isContentEditable ||
+        (typeof target.getAttribute === 'function' && target.getAttribute('role') === 'textbox'));
+    if (isEditable && (e.ctrlKey || e.metaKey || isApplePlatform)) return null;
+    return direction;
+}
+
+/**
  * Finds the closest <a> or <area> enclosing tag of an element.
  * Returns undefined if there isn't any.
  *
@@ -2017,6 +2038,7 @@ export default {
     entryRequiresNewContainer: entryRequiresNewContainer,
     openUrlInNewContainer: openUrlInNewContainer,
     setupConfigurationToggles: setupConfigurationToggles,
+    getHistoryShortcut: getHistoryShortcut,
     closestAnchorEnclosingElement: closestAnchorEnclosingElement,
     handleTitleClick: handleTitleClick,
     createSnippetElements: createSnippetElements,

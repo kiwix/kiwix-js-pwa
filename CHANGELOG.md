@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* FIX: The keyboard shortcuts for Back and Forward (Alt/Ctrl/Cmd+Left and Right) now work in Restricted mode, and no longer take over word navigation in the search box and other text fields (Ctrl/Cmd+Left and Right, and Option+Left and Right on macOS)
+
 ## Interim release 3.9.61
 
 * FIX: The contents of noscript tags are now displayed in Restricted mode, e.g. the link to the No-JavaScript version of the new Gutenberg archives
