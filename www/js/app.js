@@ -4109,6 +4109,11 @@ var historyPop = function (event) {
         if (title && !(title === '')) {
             goToArticle(title);
         } else if (titleSearch && titleSearch !== '') {
+            // The article document has just been emptied, and it stays empty for a title search. If focus is still in
+            // the iframe, key presses have no element to go to, so the history shortcuts stop working until the user
+            // clicks somewhere. Move focus back to the app. We don't do this when going back to an article, because
+            // its document is replaced anyway, and the keyboard should keep scrolling it
+            if (articleContent && document.activeElement === articleContent) articleContent.blur();
             prefix.value = titleSearch;
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
@@ -5489,6 +5494,9 @@ function onKeyUpPrefix (evt) {
 }
 
 // Listen to keyboard events for navigation, search, and print
+// On Apple platforms, Option+Left/Right move the caret by a word in text fields, so they must not navigate there
+var isApplePlatform = /mac|iphone|ipad|ipod/i.test(navigator.userAgentData && navigator.userAgentData.platform || navigator.platform || '');
+
 function listenForKeyboardEvents (controlWindow) {
     // We may have a replay_iframe inside articleWindow if we are using the ReplayWorker
     if (appstate.isReplayWorkerAvailable) {
@@ -5518,18 +5526,15 @@ function listenForKeyboardEvents (controlWindow) {
 
     // Single keydown listener for all keydown events
     var keydownListener = function (e) {
-        // Navigation: Ctrl/Alt/Cmd-Left for back
-        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
+        // Navigation: Ctrl/Alt/Cmd-Left for back, Ctrl/Alt/Cmd-Right for forward. We click the in-app buttons, which
+        // traverse the top-level window's history. In Restricted mode, the history entries belong to the top-level
+        // window, and the sandboxed article iframe is not allowed to traverse them, so articleWindow.history.back()
+        // would be silently ignored there
+        var historyShortcut = uiUtil.getHistoryShortcut(e, isApplePlatform);
+        if (historyShortcut) {
             e.preventDefault();
             e.stopPropagation();
-            articleWindow.history.back();
-            return;
-        }
-        // Navigation: Ctrl/Alt/Cmd-Right for forward
-        if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey || e.altKey || e.metaKey)) {
-            e.preventDefault();
-            e.stopPropagation();
-            articleWindow.history.forward();
+            document.getElementById(historyShortcut === 'back' ? 'btnBack' : 'btnForward').click();
             return;
         }
         // Ctrl-P to patch printing support, so iframe gets printed
